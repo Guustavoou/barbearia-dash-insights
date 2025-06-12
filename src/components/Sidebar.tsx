@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 z-50 sidebar-container",
+        "fixed left-0 top-0 z-50",
         darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200",
         "border-r shadow-lg transition-all duration-300",
         collapsed ? "w-16" : "w-64",
@@ -83,247 +83,286 @@ export const Sidebar: React.FC<SidebarProps> = ({
         height: "100vh",
         maxHeight: "100vh",
         overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">U</span>
-            </div>
-            <span
-              className={cn(
-                "font-bold text-lg",
-                darkMode ? "text-white" : "text-gray-900",
-              )}
-            >
-              Unclic
-            </span>
-          </div>
-        )}
-        <button
-          onClick={onToggleCollapse}
-          className={cn(
-            "p-2 rounded-lg transition-colors",
-            darkMode
-              ? "hover:bg-gray-700 text-gray-300"
-              : "hover:bg-gray-100 text-gray-600",
-          )}
-        >
-          {collapsed ? (
-            <Menu className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-
-      {/* Navigation - Reduced items to fit perfectly */}
-      <div className="p-4 flex-1 space-y-6 flex flex-col justify-between">
-        {/* Main Items */}
-        <div className="space-y-6">
-          {/* Principal Section */}
-          <div className="space-y-3">
-            {!collapsed && (
-              <h3
-                className={cn(
-                  "text-xs font-semibold uppercase tracking-wider",
-                  darkMode ? "text-gray-400" : "text-gray-500",
-                )}
-              >
-                PRINCIPAL
-              </h3>
-            )}
-            <div className="space-y-2">
-              <MenuItem
-                icon={BarChart3}
-                label="Dashboard"
-                pageId="dashboard"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={Calendar}
-                label="Agendamentos"
-                pageId="appointments"
-                hasNotification={true}
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-            </div>
-          </div>
-
-          {/* Management Section */}
-          <div className="space-y-3">
-            {!collapsed && (
-              <h3
-                className={cn(
-                  "text-xs font-semibold uppercase tracking-wider",
-                  darkMode ? "text-gray-400" : "text-gray-500",
-                )}
-              >
-                GESTÃO
-              </h3>
-            )}
-            <div className="space-y-2">
-              <MenuItem
-                icon={Users}
-                label="Clientes"
-                pageId="clients"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={Package}
-                label="Serviços"
-                pageId="services"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={Users}
-                label="Profissionais"
-                pageId="professionals"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={Package}
-                label="Estoque"
-                pageId="stock"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-            </div>
-          </div>
-
-          {/* Financial Section */}
-          <div className="space-y-3">
-            {!collapsed && (
-              <h3
-                className={cn(
-                  "text-xs font-semibold uppercase tracking-wider",
-                  darkMode ? "text-gray-400" : "text-gray-500",
-                )}
-              >
-                FINANCEIRO
-              </h3>
-            )}
-            <div className="space-y-2">
-              <MenuItem
-                icon={DollarSign}
-                label="Financeiro"
-                pageId="financial"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={FileText}
-                label="Pagamentos"
-                pageId="payments"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={BarChart3}
-                label="Relatórios"
-                pageId="reports"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-            </div>
-          </div>
-
-          {/* System Section - Reduced to essential items */}
-          <div className="space-y-3">
-            {!collapsed && (
-              <h3
-                className={cn(
-                  "text-xs font-semibold uppercase tracking-wider",
-                  darkMode ? "text-gray-400" : "text-gray-500",
-                )}
-              >
-                SISTEMA
-              </h3>
-            )}
-            <div className="space-y-2">
-              <MenuItem
-                icon={Settings}
-                label="Configurações"
-                pageId="settings"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* User Profile */}
-      <div className="p-4 flex-shrink-0">
+      <div
+        style={{
+          height: "100vh",
+          display: "grid",
+          gridTemplateRows: "64px 1fr 96px",
+          gridTemplateAreas: '"header" "content" "footer"',
+          overflow: "hidden",
+        }}
+      >
+        {/* Header */}
         <div
-          className={cn(
-            "flex items-center gap-3 p-3 rounded-xl transition-colors",
-            darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-gray-50 border-gray-200",
-            "border",
-            !collapsed &&
-              "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700",
-          )}
+          style={{ gridArea: "header" }}
+          className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
         >
-          {!collapsed ? (
-            <>
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-semibold text-sm">M</span>
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">U</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <p
+              <span
+                className={cn(
+                  "font-bold text-lg",
+                  darkMode ? "text-white" : "text-gray-900",
+                )}
+              >
+                Unclic
+              </span>
+            </div>
+          )}
+          <button
+            onClick={onToggleCollapse}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              darkMode
+                ? "hover:bg-gray-700 text-gray-300"
+                : "hover:bg-gray-100 text-gray-600",
+            )}
+          >
+            {collapsed ? (
+              <Menu className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        {/* Navigation Content */}
+        <div
+          style={{ gridArea: "content", overflow: "hidden" }}
+          className="p-4"
+        >
+          <div
+            style={{
+              height: "100%",
+              display: "grid",
+              gridTemplateRows: "repeat(4, 1fr)",
+              gap: "8px",
+              overflow: "hidden",
+            }}
+          >
+            {/* Principal */}
+            <div className="flex flex-col justify-center">
+              {!collapsed && (
+                <h3
                   className={cn(
-                    "font-medium text-sm truncate",
-                    darkMode ? "text-white" : "text-gray-900",
-                  )}
-                >
-                  Maria Silva
-                </p>
-                <p
-                  className={cn(
-                    "text-xs truncate",
+                    "text-xs font-semibold uppercase tracking-wider mb-2",
                     darkMode ? "text-gray-400" : "text-gray-500",
                   )}
                 >
-                  Studio Bella
-                </p>
+                  PRINCIPAL
+                </h3>
+              )}
+              <div className="space-y-1">
+                <MenuItem
+                  icon={BarChart3}
+                  label="Dashboard"
+                  pageId="dashboard"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={Calendar}
+                  label="Agendamentos"
+                  pageId="appointments"
+                  hasNotification={true}
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
               </div>
-            </>
-          ) : (
-            <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white font-semibold text-xs">M</span>
             </div>
-          )}
+
+            {/* Gestão */}
+            <div className="flex flex-col justify-center">
+              {!collapsed && (
+                <h3
+                  className={cn(
+                    "text-xs font-semibold uppercase tracking-wider mb-2",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  GESTÃO
+                </h3>
+              )}
+              <div className="space-y-1">
+                <MenuItem
+                  icon={Users}
+                  label="Clientes"
+                  pageId="clients"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={Package}
+                  label="Serviços"
+                  pageId="services"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={Users}
+                  label="Profissionais"
+                  pageId="professionals"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={Package}
+                  label="Estoque"
+                  pageId="stock"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+              </div>
+            </div>
+
+            {/* Financeiro */}
+            <div className="flex flex-col justify-center">
+              {!collapsed && (
+                <h3
+                  className={cn(
+                    "text-xs font-semibold uppercase tracking-wider mb-2",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  FINANCEIRO
+                </h3>
+              )}
+              <div className="space-y-1">
+                <MenuItem
+                  icon={DollarSign}
+                  label="Financeiro"
+                  pageId="financial"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={FileText}
+                  label="Pagamentos"
+                  pageId="payments"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={BarChart3}
+                  label="Relatórios"
+                  pageId="reports"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+              </div>
+            </div>
+
+            {/* Sistema */}
+            <div className="flex flex-col justify-center">
+              {!collapsed && (
+                <h3
+                  className={cn(
+                    "text-xs font-semibold uppercase tracking-wider mb-2",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  SISTEMA
+                </h3>
+              )}
+              <div className="space-y-1">
+                <MenuItem
+                  icon={FileText}
+                  label="Marketing"
+                  pageId="marketing"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={FileText}
+                  label="Documentos"
+                  pageId="documents"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+                <MenuItem
+                  icon={Settings}
+                  label="Configurações"
+                  pageId="settings"
+                  currentPage={currentPage}
+                  onPageChange={onPageChange}
+                  collapsed={collapsed}
+                  darkMode={darkMode}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ gridArea: "footer" }} className="p-4">
+          <div
+            className={cn(
+              "flex items-center gap-3 p-3 rounded-xl transition-colors",
+              darkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-gray-50 border-gray-200",
+              "border",
+              !collapsed &&
+                "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700",
+            )}
+          >
+            {!collapsed ? (
+              <>
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-semibold text-sm">M</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={cn(
+                      "font-medium text-sm truncate",
+                      darkMode ? "text-white" : "text-gray-900",
+                    )}
+                  >
+                    Maria Silva
+                  </p>
+                  <p
+                    className={cn(
+                      "text-xs truncate",
+                      darkMode ? "text-gray-400" : "text-gray-500",
+                    )}
+                  >
+                    Studio Bella
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-white font-semibold text-xs">M</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

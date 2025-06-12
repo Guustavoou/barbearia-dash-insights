@@ -128,40 +128,46 @@
     left: 0;
   }
 
-  /* Force no scrollbars on sidebar and layout containers */
-  .sidebar-container {
+  /* Force absolutely no scrollbars anywhere in sidebar */
+  .sidebar-container,
+  .sidebar-container *,
+  .sidebar-container *::before,
+  .sidebar-container *::after {
     overflow: hidden !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
   }
 
-  .sidebar-container::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-  }
-
-  .sidebar-container * {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
-  }
-
+  .sidebar-container::-webkit-scrollbar,
   .sidebar-container *::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+    background: transparent !important;
   }
 
-  /* Specific override for any scrollable elements in sidebar */
-  .sidebar-container div {
-    overflow: visible !important;
+  /* Force container heights */
+  .sidebar-container {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    min-height: 100vh !important;
   }
 
-  .sidebar-container .space-y-1,
-  .sidebar-container .space-y-4 {
-    overflow: visible !important;
+  /* Override any potential scroll from Tailwind or other sources */
+  [class*="sidebar"] {
+    overflow: hidden !important;
+  }
+
+  [class*="sidebar"] * {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  [class*="sidebar"] *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .layout-container {
