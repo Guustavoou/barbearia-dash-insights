@@ -15,6 +15,8 @@ export const Header: React.FC<HeaderProps> = ({
   notifications,
   currentTime,
 }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <header
       className={cn(
@@ -25,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
       )}
     >
       <div className="flex items-center justify-between px-6 py-4">
-        {/* Left side - can be expanded for breadcrumbs etc */}
+        {/* Left side - Time and Search */}
         <div className="flex items-center gap-4">
           <div
             className={cn(
@@ -42,6 +44,29 @@ export const Header: React.FC<HeaderProps> = ({
                 minute: "2-digit",
               })}
             </span>
+          </div>
+
+          {/* Global Search */}
+          <div className="relative hidden md:block">
+            <Search
+              className={cn(
+                "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4",
+                darkMode ? "text-gray-400" : "text-gray-500",
+              )}
+            />
+            <input
+              type="text"
+              placeholder="Buscar clientes, agendamentos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={cn(
+                "pl-10 pr-4 py-2 w-64 rounded-lg border transition-colors",
+                darkMode
+                  ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                  : "bg-white border-gray-300 placeholder-gray-500 focus:border-blue-500",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+              )}
+            />
           </div>
         </div>
 
