@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 h-full transition-all duration-300 z-50",
+        "fixed left-0 top-0 h-screen transition-all duration-300 z-50 flex flex-col",
         darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200",
         "border-r shadow-lg",
         collapsed ? "w-16" : "w-64",
@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Navigation */}
-      <div className="p-4 space-y-6">
+      <div className="flex-1 p-4 space-y-6 overflow-y-auto">
         {/* Principal Section */}
         <div>
           {!collapsed && (
@@ -292,7 +292,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User Profile */}
-      <div className="absolute bottom-4 left-4 right-4">
+      <div className="p-4 mt-auto">
         <div
           className={cn(
             "flex items-center gap-3 p-3 rounded-xl transition-colors",
