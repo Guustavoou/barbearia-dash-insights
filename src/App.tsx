@@ -85,7 +85,7 @@ const UnclicApp: React.FC = () => {
   return (
     <div
       className={cn(
-        "min-h-screen transition-colors duration-300",
+        "h-screen flex transition-colors duration-300 overflow-hidden",
         darkMode ? "dark bg-gray-900" : "bg-gray-50",
       )}
     >
@@ -101,7 +101,7 @@ const UnclicApp: React.FC = () => {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all duration-300",
+          "flex-1 flex flex-col transition-all duration-300 overflow-hidden",
           sidebarCollapsed ? "ml-16" : "ml-64",
         )}
       >
@@ -114,8 +114,8 @@ const UnclicApp: React.FC = () => {
         />
 
         {/* Page Content */}
-        <main className="p-6">
-          <div className="max-w-7xl mx-auto">{renderCurrentPage()}</div>
+        <main className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-7xl mx-auto h-full">{renderCurrentPage()}</div>
         </main>
       </div>
     </div>
