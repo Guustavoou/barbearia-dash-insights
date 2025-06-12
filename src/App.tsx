@@ -12,6 +12,9 @@ import { Appointments } from "@/pages/Appointments";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
 import { Professionals } from "@/pages/Professionals";
+import { Financial } from "@/pages/Financial";
+import { Reports } from "@/pages/Reports";
+import { Settings } from "@/pages/Settings";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { PageType } from "@/lib/types";
 
