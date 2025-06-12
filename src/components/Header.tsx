@@ -7,7 +7,6 @@ import { NotificationCenter } from "./NotificationCenter";
 interface HeaderProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
-  notifications: number;
   currentTime: Date;
   onPageChange: (page: string) => void;
 }
@@ -15,7 +14,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   darkMode,
   onToggleDarkMode,
-  notifications,
   currentTime,
   onPageChange,
 }) => {
