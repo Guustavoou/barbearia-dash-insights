@@ -111,6 +111,7 @@ const UnclicApp: React.FC = () => {
           onToggleDarkMode={() => setDarkMode(!darkMode)}
           notifications={notifications}
           currentTime={currentTime}
+          onPageChange={setCurrentPage}
         />
 
         {/* Page Content */}
