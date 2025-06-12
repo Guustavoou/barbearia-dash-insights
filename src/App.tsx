@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -47,10 +48,14 @@ const UnclicApp: React.FC = () => {
     }
   }, [darkMode]);
 
+  const handlePageChange = (page: string) => {
+    setCurrentPage(page as PageType);
+  };
+
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "dashboard":
-        return <Dashboard darkMode={darkMode} onPageChange={setCurrentPage} />;
+        return <Dashboard darkMode={darkMode} onPageChange={handlePageChange} />;
       case "clients":
         return <Clients darkMode={darkMode} />;
       case "appointments":
@@ -78,7 +83,7 @@ const UnclicApp: React.FC = () => {
       case "documents":
         return <Documents darkMode={darkMode} />;
       default:
-        return <Dashboard darkMode={darkMode} onPageChange={setCurrentPage} />;
+        return <Dashboard darkMode={darkMode} onPageChange={handlePageChange} />;
     }
   };
 
@@ -92,7 +97,7 @@ const UnclicApp: React.FC = () => {
       {/* Sidebar */}
       <Sidebar
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         darkMode={darkMode}
@@ -110,7 +115,7 @@ const UnclicApp: React.FC = () => {
           darkMode={darkMode}
           onToggleDarkMode={() => setDarkMode(!darkMode)}
           currentTime={currentTime}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
         />
 
         {/* Page Content */}

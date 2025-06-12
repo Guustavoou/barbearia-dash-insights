@@ -1,12 +1,16 @@
+
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { cities } from "@/lib/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewClientModalProps {
   isOpen: boolean;
   onClose: () => void;
   darkMode: boolean;
+  onClientCreated?: () => void;
 }
 
 interface FormData {
@@ -23,6 +27,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
   isOpen,
   onClose,
   darkMode,
+  onClientCreated,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -33,12 +38,79 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
     profession: "",
     notes: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle the form submission
-    console.log("New client data:", formData);
-    onClose();
+    setIsLoading(true);
+
+    try {
+      // Get the current user's barbershop
+      const { data: barbershop, error: barbershopError } = await supabase
+        .from("barbershops")
+        .select("id")
+        .eq("owner_id", (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      if (barbershopError || !barbershop) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível encontrar sua barbearia. Faça login novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase.from("clients").insert({
+        barbershop_id: barbershop.id,
+        name: formData.name,
+        email: formData.email || null,
+        phone: formData.phone || null,
+        cpf: formData.cpf || null,
+        city: formData.city || null,
+        profession: formData.profession || null,
+        notes: formData.notes || null,
+      });
+
+      if (error) {
+        console.error("Erro ao criar cliente:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível criar o cliente. Tente novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Cliente criado com sucesso!",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        cpf: "",
+        city: "São Paulo",
+        profession: "",
+        notes: "",
+      });
+
+      onClientCreated?.();
+      onClose();
+    } catch (error) {
+      console.error("Erro inesperado:", error);
+      toast({
+        title: "Erro",
+        description: "Erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (
@@ -79,6 +151,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
           </h2>
           <button
             onClick={onClose}
+            disabled={isLoading}
             className={cn(
               "p-2 rounded-lg transition-colors",
               darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100",
@@ -113,6 +186,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               required
               value={formData.name}
               onChange={handleInputChange}
+              disabled={isLoading}
               className={cn(
                 "w-full px-3 py-2 rounded-lg border transition-colors",
                 darkMode
@@ -134,15 +208,15 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   darkMode ? "text-gray-300" : "text-gray-700",
                 )}
               >
-                E-mail *
+                E-mail
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                required
                 value={formData.email}
                 onChange={handleInputChange}
+                disabled={isLoading}
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border transition-colors",
                   darkMode
@@ -161,15 +235,15 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   darkMode ? "text-gray-300" : "text-gray-700",
                 )}
               >
-                Telefone *
+                Telefone
               </label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
-                required
                 value={formData.phone}
                 onChange={handleInputChange}
+                disabled={isLoading}
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border transition-colors",
                   darkMode
@@ -200,6 +274,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                 name="cpf"
                 value={formData.cpf}
                 onChange={handleInputChange}
+                disabled={isLoading}
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border transition-colors",
                   darkMode
@@ -226,6 +301,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                 name="profession"
                 value={formData.profession}
                 onChange={handleInputChange}
+                disabled={isLoading}
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border transition-colors",
                   darkMode
@@ -254,6 +330,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               name="city"
               value={formData.city}
               onChange={handleInputChange}
+              disabled={isLoading}
               className={cn(
                 "w-full px-3 py-2 rounded-lg border transition-colors",
                 darkMode
@@ -287,6 +364,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               rows={3}
               value={formData.notes}
               onChange={handleInputChange}
+              disabled={isLoading}
               className={cn(
                 "w-full px-3 py-2 rounded-lg border transition-colors resize-none",
                 darkMode
@@ -303,6 +381,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
             <button
               type="button"
               onClick={onClose}
+              disabled={isLoading}
               className={cn(
                 "flex-1 px-4 py-2 rounded-lg border transition-colors",
                 darkMode
@@ -314,9 +393,16 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={isLoading}
+              className={cn(
+                "flex-1 px-4 py-2 rounded-lg transition-colors",
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700",
+                "text-white",
+              )}
             >
-              Salvar Cliente
+              {isLoading ? "Salvando..." : "Salvar Cliente"}
             </button>
           </div>
         </form>
