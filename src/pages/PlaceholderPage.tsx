@@ -9,35 +9,30 @@ interface PlaceholderPageProps {
 
 const getPageInfo = (pageType: PageType) => {
   const pageMap = {
-    appointments: {
-      title: "Agendamentos",
-      description: "Gerencie todos os agendamentos do seu negócio",
-      icon: "📅",
-    },
     calendar: {
       title: "Calendário",
       description: "Visualize sua agenda em formato de calendário",
       icon: "📅",
     },
-    services: {
-      title: "Serviços",
-      description: "Gerencie os serviços oferecidos pelo seu negócio",
-      icon: "💼",
-    },
-    reports: {
-      title: "Relatórios",
-      description: "Analise relatórios detalhados do seu negócio",
-      icon: "📊",
-    },
-    settings: {
-      title: "Configurações",
-      description: "Configure as preferências do sistema",
-      icon: "⚙️",
-    },
     help: {
       title: "Ajuda",
-      description: "Encontre respostas para suas dúvidas",
+      description: "Encontre respostas para suas dúvidas e suporte técnico",
       icon: "❓",
+    },
+    payments: {
+      title: "Pagamentos",
+      description: "Gerencie métodos de pagamento e transações",
+      icon: "💳",
+    },
+    marketing: {
+      title: "Marketing",
+      description: "Ferramentas de marketing e promoções",
+      icon: "📢",
+    },
+    documents: {
+      title: "Documentos",
+      description: "Gerencie documentos e arquivos do negócio",
+      icon: "📄",
     },
   };
 
