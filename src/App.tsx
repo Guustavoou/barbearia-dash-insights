@@ -15,6 +15,11 @@ import { Professionals } from "@/pages/Professionals";
 import { Financial } from "@/pages/Financial";
 import { Reports } from "@/pages/Reports";
 import { Settings } from "@/pages/Settings";
+import { Calendar } from "@/pages/Calendar";
+import { Help } from "@/pages/Help";
+import { Payments } from "@/pages/Payments";
+import { Marketing } from "@/pages/Marketing";
+import { Documents } from "@/pages/Documents";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { PageType } from "@/lib/types";
 
@@ -63,11 +68,15 @@ const UnclicApp: React.FC = () => {
       case "settings":
         return <Settings darkMode={darkMode} />;
       case "calendar":
+        return <Calendar darkMode={darkMode} />;
       case "help":
+        return <Help darkMode={darkMode} />;
       case "payments":
+        return <Payments darkMode={darkMode} />;
       case "marketing":
+        return <Marketing darkMode={darkMode} />;
       case "documents":
-        return <PlaceholderPage pageType={currentPage} darkMode={darkMode} />;
+        return <Documents darkMode={darkMode} />;
       default:
         return <Dashboard darkMode={darkMode} onPageChange={setCurrentPage} />;
     }
