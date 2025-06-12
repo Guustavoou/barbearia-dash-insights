@@ -133,9 +133,23 @@
     overflow: hidden !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
   }
 
   .sidebar-container::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .sidebar-container * {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .sidebar-container *::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
