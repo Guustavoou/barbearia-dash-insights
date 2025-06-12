@@ -74,7 +74,13 @@ export type PageType =
   | "services"
   | "reports"
   | "settings"
-  | "help";
+  | "help"
+  | "professionals"
+  | "stock"
+  | "financial"
+  | "payments"
+  | "marketing"
+  | "documents";
 
 export type SortField = "name" | "lastVisit" | "totalSpent" | "joinDate";
 export type SortOrder = "asc" | "desc";
