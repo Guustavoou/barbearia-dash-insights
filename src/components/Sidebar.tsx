@@ -9,6 +9,7 @@ import {
   HelpCircle,
   Menu,
   ChevronLeft,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { PageType } from "@/lib/types";
