@@ -139,19 +139,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
               darkMode={darkMode}
             />
             <MenuItem
-              icon={Users}
-              label="Clientes"
-              pageId="clients"
+              icon={Calendar}
+              label="Agendamentos"
+              pageId="appointments"
+              hasNotification={true}
               currentPage={currentPage}
               onPageChange={onPageChange}
               collapsed={collapsed}
               darkMode={darkMode}
             />
+          </div>
+        </div>
+
+        {/* Gestão Section */}
+        <div>
+          {!collapsed && (
+            <h3
+              className={cn(
+                "text-xs font-semibold uppercase tracking-wider mb-3",
+                darkMode ? "text-gray-400" : "text-gray-500",
+              )}
+            >
+              GESTÃO
+            </h3>
+          )}
+          <div className="space-y-1">
             <MenuItem
-              icon={Calendar}
-              label="Agendamentos"
-              pageId="appointments"
-              hasNotification={true}
+              icon={Users}
+              label="Clientes"
+              pageId="clients"
               currentPage={currentPage}
               onPageChange={onPageChange}
               collapsed={collapsed}
@@ -167,7 +183,59 @@ export const Sidebar: React.FC<SidebarProps> = ({
               darkMode={darkMode}
             />
             <MenuItem
+              icon={Users}
+              label="Profissionais"
+              pageId="professionals"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={Package}
+              label="Estoque"
+              pageId="stock"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+          </div>
+        </div>
+
+        {/* Financeiro Section */}
+        <div>
+          {!collapsed && (
+            <h3
+              className={cn(
+                "text-xs font-semibold uppercase tracking-wider mb-3",
+                darkMode ? "text-gray-400" : "text-gray-500",
+              )}
+            >
+              FINANCEIRO
+            </h3>
+          )}
+          <div className="space-y-1">
+            <MenuItem
+              icon={DollarSign}
+              label="Financeiro"
+              pageId="financial"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
               icon={FileText}
+              label="Pagamentos"
+              pageId="payments"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={BarChart3}
               label="Relatórios"
               pageId="reports"
               currentPage={currentPage}
@@ -192,18 +260,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
           <div className="space-y-1">
             <MenuItem
-              icon={Settings}
-              label="Configurações"
-              pageId="settings"
+              icon={FileText}
+              label="Marketing"
+              pageId="marketing"
               currentPage={currentPage}
               onPageChange={onPageChange}
               collapsed={collapsed}
               darkMode={darkMode}
             />
             <MenuItem
-              icon={HelpCircle}
-              label="Ajuda"
-              pageId="help"
+              icon={FileText}
+              label="Documentos"
+              pageId="documents"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={Settings}
+              label="Configurações"
+              pageId="settings"
               currentPage={currentPage}
               onPageChange={onPageChange}
               collapsed={collapsed}
