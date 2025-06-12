@@ -84,37 +84,70 @@ const UnclicApp: React.FC = () => {
 
   return (
     <div
-      className={cn(
-        "min-h-screen transition-colors duration-300",
-        darkMode ? "dark bg-gray-900" : "bg-gray-50",
-      )}
+      className="h-screen w-screen flex overflow-hidden layout-container"
+      style={{
+        height: "100vh",
+        width: "100vw",
+        maxHeight: "100vh",
+        maxWidth: "100vw",
+        overflow: "hidden",
+        position: "fixed",
+        top: 0,
+        left: 0,
+      }}
     >
       {/* Sidebar */}
-      <Sidebar
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        darkMode={darkMode}
-      />
+      <div className="flex-shrink-0">
+        <Sidebar
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          darkMode={darkMode}
+        />
+      </div>
 
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all duration-300",
-          sidebarCollapsed ? "ml-16" : "ml-64",
+          "flex-1 flex flex-col h-screen transition-all duration-300 overflow-hidden",
+          darkMode ? "dark bg-gray-900" : "bg-gray-50",
         )}
+        style={{
+          marginLeft: sidebarCollapsed ? "64px" : "256px",
+          width: `calc(100vw - ${sidebarCollapsed ? "64px" : "256px"})`,
+          height: "100vh",
+          maxHeight: "100vh",
+          overflow: "hidden",
+        }}
       >
         {/* Header */}
-        <Header
-          darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode(!darkMode)}
-          currentTime={currentTime}
-          onPageChange={setCurrentPage}
-        />
+        <div
+          className="flex-shrink-0"
+          style={{
+            height: "72px",
+            minHeight: "72px",
+            maxHeight: "72px",
+          }}
+        >
+          <Header
+            darkMode={darkMode}
+            onToggleDarkMode={() => setDarkMode(!darkMode)}
+            currentTime={currentTime}
+            onPageChange={setCurrentPage}
+          />
+        </div>
 
         {/* Page Content */}
-        <main className="p-6">
+        <main
+          className="flex-1 p-6 content-scroll"
+          style={{
+            height: "calc(100vh - 72px)",
+            maxHeight: "calc(100vh - 72px)",
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
+        >
           <div className="max-w-7xl mx-auto">{renderCurrentPage()}</div>
         </main>
       </div>
