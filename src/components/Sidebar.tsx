@@ -83,17 +83,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         height: "100vh",
         maxHeight: "100vh",
         overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      {/* Header - 72px */}
-      <div
-        className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-        style={{
-          height: "72px",
-          minHeight: "72px",
-          maxHeight: "72px",
-        }}
-      >
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -126,163 +121,121 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation - calc(100vh - 72px - 96px) = calc(100vh - 168px) */}
-      <div
-        className="p-4 space-y-6"
-        style={{
-          height: "calc(100vh - 168px)",
-          minHeight: "calc(100vh - 168px)",
-          maxHeight: "calc(100vh - 168px)",
-          overflow: "hidden",
-        }}
-      >
-        {/* Principal Section */}
-        <div className="space-y-3">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-            >
-              PRINCIPAL
-            </h3>
-          )}
-          <div className="space-y-2">
-            <MenuItem
-              icon={BarChart3}
-              label="Dashboard"
-              pageId="dashboard"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-            <MenuItem
-              icon={Calendar}
-              label="Agendamentos"
-              pageId="appointments"
-              hasNotification={true}
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
+      {/* Navigation - Simplified to essential items only */}
+      <div className="p-4 flex-1 space-y-8 flex flex-col justify-between">
+        {/* Core Navigation */}
+        <div className="space-y-6">
+          {/* Essential Items */}
+          <div className="space-y-3">
+            {!collapsed && (
+              <h3
+                className={cn(
+                  "text-xs font-semibold uppercase tracking-wider",
+                  darkMode ? "text-gray-400" : "text-gray-500",
+                )}
+              >
+                PRINCIPAL
+              </h3>
+            )}
+            <div className="space-y-2">
+              <MenuItem
+                icon={BarChart3}
+                label="Dashboard"
+                pageId="dashboard"
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                collapsed={collapsed}
+                darkMode={darkMode}
+              />
+              <MenuItem
+                icon={Calendar}
+                label="Agendamentos"
+                pageId="appointments"
+                hasNotification={true}
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                collapsed={collapsed}
+                darkMode={darkMode}
+              />
+            </div>
+          </div>
+
+          {/* Management */}
+          <div className="space-y-3">
+            {!collapsed && (
+              <h3
+                className={cn(
+                  "text-xs font-semibold uppercase tracking-wider",
+                  darkMode ? "text-gray-400" : "text-gray-500",
+                )}
+              >
+                GESTÃO
+              </h3>
+            )}
+            <div className="space-y-2">
+              <MenuItem
+                icon={Users}
+                label="Clientes"
+                pageId="clients"
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                collapsed={collapsed}
+                darkMode={darkMode}
+              />
+              <MenuItem
+                icon={Package}
+                label="Serviços"
+                pageId="services"
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                collapsed={collapsed}
+                darkMode={darkMode}
+              />
+            </div>
+          </div>
+
+          {/* Financial */}
+          <div className="space-y-3">
+            {!collapsed && (
+              <h3
+                className={cn(
+                  "text-xs font-semibold uppercase tracking-wider",
+                  darkMode ? "text-gray-400" : "text-gray-500",
+                )}
+              >
+                FINANCEIRO
+              </h3>
+            )}
+            <div className="space-y-2">
+              <MenuItem
+                icon={DollarSign}
+                label="Financeiro"
+                pageId="financial"
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                collapsed={collapsed}
+                darkMode={darkMode}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Gestão Section */}
-        <div className="space-y-3">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-            >
-              GESTÃO
-            </h3>
-          )}
-          <div className="space-y-2">
-            <MenuItem
-              icon={Users}
-              label="Clientes"
-              pageId="clients"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-            <MenuItem
-              icon={Package}
-              label="Serviços"
-              pageId="services"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-            <MenuItem
-              icon={Users}
-              label="Profissionais"
-              pageId="professionals"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-          </div>
-        </div>
-
-        {/* Financeiro Section */}
-        <div className="space-y-3">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-            >
-              FINANCEIRO
-            </h3>
-          )}
-          <div className="space-y-2">
-            <MenuItem
-              icon={DollarSign}
-              label="Financeiro"
-              pageId="financial"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-            <MenuItem
-              icon={FileText}
-              label="Relatórios"
-              pageId="reports"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-          </div>
-        </div>
-
-        {/* Sistema Section */}
-        <div className="space-y-3">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-            >
-              SISTEMA
-            </h3>
-          )}
-          <div className="space-y-2">
-            <MenuItem
-              icon={Settings}
-              label="Configurações"
-              pageId="settings"
-              currentPage={currentPage}
-              onPageChange={onPageChange}
-              collapsed={collapsed}
-              darkMode={darkMode}
-            />
-          </div>
+        {/* Settings at bottom */}
+        <div className="space-y-2">
+          <MenuItem
+            icon={Settings}
+            label="Configurações"
+            pageId="settings"
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            collapsed={collapsed}
+            darkMode={darkMode}
+          />
         </div>
       </div>
 
-      {/* User Profile - 96px */}
-      <div
-        className="p-4"
-        style={{
-          height: "96px",
-          minHeight: "96px",
-          maxHeight: "96px",
-        }}
-      >
+      {/* User Profile */}
+      <div className="p-4 flex-shrink-0">
         <div
           className={cn(
             "flex items-center gap-3 p-3 rounded-xl transition-colors",
