@@ -1,5 +1,5 @@
-import React from "react";
-import { Bell, Sun, Moon, Clock } from "lucide-react";
+import React, { useState } from "react";
+import { Bell, Sun, Moon, Clock, Search } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 
 interface HeaderProps {
