@@ -32,6 +32,7 @@ import {
   topServices,
 } from "@/lib/mockData";
 import { PageType } from "@/lib/types";
+import { QuickActions } from "@/components/QuickActions";
 
 interface DashboardProps {
   darkMode: boolean;
