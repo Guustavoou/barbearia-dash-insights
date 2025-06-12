@@ -87,6 +87,42 @@ export const appointmentsMockData: AppointmentItem[] = [
     price: 30.0,
     professional: "Maria Silva",
   },
+  {
+    id: 8,
+    client: "João Silva",
+    clientId: 8,
+    service: "Corte",
+    date: new Date(2025, 5, 12, 14, 0), // 12 de junho de 2025, 14:00
+    time: "14:00",
+    duration: 60,
+    status: "confirmado",
+    price: 40.0,
+    professional: "Maria Silva",
+  },
+  {
+    id: 9,
+    client: "Maria Santos",
+    clientId: 9,
+    service: "Manicure",
+    date: new Date(2025, 5, 18, 10, 0), // 18 de junho de 2025, 10:00
+    time: "10:00",
+    duration: 60,
+    status: "agendado",
+    price: 45.0,
+    professional: "Ana Costa",
+  },
+  {
+    id: 10,
+    client: "Paulo Costa",
+    clientId: 10,
+    service: "Barba",
+    date: new Date(2025, 5, 27, 16, 30), // 27 de junho de 2025, 16:30
+    time: "16:30",
+    duration: 45,
+    status: "agendado",
+    price: 35.0,
+    professional: "João Santos",
+  },
 ];
 
 export const professionals = [
