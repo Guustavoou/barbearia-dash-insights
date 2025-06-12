@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
 import { Dashboard } from "@/pages/Dashboard";
 import { Clients } from "@/pages/Clients";
+import { Appointments } from "@/pages/Appointments";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { PageType } from "@/lib/types";
 
