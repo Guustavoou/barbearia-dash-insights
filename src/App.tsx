@@ -29,7 +29,7 @@ const UnclicApp: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [notifications] = useState(3);
+
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute
@@ -109,7 +109,6 @@ const UnclicApp: React.FC = () => {
         <Header
           darkMode={darkMode}
           onToggleDarkMode={() => setDarkMode(!darkMode)}
-          notifications={notifications}
           currentTime={currentTime}
           onPageChange={setCurrentPage}
         />
