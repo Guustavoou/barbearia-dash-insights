@@ -11,6 +11,7 @@ import { Clients } from "@/pages/Clients";
 import { Appointments } from "@/pages/Appointments";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
+import { Professionals } from "@/pages/Professionals";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { PageType } from "@/lib/types";
 
