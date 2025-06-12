@@ -544,6 +544,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Quick Actions */}
+      <QuickActions darkMode={darkMode} onPageChange={onPageChange} />
     </div>
   );
 };
