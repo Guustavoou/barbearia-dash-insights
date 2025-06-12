@@ -45,23 +45,24 @@ const MenuItem: React.FC<MenuItemProps> = ({
   <button
     onClick={() => onPageChange(pageId)}
     className={cn(
-      "w-full flex items-center gap-2 px-2 py-0.5 rounded text-left transition-all duration-200 text-xs",
+      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all duration-200",
       currentPage === pageId
-        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm"
+        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
         : darkMode
           ? "text-gray-300 hover:bg-gray-700/50 hover:text-white"
           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-      collapsed && "justify-center px-1",
+      collapsed && "justify-center px-2",
     )}
-    style={{ height: "26px", minHeight: "26px" }}
   >
     <div className="relative flex-shrink-0">
-      <Icon className="h-3.5 w-3.5" />
+      <Icon className="h-4 w-4" />
       {hasNotification && (
-        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+        <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
       )}
     </div>
-    {!collapsed && <span className="font-medium truncate">{label}</span>}
+    {!collapsed && (
+      <span className="font-medium text-sm truncate">{label}</span>
+    )}
   </button>
 );
 
@@ -88,19 +89,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         flexDirection: "column",
       }}
     >
-      {/* Header - 40px */}
+      {/* Header - 60px */}
       <div
-        className="flex items-center justify-between px-2 py-1 border-b border-gray-200 dark:border-gray-700"
-        style={{ height: "40px", minHeight: "40px", flexShrink: 0 }}
+        className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700"
+        style={{ height: "60px", minHeight: "60px", flexShrink: 0 }}
       >
         {!collapsed && (
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 bg-gradient-to-br from-blue-600 to-purple-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-xs">U</span>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">U</span>
             </div>
             <span
               className={cn(
-                "font-bold text-sm",
+                "font-bold text-lg",
                 darkMode ? "text-white" : "text-gray-900",
               )}
             >
@@ -111,190 +112,143 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onToggleCollapse}
           className={cn(
-            "p-0.5 rounded transition-colors",
+            "p-2 rounded-lg transition-colors",
             darkMode
               ? "hover:bg-gray-700 text-gray-300"
               : "hover:bg-gray-100 text-gray-600",
           )}
         >
           {collapsed ? (
-            <Menu className="h-3.5 w-3.5" />
+            <Menu className="h-4 w-4" />
           ) : (
-            <ChevronLeft className="h-3.5 w-3.5" />
+            <ChevronLeft className="h-4 w-4" />
           )}
         </button>
       </div>
 
-      {/* Navigation - Remaining space minus footer */}
+      {/* Navigation - Simplified with key items only */}
       <div
-        className="px-2 py-1 flex-1"
+        className="px-4 py-4 flex-1"
         style={{
-          height: "calc(100vh - 40px - 50px)",
-          maxHeight: "calc(100vh - 40px - 50px)",
+          height: "calc(100vh - 60px - 80px)",
+          maxHeight: "calc(100vh - 60px - 80px)",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-evenly",
+          justifyContent: "space-between",
         }}
       >
-        {/* Principal Section */}
-        <div className="space-y-0.5">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider px-1",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-              style={{ fontSize: "10px", lineHeight: "12px", height: "12px" }}
-            >
-              PRINCIPAL
-            </h3>
-          )}
-          <MenuItem
-            icon={BarChart3}
-            label="Dashboard"
-            pageId="dashboard"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={Calendar}
-            label="Agendamentos"
-            pageId="appointments"
-            hasNotification={true}
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
+        {/* Main Navigation */}
+        <div className="space-y-6">
+          {/* Core Items */}
+          <div className="space-y-2">
+            {!collapsed && (
+              <h3
+                className={cn(
+                  "text-xs font-semibold uppercase tracking-wider mb-3",
+                  darkMode ? "text-gray-400" : "text-gray-500",
+                )}
+              >
+                PRINCIPAL
+              </h3>
+            )}
+            <MenuItem
+              icon={BarChart3}
+              label="Dashboard"
+              pageId="dashboard"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={Calendar}
+              label="Agendamentos"
+              pageId="appointments"
+              hasNotification={true}
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+          </div>
+
+          {/* Business Items */}
+          <div className="space-y-2">
+            {!collapsed && (
+              <h3
+                className={cn(
+                  "text-xs font-semibold uppercase tracking-wider mb-3",
+                  darkMode ? "text-gray-400" : "text-gray-500",
+                )}
+              >
+                GESTÃO
+              </h3>
+            )}
+            <MenuItem
+              icon={Users}
+              label="Clientes"
+              pageId="clients"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={Package}
+              label="Serviços"
+              pageId="services"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={Users}
+              label="Profissionais"
+              pageId="professionals"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+          </div>
+
+          {/* Financial Items */}
+          <div className="space-y-2">
+            {!collapsed && (
+              <h3
+                className={cn(
+                  "text-xs font-semibold uppercase tracking-wider mb-3",
+                  darkMode ? "text-gray-400" : "text-gray-500",
+                )}
+              >
+                FINANCEIRO
+              </h3>
+            )}
+            <MenuItem
+              icon={DollarSign}
+              label="Financeiro"
+              pageId="financial"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+            <MenuItem
+              icon={FileText}
+              label="Relatórios"
+              pageId="reports"
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+              collapsed={collapsed}
+              darkMode={darkMode}
+            />
+          </div>
         </div>
 
-        {/* Gestão Section */}
-        <div className="space-y-0.5">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider px-1",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-              style={{ fontSize: "10px", lineHeight: "12px", height: "12px" }}
-            >
-              GESTÃO
-            </h3>
-          )}
-          <MenuItem
-            icon={Users}
-            label="Clientes"
-            pageId="clients"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={Package}
-            label="Serviços"
-            pageId="services"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={Users}
-            label="Profissionais"
-            pageId="professionals"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={Package}
-            label="Estoque"
-            pageId="stock"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-        </div>
-
-        {/* Financeiro Section */}
-        <div className="space-y-0.5">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider px-1",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-              style={{ fontSize: "10px", lineHeight: "12px", height: "12px" }}
-            >
-              FINANCEIRO
-            </h3>
-          )}
-          <MenuItem
-            icon={DollarSign}
-            label="Financeiro"
-            pageId="financial"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={FileText}
-            label="Pagamentos"
-            pageId="payments"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={BarChart3}
-            label="Relatórios"
-            pageId="reports"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-        </div>
-
-        {/* Sistema Section */}
-        <div className="space-y-0.5">
-          {!collapsed && (
-            <h3
-              className={cn(
-                "text-xs font-semibold uppercase tracking-wider px-1",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-              style={{ fontSize: "10px", lineHeight: "12px", height: "12px" }}
-            >
-              SISTEMA
-            </h3>
-          )}
-          <MenuItem
-            icon={FileText}
-            label="Marketing"
-            pageId="marketing"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
-          <MenuItem
-            icon={FileText}
-            label="Documentos"
-            pageId="documents"
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            collapsed={collapsed}
-            darkMode={darkMode}
-          />
+        {/* System Items at bottom */}
+        <div className="space-y-2">
           <MenuItem
             icon={Settings}
             label="Configurações"
@@ -307,14 +261,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* User Profile - 50px */}
+      {/* User Profile - 80px */}
       <div
-        className="px-2 py-1"
-        style={{ height: "50px", minHeight: "50px", flexShrink: 0 }}
+        className="px-4 py-3"
+        style={{ height: "80px", minHeight: "80px", flexShrink: 0 }}
       >
         <div
           className={cn(
-            "flex items-center gap-1.5 p-1.5 rounded-lg transition-colors h-full",
+            "flex items-center gap-3 p-3 rounded-xl transition-colors h-full",
             darkMode
               ? "bg-gray-800 border-gray-700"
               : "bg-gray-50 border-gray-200",
@@ -325,16 +279,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           {!collapsed ? (
             <>
-              <div className="w-7 h-7 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-semibold text-xs">M</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-semibold text-sm">M</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p
                   className={cn(
-                    "font-medium text-xs truncate",
+                    "font-medium text-sm truncate",
                     darkMode ? "text-white" : "text-gray-900",
                   )}
-                  style={{ lineHeight: "1.2" }}
                 >
                   Maria Silva
                 </p>
@@ -343,14 +296,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     "text-xs truncate",
                     darkMode ? "text-gray-400" : "text-gray-500",
                   )}
-                  style={{ lineHeight: "1.1", fontSize: "10px" }}
                 >
                   Studio Bella
                 </p>
               </div>
             </>
           ) : (
-            <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+            <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
               <span className="text-white font-semibold text-xs">M</span>
             </div>
           )}
