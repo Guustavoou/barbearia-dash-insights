@@ -48,8 +48,9 @@ const UnclicApp: React.FC = () => {
         return <Appointments darkMode={darkMode} />;
       case "stock":
         return <Stock darkMode={darkMode} />;
-      case "calendar":
       case "services":
+        return <Services darkMode={darkMode} />;
+      case "calendar":
       case "reports":
       case "settings":
       case "help":
