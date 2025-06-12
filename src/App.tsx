@@ -45,11 +45,18 @@ const UnclicApp: React.FC = () => {
         return <Clients darkMode={darkMode} />;
       case "appointments":
         return <Appointments darkMode={darkMode} />;
+      case "stock":
+        return <Stock darkMode={darkMode} />;
       case "calendar":
       case "services":
       case "reports":
       case "settings":
       case "help":
+      case "professionals":
+      case "financial":
+      case "payments":
+      case "marketing":
+      case "documents":
         return <PlaceholderPage pageType={currentPage} darkMode={darkMode} />;
       default:
         return <Dashboard darkMode={darkMode} onPageChange={setCurrentPage} />;
