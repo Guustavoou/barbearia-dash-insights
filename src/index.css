@@ -144,7 +144,6 @@
   }
 
   .sidebar-container * {
-    overflow: hidden !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
   }
@@ -153,6 +152,16 @@
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+  }
+
+  /* Specific override for any scrollable elements in sidebar */
+  .sidebar-container div {
+    overflow: visible !important;
+  }
+
+  .sidebar-container .space-y-1,
+  .sidebar-container .space-y-4 {
+    overflow: visible !important;
   }
 
   .layout-container {
