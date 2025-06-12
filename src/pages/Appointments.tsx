@@ -16,7 +16,7 @@ interface AppointmentsProps {
 }
 
 export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date(2025, 5, 1)); // June 2025
   const [viewMode, setViewMode] = useState<AppointmentViewMode>("calendario");
   const [calendarView, setCalendarView] = useState<CalendarViewType>("mensal");
   const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
