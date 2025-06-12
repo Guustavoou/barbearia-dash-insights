@@ -45,7 +45,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
   <button
     onClick={() => onPageChange(pageId)}
     className={cn(
-      "w-full flex items-center gap-2.5 px-3 rounded-lg text-left transition-all duration-200",
+      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all duration-200",
       currentPage === pageId
         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
         : darkMode
@@ -53,7 +53,6 @@ const MenuItem: React.FC<MenuItemProps> = ({
           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
       collapsed && "justify-center px-2",
     )}
-    style={{ height: "36px", minHeight: "36px", maxHeight: "36px" }}
   >
     <div className="relative flex-shrink-0">
       <Icon className="h-5 w-5" />
@@ -72,12 +71,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse,
   darkMode,
 }) => {
-  // Total height: 100vh
-  // Header: 64px
-  // Footer: 88px
-  // Available for content: calc(100vh - 152px)
-  // 4 sections with 13 items + 4 headers = needs to fit exactly
-
   return (
     <div
       className={cn(
@@ -89,19 +82,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       style={{
         height: "100vh",
         maxHeight: "100vh",
-        overflow: "hidden !important",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      {/* Header - Exactly 64px */}
-      <div
-        className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-        style={{
-          height: "64px",
-          minHeight: "64px",
-          maxHeight: "64px",
-          overflow: "hidden",
-        }}
-      >
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -134,33 +121,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation - Exactly calc(100vh - 152px) */}
-      <div
-        className="px-4"
-        style={{
-          height: "calc(100vh - 152px)",
-          minHeight: "calc(100vh - 152px)",
-          maxHeight: "calc(100vh - 152px)",
-          overflow: "hidden !important",
-          paddingTop: "16px",
-          paddingBottom: "16px",
-        }}
-      >
-        <div className="space-y-4" style={{ height: "100%" }}>
+      {/* Navigation - Reduced items to fit perfectly */}
+      <div className="p-4 flex-1 space-y-6 flex flex-col justify-between">
+        {/* Main Items */}
+        <div className="space-y-6">
           {/* Principal Section */}
-          <div>
+          <div className="space-y-3">
             {!collapsed && (
               <h3
                 className={cn(
-                  "text-xs font-semibold uppercase tracking-wider mb-2",
+                  "text-xs font-semibold uppercase tracking-wider",
                   darkMode ? "text-gray-400" : "text-gray-500",
                 )}
-                style={{ height: "16px", lineHeight: "16px" }}
               >
                 PRINCIPAL
               </h3>
             )}
-            <div className="space-y-1">
+            <div className="space-y-2">
               <MenuItem
                 icon={BarChart3}
                 label="Dashboard"
@@ -183,20 +160,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* Gestão Section */}
-          <div>
+          {/* Management Section */}
+          <div className="space-y-3">
             {!collapsed && (
               <h3
                 className={cn(
-                  "text-xs font-semibold uppercase tracking-wider mb-2",
+                  "text-xs font-semibold uppercase tracking-wider",
                   darkMode ? "text-gray-400" : "text-gray-500",
                 )}
-                style={{ height: "16px", lineHeight: "16px" }}
               >
                 GESTÃO
               </h3>
             )}
-            <div className="space-y-1">
+            <div className="space-y-2">
               <MenuItem
                 icon={Users}
                 label="Clientes"
@@ -236,20 +212,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* Financeiro Section */}
-          <div>
+          {/* Financial Section */}
+          <div className="space-y-3">
             {!collapsed && (
               <h3
                 className={cn(
-                  "text-xs font-semibold uppercase tracking-wider mb-2",
+                  "text-xs font-semibold uppercase tracking-wider",
                   darkMode ? "text-gray-400" : "text-gray-500",
                 )}
-                style={{ height: "16px", lineHeight: "16px" }}
               >
                 FINANCEIRO
               </h3>
             )}
-            <div className="space-y-1">
+            <div className="space-y-2">
               <MenuItem
                 icon={DollarSign}
                 label="Financeiro"
@@ -280,38 +255,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* Sistema Section */}
-          <div>
+          {/* System Section - Reduced to essential items */}
+          <div className="space-y-3">
             {!collapsed && (
               <h3
                 className={cn(
-                  "text-xs font-semibold uppercase tracking-wider mb-2",
+                  "text-xs font-semibold uppercase tracking-wider",
                   darkMode ? "text-gray-400" : "text-gray-500",
                 )}
-                style={{ height: "16px", lineHeight: "16px" }}
               >
                 SISTEMA
               </h3>
             )}
-            <div className="space-y-1">
-              <MenuItem
-                icon={FileText}
-                label="Marketing"
-                pageId="marketing"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
-              <MenuItem
-                icon={FileText}
-                label="Documentos"
-                pageId="documents"
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                collapsed={collapsed}
-                darkMode={darkMode}
-              />
+            <div className="space-y-2">
               <MenuItem
                 icon={Settings}
                 label="Configurações"
@@ -326,16 +282,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* User Profile - Exactly 88px */}
-      <div
-        className="p-4"
-        style={{
-          height: "88px",
-          minHeight: "88px",
-          maxHeight: "88px",
-          overflow: "hidden",
-        }}
-      >
+      {/* User Profile */}
+      <div className="p-4 flex-shrink-0">
         <div
           className={cn(
             "flex items-center gap-3 p-3 rounded-xl transition-colors",
@@ -346,7 +294,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             !collapsed &&
               "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700",
           )}
-          style={{ height: "56px", maxHeight: "56px" }}
         >
           {!collapsed ? (
             <>
