@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Bell, Sun, Moon, Clock, Search } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { GlobalSearch } from "./GlobalSearch";
+import { NotificationCenter } from "./NotificationCenter";
 
 interface HeaderProps {
   darkMode: boolean;
@@ -77,22 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* Notifications */}
-          <button
-            className={cn(
-              "relative p-2 rounded-lg transition-colors",
-              darkMode
-                ? "hover:bg-gray-700 text-gray-300"
-                : "hover:bg-gray-100 text-gray-500",
-            )}
-            title="Notificações"
-          >
-            <Bell className="h-5 w-5" />
-            {notifications > 0 && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                {notifications}
-              </div>
-            )}
-          </button>
+          <NotificationCenter darkMode={darkMode} />
 
           {/* User Avatar */}
           <div
