@@ -83,13 +83,7 @@ const UnclicApp: React.FC = () => {
   };
 
   return (
-    <div
-      className={cn(
-        "w-full h-screen flex transition-colors duration-300 relative",
-        darkMode ? "dark bg-gray-900" : "bg-gray-50",
-      )}
-      style={{ height: "100vh", overflow: "hidden" }}
-    >
+    <div className="h-screen w-screen flex overflow-hidden">
       {/* Sidebar */}
       <Sidebar
         currentPage={currentPage}
@@ -102,29 +96,36 @@ const UnclicApp: React.FC = () => {
       {/* Main Content */}
       <div
         className={cn(
-          "flex-1 flex flex-col transition-all duration-300 h-full",
-          sidebarCollapsed ? "ml-16" : "ml-64",
+          "flex-1 flex flex-col h-screen transition-all duration-300",
+          darkMode ? "dark bg-gray-900" : "bg-gray-50",
         )}
-        style={{ height: "100vh", overflow: "hidden" }}
+        style={{
+          marginLeft: sidebarCollapsed ? "64px" : "256px",
+          width: `calc(100vw - ${sidebarCollapsed ? "64px" : "256px"})`,
+          height: "100vh",
+          overflow: "hidden",
+        }}
       >
         {/* Header */}
-        <Header
-          darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode(!darkMode)}
-          currentTime={currentTime}
-          onPageChange={setCurrentPage}
-        />
+        <div className="flex-shrink-0">
+          <Header
+            darkMode={darkMode}
+            onToggleDarkMode={() => setDarkMode(!darkMode)}
+            currentTime={currentTime}
+            onPageChange={setCurrentPage}
+          />
+        </div>
 
         {/* Page Content */}
         <main
           className="flex-1 p-6 overflow-y-auto"
           style={{
-            height: "calc(100vh - 80px)", // Subtract header height
+            height: "calc(100vh - 80px)",
             overflowY: "auto",
             overflowX: "hidden",
           }}
         >
-          <div className="max-w-7xl mx-auto h-full">{renderCurrentPage()}</div>
+          <div className="max-w-7xl mx-auto">{renderCurrentPage()}</div>
         </main>
       </div>
     </div>

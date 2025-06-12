@@ -6,7 +6,6 @@ import {
   Package,
   FileText,
   Settings,
-  HelpCircle,
   Menu,
   ChevronLeft,
   DollarSign,
@@ -52,16 +51,16 @@ const MenuItem: React.FC<MenuItemProps> = ({
         : darkMode
           ? "text-gray-300 hover:bg-gray-700/50 hover:text-white"
           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-      collapsed && "justify-center",
+      collapsed && "justify-center px-2",
     )}
   >
-    <div className="relative">
+    <div className="relative flex-shrink-0">
       <Icon className="h-5 w-5" />
       {hasNotification && (
         <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
       )}
     </div>
-    {!collapsed && <span className="font-medium">{label}</span>}
+    {!collapsed && <span className="font-medium text-sm">{label}</span>}
   </button>
 );
 
@@ -75,22 +74,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 flex flex-col transition-all duration-300 z-50",
+        "fixed left-0 top-0 z-50 flex flex-col",
         darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200",
-        "border-r shadow-lg",
+        "border-r shadow-lg transition-all duration-300",
         collapsed ? "w-16" : "w-64",
       )}
       style={{
         height: "100vh",
-        overflowX: "hidden",
-        overflowY: "hidden",
+        minHeight: "100vh",
+        maxHeight: "100vh",
+        overflow: "hidden",
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+      {/* Header - Fixed Height */}
+      <div
+        className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
+        style={{ height: "72px", minHeight: "72px", maxHeight: "72px" }}
+      >
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <span className="text-white font-bold text-sm">U</span>
             </div>
             <span
@@ -106,7 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={onToggleCollapse}
           className={cn(
-            "p-2 rounded-lg transition-colors",
+            "p-2 rounded-lg transition-colors flex-shrink-0",
             darkMode
               ? "hover:bg-gray-700 text-gray-300"
               : "hover:bg-gray-100 text-gray-600",
@@ -120,21 +123,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation - Flexible Height */}
       <div
-        className="flex-1 p-4 space-y-6 overflow-y-auto"
+        className="flex-1 p-4 space-y-4"
         style={{
+          height: "calc(100vh - 72px - 96px)",
+          minHeight: "calc(100vh - 72px - 96px)",
+          maxHeight: "calc(100vh - 72px - 96px)",
           overflowY: "auto",
           overflowX: "hidden",
-          height: "calc(100vh - 160px)", // Subtract header and footer space
         }}
       >
         {/* Principal Section */}
-        <div>
+        <div className="space-y-2">
           {!collapsed && (
             <h3
               className={cn(
-                "text-xs font-semibold uppercase tracking-wider mb-3",
+                "text-xs font-semibold uppercase tracking-wider mb-2 px-1",
                 darkMode ? "text-gray-400" : "text-gray-500",
               )}
             >
@@ -165,11 +170,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Gestão Section */}
-        <div>
+        <div className="space-y-2">
           {!collapsed && (
             <h3
               className={cn(
-                "text-xs font-semibold uppercase tracking-wider mb-3",
+                "text-xs font-semibold uppercase tracking-wider mb-2 px-1",
                 darkMode ? "text-gray-400" : "text-gray-500",
               )}
             >
@@ -217,11 +222,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Financeiro Section */}
-        <div>
+        <div className="space-y-2">
           {!collapsed && (
             <h3
               className={cn(
-                "text-xs font-semibold uppercase tracking-wider mb-3",
+                "text-xs font-semibold uppercase tracking-wider mb-2 px-1",
                 darkMode ? "text-gray-400" : "text-gray-500",
               )}
             >
@@ -260,11 +265,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sistema Section */}
-        <div>
+        <div className="space-y-2">
           {!collapsed && (
             <h3
               className={cn(
-                "text-xs font-semibold uppercase tracking-wider mb-3",
+                "text-xs font-semibold uppercase tracking-wider mb-2 px-1",
                 darkMode ? "text-gray-400" : "text-gray-500",
               )}
             >
@@ -303,8 +308,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* User Profile */}
-      <div className="p-4 flex-shrink-0">
+      {/* User Profile - Fixed Height */}
+      <div
+        className="p-4"
+        style={{ height: "96px", minHeight: "96px", maxHeight: "96px" }}
+      >
         <div
           className={cn(
             "flex items-center gap-3 p-3 rounded-xl transition-colors",
@@ -318,7 +326,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           {!collapsed ? (
             <>
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-semibold text-sm">M</span>
               </div>
               <div className="flex-1 min-w-0">
