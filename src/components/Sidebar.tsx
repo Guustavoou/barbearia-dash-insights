@@ -75,14 +75,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 h-screen transition-all duration-300 z-50 flex flex-col",
+        "fixed left-0 top-0 flex flex-col transition-all duration-300 z-50",
         darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200",
         "border-r shadow-lg",
         collapsed ? "w-16" : "w-64",
       )}
+      style={{
+        height: "100vh",
+        overflowX: "hidden",
+        overflowY: "hidden",
+      }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -116,7 +121,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 p-4 space-y-6 overflow-y-auto">
+      <div
+        className="flex-1 p-4 space-y-6 overflow-y-auto"
+        style={{
+          overflowY: "auto",
+          overflowX: "hidden",
+          height: "calc(100vh - 160px)", // Subtract header and footer space
+        }}
+      >
         {/* Principal Section */}
         <div>
           {!collapsed && (
@@ -292,7 +304,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User Profile */}
-      <div className="p-4 mt-auto">
+      <div className="p-4 flex-shrink-0">
         <div
           className={cn(
             "flex items-center gap-3 p-3 rounded-xl transition-colors",

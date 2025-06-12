@@ -85,9 +85,10 @@ const UnclicApp: React.FC = () => {
   return (
     <div
       className={cn(
-        "h-screen flex transition-colors duration-300 overflow-hidden",
+        "w-full h-screen flex transition-colors duration-300 relative",
         darkMode ? "dark bg-gray-900" : "bg-gray-50",
       )}
+      style={{ height: "100vh", overflow: "hidden" }}
     >
       {/* Sidebar */}
       <Sidebar
@@ -101,9 +102,10 @@ const UnclicApp: React.FC = () => {
       {/* Main Content */}
       <div
         className={cn(
-          "flex-1 flex flex-col transition-all duration-300 overflow-hidden",
+          "flex-1 flex flex-col transition-all duration-300 h-full",
           sidebarCollapsed ? "ml-16" : "ml-64",
         )}
+        style={{ height: "100vh", overflow: "hidden" }}
       >
         {/* Header */}
         <Header
@@ -114,7 +116,14 @@ const UnclicApp: React.FC = () => {
         />
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main
+          className="flex-1 p-6 overflow-y-auto"
+          style={{
+            height: "calc(100vh - 80px)", // Subtract header height
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
+        >
           <div className="max-w-7xl mx-auto h-full">{renderCurrentPage()}</div>
         </main>
       </div>
