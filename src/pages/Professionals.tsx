@@ -49,6 +49,34 @@ export const Professionals: React.FC<ProfessionalsProps> = ({ darkMode }) => {
   const [showNewProfessionalModal, setShowNewProfessionalModal] =
     useState(false);
 
+  // API integration
+  const {
+    data: apiResponse,
+    loading,
+    error,
+    refetch,
+  } = useProfessionals({
+    search: searchTerm,
+    status: statusFilter === "all" ? undefined : statusFilter,
+  });
+
+  // Fallback to mock data if API fails
+  const [fallbackData, setFallbackData] = useState<any>(null);
+
+  React.useEffect(() => {
+    if (error) {
+      import("@/lib/professionalsMockData").then((mockData) => {
+        setFallbackData(mockData);
+      });
+    }
+  }, [error]);
+
+  // Use API data or fallback to mock data
+  const professionalsData =
+    apiResponse?.data ||
+    fallbackData?.professionalsMockData ||
+    professionalsMockData;
+
   // Filter and sort professionals
   const filteredProfessionals = useMemo(() => {
     let filtered = professionalsMockData.filter((professional) => {
