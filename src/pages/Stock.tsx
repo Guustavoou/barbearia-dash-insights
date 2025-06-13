@@ -63,7 +63,7 @@ export const Stock: React.FC<StockProps> = ({ darkMode }) => {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let filtered = productsMockData.filter((product) => {
+    let filtered = productsData.filter((product: any) => {
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
