@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
-  Calendar,
   Download,
+  Calendar,
   TrendingUp,
   Users,
   DollarSign,
-  Star,
   Clock,
-  Target,
-  Award,
+  Filter,
+  Eye,
   BarChart3,
   PieChart,
+  FileText,
+  Printer,
+  Share,
+  RefreshCw,
 } from "lucide-react";
 import {
   BarChart,
@@ -19,13 +22,21 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart as RechartsPieChart,
   Cell,
+  LineChart,
+  Line,
 } from "recharts";
-import { cn, formatCurrency } from "@/lib/unclicUtils";
+import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
+import {
+  useDashboardStats,
+  useClients,
+  useAppointments,
+  useServices,
+  useTransactions,
+} from "@/hooks/useApi";
 
 interface ReportsProps {
   darkMode: boolean;
@@ -590,7 +601,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
                 darkMode ? "text-gray-400" : "text-gray-600",
               )}
             >
-              Esta seção de relatório está sendo desenvolvida e estará
+              Esta seção de relatório está sendo desenvolvida e estar��
               disponível em breve.
             </p>
           </div>
