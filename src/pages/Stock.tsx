@@ -23,6 +23,7 @@ import {
   categories,
 } from "@/lib/stockMockData";
 import { Product } from "@/lib/stockTypes";
+import { useProducts } from "@/hooks/useApi";
 
 interface StockProps {
   darkMode: boolean;
