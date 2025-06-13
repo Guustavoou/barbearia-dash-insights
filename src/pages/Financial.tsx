@@ -74,7 +74,7 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
 
   // Filter and sort transactions
   const filteredTransactions = useMemo(() => {
-    let filtered = transactionsMockData.filter((transaction) => {
+    let filtered = transactions.filter((transaction: any) => {
       const matchesSearch =
         transaction.description
           .toLowerCase()
