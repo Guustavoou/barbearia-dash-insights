@@ -244,3 +244,25 @@ export function useUpdateProduct(
 export function useDeleteProduct(options?: UseMutationOptions<any, number>) {
   return useMutation((id) => api.deleteProduct(id), options);
 }
+
+export function useCreateTransaction(options?: UseMutationOptions<any, any>) {
+  return useMutation(
+    (transactionData) => api.createTransaction(transactionData),
+    options,
+  );
+}
+
+export function useUpdateTransaction(
+  options?: UseMutationOptions<any, { id: number; data: any }>,
+) {
+  return useMutation(
+    ({ id, data }) => api.updateTransaction(id, data),
+    options,
+  );
+}
+
+export function useDeleteTransaction(
+  options?: UseMutationOptions<any, number>,
+) {
+  return useMutation((id) => api.deleteTransaction(id), options);
+}
