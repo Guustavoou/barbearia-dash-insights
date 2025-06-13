@@ -4,8 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { Scissors, Mail, Lock, User, Phone, MapPin, Building } from 'lucide-react';
+import { Scissors, Mail, Lock, User, Phone, MapPin, Building, AlertCircle, CheckCircle } from 'lucide-react';
 
 export const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,17 +17,28 @@ export const Auth: React.FC = () => {
   const [city, setCity] = useState('');
   const [barbershopName, setBarbershopName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const [showResendOption, setShowResendOption] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const { signIn, signUp, resendConfirmation } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setShowResendOption(false);
 
     try {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          toast.error(error.message);
+          if (error.message.includes('Invalid login credentials')) {
+            toast.error('Email ou senha incorretos. Verifique suas credenciais.');
+          } else if (error.message.includes('Email not confirmed')) {
+            toast.error('Email não confirmado. Verifique sua caixa de entrada.');
+            setShowResendOption(true);
+            setPendingEmail(email);
+          } else {
+            toast.error(error.message);
+          }
         } else {
           toast.success('Login realizado com sucesso!');
         }
@@ -38,15 +50,51 @@ export const Auth: React.FC = () => {
           barbershop_name: barbershopName
         };
         
-        const { error } = await signUp(email, password, userData);
+        const { error, data } = await signUp(email, password, userData);
+        
         if (error) {
-          toast.error(error.message);
+          console.log('Signup error details:', error);
+          if (error.message.includes('User already registered')) {
+            toast.error('Este email já está cadastrado. Tente fazer login ou use outro email.');
+            setShowResendOption(true);
+            setPendingEmail(email);
+          } else if (error.message.includes('Password should be at least')) {
+            toast.error('A senha deve ter pelo menos 6 caracteres.');
+          } else {
+            toast.error(`Erro no cadastro: ${error.message}`);
+          }
         } else {
-          toast.success('Conta criada com sucesso! Verifique seu email para confirmar.');
+          console.log('Signup successful:', data);
+          if (data?.user && !data.user.email_confirmed_at) {
+            toast.success('Conta criada com sucesso! Verifique seu email para confirmar.');
+            setShowResendOption(true);
+            setPendingEmail(email);
+          } else {
+            toast.success('Conta criada e confirmada com sucesso!');
+          }
         }
       }
     } catch (error) {
-      toast.error('Ocorreu um erro. Tente novamente.');
+      console.error('Authentication error:', error);
+      toast.error('Ocorreu um erro inesperado. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!pendingEmail) return;
+    
+    setLoading(true);
+    try {
+      const { error } = await resendConfirmation(pendingEmail);
+      if (error) {
+        toast.error(`Erro ao reenviar email: ${error.message}`);
+      } else {
+        toast.success('Email de confirmação reenviado! Verifique sua caixa de entrada.');
+      }
+    } catch (error) {
+      toast.error('Erro ao reenviar email de confirmação.');
     } finally {
       setLoading(false);
     }
@@ -71,6 +119,23 @@ export const Auth: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {showResendOption && (
+            <Alert className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="flex flex-col gap-2">
+                Email de confirmação necessário para: {pendingEmail}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleResendConfirmation}
+                  disabled={loading}
+                >
+                  Reenviar email de confirmação
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <>
@@ -152,13 +217,26 @@ export const Auth: React.FC = () => {
           <div className="mt-4 text-center">
             <Button
               variant="ghost"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setShowResendOption(false);
+                setPendingEmail('');
+              }}
               className="text-sm"
             >
               {isLogin 
                 ? 'Não tem uma conta? Criar conta' 
                 : 'Já tem uma conta? Entrar'}
             </Button>
+          </div>
+
+          <div className="mt-4 text-xs text-gray-500 text-center">
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Se não receber o email de confirmação, verifique sua caixa de spam ou use o botão "Reenviar email de confirmação" acima.
+              </AlertDescription>
+            </Alert>
           </div>
         </CardContent>
       </Card>

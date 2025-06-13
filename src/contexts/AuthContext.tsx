@@ -7,9 +7,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any; data?: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  resendConfirmation: (email: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,7 +52,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, userData?: any) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    console.log('Attempting signup for:', email);
+    
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -60,14 +63,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
     
-    return { error };
+    console.log('Signup response:', { data, error });
+    
+    return { error, data };
   };
 
   const signIn = async (email: string, password: string) => {
+    console.log('Attempting login for:', email);
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+    
+    console.log('Login response:', { error });
+    
+    return { error };
+  };
+
+  const resendConfirmation = async (email: string) => {
+    console.log('Resending confirmation email for:', email);
+    
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`
+      }
+    });
+    
+    console.log('Resend confirmation response:', { error });
     
     return { error };
   };
@@ -82,7 +107,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     signUp,
     signIn,
-    signOut
+    signOut,
+    resendConfirmation
   };
 
   return (
