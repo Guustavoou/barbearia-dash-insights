@@ -337,9 +337,10 @@ export const updateTransaction = async (req: Request, res: Response) => {
         amount = COALESCE(?, amount),
         description = COALESCE(?, description),
         payment_method = COALESCE(?, payment_method),
-        appointment_id = COALESCE(?, appointment_id),
-        product_id = COALESCE(?, product_id),
-        reference = COALESCE(?, reference),
+        category = COALESCE(?, category),
+        reference_id = COALESCE(?, reference_id),
+        reference_type = COALESCE(?, reference_type),
+        date = COALESCE(?, date),
         updated_at = datetime('now')
       WHERE id = ?
     `);
@@ -349,9 +350,10 @@ export const updateTransaction = async (req: Request, res: Response) => {
       amount || null,
       description || null,
       payment_method || null,
-      appointment_id || null,
-      product_id || null,
-      reference || null,
+      category || null,
+      reference_id || null,
+      reference_type || null,
+      date || null,
       id,
     );
 
