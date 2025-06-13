@@ -49,7 +49,7 @@ function seedDatabase() {
       "Especialista em cortes masculinos e barbas",
       15,
       '["Barbeiro Profissional","Curso de Barbas"]',
-      true,
+      1,
     ],
     [
       "Ana Costa",
@@ -67,7 +67,7 @@ function seedDatabase() {
       "Especialista em manicure, pedicure e nail art",
       8,
       '["Manicure Profissional","Nail Art Avançado"]',
-      false,
+      0,
     ],
     [
       "Beatriz Lima",
@@ -85,7 +85,7 @@ function seedDatabase() {
       "Colorista especializada em técnicas modernas",
       12,
       '["Colorimetria Avançada","Técnicas de Mechas"]',
-      false,
+      0,
     ],
     [
       "Roberto Silva",
@@ -103,7 +103,7 @@ function seedDatabase() {
       "Especialista em cortes femininos e escova",
       6,
       '["Cabeleireiro Profissional"]',
-      false,
+      0,
     ],
     [
       "Carla Mendes",
@@ -121,7 +121,7 @@ function seedDatabase() {
       "Especialista em tratamentos capilares e hidratação",
       10,
       '["Terapia Capilar","Tratamentos Químicos"]',
-      false,
+      0,
     ],
     [
       "Diego Oliveira",
@@ -139,7 +139,7 @@ function seedDatabase() {
       "Barbeiro especializado em cortes modernos",
       4,
       '["Barbeiro Moderno"]',
-      false,
+      0,
     ],
   ];
 
