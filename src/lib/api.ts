@@ -1,5 +1,18 @@
 // API Configuration and HTTP Client
-const API_BASE_URL = "http://localhost:3001/api";
+const getApiBaseUrl = () => {
+  // Check if we're in development or if localhost is accessible
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
+    return "http://localhost:3001/api";
+  }
+
+  // If running on external domain, try to use proxy on same origin
+  return `${window.location.origin}/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface ApiResponse<T = any> {
   success: boolean;
