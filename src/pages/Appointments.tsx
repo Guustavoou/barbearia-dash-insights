@@ -475,7 +475,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
         {/* Content */}
         {viewMode === "calendario" ? (
           <CalendarView
-            appointments={appointmentsMockData}
+            appointments={appointments}
             selectedDate={selectedDate}
             onDateSelect={setSelectedDate}
             onNewAppointment={() => setShowNewAppointmentModal(true)}
