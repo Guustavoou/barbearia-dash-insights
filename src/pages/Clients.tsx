@@ -23,7 +23,6 @@ import {
   getClientStatusColor,
   getInitials,
 } from "@/lib/unclicUtils";
-import { clients, cities } from "@/lib/mockData";
 import {
   Client,
   SortField,
@@ -33,6 +32,12 @@ import {
 } from "@/lib/types";
 import { ClientDetailsModal } from "@/components/ClientDetailsModal";
 import { NewClientModal } from "@/components/NewClientModal";
+import {
+  useClients,
+  useCreateClient,
+  useUpdateClient,
+  useDeleteClient,
+} from "@/hooks/useApi";
 
 interface ClientsProps {
   darkMode: boolean;
@@ -41,74 +46,125 @@ interface ClientsProps {
 export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
   const [expandedClientId, setExpandedClientId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCity, setSelectedCity] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("todos");
   const [sortBy, setSortBy] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
-  const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [showClientDetails, setShowClientDetails] = useState(false);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
-  const [showClientDetailsModal, setShowClientDetailsModal] = useState(false);
-  const [selectedClientForDetails, setSelectedClientForDetails] =
-    useState<Client | null>(null);
+  const itemsPerPage = 12;
 
-  const itemsPerPage = 9;
+  // API integration
+  const {
+    data: apiResponse,
+    loading,
+    error,
+    refetch,
+  } = useClients({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm,
+    sort: sortBy,
+    order: sortOrder.toUpperCase(),
+    status: selectedStatus === "todos" ? undefined : selectedStatus,
+  });
 
-  // Filter and sort clients
+  const createClient = useCreateClient({
+    onSuccess: () => {
+      setShowNewClientModal(false);
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error creating client:", error);
+      alert("Erro ao criar cliente: " + error);
+    },
+  });
+
+  const updateClient = useUpdateClient({
+    onSuccess: () => {
+      setSelectedClient(null);
+      setShowClientDetails(false);
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error updating client:", error);
+      alert("Erro ao atualizar cliente: " + error);
+    },
+  });
+
+  const deleteClient = useDeleteClient({
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error deleting client:", error);
+      alert("Erro ao excluir cliente: " + error);
+    },
+  });
+
+  // Fallback to mock data if API fails
+  const [fallbackClients, setFallbackClients] = useState<Client[]>([]);
+
   useEffect(() => {
-    let filtered = clients.filter((client) => {
-      const matchesSearch =
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.phone.includes(searchTerm);
-      const matchesCity =
-        selectedCity === "all" || client.city === selectedCity;
-      const matchesStatus =
-        selectedStatus === "todos" ||
-        (selectedStatus === "ativos" && client.status === "ativo") ||
-        (selectedStatus === "inativos" && client.status === "inativo");
-      return matchesSearch && matchesCity && matchesStatus;
-    });
+    if (error) {
+      // Load fallback data
+      import("@/lib/mockData").then((mockData) => {
+        setFallbackClients(mockData.clients);
+      });
+    }
+  }, [error]);
 
-    filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
-      switch (sortBy) {
-        case "name":
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-          break;
-        case "lastVisit":
-          aValue = a.lastVisit;
-          bValue = b.lastVisit;
-          break;
-        case "totalSpent":
-          aValue = a.totalSpent;
-          bValue = b.totalSpent;
-          break;
-        case "joinDate":
-          aValue = a.joinDate;
-          bValue = b.joinDate;
-          break;
-        default:
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
-      }
-      return sortOrder === "asc"
-        ? aValue > bValue
-          ? 1
-          : -1
-        : aValue < bValue
-          ? 1
-          : -1;
-    });
+  // Use API data or fallback to mock data
+  const clients = apiResponse?.data || fallbackClients;
+  const pagination = apiResponse?.pagination;
 
-    setFilteredClients(filtered);
-    setCurrentPage(1);
-  }, [searchTerm, selectedCity, selectedStatus, sortBy, sortOrder]);
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
 
-  const toggleSort = (field: SortField) => {
+    return () => clearTimeout(timer);
+  }, [searchTerm, sortBy, sortOrder, selectedStatus]);
+
+  if (loading && !fallbackClients.length) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p
+            className={cn(
+              "text-sm",
+              darkMode ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            Carregando clientes...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleNewClient = (clientData: any) => {
+    createClient.mutate(clientData);
+  };
+
+  const handleEditClient = (clientData: any) => {
+    if (selectedClient) {
+      updateClient.mutate({ id: selectedClient.id, data: clientData });
+    }
+  };
+
+  const handleDeleteClient = (clientId: number) => {
+    if (confirm("Tem certeza que deseja excluir este cliente?")) {
+      deleteClient.mutate(clientId);
+    }
+  };
+
+  const handleSort = (field: SortField) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -117,7 +173,7 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
     }
   };
 
-  const toggleClientSelection = (clientId: number) => {
+  const handleSelectClient = (clientId: number) => {
     setSelectedClients((prev) =>
       prev.includes(clientId)
         ? prev.filter((id) => id !== clientId)
@@ -125,46 +181,168 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
     );
   };
 
-  const getCurrentPageClients = () => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredClients.slice(startIndex, startIndex + itemsPerPage);
+  const handleSelectAll = () => {
+    if (selectedClients.length === clients.length) {
+      setSelectedClients([]);
+    } else {
+      setSelectedClients(clients.map((client) => client.id));
+    }
   };
 
-  const openClientDetails = (client: Client) => {
-    setSelectedClientForDetails(client);
-    setShowClientDetailsModal(true);
-  };
+  const totalPages =
+    pagination?.totalPages || Math.ceil(clients.length / itemsPerPage);
+  const totalClients = pagination?.total || clients.length;
 
-  const handleCardClick = (e: React.MouseEvent, clientId: number) => {
-    if ((e.target as HTMLElement).closest(".action-button")) return;
-    setExpandedClientId(expandedClientId === clientId ? null : clientId);
-  };
-
-  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
-
-  const SortButton: React.FC<{
-    field: SortField;
-    label: string;
-  }> = ({ field, label }) => (
-    <button
-      onClick={() => toggleSort(field)}
+  const ClientCard: React.FC<{ client: Client }> = ({ client }) => (
+    <div
       className={cn(
-        "px-3 py-1 rounded-lg text-sm flex items-center gap-1 transition-colors",
-        sortBy === field
-          ? "bg-blue-600 text-white"
-          : darkMode
-            ? "text-gray-300 hover:bg-gray-700"
-            : "text-gray-600 hover:bg-gray-100",
+        "group relative overflow-hidden rounded-xl p-6 transition-all duration-300 hover:shadow-xl",
+        darkMode
+          ? "bg-gray-800 border border-gray-700 hover:bg-gray-750"
+          : "bg-white border border-gray-200 hover:shadow-lg",
       )}
     >
-      {label}
-      {sortBy === field &&
-        (sortOrder === "asc" ? (
-          <ArrowUp className="h-3 w-3" />
-        ) : (
-          <ArrowDown className="h-3 w-3" />
-        ))}
-    </button>
+      {/* Status indicator */}
+      <div
+        className={cn(
+          "absolute top-4 right-4 w-3 h-3 rounded-full",
+          client.status === "ativo" ? "bg-green-500" : "bg-red-500",
+        )}
+      />
+
+      {/* Avatar */}
+      <div className="flex items-start gap-4 mb-4">
+        <div
+          className={cn(
+            "w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl",
+            "bg-gradient-to-br from-blue-500 to-purple-600",
+          )}
+        >
+          {getInitials(client.name)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3
+            className={cn(
+              "font-bold text-lg truncate mb-1",
+              darkMode ? "text-white" : "text-gray-900",
+            )}
+          >
+            {client.name}
+          </h3>
+          <p
+            className={cn(
+              "text-sm",
+              darkMode ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            {client.profession || "Profissão não informada"}
+          </p>
+        </div>
+      </div>
+
+      {/* Contact info */}
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center gap-2">
+          <Phone className="h-4 w-4 text-blue-500" />
+          <span
+            className={cn(
+              "text-sm",
+              darkMode ? "text-gray-300" : "text-gray-700",
+            )}
+          >
+            {client.phone}
+          </span>
+        </div>
+        {client.email && (
+          <div className="flex items-center gap-2">
+            <Mail className="h-4 w-4 text-green-500" />
+            <span
+              className={cn(
+                "text-sm truncate",
+                darkMode ? "text-gray-300" : "text-gray-700",
+              )}
+            >
+              {client.email}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-purple-500" />
+          <span
+            className={cn(
+              "text-sm",
+              darkMode ? "text-gray-300" : "text-gray-700",
+            )}
+          >
+            {client.lastVisit ? formatDate(client.lastVisit) : "Nunca"}
+          </span>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p
+            className={cn(
+              "text-xs",
+              darkMode ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            Total Gasto
+          </p>
+          <p
+            className={cn(
+              "font-bold text-lg",
+              darkMode ? "text-white" : "text-gray-900",
+            )}
+          >
+            {formatCurrency(client.totalSpent)}
+          </p>
+        </div>
+        <div>
+          <p
+            className={cn(
+              "text-xs",
+              darkMode ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            Visitas
+          </p>
+          <p
+            className={cn(
+              "font-bold text-lg",
+              darkMode ? "text-white" : "text-gray-900",
+            )}
+          >
+            {client.visits}
+          </p>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => {
+            setSelectedClient(client);
+            setShowClientDetails(true);
+          }}
+          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+        >
+          Ver Detalhes
+        </button>
+        <button
+          onClick={() => handleDeleteClient(client.id)}
+          className={cn(
+            "p-2 rounded-lg transition-colors",
+            darkMode
+              ? "hover:bg-gray-700 text-red-400"
+              : "hover:bg-red-50 text-red-600",
+          )}
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
   );
 
   return (
@@ -178,7 +356,7 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
               darkMode ? "text-white" : "text-gray-900",
             )}
           >
-            Gerenciar Clientes
+            Clientes
           </h1>
           <p
             className={cn(
@@ -186,294 +364,132 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
               darkMode ? "text-gray-400" : "text-gray-600",
             )}
           >
-            {filteredClients.length} clientes encontrados
+            Gerencie seus clientes e histórico de atendimentos
           </p>
         </div>
+        <button
+          onClick={() => setShowNewClientModal(true)}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Novo Cliente
+        </button>
       </div>
 
-      {/* Filters and Actions */}
-      <div
-        className={cn(
-          "rounded-xl p-6 border",
-          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
-        )}
-      >
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search
-              className={cn(
-                "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-            />
-            <input
-              type="text"
-              placeholder="Buscar por nome, email ou telefone..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={cn(
-                "w-full pl-10 pr-4 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  : "bg-white border-gray-300 placeholder-gray-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
-              )}
-            />
-          </div>
+      {/* API Error Notice */}
+      {error && (
+        <div
+          className={cn(
+            "p-4 rounded-lg border-l-4 border-yellow-500",
+            darkMode
+              ? "bg-yellow-900/20 text-yellow-200"
+              : "bg-yellow-50 text-yellow-800",
+          )}
+        >
+          <p className="text-sm">
+            ⚠️ Usando dados offline. Verifique se o servidor backend está
+            rodando na porta 3001.
+          </p>
+        </div>
+      )}
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-3">
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className={cn(
-                "px-4 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
-                  : "bg-white border-gray-300",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
-              )}
-            >
-              <option value="all">Todas as cidades</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedStatus}
-              onChange={(e) =>
-                setSelectedStatus(e.target.value as StatusFilter)
-              }
-              className={cn(
-                "px-4 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white"
-                  : "bg-white border-gray-300",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
-              )}
-            >
-              <option value="todos">Todos os status</option>
-              <option value="ativos">Ativos</option>
-              <option value="inativos">Inativos</option>
-            </select>
-
-            <button
-              onClick={() =>
-                setViewMode(viewMode === "cards" ? "list" : "cards")
-              }
-              className={cn(
-                "p-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                  : "border-gray-300 text-gray-600 hover:bg-gray-50",
-              )}
-              title={`Alternar para vista em ${viewMode === "cards" ? "lista" : "cards"}`}
-            >
-              {viewMode === "cards" ? (
-                <List className="h-4 w-4" />
-              ) : (
-                <Grid3X3 className="h-4 w-4" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setShowNewClientModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              Novo Cliente
-            </button>
-          </div>
+      {/* Filters and Search */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search
+            className={cn(
+              "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4",
+              darkMode ? "text-gray-400" : "text-gray-500",
+            )}
+          />
+          <input
+            type="text"
+            placeholder="Buscar clientes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={cn(
+              "pl-10 pr-4 py-3 w-full rounded-lg border transition-colors",
+              darkMode
+                ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                : "bg-white border-gray-300 placeholder-gray-500 focus:border-blue-500",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+            )}
+          />
         </div>
 
-        {/* Sort Options */}
-        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <span
+        <select
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value as StatusFilter)}
+          className={cn(
+            "px-4 py-3 rounded-lg border min-w-[140px]",
+            darkMode
+              ? "bg-gray-800 border-gray-600 text-white"
+              : "bg-white border-gray-300 text-gray-900",
+          )}
+        >
+          <option value="todos">Todos</option>
+          <option value="ativo">Ativos</option>
+          <option value="inativo">Inativos</option>
+        </select>
+
+        <div
+          className={cn(
+            "flex items-center rounded-lg border",
+            darkMode
+              ? "border-gray-600 bg-gray-800"
+              : "border-gray-300 bg-white",
+          )}
+        >
+          <button
+            onClick={() => setViewMode("cards")}
             className={cn(
-              "text-sm font-medium",
-              darkMode ? "text-gray-300" : "text-gray-700",
+              "p-3 transition-colors",
+              viewMode === "cards"
+                ? "bg-blue-500 text-white"
+                : darkMode
+                  ? "text-gray-300 hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-100",
             )}
           >
-            Ordenar por:
-          </span>
-          <div className="flex flex-wrap gap-2">
-            <SortButton field="name" label="Nome" />
-            <SortButton field="lastVisit" label="Última Visita" />
-            <SortButton field="totalSpent" label="Total Gasto" />
-            <SortButton field="joinDate" label="Data de Cadastro" />
-          </div>
+            <Grid3X3 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode("list")}
+            className={cn(
+              "p-3 transition-colors",
+              viewMode === "list"
+                ? "bg-blue-500 text-white"
+                : darkMode
+                  ? "text-gray-300 hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-100",
+            )}
+          >
+            <List className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
-      {/* Client List */}
+      {/* Loading indicator */}
+      {loading && (
+        <div className="text-center py-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+        </div>
+      )}
+
+      {/* Clients Grid/List */}
       {viewMode === "cards" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {getCurrentPageClients().map((client) => (
-            <div
-              key={client.id}
-              onClick={(e) => handleCardClick(e, client.id)}
-              className={cn(
-                "rounded-xl p-6 border cursor-pointer transition-all",
-                darkMode
-                  ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
-                  : "bg-white border-gray-200 hover:shadow-lg",
-                expandedClientId === client.id
-                  ? "ring-2 ring-blue-500"
-                  : "hover:border-blue-300",
-              )}
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold">
-                    {getInitials(client.name)}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3
-                    className={cn(
-                      "font-semibold truncate",
-                      darkMode ? "text-white" : "text-gray-900",
-                    )}
-                  >
-                    {client.name}
-                  </h3>
-                  <p
-                    className={cn(
-                      "text-sm truncate",
-                      darkMode ? "text-gray-400" : "text-gray-600",
-                    )}
-                  >
-                    {client.city}
-                  </p>
-                </div>
-                <span
-                  className={cn(
-                    "px-2 py-1 rounded-full text-xs font-medium",
-                    getClientStatusColor(client.status),
-                  )}
-                >
-                  {client.status}
-                </span>
-              </div>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-gray-400" />
-                  <span
-                    className={cn(
-                      "text-sm",
-                      darkMode ? "text-gray-300" : "text-gray-600",
-                    )}
-                  >
-                    {client.phone}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                  <span
-                    className={cn(
-                      "text-sm truncate",
-                      darkMode ? "text-gray-300" : "text-gray-600",
-                    )}
-                  >
-                    {client.email}
-                  </span>
-                </div>
-              </div>
-
-              {expandedClientId === client.id && (
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span
-                      className={cn(
-                        darkMode ? "text-gray-400" : "text-gray-600",
-                      )}
-                    >
-                      Última visita:
-                    </span>
-                    <span
-                      className={cn(
-                        "font-medium",
-                        darkMode ? "text-white" : "text-gray-900",
-                      )}
-                    >
-                      {formatDate(client.lastVisit)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span
-                      className={cn(
-                        darkMode ? "text-gray-400" : "text-gray-600",
-                      )}
-                    >
-                      Total gasto:
-                    </span>
-                    <span
-                      className={cn(
-                        "font-medium",
-                        darkMode ? "text-green-400" : "text-green-600",
-                      )}
-                    >
-                      {formatCurrency(client.totalSpent)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span
-                      className={cn(
-                        darkMode ? "text-gray-400" : "text-gray-600",
-                      )}
-                    >
-                      Visitas:
-                    </span>
-                    <span
-                      className={cn(
-                        "font-medium",
-                        darkMode ? "text-white" : "text-gray-900",
-                      )}
-                    >
-                      {client.visits}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2 mt-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openClientDetails(client);
-                      }}
-                      className="action-button flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <Eye className="h-3 w-3" />
-                      Detalhes
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Handle schedule functionality
-                      }}
-                      className="action-button flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      <Calendar className="h-3 w-3" />
-                      Agendar
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {clients.map((client) => (
+            <ClientCard key={client.id} client={client} />
           ))}
         </div>
       ) : (
-        // Table View
         <div
           className={cn(
-            "rounded-xl border overflow-hidden",
+            "rounded-lg border overflow-hidden",
             darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200",
+              ? "border-gray-700 bg-gray-800"
+              : "border-gray-200 bg-white",
           )}
         >
           <div className="overflow-x-auto">
@@ -482,108 +498,108 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
                 className={cn(
                   "border-b",
                   darkMode
-                    ? "bg-gray-700 border-gray-600"
-                    : "bg-gray-50 border-gray-200",
+                    ? "border-gray-700 bg-gray-900"
+                    : "border-gray-200 bg-gray-50",
                 )}
               >
                 <tr>
-                  <th className="px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedClients.length ===
-                        getCurrentPageClients().length
-                      }
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedClients(
-                            getCurrentPageClients().map((c) => c.id),
-                          );
-                        } else {
-                          setSelectedClients([]);
-                        }
-                      }}
-                      className="rounded"
-                    />
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort("name")}
+                      className={cn(
+                        "flex items-center gap-2 font-medium",
+                        darkMode ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Nome
+                      {sortBy === "name" &&
+                        (sortOrder === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        ))}
+                    </button>
                   </th>
                   <th
                     className={cn(
-                      "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
-                      darkMode ? "text-gray-300" : "text-gray-500",
-                    )}
-                  >
-                    Cliente
-                  </th>
-                  <th
-                    className={cn(
-                      "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
-                      darkMode ? "text-gray-300" : "text-gray-500",
+                      "text-left p-4 font-medium",
+                      darkMode ? "text-gray-300" : "text-gray-700",
                     )}
                   >
                     Contato
                   </th>
-                  <th
-                    className={cn(
-                      "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
-                      darkMode ? "text-gray-300" : "text-gray-500",
-                    )}
-                  >
-                    Última Visita
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort("totalSpent")}
+                      className={cn(
+                        "flex items-center gap-2 font-medium",
+                        darkMode ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Total Gasto
+                      {sortBy === "totalSpent" &&
+                        (sortOrder === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        ))}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort("lastVisit")}
+                      className={cn(
+                        "flex items-center gap-2 font-medium",
+                        darkMode ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      Última Visita
+                      {sortBy === "lastVisit" &&
+                        (sortOrder === "asc" ? (
+                          <ArrowUp className="h-4 w-4" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        ))}
+                    </button>
                   </th>
                   <th
                     className={cn(
-                      "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
-                      darkMode ? "text-gray-300" : "text-gray-500",
-                    )}
-                  >
-                    Total Gasto
-                  </th>
-                  <th
-                    className={cn(
-                      "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
-                      darkMode ? "text-gray-300" : "text-gray-500",
+                      "text-left p-4 font-medium",
+                      darkMode ? "text-gray-300" : "text-gray-700",
                     )}
                   >
                     Status
                   </th>
                   <th
                     className={cn(
-                      "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
-                      darkMode ? "text-gray-300" : "text-gray-500",
+                      "text-left p-4 font-medium",
+                      darkMode ? "text-gray-300" : "text-gray-700",
                     )}
                   >
                     Ações
                   </th>
                 </tr>
               </thead>
-              <tbody
-                className={cn(
-                  "divide-y",
-                  darkMode ? "divide-gray-700" : "divide-gray-200",
-                )}
-              >
-                {getCurrentPageClients().map((client) => (
+              <tbody>
+                {clients.map((client) => (
                   <tr
                     key={client.id}
                     className={cn(
-                      "transition-colors",
-                      darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50",
+                      "border-b transition-colors",
+                      darkMode
+                        ? "border-gray-700 hover:bg-gray-750"
+                        : "border-gray-200 hover:bg-gray-50",
                     )}
                   >
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedClients.includes(client.id)}
-                        onChange={() => toggleClientSelection(client.id)}
-                        className="rounded"
-                      />
-                    </td>
-                    <td className="px-6 py-4">
+                    <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-semibold">
-                            {getInitials(client.name)}
-                          </span>
+                        <div
+                          className={cn(
+                            "w-10 h-10 rounded-full flex items-center justify-center text-white font-bold",
+                            "bg-gradient-to-br from-blue-500 to-purple-600",
+                          )}
+                        >
+                          {getInitials(client.name)}
                         </div>
                         <div>
                           <p
@@ -600,79 +616,85 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
                               darkMode ? "text-gray-400" : "text-gray-600",
                             )}
                           >
-                            {client.city}
+                            {client.profession || "N/A"}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="p-4">
                       <div>
                         <p
                           className={cn(
                             "text-sm",
-                            darkMode ? "text-gray-300" : "text-gray-600",
+                            darkMode ? "text-gray-300" : "text-gray-700",
                           )}
                         >
                           {client.phone}
                         </p>
-                        <p
-                          className={cn(
-                            "text-sm",
-                            darkMode ? "text-gray-400" : "text-gray-500",
-                          )}
-                        >
-                          {client.email}
-                        </p>
+                        {client.email && (
+                          <p
+                            className={cn(
+                              "text-sm",
+                              darkMode ? "text-gray-400" : "text-gray-600",
+                            )}
+                          >
+                            {client.email}
+                          </p>
+                        )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={cn(
-                          "text-sm",
-                          darkMode ? "text-gray-300" : "text-gray-600",
-                        )}
-                      >
-                        {formatDate(client.lastVisit)}
-                      </span>
+                    <td
+                      className={cn(
+                        "p-4 font-medium",
+                        darkMode ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      {formatCurrency(client.totalSpent)}
                     </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={cn(
-                          "text-sm font-medium",
-                          darkMode ? "text-green-400" : "text-green-600",
-                        )}
-                      >
-                        {formatCurrency(client.totalSpent)}
-                      </span>
+                    <td
+                      className={cn(
+                        "p-4",
+                        darkMode ? "text-gray-300" : "text-gray-700",
+                      )}
+                    >
+                      {client.lastVisit
+                        ? formatDate(client.lastVisit)
+                        : "Nunca"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="p-4">
                       <span
                         className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium",
+                          "px-2 py-1 text-xs rounded-full",
                           getClientStatusColor(client.status),
                         )}
                       >
-                        {client.status}
+                        {client.status === "ativo" ? "Ativo" : "Inativo"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => openClientDetails(client)}
-                          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          title="Ver detalhes"
+                          onClick={() => {
+                            setSelectedClient(client);
+                            setShowClientDetails(true);
+                          }}
+                          className={cn(
+                            "p-2 rounded-lg transition-colors",
+                            darkMode
+                              ? "hover:bg-gray-700 text-gray-300"
+                              : "hover:bg-gray-100 text-gray-600",
+                          )}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
-                          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          title="Editar"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </button>
-                        <button
-                          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-red-600"
-                          title="Excluir"
+                          onClick={() => handleDeleteClient(client.id)}
+                          className={cn(
+                            "p-2 rounded-lg transition-colors",
+                            darkMode
+                              ? "hover:bg-gray-700 text-red-400"
+                              : "hover:bg-gray-100 text-red-600",
+                          )}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -686,6 +708,32 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
         </div>
       )}
 
+      {/* Empty State */}
+      {clients.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">👥</div>
+          <h3
+            className={cn(
+              "text-xl font-semibold mb-2",
+              darkMode ? "text-white" : "text-gray-900",
+            )}
+          >
+            Nenhum cliente encontrado
+          </h3>
+          <p className={cn("text-gray-500 dark:text-gray-400 mb-6")}>
+            {searchTerm
+              ? "Tente ajustar sua busca ou adicione um novo cliente"
+              : "Comece adicionando seu primeiro cliente"}
+          </p>
+          <button
+            onClick={() => setShowNewClientModal(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Adicionar Cliente
+          </button>
+        </div>
+      )}
+
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
@@ -696,8 +744,8 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
             )}
           >
             Mostrando {(currentPage - 1) * itemsPerPage + 1} a{" "}
-            {Math.min(currentPage * itemsPerPage, filteredClients.length)} de{" "}
-            {filteredClients.length} clientes
+            {Math.min(currentPage * itemsPerPage, totalClients)} de{" "}
+            {totalClients} clientes
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -708,30 +756,20 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
                 currentPage === 1
                   ? "opacity-50 cursor-not-allowed"
                   : darkMode
-                    ? "hover:bg-gray-700"
-                    : "hover:bg-gray-100",
+                    ? "hover:bg-gray-700 text-gray-300"
+                    : "hover:bg-gray-100 text-gray-600",
               )}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <div className="flex gap-1">
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={cn(
-                    "px-3 py-1 rounded-lg text-sm transition-colors",
-                    currentPage === i + 1
-                      ? "bg-blue-600 text-white"
-                      : darkMode
-                        ? "text-gray-300 hover:bg-gray-700"
-                        : "text-gray-600 hover:bg-gray-100",
-                  )}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
+            <span
+              className={cn(
+                "px-4 py-2 text-sm",
+                darkMode ? "text-white" : "text-gray-900",
+              )}
+            >
+              {currentPage} de {totalPages}
+            </span>
             <button
               onClick={() =>
                 setCurrentPage(Math.min(totalPages, currentPage + 1))
@@ -742,8 +780,8 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
                 currentPage === totalPages
                   ? "opacity-50 cursor-not-allowed"
                   : darkMode
-                    ? "hover:bg-gray-700"
-                    : "hover:bg-gray-100",
+                    ? "hover:bg-gray-700 text-gray-300"
+                    : "hover:bg-gray-100 text-gray-600",
               )}
             >
               <ChevronRight className="h-4 w-4" />
@@ -753,20 +791,26 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
       )}
 
       {/* Modals */}
-      <NewClientModal
-        isOpen={showNewClientModal}
-        onClose={() => setShowNewClientModal(false)}
-        darkMode={darkMode}
-      />
-      <ClientDetailsModal
-        client={selectedClientForDetails}
-        isOpen={showClientDetailsModal}
-        onClose={() => {
-          setShowClientDetailsModal(false);
-          setSelectedClientForDetails(null);
-        }}
-        darkMode={darkMode}
-      />
+      {showClientDetails && selectedClient && (
+        <ClientDetailsModal
+          client={selectedClient}
+          darkMode={darkMode}
+          onClose={() => {
+            setShowClientDetails(false);
+            setSelectedClient(null);
+          }}
+          onEdit={handleEditClient}
+        />
+      )}
+
+      {showNewClientModal && (
+        <NewClientModal
+          darkMode={darkMode}
+          onClose={() => setShowNewClientModal(false)}
+          onSave={handleNewClient}
+          loading={createClient.loading}
+        />
+      )}
     </div>
   );
 };
