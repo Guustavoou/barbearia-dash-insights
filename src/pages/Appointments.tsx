@@ -10,6 +10,12 @@ import {
   CalendarViewType,
   AppointmentStats,
 } from "@/lib/appointmentTypes";
+import {
+  useAppointments,
+  useCreateAppointment,
+  useUpdateAppointment,
+  useDeleteAppointment,
+} from "@/hooks/useApi";
 
 interface AppointmentsProps {
   darkMode: boolean;
