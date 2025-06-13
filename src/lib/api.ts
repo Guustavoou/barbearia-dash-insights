@@ -329,6 +329,43 @@ class ApiClient {
     return this.get("/products/movements", params);
   }
 
+  // Financial API
+  async getTransactions(
+    params?: PaginationParams & {
+      type?: string;
+      category?: string;
+      payment_method?: string;
+      start_date?: string;
+      end_date?: string;
+    },
+  ) {
+    return this.get("/financial/transactions", params);
+  }
+
+  async getTransactionById(id: number) {
+    return this.get(`/financial/transactions/${id}`);
+  }
+
+  async createTransaction(transactionData: any) {
+    return this.post("/financial/transactions", transactionData);
+  }
+
+  async updateTransaction(id: number, transactionData: any) {
+    return this.put(`/financial/transactions/${id}`, transactionData);
+  }
+
+  async deleteTransaction(id: number) {
+    return this.delete(`/financial/transactions/${id}`);
+  }
+
+  async getFinancialStats(period?: string) {
+    return this.get("/financial/stats", { period });
+  }
+
+  async getMonthlyRevenue(months?: number) {
+    return this.get("/financial/monthly-revenue", { months });
+  }
+
   // Health check
   async healthCheck() {
     return this.get("/health");
