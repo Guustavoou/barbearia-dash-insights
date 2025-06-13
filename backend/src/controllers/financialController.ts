@@ -28,13 +28,9 @@ export const getTransactions = async (req: Request, res: Response) => {
     );
 
     let query = `
-      SELECT 
+      SELECT
         t.*,
-        CASE 
-          WHEN t.appointment_id IS NOT NULL THEN 'Serviço'
-          WHEN t.product_id IS NOT NULL THEN 'Produto'
-          ELSE 'Outros'
-        END as category_name
+        t.category as category_name
       FROM transactions t
       WHERE 1=1
     `;
@@ -129,14 +125,14 @@ export const getFinancialStats = async (req: Request, res: Response) => {
     // Get revenue and expenses
     const revenueStmt = db.prepare(`
       SELECT COALESCE(SUM(amount), 0) as total_revenue
-      FROM transactions 
+      FROM transactions
       WHERE type = 'entrada' ${dateFilter}
     `);
     const { total_revenue } = revenueStmt.get() as { total_revenue: number };
 
     const expenseStmt = db.prepare(`
       SELECT COALESCE(SUM(amount), 0) as total_expenses
-      FROM transactions 
+      FROM transactions
       WHERE type = 'saida' ${dateFilter}
     `);
     const { total_expenses } = expenseStmt.get() as { total_expenses: number };
@@ -144,7 +140,7 @@ export const getFinancialStats = async (req: Request, res: Response) => {
     // Get transaction count
     const countStmt = db.prepare(`
       SELECT COUNT(*) as total_transactions
-      FROM transactions 
+      FROM transactions
       WHERE 1=1 ${dateFilter}
     `);
     const { total_transactions } = countStmt.get() as {
@@ -153,11 +149,11 @@ export const getFinancialStats = async (req: Request, res: Response) => {
 
     // Get payment method distribution
     const paymentMethodsStmt = db.prepare(`
-      SELECT 
+      SELECT
         payment_method,
         COUNT(*) as count,
         SUM(amount) as total_amount
-      FROM transactions 
+      FROM transactions
       WHERE type = 'entrada' ${dateFilter}
       GROUP BY payment_method
       ORDER BY total_amount DESC
@@ -193,11 +189,11 @@ export const getMonthlyRevenue = async (req: Request, res: Response) => {
     const { months = 12 } = req.query;
 
     const stmt = db.prepare(`
-      SELECT 
+      SELECT
         strftime('%Y-%m', created_at) as month,
         SUM(CASE WHEN type = 'entrada' THEN amount ELSE 0 END) as revenue,
         SUM(CASE WHEN type = 'saida' THEN amount ELSE 0 END) as expenses
-      FROM transactions 
+      FROM transactions
       WHERE created_at >= DATE('now', '-${months} months')
       GROUP BY strftime('%Y-%m', created_at)
       ORDER BY month ASC
@@ -257,7 +253,7 @@ export const createTransaction = async (req: Request, res: Response) => {
 
     const stmt = db.prepare(`
       INSERT INTO transactions (
-        type, amount, description, payment_method, 
+        type, amount, description, payment_method,
         appointment_id, product_id, reference, created_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
@@ -332,8 +328,8 @@ export const updateTransaction = async (req: Request, res: Response) => {
     }
 
     const stmt = db.prepare(`
-      UPDATE transactions 
-      SET 
+      UPDATE transactions
+      SET
         type = COALESCE(?, type),
         amount = COALESCE(?, amount),
         description = COALESCE(?, description),
