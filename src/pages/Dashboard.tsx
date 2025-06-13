@@ -89,70 +89,38 @@ export const Dashboard: React.FC<DashboardProps> = ({
   darkMode,
   onPageChange,
 }) => {
-  const [dashboardData, setDashboardData] = useState<any>(null);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
-  const [birthdays, setBirthdays] = useState<any[]>([]);
-  const [topServices, setTopServices] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Use custom hooks for API data
+  const {
+    data: dashboardData,
+    loading: statsLoading,
+    error: statsError,
+  } = useDashboardStats();
+  const { data: revenueData, loading: revenueLoading } = useRevenueData();
+  const { data: topServices, loading: servicesLoading } = useTopServices(4);
+  const { data: upcomingAppointments, loading: appointmentsLoading } =
+    useUpcomingAppointments(5);
+  const { data: birthdays, loading: birthdaysLoading } = useBirthdays();
+
+  // Fallback to mock data if API fails
+  const [fallbackData, setFallbackData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
+    if (statsError) {
+      // Load fallback data
+      import("@/lib/mockData").then((mockData) => {
+        setFallbackData(mockData);
+      });
+    }
+  }, [statsError]);
 
-        // Fetch all dashboard data in parallel
-        const [
-          statsResponse,
-          revenueResponse,
-          servicesResponse,
-          appointmentsResponse,
-          birthdaysResponse,
-        ] = await Promise.all([
-          api.getDashboardStats(),
-          api.getRevenueData(),
-          api.getTopServices(4),
-          api.getUpcomingAppointments(5),
-          api.getBirthdaysThisMonth(),
-        ]);
+  const isLoading =
+    statsLoading ||
+    revenueLoading ||
+    servicesLoading ||
+    appointmentsLoading ||
+    birthdaysLoading;
 
-        if (statsResponse.success) {
-          setDashboardData(statsResponse.data);
-        }
-
-        if (revenueResponse.success) {
-          setRevenueData(revenueResponse.data || []);
-        }
-
-        if (servicesResponse.success) {
-          setTopServices(servicesResponse.data || []);
-        }
-
-        if (appointmentsResponse.success) {
-          setUpcomingAppointments(appointmentsResponse.data || []);
-        }
-
-        if (birthdaysResponse.success) {
-          setBirthdays(birthdaysResponse.data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        // Fallback to mock data if API fails
-        const fallbackData = await import("@/lib/mockData");
-        setDashboardData(fallbackData.dashboardData);
-        setRevenueData(fallbackData.revenueData);
-        setUpcomingAppointments(fallbackData.upcomingAppointments);
-        setBirthdays(fallbackData.birthdays);
-        setTopServices(fallbackData.topServices);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -170,7 +138,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
     );
   }
 
-  if (!dashboardData) {
+  // Use fallback data if API failed
+  const finalDashboardData = dashboardData || fallbackData?.dashboardData;
+  const finalRevenueData = revenueData || fallbackData?.revenueData || [];
+  const finalTopServices = topServices || fallbackData?.topServices || [];
+  const finalUpcomingAppointments =
+    upcomingAppointments || fallbackData?.upcomingAppointments || [];
+  const finalBirthdays = birthdays || fallbackData?.birthdays || [];
+
+  if (!finalDashboardData) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -179,213 +155,157 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             Erro ao carregar dados do dashboard
           </p>
+          {statsError && (
+            <p
+              className={cn(
+                "text-sm mt-2",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Verifique se o servidor backend está rodando na porta 3001
+            </p>
+          )}
         </div>
       </div>
     );
   }
-  const metrics = [
-    {
-      title: "Receita do Mês",
-      value: formatCurrency(dashboardData.revenue.current),
-      icon: DollarSign,
-      change: `+${dashboardData.revenue.growth}%`,
-      positive: true,
-      bg: "from-green-500 to-emerald-600",
-    },
-    {
-      title: "Agendamentos",
-      value: dashboardData.appointments.total.toString(),
-      icon: Calendar,
-      change: `+${dashboardData.appointments.variation}`,
-      positive: true,
-      onClick: () => onPageChange("appointments"),
-      bg: "from-blue-500 to-cyan-600",
-    },
-    {
-      title: "Clientes Ativos",
-      value: dashboardData.clients.active.toString(),
-      icon: Users,
-      change: `+${dashboardData.clients.new} novos`,
-      positive: true,
-      onClick: () => onPageChange("clients"),
-      bg: "from-purple-500 to-violet-600",
-    },
-    {
-      title: "Satisfação",
-      value: dashboardData.satisfaction.toString(),
-      icon: Star,
-      change: "⭐⭐⭐⭐⭐",
-      positive: true,
-      bg: "from-yellow-500 to-orange-600",
-    },
-    {
-      title: "Taxa Conclusão",
-      value: `${dashboardData.services.completion}%`,
-      icon: Check,
-      change: `${dashboardData.services.completed} serviços`,
-      positive: true,
-      bg: "from-teal-500 to-green-600",
-    },
-    {
-      title: "Retenção",
-      value: `${dashboardData.clients.retention}%`,
-      icon: BarChart3,
-      change: "Excelente",
-      positive: true,
-      bg: "from-pink-500 to-rose-600",
-    },
-  ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Welcome Banner */}
       <div
         className={cn(
-          "rounded-2xl p-6 border",
-          darkMode
-            ? "bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-gray-700"
-            : "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200",
+          "relative overflow-hidden rounded-2xl p-8",
+          "bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800",
         )}
       >
-        <div className="flex items-center justify-between">
-          <div>
-            <h1
-              className={cn(
-                "text-xl font-bold mb-2",
-                darkMode ? "text-white" : "text-gray-900",
-              )}
-            >
-              🌟 Olá, Maria! Bem-vinda ao Studio Bella
-            </h1>
-            <p
-              className={cn(
-                "text-sm",
-                darkMode ? "text-gray-300" : "text-gray-600",
-              )}
-            >
-              Você tem <strong>3 agendamentos</strong> hoje e o negócio está
-              crescendo <strong>+15.8%</strong> este mês!
-            </p>
-          </div>
-          <div
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium",
-              darkMode
-                ? "bg-blue-600 text-white"
-                : "bg-blue-600 text-white hover:bg-blue-700",
-              "transition-colors cursor-pointer",
-            )}
-          >
-            Vamos começar! 🚀
-          </div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Bem-vindo ao seu Dashboard! 👋
+          </h1>
+          <p className="text-blue-100 text-lg">
+            Aqui está um resumo do seu salão hoje, {formatDate(new Date())}
+          </p>
         </div>
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-white/10" />
+        <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-32 w-32 rounded-full bg-white/5" />
       </div>
 
-      {/* Metrics Grid */}
+      {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {metrics.map((metric, index) => (
-          <MetricCard
-            key={index}
-            title={metric.title}
-            value={metric.value}
-            icon={metric.icon}
-            change={metric.change}
-            positive={metric.positive}
-            bg={metric.bg}
-            onClick={metric.onClick}
-            darkMode={darkMode}
-          />
-        ))}
+        <MetricCard
+          title="Receita do Mês"
+          value={formatCurrency(finalDashboardData.revenue?.current || 0)}
+          icon={DollarSign}
+          change={`${finalDashboardData.revenue?.growth >= 0 ? "+" : ""}${finalDashboardData.revenue?.growth || 0}%`}
+          positive={finalDashboardData.revenue?.growth >= 0}
+          bg="from-green-500 to-emerald-600"
+          onClick={() => onPageChange("financial")}
+          darkMode={darkMode}
+        />
+
+        <MetricCard
+          title="Agendamentos"
+          value={finalDashboardData.appointments?.total?.toString() || "0"}
+          icon={Calendar}
+          change={`${finalDashboardData.appointments?.variation >= 0 ? "+" : ""}${finalDashboardData.appointments?.variation || 0}%`}
+          positive={finalDashboardData.appointments?.variation >= 0}
+          bg="from-blue-500 to-cyan-600"
+          onClick={() => onPageChange("appointments")}
+          darkMode={darkMode}
+        />
+
+        <MetricCard
+          title="Clientes Ativos"
+          value={finalDashboardData.clients?.active?.toString() || "0"}
+          icon={Users}
+          change={`${finalDashboardData.clients?.new || 0} novos`}
+          positive={true}
+          bg="from-purple-500 to-pink-600"
+          onClick={() => onPageChange("clients")}
+          darkMode={darkMode}
+        />
+
+        <MetricCard
+          title="Receita Acumulada"
+          value={formatCurrency(finalDashboardData.revenue?.accumulated || 0)}
+          icon={BarChart3}
+          change="Este ano"
+          positive={true}
+          bg="from-orange-500 to-red-600"
+          onClick={() => onPageChange("financial")}
+          darkMode={darkMode}
+        />
+
+        <MetricCard
+          title="Satisfação"
+          value={`${finalDashboardData.satisfaction || 0}/5 ⭐`}
+          icon={Star}
+          change="Avaliação média"
+          positive={true}
+          bg="from-yellow-500 to-orange-600"
+          darkMode={darkMode}
+        />
+
+        <MetricCard
+          title="Serviços Concluídos"
+          value={finalDashboardData.services?.completed?.toString() || "0"}
+          icon={Check}
+          change={`${finalDashboardData.services?.completion || 0}% conclusão`}
+          positive={true}
+          bg="from-teal-500 to-green-600"
+          onClick={() => onPageChange("services")}
+          darkMode={darkMode}
+        />
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Charts and Lists */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Revenue Chart */}
         <div
           className={cn(
-            "lg:col-span-2 rounded-2xl p-6 border",
+            "rounded-2xl p-6 border",
             darkMode
               ? "bg-gray-800 border-gray-700"
               : "bg-white border-gray-200",
           )}
         >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3
-                className={cn(
-                  "text-lg font-semibold mb-1",
-                  darkMode ? "text-white" : "text-gray-900",
-                )}
-              >
-                📈 Receita dos Últimos 6 Meses
-              </h3>
-              <p
-                className={cn(
-                  "text-sm",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Total acumulado:{" "}
-                {formatCurrency(dashboardData.revenue.accumulated)}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "text-right px-3 py-1 rounded-lg text-xs",
-                darkMode ? "bg-gray-700" : "bg-gray-100",
-              )}
-            >
-              <span
-                className={cn(
-                  "text-xs",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Melhor mês
-              </span>
-              <div
-                className={cn(
-                  "font-semibold",
-                  darkMode ? "text-white" : "text-gray-900",
-                )}
-              >
-                {formatCurrency(dashboardData.revenue.best)}
-              </div>
-            </div>
-          </div>
+          <h3
+            className={cn(
+              "text-lg font-semibold mb-4",
+              darkMode ? "text-white" : "text-gray-900",
+            )}
+          >
+            📈 Receita dos Últimos Meses
+          </h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
+              <LineChart data={finalRevenueData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke={darkMode ? "#374151" : "#E5E7EB"}
+                  stroke={darkMode ? "#374151" : "#e5e7eb"}
                 />
                 <XAxis
                   dataKey="month"
-                  stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  stroke={darkMode ? "#9ca3af" : "#6b7280"}
                 />
-                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
+                <YAxis stroke={darkMode ? "#9ca3af" : "#6b7280"} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: darkMode ? "#1F2937" : "#FFFFFF",
+                    backgroundColor: darkMode ? "#1f2937" : "#ffffff",
                     border: darkMode
                       ? "1px solid #374151"
-                      : "1px solid #E5E7EB",
+                      : "1px solid #e5e7eb",
                     borderRadius: "8px",
-                    color: darkMode ? "#FFFFFF" : "#000000",
                   }}
-                  formatter={(value: number) => [
-                    formatCurrency(value),
-                    "Receita",
-                  ]}
+                  formatter={(value: any) => [formatCurrency(value), "Receita"]}
                 />
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="#3B82F6"
+                  stroke="#3b82f6"
                   strokeWidth={3}
-                  dot={{ fill: "#3B82F6", strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, stroke: "#3B82F6", strokeWidth: 2 }}
+                  dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -409,51 +329,69 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             📅 Próximos Agendamentos
           </h3>
-          <div className="space-y-4">
-            {upcomingAppointments.map((appointment) => (
-              <div key={appointment.id} className="flex items-center gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span
-                      className={cn(
-                        "font-medium text-sm",
-                        darkMode ? "text-white" : "text-gray-900",
-                      )}
-                    >
-                      {appointment.client}
-                    </span>
-                    <span
-                      className={cn(
-                        "px-2 py-1 rounded-full text-xs font-medium",
-                        getStatusColor(appointment.status),
-                      )}
-                    >
-                      {appointment.status}
-                    </span>
-                  </div>
-                  <p
+          <div className="space-y-3">
+            {finalUpcomingAppointments.length > 0 ? (
+              finalUpcomingAppointments.map(
+                (appointment: any, index: number) => (
+                  <div
+                    key={index}
                     className={cn(
-                      "text-sm",
-                      darkMode ? "text-gray-400" : "text-gray-600",
+                      "flex items-center justify-between p-3 rounded-lg",
+                      darkMode ? "bg-gray-700" : "bg-gray-50",
                     )}
                   >
-                    {appointment.service} • {appointment.time}
-                  </p>
-                </div>
-              </div>
-            ))}
+                    <div>
+                      <p
+                        className={cn(
+                          "font-medium",
+                          darkMode ? "text-white" : "text-gray-900",
+                        )}
+                      >
+                        {appointment.client}
+                      </p>
+                      <p
+                        className={cn(
+                          "text-sm",
+                          darkMode ? "text-gray-400" : "text-gray-600",
+                        )}
+                      >
+                        {appointment.service}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={cn(
+                          "text-sm font-medium",
+                          darkMode ? "text-white" : "text-gray-900",
+                        )}
+                      >
+                        {appointment.time}
+                      </p>
+                      <span
+                        className={cn(
+                          "text-xs px-2 py-1 rounded-full",
+                          getStatusColor(appointment.status),
+                        )}
+                      >
+                        {appointment.status}
+                      </span>
+                    </div>
+                  </div>
+                ),
+              )
+            ) : (
+              <p
+                className={cn(
+                  "text-center py-8",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Nenhum agendamento próximo
+              </p>
+            )}
           </div>
-          <button
-            onClick={() => onPageChange("appointments")}
-            className="w-full mt-4 p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium transition-all"
-          >
-            Ver todos os agendamentos
-          </button>
         </div>
-      </div>
 
-      {/* Secondary Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Birthdays */}
         <div
           className={cn(
@@ -469,36 +407,46 @@ export const Dashboard: React.FC<DashboardProps> = ({
               darkMode ? "text-white" : "text-gray-900",
             )}
           >
-            🎉 Aniversariantes
+            🎂 Aniversariantes do Mês
           </h3>
           <div className="space-y-3">
-            {birthdays.map((birthday, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-semibold">
-                    {birthday.name.charAt(0)}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <span
+            {finalBirthdays.length > 0 ? (
+              finalBirthdays.map((birthday: any, index: number) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-lg",
+                    darkMode ? "bg-gray-700" : "bg-gray-50",
+                  )}
+                >
+                  <p
                     className={cn(
-                      "font-medium text-sm",
+                      "font-medium",
                       darkMode ? "text-white" : "text-gray-900",
                     )}
                   >
                     {birthday.name}
-                  </span>
+                  </p>
+                  <p
+                    className={cn(
+                      "text-sm",
+                      darkMode ? "text-gray-400" : "text-gray-600",
+                    )}
+                  >
+                    {birthday.date}
+                  </p>
                 </div>
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    darkMode ? "text-blue-400" : "text-blue-600",
-                  )}
-                >
-                  {birthday.date}
-                </span>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p
+                className={cn(
+                  "text-center py-8",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Nenhum aniversário este mês
+              </p>
+            )}
           </div>
         </div>
 
@@ -517,7 +465,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               darkMode ? "text-white" : "text-gray-900",
             )}
           >
-            💡 Insights do Dia
+            💡 Insights Rápidos
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -535,7 +483,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                {dashboardData.insights.peakHour}
+                {finalDashboardData.insights?.peakHour || "14:00"}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -553,7 +501,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                {dashboardData.insights.cancellations} hoje
+                {finalDashboardData.insights?.cancellations || 0} hoje
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -571,7 +519,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   darkMode ? "text-green-400" : "text-green-600",
                 )}
               >
-                {dashboardData.insights.revenueStatus} da média
+                {finalDashboardData.insights?.revenueStatus || "acima"} da média
               </span>
             </div>
           </div>
@@ -594,7 +542,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           🏆 Serviços Mais Populares
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {topServices.map((service, index) => (
+          {finalTopServices.map((service: any, index: number) => (
             <div
               key={index}
               className={cn(
@@ -619,19 +567,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     darkMode ? "text-green-400" : "text-green-600",
                   )}
                 >
-                  {formatCurrency(service.revenue)}
+                  {formatCurrency(service.revenue || 0)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span
                   className={cn(darkMode ? "text-gray-400" : "text-gray-600")}
                 >
-                  {service.count} agendamentos
+                  {service.count || 0} agendamentos
                 </span>
                 <span
                   className={cn(darkMode ? "text-gray-400" : "text-gray-600")}
                 >
-                  Média: {formatCurrency(service.revenue / service.count)}
+                  Média:{" "}
+                  {service.count > 0
+                    ? formatCurrency((service.revenue || 0) / service.count)
+                    : "R$ 0,00"}
                 </span>
               </div>
             </div>
