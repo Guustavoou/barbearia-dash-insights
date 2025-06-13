@@ -79,7 +79,7 @@ export const Professionals: React.FC<ProfessionalsProps> = ({ darkMode }) => {
 
   // Filter and sort professionals
   const filteredProfessionals = useMemo(() => {
-    let filtered = professionalsMockData.filter((professional) => {
+    let filtered = professionalsData.filter((professional: any) => {
       const matchesSearch =
         professional.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         professional.specialties.some((spec) =>
