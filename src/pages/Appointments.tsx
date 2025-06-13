@@ -197,7 +197,9 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
                     )}
                   >
                     {appointment.service} • {appointment.time} •{" "}
-                    {appointment.date.toLocaleDateString("pt-BR")}
+                    {appointment.date instanceof Date
+                      ? appointment.date.toLocaleDateString("pt-BR")
+                      : new Date(appointment.date).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
