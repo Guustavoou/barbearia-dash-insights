@@ -1,18 +1,6 @@
 // API Configuration and HTTP Client
-const getApiBaseUrl = () => {
-  // Check if we're in development or if localhost is accessible
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  ) {
-    return "http://localhost:3001/api";
-  }
-
-  // If running on external domain, try to use proxy on same origin
-  return `${window.location.origin}/api`;
-};
-
-const API_BASE_URL = getApiBaseUrl();
+// Use relative URL to leverage Vite proxy configuration
+const API_BASE_URL = "/api";
 
 interface ApiResponse<T = any> {
   success: boolean;
