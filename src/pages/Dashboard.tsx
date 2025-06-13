@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   DollarSign,
@@ -24,15 +25,12 @@ import {
   formatDate,
   getStatusColor,
 } from "@/lib/unclicUtils";
-import {
-  dashboardData,
-  revenueData,
-  upcomingAppointments,
-  birthdays,
-  topServices,
-} from "@/lib/mockData";
 import { PageType } from "@/lib/types";
 import { QuickActions } from "@/components/QuickActions";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useClients } from "@/hooks/useClients";
+import { useServices } from "@/hooks/useServices";
+import { useAppointments } from "@/hooks/useAppointments";
 
 interface DashboardProps {
   darkMode: boolean;
@@ -41,13 +39,14 @@ interface DashboardProps {
 
 interface MetricCardProps {
   title: string;
-  value: string;
+  value: string | number;
   icon: React.ElementType;
   change: string;
   positive: boolean;
   bg: string;
   onClick?: () => void;
   darkMode: boolean;
+  loading?: boolean;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({
@@ -59,6 +58,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   bg,
   onClick,
   darkMode,
+  loading = false,
 }) => (
   <div
     onClick={onClick}
@@ -69,18 +69,26 @@ const MetricCard: React.FC<MetricCardProps> = ({
       onClick && "cursor-pointer hover:scale-105",
     )}
   >
-    <div className="relative z-10">
-      <div className="flex items-center justify-between mb-4">
-        <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-          <Icon className="h-6 w-6 text-white" />
+    {loading ? (
+      <div className="animate-pulse">
+        <div className="h-4 bg-white/20 rounded mb-4"></div>
+        <div className="h-8 bg-white/20 rounded mb-2"></div>
+        <div className="h-3 bg-white/20 rounded"></div>
+      </div>
+    ) : (
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+            <Icon className="h-6 w-6 text-white" />
+          </div>
+          <div className="text-white/80 text-sm font-medium">{change}</div>
         </div>
-        <div className="text-white/80 text-sm font-medium">{change}</div>
+        <div className="text-white">
+          <h3 className="text-2xl font-bold mb-1">{value}</h3>
+          <p className="text-white/90 text-sm font-medium">{title}</p>
+        </div>
       </div>
-      <div className="text-white">
-        <h3 className="text-2xl font-bold mb-1">{value}</h3>
-        <p className="text-white/90 text-sm font-medium">{title}</p>
-      </div>
-    </div>
+    )}
     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
   </div>
 );
@@ -89,56 +97,88 @@ export const Dashboard: React.FC<DashboardProps> = ({
   darkMode,
   onPageChange,
 }) => {
+  const { stats, loading: statsLoading } = useDashboardStats();
+  const { clients, loading: clientsLoading } = useClients();
+  const { services, loading: servicesLoading } = useServices();
+  const { appointments, loading: appointmentsLoading } = useAppointments();
+
+  // Calculate today's appointments
+  const today = new Date().toISOString().split('T')[0];
+  const todaysAppointments = appointments.filter(apt => 
+    apt.appointment_date === today
+  );
+
+  // Calculate client growth (new clients this month)
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const newClientsThisMonth = clients.filter(client => 
+    client.created_at && client.created_at.startsWith(currentMonth)
+  ).length;
+
+  // Get upcoming appointments (next 5)
+  const upcomingAppointments = appointments
+    .filter(apt => {
+      const aptDateTime = new Date(`${apt.appointment_date} ${apt.appointment_time}`);
+      return aptDateTime > new Date();
+    })
+    .slice(0, 5);
+
   const metrics = [
     {
       title: "Receita do Mês",
-      value: formatCurrency(dashboardData.revenue.current),
+      value: formatCurrency(stats.monthlyRevenue),
       icon: DollarSign,
-      change: `+${dashboardData.revenue.growth}%`,
+      change: "Este mês",
       positive: true,
       bg: "from-green-500 to-emerald-600",
+      loading: statsLoading,
     },
     {
-      title: "Agendamentos",
-      value: dashboardData.appointments.total.toString(),
+      title: "Agendamentos Hoje",
+      value: stats.todayAppointments,
       icon: Calendar,
-      change: `+${dashboardData.appointments.variation}`,
+      change: `${todaysAppointments.length} hoje`,
       positive: true,
       onClick: () => onPageChange("appointments"),
       bg: "from-blue-500 to-cyan-600",
+      loading: statsLoading,
     },
     {
-      title: "Clientes Ativos",
-      value: dashboardData.clients.active.toString(),
+      title: "Total de Clientes",
+      value: stats.totalClients,
       icon: Users,
-      change: `+${dashboardData.clients.new} novos`,
+      change: `+${newClientsThisMonth} novos`,
       positive: true,
       onClick: () => onPageChange("clients"),
       bg: "from-purple-500 to-violet-600",
+      loading: statsLoading,
     },
     {
-      title: "Satisfação",
-      value: dashboardData.satisfaction.toString(),
+      title: "Serviços Ativos",
+      value: stats.totalServices,
       icon: Star,
-      change: "⭐⭐⭐⭐⭐",
+      change: "Disponíveis",
       positive: true,
+      onClick: () => onPageChange("services"),
       bg: "from-yellow-500 to-orange-600",
+      loading: statsLoading,
     },
     {
-      title: "Taxa Conclusão",
-      value: `${dashboardData.services.completion}%`,
+      title: "Agendamentos Total",
+      value: appointments.length,
       icon: Check,
-      change: `${dashboardData.services.completed} serviços`,
+      change: "Total geral",
       positive: true,
       bg: "from-teal-500 to-green-600",
+      loading: appointmentsLoading,
     },
     {
-      title: "Retenção",
-      value: `${dashboardData.clients.retention}%`,
+      title: "Clientes Ativos",
+      value: clients.filter(c => c.status === 'ativo').length,
       icon: BarChart3,
-      change: "Excelente",
+      change: "Ativos",
       positive: true,
       bg: "from-pink-500 to-rose-600",
+      loading: clientsLoading,
     },
   ];
 
@@ -161,7 +201,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 darkMode ? "text-white" : "text-gray-900",
               )}
             >
-              🌟 Olá, Maria! Bem-vinda ao Studio Bella
+              🌟 Bem-vindo ao seu sistema de gestão!
             </h1>
             <p
               className={cn(
@@ -169,8 +209,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 darkMode ? "text-gray-300" : "text-gray-600",
               )}
             >
-              Você tem <strong>3 agendamentos</strong> hoje e o negócio está
-              crescendo <strong>+15.8%</strong> este mês!
+              Você tem <strong>{stats.todayAppointments} agendamentos</strong> hoje e <strong>{stats.totalClients} clientes</strong> cadastrados!
             </p>
           </div>
           <div
@@ -182,7 +221,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               "transition-colors cursor-pointer",
             )}
           >
-            Vamos começar! 🚀
+            Vamos trabalhar! 🚀
           </div>
         </div>
       </div>
@@ -200,13 +239,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
             bg={metric.bg}
             onClick={metric.onClick}
             darkMode={darkMode}
+            loading={metric.loading}
           />
         ))}
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Revenue Chart */}
+        {/* Recent Activity */}
         <div
           className={cn(
             "lg:col-span-2 rounded-2xl p-6 border",
@@ -223,7 +263,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                📈 Receita dos Últimos 6 Meses
+                📈 Resumo dos Dados
               </h3>
               <p
                 className={cn(
@@ -231,70 +271,79 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   darkMode ? "text-gray-400" : "text-gray-600",
                 )}
               >
-                Total acumulado:{" "}
-                {formatCurrency(dashboardData.revenue.accumulated)}
+                Visão geral do seu negócio
               </p>
             </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
             <div
               className={cn(
-                "text-right px-3 py-1 rounded-lg text-xs",
-                darkMode ? "bg-gray-700" : "bg-gray-100",
+                "p-4 rounded-lg border",
+                darkMode
+                  ? "bg-gray-700 border-gray-600"
+                  : "bg-gray-50 border-gray-200",
               )}
             >
-              <span
+              <h4
                 className={cn(
-                  "text-xs",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Melhor mês
-              </span>
-              <div
-                className={cn(
-                  "font-semibold",
+                  "font-medium mb-2",
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                {formatCurrency(dashboardData.revenue.best)}
-              </div>
+                Clientes
+              </h4>
+              <p
+                className={cn(
+                  "text-2xl font-bold mb-1",
+                  darkMode ? "text-blue-400" : "text-blue-600",
+                )}
+              >
+                {clientsLoading ? "..." : stats.totalClients}
+              </p>
+              <p
+                className={cn(
+                  "text-sm",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Total cadastrados
+              </p>
             </div>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={darkMode ? "#374151" : "#E5E7EB"}
-                />
-                <XAxis
-                  dataKey="month"
-                  stroke={darkMode ? "#9CA3AF" : "#6B7280"}
-                />
-                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: darkMode ? "#1F2937" : "#FFFFFF",
-                    border: darkMode
-                      ? "1px solid #374151"
-                      : "1px solid #E5E7EB",
-                    borderRadius: "8px",
-                    color: darkMode ? "#FFFFFF" : "#000000",
-                  }}
-                  formatter={(value: number) => [
-                    formatCurrency(value),
-                    "Receita",
-                  ]}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#3B82F6"
-                  strokeWidth={3}
-                  dot={{ fill: "#3B82F6", strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, stroke: "#3B82F6", strokeWidth: 2 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+
+            <div
+              className={cn(
+                "p-4 rounded-lg border",
+                darkMode
+                  ? "bg-gray-700 border-gray-600"
+                  : "bg-gray-50 border-gray-200",
+              )}
+            >
+              <h4
+                className={cn(
+                  "font-medium mb-2",
+                  darkMode ? "text-white" : "text-gray-900",
+                )}
+              >
+                Serviços
+              </h4>
+              <p
+                className={cn(
+                  "text-2xl font-bold mb-1",
+                  darkMode ? "text-green-400" : "text-green-600",
+                )}
+              >
+                {servicesLoading ? "..." : stats.totalServices}
+              </p>
+              <p
+                className={cn(
+                  "text-sm",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Disponíveis
+              </p>
+            </div>
           </div>
         </div>
 
@@ -315,233 +364,68 @@ export const Dashboard: React.FC<DashboardProps> = ({
           >
             📅 Próximos Agendamentos
           </h3>
-          <div className="space-y-4">
-            {upcomingAppointments.map((appointment) => (
-              <div key={appointment.id} className="flex items-center gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span
-                      className={cn(
-                        "font-medium text-sm",
-                        darkMode ? "text-white" : "text-gray-900",
-                      )}
-                    >
-                      {appointment.client}
-                    </span>
-                    <span
-                      className={cn(
-                        "px-2 py-1 rounded-full text-xs font-medium",
-                        getStatusColor(appointment.status),
-                      )}
-                    >
-                      {appointment.status}
-                    </span>
-                  </div>
-                  <p
-                    className={cn(
-                      "text-sm",
-                      darkMode ? "text-gray-400" : "text-gray-600",
-                    )}
-                  >
-                    {appointment.service} • {appointment.time}
-                  </p>
+          
+          {appointmentsLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className={cn("h-4 rounded mb-2", darkMode ? "bg-gray-700" : "bg-gray-200")}></div>
+                  <div className={cn("h-3 rounded", darkMode ? "bg-gray-700" : "bg-gray-200")}></div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : upcomingAppointments.length > 0 ? (
+            <div className="space-y-4">
+              {upcomingAppointments.map((appointment) => (
+                <div key={appointment.id} className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span
+                        className={cn(
+                          "font-medium text-sm",
+                          darkMode ? "text-white" : "text-gray-900",
+                        )}
+                      >
+                        {appointment.clients?.name || 'Cliente'}
+                      </span>
+                      <span
+                        className={cn(
+                          "px-2 py-1 rounded-full text-xs font-medium",
+                          getStatusColor(appointment.status),
+                        )}
+                      >
+                        {appointment.status}
+                      </span>
+                    </div>
+                    <p
+                      className={cn(
+                        "text-sm",
+                        darkMode ? "text-gray-400" : "text-gray-600",
+                      )}
+                    >
+                      {appointment.services?.name || 'Serviço'} • {appointment.appointment_time} • {formatDate(new Date(appointment.appointment_date))}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p
+              className={cn(
+                "text-sm text-center py-8",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Nenhum agendamento próximo
+            </p>
+          )}
+          
           <button
             onClick={() => onPageChange("appointments")}
             className="w-full mt-4 p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium transition-all"
           >
             Ver todos os agendamentos
           </button>
-        </div>
-      </div>
-
-      {/* Secondary Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Birthdays */}
-        <div
-          className={cn(
-            "rounded-2xl p-6 border",
-            darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200",
-          )}
-        >
-          <h3
-            className={cn(
-              "text-lg font-semibold mb-4",
-              darkMode ? "text-white" : "text-gray-900",
-            )}
-          >
-            🎉 Aniversariantes
-          </h3>
-          <div className="space-y-3">
-            {birthdays.map((birthday, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-semibold">
-                    {birthday.name.charAt(0)}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <span
-                    className={cn(
-                      "font-medium text-sm",
-                      darkMode ? "text-white" : "text-gray-900",
-                    )}
-                  >
-                    {birthday.name}
-                  </span>
-                </div>
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    darkMode ? "text-blue-400" : "text-blue-600",
-                  )}
-                >
-                  {birthday.date}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick Insights */}
-        <div
-          className={cn(
-            "rounded-2xl p-6 border",
-            darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200",
-          )}
-        >
-          <h3
-            className={cn(
-              "text-lg font-semibold mb-4",
-              darkMode ? "text-white" : "text-gray-900",
-            )}
-          >
-            💡 Insights do Dia
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span
-                className={cn(
-                  "text-sm",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Horário de pico
-              </span>
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-white" : "text-gray-900",
-                )}
-              >
-                {dashboardData.insights.peakHour}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span
-                className={cn(
-                  "text-sm",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Cancelamentos
-              </span>
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-white" : "text-gray-900",
-                )}
-              >
-                {dashboardData.insights.cancellations} hoje
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span
-                className={cn(
-                  "text-sm",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Receita está
-              </span>
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-green-400" : "text-green-600",
-                )}
-              >
-                {dashboardData.insights.revenueStatus} da média
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Top Services */}
-      <div
-        className={cn(
-          "rounded-2xl p-6 border",
-          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
-        )}
-      >
-        <h3
-          className={cn(
-            "text-lg font-semibold mb-4",
-            darkMode ? "text-white" : "text-gray-900",
-          )}
-        >
-          🏆 Serviços Mais Populares
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {topServices.map((service, index) => (
-            <div
-              key={index}
-              className={cn(
-                "p-4 rounded-lg border",
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-gray-50 border-gray-200",
-              )}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span
-                  className={cn(
-                    "font-medium text-sm",
-                    darkMode ? "text-white" : "text-gray-900",
-                  )}
-                >
-                  {service.name}
-                </span>
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    darkMode ? "text-green-400" : "text-green-600",
-                  )}
-                >
-                  {formatCurrency(service.revenue)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span
-                  className={cn(darkMode ? "text-gray-400" : "text-gray-600")}
-                >
-                  {service.count} agendamentos
-                </span>
-                <span
-                  className={cn(darkMode ? "text-gray-400" : "text-gray-600")}
-                >
-                  Média: {formatCurrency(service.revenue / service.count)}
-                </span>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 

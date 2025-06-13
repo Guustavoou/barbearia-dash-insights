@@ -1,8 +1,12 @@
+
 import React, { useState } from "react";
 import { X, Calendar, Clock, User, Briefcase } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/unclicUtils";
-import { clients } from "@/lib/mockData";
-import { services, professionals } from "@/lib/appointmentMockData";
+import { useClients } from "@/hooks/useClients";
+import { useServices } from "@/hooks/useServices";
+import { useProfessionals } from "@/hooks/useProfessionals";
+import { useAppointments } from "@/hooks/useAppointments";
+import { toast } from "sonner";
 
 interface NewAppointmentModalProps {
   isOpen: boolean;
@@ -37,15 +41,61 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
     notes: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
+  const { clients } = useClients();
+  const { services } = useServices();
+  const { professionals } = useProfessionals();
+  const { addAppointment } = useAppointments();
+
   const selectedService = services.find(
-    (s) => s.id.toString() === formData.serviceId,
+    (s) => s.id === formData.serviceId,
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle the form submission
-    console.log("New appointment data:", formData);
-    onClose();
+    setLoading(true);
+
+    try {
+      const appointmentData = {
+        client_id: formData.clientId,
+        service_id: formData.serviceId,
+        professional_id: formData.professionalId || null,
+        appointment_date: formData.date,
+        appointment_time: formData.time,
+        duration: selectedService?.duration || 30,
+        price: selectedService?.price || 0,
+        notes: formData.notes || null,
+        status: 'agendado' as const,
+      };
+
+      const result = await addAppointment(appointmentData);
+      
+      if (result) {
+        toast.success("Agendamento criado com sucesso!");
+        
+        // Reset form
+        setFormData({
+          clientId: "",
+          serviceId: "",
+          professionalId: "",
+          date: selectedDate
+            ? selectedDate.toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0],
+          time: "",
+          notes: "",
+        });
+        
+        onClose();
+      } else {
+        toast.error("Erro ao criar agendamento");
+      }
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      toast.error("Erro ao criar agendamento");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (
@@ -130,7 +180,7 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
             >
               <option value="">Selecione um cliente</option>
               {clients.map((client) => (
-                <option key={client.id} value={client.id.toString()}>
+                <option key={client.id} value={client.id}>
                   {client.name}
                 </option>
               ))}
@@ -164,8 +214,8 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
               )}
             >
               <option value="">Selecione um serviço</option>
-              {services.map((service) => (
-                <option key={service.id} value={service.id.toString()}>
+              {services.filter(s => s.is_active).map((service) => (
+                <option key={service.id} value={service.id}>
                   {service.name} - {formatCurrency(service.price)} (
                   {service.duration}min)
                 </option>
@@ -197,11 +247,11 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
               )}
             >
-              <option value="">Selecione um profissional</option>
-              {professionals.map((professional) => (
+              <option value="">Selecione um profissional (opcional)</option>
+              {professionals.filter(p => p.status === 'ativo').map((professional) => (
                 <option
                   key={professional.id}
-                  value={professional.id.toString()}
+                  value={professional.id}
                 >
                   {professional.name}
                 </option>
@@ -302,6 +352,16 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
                 >
                   Valor: {formatCurrency(selectedService.price)}
                 </p>
+                {selectedService.description && (
+                  <p
+                    className={cn(
+                      "text-sm",
+                      darkMode ? "text-gray-300" : "text-gray-600",
+                    )}
+                  >
+                    {selectedService.description}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -339,20 +399,26 @@ export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
             <button
               type="button"
               onClick={onClose}
+              disabled={loading}
               className={cn(
                 "flex-1 px-4 py-2 rounded-lg border transition-colors",
                 darkMode
                   ? "border-gray-600 text-gray-300 hover:bg-gray-700"
                   : "border-gray-300 text-gray-600 hover:bg-gray-50",
+                loading && "opacity-50 cursor-not-allowed",
               )}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={loading || !formData.clientId || !formData.serviceId || !formData.date || !formData.time}
+              className={cn(
+                "flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors",
+                (loading || !formData.clientId || !formData.serviceId || !formData.date || !formData.time) && "opacity-50 cursor-not-allowed",
+              )}
             >
-              Agendar
+              {loading ? "Agendando..." : "Agendar"}
             </button>
           </div>
         </form>
