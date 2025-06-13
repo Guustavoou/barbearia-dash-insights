@@ -266,12 +266,104 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
         </button>
       </div>
 
-      {/* Stats Cards (Skeleton) */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
+        {loading ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : (
+          <>
+            <div
+              className={cn(
+                "rounded-xl p-6 border",
+                darkMode
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-gray-200",
+              )}
+            >
+              <h3
+                className={cn(
+                  "text-sm font-medium",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Total de Agendamentos
+              </h3>
+              <p
+                className={cn(
+                  "text-2xl font-bold mt-1",
+                  darkMode ? "text-white" : "text-gray-900",
+                )}
+              >
+                {stats.total}
+              </p>
+            </div>
+            <div
+              className={cn(
+                "rounded-xl p-6 border",
+                darkMode
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-gray-200",
+              )}
+            >
+              <h3
+                className={cn(
+                  "text-sm font-medium",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Concluídos
+              </h3>
+              <p className={cn("text-2xl font-bold mt-1 text-green-600")}>
+                {stats.concluidos}
+              </p>
+            </div>
+            <div
+              className={cn(
+                "rounded-xl p-6 border",
+                darkMode
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-gray-200",
+              )}
+            >
+              <h3
+                className={cn(
+                  "text-sm font-medium",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Agendados
+              </h3>
+              <p className={cn("text-2xl font-bold mt-1 text-blue-600")}>
+                {stats.agendados}
+              </p>
+            </div>
+            <div
+              className={cn(
+                "rounded-xl p-6 border",
+                darkMode
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-gray-200",
+              )}
+            >
+              <h3
+                className={cn(
+                  "text-sm font-medium",
+                  darkMode ? "text-gray-400" : "text-gray-600",
+                )}
+              >
+                Cancelados
+              </h3>
+              <p className={cn("text-2xl font-bold mt-1 text-red-600")}>
+                {stats.cancelados}
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* View Controls */}
