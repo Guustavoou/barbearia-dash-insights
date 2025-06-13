@@ -114,7 +114,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     client.created_at && client.created_at.startsWith(currentMonth)
   ).length;
 
-  // Get upcoming appointments (next 5)
+  // Get upcoming appointments (next 5) with proper type handling
   const upcomingAppointments = appointments
     .filter(apt => {
       const aptDateTime = new Date(`${apt.appointment_date} ${apt.appointment_time}`);
@@ -376,38 +376,44 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           ) : upcomingAppointments.length > 0 ? (
             <div className="space-y-4">
-              {upcomingAppointments.map((appointment) => (
-                <div key={appointment.id} className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span
+              {upcomingAppointments.map((appointment) => {
+                // Find client and service names from our loaded data
+                const client = clients.find(c => c.id === appointment.client_id);
+                const service = services.find(s => s.id === appointment.service_id);
+                
+                return (
+                  <div key={appointment.id} className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span
+                          className={cn(
+                            "font-medium text-sm",
+                            darkMode ? "text-white" : "text-gray-900",
+                          )}
+                        >
+                          {client?.name || 'Cliente'}
+                        </span>
+                        <span
+                          className={cn(
+                            "px-2 py-1 rounded-full text-xs font-medium",
+                            getStatusColor(appointment.status as "confirmado" | "agendado" | "pendente"),
+                          )}
+                        >
+                          {appointment.status}
+                        </span>
+                      </div>
+                      <p
                         className={cn(
-                          "font-medium text-sm",
-                          darkMode ? "text-white" : "text-gray-900",
+                          "text-sm",
+                          darkMode ? "text-gray-400" : "text-gray-600",
                         )}
                       >
-                        {appointment.clients?.name || 'Cliente'}
-                      </span>
-                      <span
-                        className={cn(
-                          "px-2 py-1 rounded-full text-xs font-medium",
-                          getStatusColor(appointment.status),
-                        )}
-                      >
-                        {appointment.status}
-                      </span>
+                        {service?.name || 'Serviço'} • {appointment.appointment_time} • {formatDate(new Date(appointment.appointment_date))}
+                      </p>
                     </div>
-                    <p
-                      className={cn(
-                        "text-sm",
-                        darkMode ? "text-gray-400" : "text-gray-600",
-                      )}
-                    >
-                      {appointment.services?.name || 'Serviço'} • {appointment.appointment_time} • {formatDate(new Date(appointment.appointment_date))}
-                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p

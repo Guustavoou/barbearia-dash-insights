@@ -1,3 +1,4 @@
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -23,7 +24,7 @@ export const formatDate = (date: Date): string => {
 };
 
 export const getStatusColor = (
-  status: "confirmado" | "agendado" | "pendente",
+  status: "confirmado" | "agendado" | "pendente" | "concluido" | "cancelado" | "faltou",
 ): string => {
   switch (status) {
     case "confirmado":
@@ -32,6 +33,12 @@ export const getStatusColor = (
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
     case "pendente":
       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+    case "concluido":
+      return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+    case "cancelado":
+      return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+    case "faltou":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400";
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400";
   }
