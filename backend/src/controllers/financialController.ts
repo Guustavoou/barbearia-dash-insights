@@ -191,8 +191,8 @@ export const getMonthlyRevenue = async (req: Request, res: Response) => {
     const stmt = db.prepare(`
       SELECT
         strftime('%Y-%m', created_at) as month,
-        SUM(CASE WHEN type = 'entrada' THEN amount ELSE 0 END) as revenue,
-        SUM(CASE WHEN type = 'saida' THEN amount ELSE 0 END) as expenses
+        SUM(CASE WHEN type = 'receita' THEN amount ELSE 0 END) as revenue,
+        SUM(CASE WHEN type = 'despesa' THEN amount ELSE 0 END) as expenses
       FROM transactions
       WHERE created_at >= DATE('now', '-${months} months')
       GROUP BY strftime('%Y-%m', created_at)
