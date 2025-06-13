@@ -40,6 +40,7 @@ class ApiClient {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      timeout: 10000, // 10 second timeout
       ...options,
     };
 
@@ -47,14 +48,22 @@ class ApiClient {
       const response = await fetch(url, defaultOptions);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${errorText}`,
+        );
       }
 
       const data: ApiResponse<T> = await response.json();
       return data;
     } catch (error) {
-      console.error("API request failed:", error);
-      throw error;
+      console.error(`API request failed for ${endpoint}:`, error);
+
+      // Return a failed response instead of throwing
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown API error",
+      };
     }
   }
 
