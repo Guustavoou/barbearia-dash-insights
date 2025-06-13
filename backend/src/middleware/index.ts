@@ -226,16 +226,28 @@ export function apiVersion(version: string) {
 /**
  * Response time middleware
  */
-export function responseTime(req: Request, res: Response, next: NextFunction) {
+export const responseTime = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const start = Date.now();
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    res.header("X-Response-Time", `${duration}ms`);
+    // Only set header if response hasn't been sent yet
+    if (!res.headersSent) {
+      try {
+        res.header("X-Response-Time", `${duration}ms`);
+      } catch (error) {
+        // Silently ignore header setting errors
+        console.debug("Could not set response time header:", error);
+      }
+    }
   });
 
   next();
-}
+};
 
 /**
  * Content type validation middleware
