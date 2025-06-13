@@ -5,10 +5,8 @@ import { cn, formatDate, formatCurrency } from "@/lib/unclicUtils";
 import { NewClientModal } from "@/components/NewClientModal";
 import { ClientDetailsModal } from "@/components/ClientDetailsModal";
 import { useClients } from "@/hooks/useClients";
-import { Database } from "@/integrations/supabase/types";
+import { Client } from "@/lib/types"; // Use our local Client type instead of Database type
 import { toast } from "sonner";
-
-type Client = Database['public']['Tables']['clients']['Row'];
 
 interface ClientsProps {
   darkMode: boolean;

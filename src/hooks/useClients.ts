@@ -2,11 +2,32 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
+import { Client } from '@/lib/types'; // Use our local type
 import { Database } from '@/integrations/supabase/types';
 
-type Client = Database['public']['Tables']['clients']['Row'];
+type DatabaseClient = Database['public']['Tables']['clients']['Row'];
 type ClientInsert = Database['public']['Tables']['clients']['Insert'];
 type ClientUpdate = Database['public']['Tables']['clients']['Update'];
+
+// Function to convert database client to our local Client type
+const convertToLocalClient = (dbClient: DatabaseClient): Client => ({
+  id: dbClient.id,
+  name: dbClient.name,
+  email: dbClient.email,
+  phone: dbClient.phone,
+  city: dbClient.city,
+  last_visit: dbClient.last_visit,
+  total_spent: dbClient.total_spent || 0,
+  status: (dbClient.status as "ativo" | "inativo") || "ativo", // Type assertion with fallback
+  join_date: dbClient.join_date,
+  visits: dbClient.visits || 0,
+  notes: dbClient.notes,
+  cpf: dbClient.cpf,
+  profession: dbClient.profession,
+  barbershop_id: dbClient.barbershop_id,
+  created_at: dbClient.created_at || '',
+  updated_at: dbClient.updated_at || '',
+});
 
 export const useClients = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -32,7 +53,9 @@ export const useClients = () => {
       if (error) {
         console.error('Error fetching clients:', error);
       } else {
-        setClients(data || []);
+        // Convert database clients to our local Client type
+        const convertedClients = (data || []).map(convertToLocalClient);
+        setClients(convertedClients);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -59,8 +82,9 @@ export const useClients = () => {
         return null;
       }
 
-      setClients(prev => [data, ...prev]);
-      return data;
+      const convertedClient = convertToLocalClient(data);
+      setClients(prev => [convertedClient, ...prev]);
+      return convertedClient;
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -81,10 +105,11 @@ export const useClients = () => {
         return null;
       }
 
+      const convertedClient = convertToLocalClient(data);
       setClients(prev => prev.map(client => 
-        client.id === id ? data : client
+        client.id === id ? convertedClient : client
       ));
-      return data;
+      return convertedClient;
     } catch (error) {
       console.error('Error:', error);
       return null;
