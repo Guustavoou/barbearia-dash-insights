@@ -255,19 +255,20 @@ export const createTransaction = async (req: Request, res: Response) => {
     const stmt = db.prepare(`
       INSERT INTO transactions (
         type, amount, description, payment_method,
-        appointment_id, product_id, reference, created_at
+        category, reference_id, reference_type, date, created_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     `);
 
     const result = stmt.run(
       type,
       amount,
       description,
-      payment_method,
-      appointment_id || null,
-      product_id || null,
-      reference || null,
+      payment_method || null,
+      category,
+      reference_id || null,
+      reference_type || null,
+      date || new Date().toISOString().split("T")[0],
     );
 
     // Get the created transaction
