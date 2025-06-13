@@ -1,332 +1,259 @@
-import React, { useState, useMemo } from "react";
-import { Calendar, List, Plus, BarChart3 } from "lucide-react";
-import { cn, formatCurrency } from "@/lib/unclicUtils";
-import { CalendarView } from "@/components/CalendarView";
+
+import React, { useState } from "react";
+import { Calendar, Clock, User, Phone } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { NewAppointmentModal } from "@/components/NewAppointmentModal";
-import { appointmentsMockData } from "@/lib/appointmentMockData";
-import {
-  AppointmentItem,
-  AppointmentViewMode,
-  CalendarViewType,
-  AppointmentStats,
-} from "@/lib/appointmentTypes";
+import { useAppointments } from "@/hooks/useAppointments";
+import { useClients } from "@/hooks/useClients";
+import { useServices } from "@/hooks/useServices";
+import { useProfessionals } from "@/hooks/useProfessionals";
+import { cn, formatCurrency, formatDate, formatTime } from "@/lib/unclicUtils";
 
-interface AppointmentsProps {
-  darkMode: boolean;
-}
+const Appointments = () => {
+  const [showNewModal, setShowNewModal] = useState(false);
+  const [darkMode] = useState(false);
 
-export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 5, 1)); // June 2025
-  const [viewMode, setViewMode] = useState<AppointmentViewMode>("calendario");
-  const [calendarView, setCalendarView] = useState<CalendarViewType>("mensal");
-  const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+  const { appointments, loading: appointmentsLoading, addAppointment, updateAppointment, deleteAppointment } = useAppointments();
+  const { clients, loading: clientsLoading } = useClients();
+  const { services, loading: servicesLoading } = useServices();
+  const { professionals, loading: professionalsLoading } = useProfessionals();
 
-  // Calculate statistics
-  const stats: AppointmentStats = useMemo(() => {
-    const total = appointmentsMockData.length;
-    const concluidos = appointmentsMockData.filter(
-      (apt) => apt.status === "concluido",
-    ).length;
-    const agendados = appointmentsMockData.filter(
-      (apt) => apt.status === "agendado",
-    ).length;
-    const cancelados = appointmentsMockData.filter(
-      (apt) => apt.status === "cancelado",
-    ).length;
-    const confirmados = appointmentsMockData.filter(
-      (apt) => apt.status === "confirmado",
-    ).length;
-    const faltou = appointmentsMockData.filter(
-      (apt) => apt.status === "faltou",
-    ).length;
+  const loading = appointmentsLoading || clientsLoading || servicesLoading || professionalsLoading;
 
-    return {
-      total,
-      concluidos,
-      agendados,
-      cancelados,
-      confirmados,
-      faltou,
-    };
-  }, []);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'agendado':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'confirmado':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'cancelado':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'finalizado':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
 
-  // Skeleton placeholders for top cards
-  const SkeletonCard: React.FC = () => (
-    <div
-      className={cn(
-        "rounded-xl p-6 border animate-pulse",
-        darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
-      )}
-    >
-      <div className="space-y-3">
-        <div
-          className={cn(
-            "h-4 rounded w-3/4",
-            darkMode ? "bg-gray-700" : "bg-gray-200",
-          )}
-        />
-        <div
-          className={cn(
-            "h-6 rounded w-1/2",
-            darkMode ? "bg-gray-700" : "bg-gray-200",
-          )}
-        />
-        <div
-          className={cn(
-            "h-3 rounded w-full",
-            darkMode ? "bg-gray-700" : "bg-gray-200",
-          )}
-        />
-      </div>
-    </div>
-  );
+  const handleNewAppointment = async (appointmentData: any) => {
+    const result = await addAppointment(appointmentData);
+    if (result) {
+      setShowNewModal(false);
+    }
+  };
 
-  const ListView: React.FC = () => (
-    <div
-      className={cn(
-        "rounded-xl border",
-        darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
-      )}
-    >
-      <div className="p-6">
-        <h3
-          className={cn(
-            "text-lg font-semibold mb-4",
-            darkMode ? "text-white" : "text-gray-900",
-          )}
-        >
-          Lista de Agendamentos
-        </h3>
-        <div className="space-y-4">
-          {appointmentsMockData.map((appointment) => (
-            <div
-              key={appointment.id}
-              className={cn(
-                "p-4 rounded-lg border",
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-gray-50 border-gray-200",
-              )}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4
-                    className={cn(
-                      "font-medium",
-                      darkMode ? "text-white" : "text-gray-900",
-                    )}
-                  >
-                    {appointment.client}
-                  </h4>
-                  <p
-                    className={cn(
-                      "text-sm",
-                      darkMode ? "text-gray-400" : "text-gray-600",
-                    )}
-                  >
-                    {appointment.service} • {appointment.time} •{" "}
-                    {appointment.date.toLocaleDateString("pt-BR")}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs font-medium",
-                      appointment.status === "agendado" &&
-                        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-                      appointment.status === "confirmado" &&
-                        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-                      appointment.status === "concluido" &&
-                        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-                      appointment.status === "cancelado" &&
-                        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-                      appointment.status === "faltou" &&
-                        "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
-                    )}
-                  >
-                    {appointment.status}
-                  </span>
-                  <span
-                    className={cn(
-                      "text-sm font-medium",
-                      darkMode ? "text-gray-300" : "text-gray-600",
-                    )}
-                  >
-                    {formatCurrency(appointment.price)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+  const handleStatusUpdate = async (appointmentId: string, newStatus: string) => {
+    await updateAppointment(appointmentId, { status: newStatus });
+  };
+
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    await deleteAppointment(appointmentId);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando agendamentos...</p>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <h1
-            className={cn(
-              "text-2xl font-bold",
-              darkMode ? "text-white" : "text-gray-900",
-            )}
-          >
-            Agendamentos
-          </h1>
-          <p
-            className={cn(
-              "text-sm mt-1",
-              darkMode ? "text-gray-400" : "text-gray-600",
-            )}
-          >
-            Gerencie todos os seus agendamentos em um só lugar
+          <h1 className="text-3xl font-bold text-gray-900">Agendamentos</h1>
+          <p className="text-gray-600">
+            Gerencie todos os agendamentos da sua barbearia
           </p>
         </div>
-        <button
-          onClick={() => setShowNewAppointmentModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
+        <Button onClick={() => setShowNewModal(true)} className="flex items-center gap-2">
+          <Calendar className="h-4 w-4" />
           Novo Agendamento
-        </button>
+        </Button>
       </div>
 
-      {/* Stats Cards (Skeleton) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
-        <SkeletonCard />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Hoje</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {appointments.filter(apt => apt.appointment_date === new Date().toISOString().split('T')[0]).length}
+            </div>
+            <p className="text-xs text-muted-foreground">agendamentos para hoje</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Confirmados</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {appointments.filter(apt => apt.status === 'confirmado').length}
+            </div>
+            <p className="text-xs text-muted-foreground">agendamentos confirmados</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
+            <User className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {appointments.filter(apt => apt.status === 'agendado').length}
+            </div>
+            <p className="text-xs text-muted-foreground">aguardando confirmação</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Receita Prevista</CardTitle>
+            <Phone className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatCurrency(
+                appointments
+                  .filter(apt => apt.status !== 'cancelado')
+                  .reduce((sum, apt) => sum + Number(apt.price), 0)
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">dos agendamentos ativos</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* View Controls */}
-      <div
-        className={cn(
-          "rounded-xl border p-6",
-          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
-        )}
-      >
-        <div className="flex items-center justify-between mb-6">
-          {/* View Mode Tabs */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setViewMode("calendario")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
-                viewMode === "calendario"
-                  ? "bg-blue-600 text-white"
-                  : darkMode
-                    ? "text-gray-300 hover:bg-gray-700"
-                    : "text-gray-600 hover:bg-gray-100",
-              )}
-            >
-              <Calendar className="h-4 w-4" />
-              Calendário
-            </button>
-            <button
-              onClick={() => setViewMode("lista")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
-                viewMode === "lista"
-                  ? "bg-blue-600 text-white"
-                  : darkMode
-                    ? "text-gray-300 hover:bg-gray-700"
-                    : "text-gray-600 hover:bg-gray-100",
-              )}
-            >
-              <List className="h-4 w-4" />
-              Lista
-            </button>
-          </div>
-
-          {/* Calendar View Controls */}
-          {viewMode === "calendario" && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCalendarView("mensal")}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors",
-                  calendarView === "mensal"
-                    ? "bg-blue-600 text-white"
-                    : darkMode
-                      ? "text-gray-300 hover:bg-gray-700"
-                      : "text-gray-600 hover:bg-gray-100",
-                )}
-              >
-                <BarChart3 className="h-3 w-3" />
-                Mensal
-              </button>
-              <button
-                onClick={() => setCalendarView("semanal")}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1 rounded-lg text-sm transition-colors",
-                  calendarView === "semanal"
-                    ? "bg-blue-600 text-white"
-                    : darkMode
-                      ? "text-gray-300 hover:bg-gray-700"
-                      : "text-gray-600 hover:bg-gray-100",
-                )}
-              >
-                <Calendar className="h-3 w-3" />
-                Semanal
-              </button>
+      {/* Appointments List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Próximos Agendamentos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {appointments.length === 0 ? (
+            <div className="text-center py-8">
+              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Nenhum agendamento encontrado
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Comece criando um novo agendamento para seus clientes.
+              </p>
+              <Button onClick={() => setShowNewModal(true)}>
+                Criar Primeiro Agendamento
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {appointments.map((appointment) => (
+                <div
+                  key={appointment.id}
+                  className={cn(
+                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
+                    darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                  )}
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <User className="h-5 w-5 text-blue-600" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className={cn(
+                        "font-medium",
+                        darkMode ? "text-white" : "text-gray-900"
+                      )}>
+                        {appointment.clients?.name || 'Cliente não encontrado'}
+                      </h3>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <span className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {formatDate(new Date(appointment.appointment_date))}
+                        </span>
+                        <span className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {formatTime(appointment.appointment_time)}
+                        </span>
+                        <span className="flex items-center">
+                          <Phone className="h-4 w-4 mr-1" />
+                          {appointment.clients?.phone || 'Sem telefone'}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-sm text-gray-600">
+                        <span className="font-medium">
+                          {appointment.services?.name || 'Serviço não encontrado'}
+                        </span>
+                        {appointment.professionals?.name && (
+                          <span> • {appointment.professionals.name}</span>
+                        )}
+                        <span> • {formatCurrency(Number(appointment.price))}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Badge className={getStatusColor(appointment.status || 'agendado')}>
+                      {appointment.status || 'agendado'}
+                    </Badge>
+                    <div className="flex space-x-2">
+                      {appointment.status === 'agendado' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleStatusUpdate(appointment.id, 'confirmado')}
+                        >
+                          Confirmar
+                        </Button>
+                      )}
+                      {appointment.status === 'confirmado' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleStatusUpdate(appointment.id, 'finalizado')}
+                        >
+                          Finalizar
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteAppointment(appointment.id)}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
-
-          {/* Statistics */}
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              <span
-                className={cn(
-                  "font-medium",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                {stats.total} total
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-green-600">
-                {stats.concluidos} concluídos
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-blue-600">
-                {stats.agendados} agendados
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-red-600">
-                {stats.cancelados} cancelados
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        {viewMode === "calendario" ? (
-          <CalendarView
-            appointments={appointmentsMockData}
-            selectedDate={selectedDate}
-            onDateSelect={setSelectedDate}
-            onNewAppointment={() => setShowNewAppointmentModal(true)}
-            darkMode={darkMode}
-          />
-        ) : (
-          <ListView />
-        )}
-      </div>
+        </CardContent>
+      </Card>
 
       {/* New Appointment Modal */}
       <NewAppointmentModal
-        isOpen={showNewAppointmentModal}
-        onClose={() => setShowNewAppointmentModal(false)}
-        selectedDate={selectedDate}
+        isOpen={showNewModal}
+        onClose={() => setShowNewModal(false)}
+        onSubmit={handleNewAppointment}
+        clients={clients}
+        services={services}
+        professionals={professionals}
         darkMode={darkMode}
       />
     </div>
   );
 };
+
+export default Appointments;
