@@ -96,6 +96,18 @@ export function useProducts(params?: any) {
   return useApi(() => api.getProducts(params), [JSON.stringify(params)]);
 }
 
+export function useTransactions(params?: any) {
+  return useApi(() => api.getTransactions(params), [JSON.stringify(params)]);
+}
+
+export function useFinancialStats(period?: string) {
+  return useApi(() => api.getFinancialStats(period), [period]);
+}
+
+export function useMonthlyRevenue(months?: number) {
+  return useApi(() => api.getMonthlyRevenue(months), [months]);
+}
+
 // Hook for API mutations (create, update, delete)
 interface UseMutationOptions<T, P> {
   onSuccess?: (data: T) => void;
