@@ -37,6 +37,14 @@ const Appointments = () => {
     }
   };
 
+  const formatAppointmentTime = (timeString: string) => {
+    // timeString is in HH:MM format, convert to Date for formatting
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return formatTime(date);
+  };
+
   const handleNewAppointment = async (appointmentData: any) => {
     const result = await addAppointment(appointmentData);
     if (result) {
@@ -187,7 +195,7 @@ const Appointments = () => {
                         </span>
                         <span className="flex items-center">
                           <Clock className="h-4 w-4 mr-1" />
-                          {formatTime(appointment.appointment_time)}
+                          {formatAppointmentTime(appointment.appointment_time)}
                         </span>
                         <span className="flex items-center">
                           <Phone className="h-4 w-4 mr-1" />
@@ -246,10 +254,6 @@ const Appointments = () => {
       <NewAppointmentModal
         isOpen={showNewModal}
         onClose={() => setShowNewModal(false)}
-        onSubmit={handleNewAppointment}
-        clients={clients}
-        services={services}
-        professionals={professionals}
         darkMode={darkMode}
       />
     </div>

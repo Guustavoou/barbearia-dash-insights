@@ -47,6 +47,14 @@ const Dashboard = () => {
     }
   };
 
+  const formatAppointmentTime = (timeString: string) => {
+    // timeString is in HH:MM format, convert to Date for formatting
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return formatTime(date);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -165,7 +173,7 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-2 text-xs text-gray-500">
                           <span className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
-                            {formatTime(appointment.appointment_time)}
+                            {formatAppointmentTime(appointment.appointment_time)}
                           </span>
                           <span>•</span>
                           <span>{appointment.services?.name || 'Serviço não encontrado'}</span>

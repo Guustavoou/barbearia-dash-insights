@@ -4,7 +4,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
 import { Database } from '@/integrations/supabase/types';
 
-type Appointment = Database['public']['Tables']['appointments']['Row'];
+type Appointment = Database['public']['Tables']['appointments']['Row'] & {
+  clients?: {
+    name: string;
+    phone: string;
+  };
+  services?: {
+    name: string;
+    price: number;
+  };
+  professionals?: {
+    name: string;
+  };
+};
+
 type AppointmentInsert = Database['public']['Tables']['appointments']['Insert'];
 type AppointmentUpdate = Database['public']['Tables']['appointments']['Update'];
 
@@ -27,9 +40,9 @@ export const useAppointments = () => {
         .from('appointments')
         .select(`
           *,
-          clients(name, phone),
+          clients!inner(name, phone),
           professionals(name),
-          services(name, price)
+          services!inner(name, price)
         `)
         .eq('barbershop_id', barbershop.id)
         .order('appointment_date', { ascending: true })
@@ -59,9 +72,9 @@ export const useAppointments = () => {
         })
         .select(`
           *,
-          clients(name, phone),
+          clients!inner(name, phone),
           professionals(name),
-          services(name, price)
+          services!inner(name, price)
         `)
         .single();
 
@@ -92,9 +105,9 @@ export const useAppointments = () => {
         .eq('id', id)
         .select(`
           *,
-          clients(name, phone),
+          clients!inner(name, phone),
           professionals(name),
-          services(name, price)
+          services!inner(name, price)
         `)
         .single();
 
