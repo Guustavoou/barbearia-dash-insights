@@ -46,6 +46,33 @@ export const Services: React.FC<ServicesProps> = ({ darkMode }) => {
   const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [showNewServiceModal, setShowNewServiceModal] = useState(false);
 
+  // API integration
+  const {
+    data: apiResponse,
+    loading,
+    error,
+    refetch,
+  } = useServices({
+    search: searchTerm,
+    category: selectedCategory === "all" ? undefined : selectedCategory,
+    is_active: showActiveOnly ? true : undefined,
+  });
+
+  // Fallback to mock data if API fails
+  const [fallbackData, setFallbackData] = useState<any>(null);
+
+  React.useEffect(() => {
+    if (error) {
+      import("@/lib/servicesMockData").then((mockData) => {
+        setFallbackData(mockData);
+      });
+    }
+  }, [error]);
+
+  // Use API data or fallback to mock data
+  const servicesData =
+    apiResponse?.data || fallbackData?.servicesMockData || servicesMockData;
+
   // Filter and sort services
   const filteredServices = useMemo(() => {
     let filtered = servicesMockData.filter((service) => {
