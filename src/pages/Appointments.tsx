@@ -170,7 +170,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
           Lista de Agendamentos
         </h3>
         <div className="space-y-4">
-          {appointmentsMockData.map((appointment) => (
+          {appointments.map((appointment: any) => (
             <div
               key={appointment.id}
               className={cn(
