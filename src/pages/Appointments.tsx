@@ -89,37 +89,27 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   }, [error]);
 
   // Use API data or fallback to mock data
-  const appointments = apiResponse?.data || fallbackData?.appointments || [];
-  const appointmentStats = fallbackData?.appointmentStats || {
-    total: appointments.length,
-    concluidos: appointments.filter((a: any) => a.status === "concluido")
-      .length,
-    agendados: appointments.filter((a: any) => a.status === "agendado").length,
-    cancelados: appointments.filter((a: any) => a.status === "cancelado")
-      .length,
-    faltou: appointments.filter((a: any) => a.status === "faltou").length,
-    confirmados: appointments.filter((a: any) => a.status === "confirmado")
-      .length,
-  };
+  const appointments =
+    apiResponse?.data || fallbackData?.appointments || appointmentsMockData;
   const professionals = fallbackData?.professionals || [];
 
   // Calculate statistics
   const stats: AppointmentStats = useMemo(() => {
-    const total = appointmentsMockData.length;
-    const concluidos = appointmentsMockData.filter(
-      (apt) => apt.status === "concluido",
+    const total = appointments.length;
+    const concluidos = appointments.filter(
+      (apt: any) => apt.status === "concluido",
     ).length;
-    const agendados = appointmentsMockData.filter(
-      (apt) => apt.status === "agendado",
+    const agendados = appointments.filter(
+      (apt: any) => apt.status === "agendado",
     ).length;
-    const cancelados = appointmentsMockData.filter(
-      (apt) => apt.status === "cancelado",
+    const cancelados = appointments.filter(
+      (apt: any) => apt.status === "cancelado",
     ).length;
-    const confirmados = appointmentsMockData.filter(
-      (apt) => apt.status === "confirmado",
+    const confirmados = appointments.filter(
+      (apt: any) => apt.status === "confirmado",
     ).length;
-    const faltou = appointmentsMockData.filter(
-      (apt) => apt.status === "faltou",
+    const faltou = appointments.filter(
+      (apt: any) => apt.status === "faltou",
     ).length;
 
     return {
@@ -130,7 +120,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
       confirmados,
       faltou,
     };
-  }, []);
+  }, [appointments]);
 
   // Skeleton placeholders for top cards
   const SkeletonCard: React.FC = () => (
