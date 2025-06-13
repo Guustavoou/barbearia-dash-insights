@@ -122,7 +122,14 @@ export const Services: React.FC<ServicesProps> = ({ darkMode }) => {
     });
 
     return filtered;
-  }, [searchTerm, selectedCategory, sortBy, sortOrder, showActiveOnly]);
+  }, [
+    servicesData,
+    searchTerm,
+    selectedCategory,
+    sortBy,
+    sortOrder,
+    showActiveOnly,
+  ]);
 
   const toggleSort = (field: ServiceSortField) => {
     if (sortBy === field) {
