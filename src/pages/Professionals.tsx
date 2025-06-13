@@ -127,7 +127,7 @@ export const Professionals: React.FC<ProfessionalsProps> = ({ darkMode }) => {
     });
 
     return filtered;
-  }, [searchTerm, statusFilter, sortBy, sortOrder]);
+  }, [professionalsData, searchTerm, statusFilter, sortBy, sortOrder]);
 
   const toggleSort = (field: ProfessionalSortField) => {
     if (sortBy === field) {
