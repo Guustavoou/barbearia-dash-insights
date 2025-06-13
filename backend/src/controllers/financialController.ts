@@ -222,16 +222,17 @@ export const createTransaction = async (req: Request, res: Response) => {
       amount,
       description,
       payment_method,
-      appointment_id,
-      product_id,
-      reference,
+      category,
+      reference_id,
+      reference_type,
+      date,
     } = req.body;
 
     // Validate required fields
-    if (!type || !amount || !description || !payment_method) {
+    if (!type || !amount || !description || !category) {
       return res.status(400).json({
         success: false,
-        error: "Type, amount, description, and payment method are required",
+        error: "Type, amount, description, and category are required",
       });
     }
 
