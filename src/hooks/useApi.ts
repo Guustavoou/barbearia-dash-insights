@@ -182,3 +182,53 @@ export function useDeleteAppointment(
 ) {
   return useMutation((id) => api.deleteAppointment(id), options);
 }
+
+export function useCreateService(options?: UseMutationOptions<any, any>) {
+  return useMutation((serviceData) => api.createService(serviceData), options);
+}
+
+export function useUpdateService(
+  options?: UseMutationOptions<any, { id: number; data: any }>,
+) {
+  return useMutation(({ id, data }) => api.updateService(id, data), options);
+}
+
+export function useDeleteService(options?: UseMutationOptions<any, number>) {
+  return useMutation((id) => api.deleteService(id), options);
+}
+
+export function useCreateProfessional(options?: UseMutationOptions<any, any>) {
+  return useMutation(
+    (professionalData) => api.createProfessional(professionalData),
+    options,
+  );
+}
+
+export function useUpdateProfessional(
+  options?: UseMutationOptions<any, { id: number; data: any }>,
+) {
+  return useMutation(
+    ({ id, data }) => api.updateProfessional(id, data),
+    options,
+  );
+}
+
+export function useDeleteProfessional(
+  options?: UseMutationOptions<any, number>,
+) {
+  return useMutation((id) => api.deleteProfessional(id), options);
+}
+
+export function useCreateProduct(options?: UseMutationOptions<any, any>) {
+  return useMutation((productData) => api.createProduct(productData), options);
+}
+
+export function useUpdateProduct(
+  options?: UseMutationOptions<any, { id: number; data: any }>,
+) {
+  return useMutation(({ id, data }) => api.updateProduct(id, data), options);
+}
+
+export function useDeleteProduct(options?: UseMutationOptions<any, number>) {
+  return useMutation((id) => api.deleteProduct(id), options);
+}
