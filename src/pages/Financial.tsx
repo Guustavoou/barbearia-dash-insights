@@ -120,7 +120,7 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
     });
 
     return filtered;
-  }, [searchTerm, typeFilter, categoryFilter, sortBy, sortOrder]);
+  }, [transactions, searchTerm, typeFilter, categoryFilter, sortBy, sortOrder]);
 
   const getTransactionIcon = (type: string) => {
     return type === "receita" ? (
