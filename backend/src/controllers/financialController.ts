@@ -154,7 +154,7 @@ export const getFinancialStats = async (req: Request, res: Response) => {
         COUNT(*) as count,
         SUM(amount) as total_amount
       FROM transactions
-      WHERE type = 'entrada' ${dateFilter}
+      WHERE type = 'receita' ${dateFilter}
       GROUP BY payment_method
       ORDER BY total_amount DESC
     `);
