@@ -51,7 +51,8 @@ export const useDashboardStats = () => {
         .select('amount')
         .eq('barbershop_id', barbershop.id)
         .eq('type', 'receita')
-        .gte('transaction_date', `${currentMonth}-01`);
+        .gte('transaction_date', `${currentMonth}-01`)
+        .lt('transaction_date', `${currentMonth}-32`);
 
       const monthlyRevenue = revenueData?.reduce((sum, transaction) => sum + Number(transaction.amount), 0) || 0;
 
