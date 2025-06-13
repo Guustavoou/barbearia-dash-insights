@@ -64,9 +64,20 @@ const corsOptions = {
       /\.fly\.dev$/,
     ];
 
-    if (allowedOrigins.indexOf(origin) !== -1 || NODE_ENV === "development") {
+    // Check if origin is in allowed list or matches fly.dev pattern
+    const isAllowed = allowedOrigins.some((allowedOrigin) => {
+      if (typeof allowedOrigin === "string") {
+        return allowedOrigin === origin;
+      } else if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+
+    if (isAllowed || NODE_ENV === "development") {
       callback(null, true);
     } else {
+      console.log(`CORS blocked origin: ${origin}`);
       callback(new Error("Not allowed by CORS"));
     }
   },
