@@ -35,6 +35,32 @@ export const Stock: React.FC<StockProps> = ({ darkMode }) => {
   const [sortBy, setSortBy] = useState<string>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  // API integration
+  const {
+    data: apiResponse,
+    loading,
+    error,
+    refetch,
+  } = useProducts({
+    search: searchTerm,
+    category: selectedCategory === "all" ? undefined : selectedCategory,
+  });
+
+  // Fallback to mock data if API fails
+  const [fallbackData, setFallbackData] = useState<any>(null);
+
+  React.useEffect(() => {
+    if (error) {
+      import("@/lib/stockMockData").then((mockData) => {
+        setFallbackData(mockData);
+      });
+    }
+  }, [error]);
+
+  // Use API data or fallback to mock data
+  const productsData =
+    apiResponse?.data || fallbackData?.productsMockData || productsMockData;
+
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     let filtered = productsMockData.filter((product) => {
