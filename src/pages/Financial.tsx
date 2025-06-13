@@ -44,6 +44,11 @@ import {
   TransactionSortOrder,
   DateRange,
 } from "@/lib/financialTypes";
+import {
+  useTransactions,
+  useFinancialStats,
+  useMonthlyRevenue,
+} from "@/hooks/useApi";
 
 interface FinancialProps {
   darkMode: boolean;
