@@ -16,10 +16,84 @@ interface AppointmentsProps {
 }
 
 export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 5, 1)); // June 2025
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewType, setViewType] = useState<CalendarViewType>("semanal");
   const [viewMode, setViewMode] = useState<AppointmentViewMode>("calendario");
-  const [calendarView, setCalendarView] = useState<CalendarViewType>("mensal");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedProfessional, setSelectedProfessional] =
+    useState<string>("all");
   const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+
+  // API integration
+  const {
+    data: apiResponse,
+    loading,
+    error,
+    refetch,
+  } = useAppointments({
+    search: searchQuery,
+    status: selectedStatus === "all" ? undefined : selectedStatus,
+    professional_id:
+      selectedProfessional === "all"
+        ? undefined
+        : parseInt(selectedProfessional),
+    start_date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+      .toISOString()
+      .split("T")[0],
+    end_date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+      .toISOString()
+      .split("T")[0],
+  });
+
+  const createAppointment = useCreateAppointment({
+    onSuccess: () => {
+      setShowNewAppointmentModal(false);
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error creating appointment:", error);
+      alert("Erro ao criar agendamento: " + error);
+    },
+  });
+
+  const updateAppointment = useUpdateAppointment({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const deleteAppointment = useDeleteAppointment({
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  // Fallback to mock data if API fails
+  const [fallbackData, setFallbackData] = useState<any>(null);
+
+  React.useEffect(() => {
+    if (error) {
+      import("@/lib/appointmentMockData").then((mockData) => {
+        setFallbackData(mockData);
+      });
+    }
+  }, [error]);
+
+  // Use API data or fallback to mock data
+  const appointments = apiResponse?.data || fallbackData?.appointments || [];
+  const appointmentStats = fallbackData?.appointmentStats || {
+    total: appointments.length,
+    concluidos: appointments.filter((a: any) => a.status === "concluido")
+      .length,
+    agendados: appointments.filter((a: any) => a.status === "agendado").length,
+    cancelados: appointments.filter((a: any) => a.status === "cancelado")
+      .length,
+    faltou: appointments.filter((a: any) => a.status === "faltou").length,
+    confirmados: appointments.filter((a: any) => a.status === "confirmado")
+      .length,
+  };
+  const professionals = fallbackData?.professionals || [];
 
   // Calculate statistics
   const stats: AppointmentStats = useMemo(() => {
