@@ -126,14 +126,14 @@ export const getFinancialStats = async (req: Request, res: Response) => {
     const revenueStmt = db.prepare(`
       SELECT COALESCE(SUM(amount), 0) as total_revenue
       FROM transactions
-      WHERE type = 'entrada' ${dateFilter}
+      WHERE type = 'receita' ${dateFilter}
     `);
     const { total_revenue } = revenueStmt.get() as { total_revenue: number };
 
     const expenseStmt = db.prepare(`
       SELECT COALESCE(SUM(amount), 0) as total_expenses
       FROM transactions
-      WHERE type = 'saida' ${dateFilter}
+      WHERE type = 'despesa' ${dateFilter}
     `);
     const { total_expenses } = expenseStmt.get() as { total_expenses: number };
 
