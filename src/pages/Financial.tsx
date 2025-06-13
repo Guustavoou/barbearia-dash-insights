@@ -62,6 +62,16 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
   const [sortBy, setSortBy] = useState<TransactionSortField>("date");
   const [sortOrder, setSortOrder] = useState<TransactionSortOrder>("desc");
 
+  // API integration with automatic fallback
+  const { data: apiTransactions, loading, error } = useTransactions();
+  const { data: apiStats } = useFinancialStats();
+  const { data: apiMonthlyData } = useMonthlyRevenue(12);
+
+  // Use API data or fallback to mock data
+  const transactions = apiTransactions?.data || transactionsMockData;
+  const stats = apiStats?.data || financialStats;
+  const chartData = apiMonthlyData?.data || monthlyData;
+
   // Filter and sort transactions
   const filteredTransactions = useMemo(() => {
     let filtered = transactionsMockData.filter((transaction) => {
