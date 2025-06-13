@@ -35,6 +35,7 @@ import {
   ProfessionalSortOrder,
   ProfessionalStatus,
 } from "@/lib/professionalsTypes";
+import { useProfessionals } from "@/hooks/useApi";
 
 interface ProfessionalsProps {
   darkMode: boolean;
@@ -142,7 +143,7 @@ export const Professionals: React.FC<ProfessionalsProps> = ({ darkMode }) => {
       case "inativo":
         return "Inativo";
       case "ferias":
-        return "Férias";
+        return "F��rias";
       default:
         return status;
     }
