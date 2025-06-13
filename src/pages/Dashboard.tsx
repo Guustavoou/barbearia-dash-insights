@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   DollarSign,
   Calendar,
@@ -24,15 +24,9 @@ import {
   formatDate,
   getStatusColor,
 } from "@/lib/unclicUtils";
-import {
-  dashboardData,
-  revenueData,
-  upcomingAppointments,
-  birthdays,
-  topServices,
-} from "@/lib/mockData";
 import { PageType } from "@/lib/types";
 import { QuickActions } from "@/components/QuickActions";
+import { api } from "@/lib/api";
 
 interface DashboardProps {
   darkMode: boolean;
@@ -89,6 +83,100 @@ export const Dashboard: React.FC<DashboardProps> = ({
   darkMode,
   onPageChange,
 }) => {
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
+  const [birthdays, setBirthdays] = useState<any[]>([]);
+  const [topServices, setTopServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch all dashboard data in parallel
+        const [
+          statsResponse,
+          revenueResponse,
+          servicesResponse,
+          appointmentsResponse,
+          birthdaysResponse,
+        ] = await Promise.all([
+          api.getDashboardStats(),
+          api.getRevenueData(),
+          api.getTopServices(4),
+          api.getUpcomingAppointments(5),
+          api.getBirthdaysThisMonth(),
+        ]);
+
+        if (statsResponse.success) {
+          setDashboardData(statsResponse.data);
+        }
+
+        if (revenueResponse.success) {
+          setRevenueData(revenueResponse.data || []);
+        }
+
+        if (servicesResponse.success) {
+          setTopServices(servicesResponse.data || []);
+        }
+
+        if (appointmentsResponse.success) {
+          setUpcomingAppointments(appointmentsResponse.data || []);
+        }
+
+        if (birthdaysResponse.success) {
+          setBirthdays(birthdaysResponse.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        // Fallback to mock data if API fails
+        const fallbackData = await import("@/lib/mockData");
+        setDashboardData(fallbackData.dashboardData);
+        setRevenueData(fallbackData.revenueData);
+        setUpcomingAppointments(fallbackData.upcomingAppointments);
+        setBirthdays(fallbackData.birthdays);
+        setTopServices(fallbackData.topServices);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p
+            className={cn(
+              "text-sm",
+              darkMode ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            Carregando dados do dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p
+            className={cn("text-lg", darkMode ? "text-white" : "text-gray-900")}
+          >
+            Erro ao carregar dados do dashboard
+          </p>
+        </div>
+      </div>
+    );
+  }
   const metrics = [
     {
       title: "Receita do Mês",
