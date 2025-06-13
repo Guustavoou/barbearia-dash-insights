@@ -1,26 +1,21 @@
+import React, { useState } from 'react';
+import { Calendar, Clock, User, Phone, Plus, Search, Filter } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { NewAppointmentModal } from '@/components/NewAppointmentModal';
+import { useAppointments } from '@/hooks/useAppointments';
+import { cn, formatCurrency, formatDate, formatTime } from '@/lib/unclicUtils';
 
-import React, { useState } from "react";
-import { Calendar, Clock, User, Phone } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { NewAppointmentModal } from "@/components/NewAppointmentModal";
-import { useAppointments } from "@/hooks/useAppointments";
-import { useClients } from "@/hooks/useClients";
-import { useServices } from "@/hooks/useServices";
-import { useProfessionals } from "@/hooks/useProfessionals";
-import { cn, formatCurrency, formatDate, formatTime } from "@/lib/unclicUtils";
+interface AppointmentsProps {
+  darkMode: boolean;
+}
 
-const Appointments = () => {
+const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [showNewModal, setShowNewModal] = useState(false);
-  const [darkMode] = useState(false);
-
-  const { appointments, loading: appointmentsLoading, addAppointment, updateAppointment, deleteAppointment } = useAppointments();
-  const { clients, loading: clientsLoading } = useClients();
-  const { services, loading: servicesLoading } = useServices();
-  const { professionals, loading: professionalsLoading } = useProfessionals();
-
-  const loading = appointmentsLoading || clientsLoading || servicesLoading || professionalsLoading;
+  const { appointments, loading } = useAppointments();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,19 +41,14 @@ const Appointments = () => {
   };
 
   const handleNewAppointment = async (appointmentData: any) => {
-    const result = await addAppointment(appointmentData);
-    if (result) {
-      setShowNewModal(false);
-    }
+    // This will be handled by the modal component
+    setShowNewModal(false);
   };
 
-  const handleStatusUpdate = async (appointmentId: string, newStatus: string) => {
-    await updateAppointment(appointmentId, { status: newStatus });
-  };
-
-  const handleDeleteAppointment = async (appointmentId: string) => {
-    await deleteAppointment(appointmentId);
-  };
+  const filteredAppointments = appointments.filter(appointment =>
+    appointment.clients?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    appointment.services?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -76,72 +66,88 @@ const Appointments = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Agendamentos</h1>
-          <p className="text-gray-600">
-            Gerencie todos os agendamentos da sua barbearia
+          <h1 className="text-3xl font-bold tracking-tight">Agendamentos</h1>
+          <p className="text-muted-foreground">
+            Gerencie todos os seus agendamentos
           </p>
         </div>
         <Button onClick={() => setShowNewModal(true)} className="flex items-center gap-2">
-          <Calendar className="h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Novo Agendamento
         </Button>
       </div>
 
+      {/* Search and Filters */}
+      <div className="flex gap-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Buscar por cliente ou serviço..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Button variant="outline" className="flex items-center gap-2">
+          <Filter className="h-4 w-4" />
+          Filtros
+        </Button>
+      </div>
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hoje</CardTitle>
+            <CardTitle className="text-sm font-medium">Total</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{appointments.length}</div>
+            <p className="text-xs text-muted-foreground">
+              agendamentos
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Hoje</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {appointments.filter(apt => apt.appointment_date === new Date().toISOString().split('T')[0]).length}
             </div>
-            <p className="text-xs text-muted-foreground">agendamentos para hoje</p>
+            <p className="text-xs text-muted-foreground">
+              para hoje
+            </p>
           </CardContent>
         </Card>
-        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Confirmados</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {appointments.filter(apt => apt.status === 'confirmado').length}
             </div>
-            <p className="text-xs text-muted-foreground">agendamentos confirmados</p>
+            <p className="text-xs text-muted-foreground">
+              confirmados
+            </p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
-            <User className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {appointments.filter(apt => apt.status === 'agendado').length}
-            </div>
-            <p className="text-xs text-muted-foreground">aguardando confirmação</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receita Prevista</CardTitle>
+            <CardTitle className="text-sm font-medium">Cancelados</CardTitle>
             <Phone className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(
-                appointments
-                  .filter(apt => apt.status !== 'cancelado')
-                  .reduce((sum, apt) => sum + Number(apt.price), 0)
-              )}
+              {appointments.filter(apt => apt.status === 'cancelado').length}
             </div>
-            <p className="text-xs text-muted-foreground">dos agendamentos ativos</p>
+            <p className="text-xs text-muted-foreground">
+              cancelados
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -149,100 +155,91 @@ const Appointments = () => {
       {/* Appointments List */}
       <Card>
         <CardHeader>
-          <CardTitle>Próximos Agendamentos</CardTitle>
+          <CardTitle>Lista de Agendamentos</CardTitle>
         </CardHeader>
         <CardContent>
-          {appointments.length === 0 ? (
+          {filteredAppointments.length === 0 ? (
             <div className="text-center py-8">
               <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Nenhum agendamento encontrado
               </h3>
-              <p className="text-gray-600 mb-4">
-                Comece criando um novo agendamento para seus clientes.
+              <p className="text-gray-500 mb-4">
+                {searchTerm ? 'Tente buscar por outros termos.' : 'Comece criando seu primeiro agendamento.'}
               </p>
               <Button onClick={() => setShowNewModal(true)}>
-                Criar Primeiro Agendamento
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Agendamento
               </Button>
             </div>
           ) : (
             <div className="space-y-4">
-              {appointments.map((appointment) => (
+              {filteredAppointments.map((appointment) => (
                 <div
                   key={appointment.id}
                   className={cn(
-                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                    darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                    "p-6 rounded-lg border transition-colors hover:bg-gray-50",
+                    darkMode ? "bg-gray-800 border-gray-700 hover:bg-gray-700" : "bg-white border-gray-200"
                   )}
                 >
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-blue-600" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="h-6 w-6 text-blue-600" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className={cn(
+                          "text-lg font-semibold",
+                          darkMode ? "text-white" : "text-gray-900"
+                        )}>
+                          {appointment.clients?.name || 'Cliente não encontrado'}
+                        </h3>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                          <span className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            {formatDate(new Date(appointment.appointment_date))}
+                          </span>
+                          <span className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {formatAppointmentTime(appointment.appointment_time)}
+                          </span>
+                          <span className="flex items-center">
+                            <Phone className="h-4 w-4 mr-1" />
+                            {appointment.clients?.phone || 'N/A'}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <h3 className={cn(
-                        "font-medium",
-                        darkMode ? "text-white" : "text-gray-900"
-                      )}>
-                        {appointment.clients?.name || 'Cliente não encontrado'}
-                      </h3>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {formatDate(new Date(appointment.appointment_date))}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {formatAppointmentTime(appointment.appointment_time)}
-                        </span>
-                        <span className="flex items-center">
-                          <Phone className="h-4 w-4 mr-1" />
-                          {appointment.clients?.phone || 'Sem telefone'}
-                        </span>
-                      </div>
-                      <div className="mt-1 text-sm text-gray-600">
-                        <span className="font-medium">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <p className={cn(
+                          "font-medium",
+                          darkMode ? "text-white" : "text-gray-900"
+                        )}>
                           {appointment.services?.name || 'Serviço não encontrado'}
-                        </span>
-                        {appointment.professionals?.name && (
-                          <span> • {appointment.professionals.name}</span>
-                        )}
-                        <span> • {formatCurrency(Number(appointment.price))}</span>
+                        </p>
+                        <p className="text-lg font-bold text-green-600">
+                          {formatCurrency(Number(appointment.price))}
+                        </p>
                       </div>
+                      <Badge className={getStatusColor(appointment.status || 'agendado')}>
+                        {appointment.status || 'agendado'}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Badge className={getStatusColor(appointment.status || 'agendado')}>
-                      {appointment.status || 'agendado'}
-                    </Badge>
-                    <div className="flex space-x-2">
-                      {appointment.status === 'agendado' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handleStatusUpdate(appointment.id, 'confirmado')}
-                        >
-                          Confirmar
-                        </Button>
-                      )}
-                      {appointment.status === 'confirmado' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handleStatusUpdate(appointment.id, 'finalizado')}
-                        >
-                          Finalizar
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteAppointment(appointment.id)}
-                      >
-                        Cancelar
-                      </Button>
+                  
+                  {appointment.notes && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <p className={cn(
+                        "text-sm",
+                        darkMode ? "text-gray-300" : "text-gray-600"
+                      )}>
+                        <strong>Observações:</strong> {appointment.notes}
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>

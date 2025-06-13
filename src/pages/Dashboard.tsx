@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Calendar,
   Users,
@@ -17,8 +17,12 @@ import { useAppointments } from "@/hooks/useAppointments";
 import { useTransactions } from "@/hooks/useTransactions";
 import { cn, formatCurrency, formatDate, formatTime } from "@/lib/unclicUtils";
 
-const Dashboard = () => {
-  const [darkMode] = useState(false);
+interface DashboardProps {
+  darkMode: boolean;
+  onPageChange?: (page: string) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ darkMode }) => {
   const { stats, loading: statsLoading } = useDashboardStats();
   const { appointments, loading: appointmentsLoading } = useAppointments();
   const { transactions, loading: transactionsLoading } = useTransactions();
