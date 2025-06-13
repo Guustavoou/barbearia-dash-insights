@@ -26,7 +26,13 @@ import {
 } from "@/lib/unclicUtils";
 import { PageType } from "@/lib/types";
 import { QuickActions } from "@/components/QuickActions";
-import { api } from "@/lib/api";
+import {
+  useDashboardStats,
+  useRevenueData,
+  useTopServices,
+  useUpcomingAppointments,
+  useBirthdays,
+} from "@/hooks/useApi";
 
 interface DashboardProps {
   darkMode: boolean;
