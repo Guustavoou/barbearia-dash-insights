@@ -297,9 +297,10 @@ export const updateTransaction = async (req: Request, res: Response) => {
       amount,
       description,
       payment_method,
-      appointment_id,
-      product_id,
-      reference,
+      category,
+      reference_id,
+      reference_type,
+      date,
     } = req.body;
 
     // Check if transaction exists
