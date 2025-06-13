@@ -236,10 +236,10 @@ export const createTransaction = async (req: Request, res: Response) => {
     }
 
     // Validate type
-    if (!["entrada", "saida"].includes(type)) {
+    if (!["receita", "despesa"].includes(type)) {
       return res.status(400).json({
         success: false,
-        error: "Type must be 'entrada' or 'saida'",
+        error: "Type must be 'receita' or 'despesa'",
       });
     }
 
