@@ -32,6 +32,7 @@ import {
   ServiceSortOrder,
   ServiceCategory,
 } from "@/lib/servicesTypes";
+import { useServices } from "@/hooks/useApi";
 
 interface ServicesProps {
   darkMode: boolean;
