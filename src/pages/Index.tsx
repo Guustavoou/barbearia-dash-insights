@@ -327,7 +327,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         darkMode ? "text-white" : "text-gray-900",
                       )}
                     >
-                      {appointment.client}
+                      {appointment.clients?.name || 'Cliente'}
                     </span>
                     <span
                       className={cn(
@@ -344,7 +344,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       darkMode ? "text-gray-400" : "text-gray-600",
                     )}
                   >
-                    {appointment.service} • {appointment.time}
+                    {appointment.services?.name || 'Serviço'} • {appointment.appointment_time}
                   </p>
                 </div>
               </div>

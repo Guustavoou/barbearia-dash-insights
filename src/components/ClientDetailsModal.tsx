@@ -1,3 +1,4 @@
+
 import React from "react";
 import { X, Edit3, Calendar, Phone, Mail } from "lucide-react";
 import {
@@ -101,7 +102,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                     darkMode ? "text-gray-400" : "text-gray-600",
                   )}
                 >
-                  Cliente desde {formatDate(client.joinDate)}
+                  Cliente desde {client.join_date ? formatDate(new Date(client.join_date)) : 'Data não informada'}
                 </span>
               </div>
             </div>
@@ -148,7 +149,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                         darkMode ? "text-white" : "text-gray-900",
                       )}
                     >
-                      {client.phone}
+                      {client.phone || 'Não informado'}
                     </p>
                   </div>
                 </div>
@@ -174,7 +175,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                         darkMode ? "text-white" : "text-gray-900",
                       )}
                     >
-                      {client.email}
+                      {client.email || 'Não informado'}
                     </p>
                   </div>
                 </div>
@@ -195,7 +196,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                       darkMode ? "text-white" : "text-gray-900",
                     )}
                   >
-                    {client.cpf}
+                    {client.cpf || 'Não informado'}
                   </p>
                 </div>
                 <div>
@@ -213,7 +214,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                       darkMode ? "text-white" : "text-gray-900",
                     )}
                   >
-                    {client.profession}
+                    {client.profession || 'Não informada'}
                   </p>
                 </div>
                 <div>
@@ -231,7 +232,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                       darkMode ? "text-white" : "text-gray-900",
                     )}
                   >
-                    {client.city}
+                    {client.city || 'Não informada'}
                   </p>
                 </div>
               </div>
@@ -263,7 +264,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                     darkMode ? "text-blue-400" : "text-blue-600",
                   )}
                 >
-                  {client.visits}
+                  {client.visits || 0}
                 </p>
                 <span
                   className={cn(
@@ -281,7 +282,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                     darkMode ? "text-green-400" : "text-green-600",
                   )}
                 >
-                  {formatCurrency(client.totalSpent)}
+                  {formatCurrency(client.total_spent || 0)}
                 </p>
                 <span
                   className={cn(
@@ -299,7 +300,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                     darkMode ? "text-purple-400" : "text-purple-600",
                   )}
                 >
-                  {formatDate(client.lastVisit)}
+                  {client.last_visit ? formatDate(new Date(client.last_visit)) : 'Nunca'}
                 </p>
                 <span
                   className={cn(
@@ -317,7 +318,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                     darkMode ? "text-orange-400" : "text-orange-600",
                   )}
                 >
-                  {Math.round(client.totalSpent / client.visits)}
+                  {client.visits && client.total_spent ? Math.round((client.total_spent || 0) / (client.visits || 1)) : 0}
                 </p>
                 <span
                   className={cn(
