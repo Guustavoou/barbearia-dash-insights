@@ -30,6 +30,8 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   const [selectedProfessional, setSelectedProfessional] =
     useState<string>("all");
   const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [calendarView, setCalendarView] = useState<CalendarViewType>("semanal");
 
   // API integration
   const {
