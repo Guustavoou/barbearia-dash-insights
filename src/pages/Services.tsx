@@ -75,7 +75,7 @@ export const Services: React.FC<ServicesProps> = ({ darkMode }) => {
 
   // Filter and sort services
   const filteredServices = useMemo(() => {
-    let filtered = servicesMockData.filter((service) => {
+    let filtered = servicesData.filter((service: any) => {
       const matchesSearch = service.name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
