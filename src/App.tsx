@@ -79,15 +79,18 @@ const UnclicAppContent: React.FC = () => {
   useEffect(() => {
     if (isMobile) {
       setSidebarCollapsed(true);
-      setRightSidebarOpen(false);
+      rightSidebar.close();
     } else if (isTablet) {
       setSidebarCollapsed(false);
-      setRightSidebarOpen(false);
+      rightSidebar.close();
     } else {
       setSidebarCollapsed(false);
-      setRightSidebarOpen(true);
+      // On desktop, restore previous state or open by default
+      if (!rightSidebar.isOpen) {
+        rightSidebar.open();
+      }
     }
-  }, [isMobile, isTablet, isDesktop]);
+  }, [isMobile, isTablet, isDesktop, rightSidebar]);
 
   // Handle authentication state changes
   useEffect(() => {
