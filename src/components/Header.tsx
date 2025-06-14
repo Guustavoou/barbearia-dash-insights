@@ -1,14 +1,33 @@
 import React, { useState } from "react";
-import { Bell, Sun, Moon, Clock, Search } from "lucide-react";
+import {
+  Bell,
+  Sun,
+  Moon,
+  Clock,
+  Search,
+  User,
+  LogOut,
+  Settings,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationCenter } from "./NotificationCenter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
   currentTime: Date;
   onPageChange: (page: string) => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleDarkMode,
   currentTime,
   onPageChange,
+  onLogout,
 }) => {
   return (
     <header
@@ -78,16 +98,61 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Notifications */}
           <NotificationCenter darkMode={darkMode} />
 
-          {/* User Avatar */}
-          <div
-            className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-105",
-              "bg-gradient-to-br from-pink-500 to-purple-600 text-white font-semibold",
-            )}
-            title="Perfil do usuário"
-          >
-            M
-          </div>
+          {/* User Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center gap-2 p-1 rounded-lg transition-colors",
+                  darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100",
+                )}
+              >
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center",
+                    "bg-gradient-to-br from-pink-500 to-purple-600 text-white font-semibold text-sm",
+                  )}
+                >
+                  M
+                </div>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4",
+                    darkMode ? "text-gray-300" : "text-gray-500",
+                  )}
+                />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    Maria Silva
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    maria@salao.com
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onPageChange("settings")}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Perfil</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onPageChange("settings")}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Configurações</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={onLogout}
+                className="text-red-600 focus:text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

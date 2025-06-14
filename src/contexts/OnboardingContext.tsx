@@ -228,16 +228,24 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const completeOnboarding = async () => {
     try {
-      // Here you would typically send the data to your API
+      // Import API here to avoid circular dependencies
+      const { OnboardingAPI } = await import("@/lib/onboardingApi");
+
       console.log("Completing onboarding with data:", data);
 
-      // For now, just mark as completed
-      dispatch({ type: "COMPLETE_ONBOARDING" });
+      // Send data to API
+      const result = await OnboardingAPI.completeOnboarding(data);
 
-      // Clear localStorage after successful completion
-      localStorage.removeItem("unclic-onboarding-progress");
+      if (result.success) {
+        dispatch({ type: "COMPLETE_ONBOARDING" });
 
-      return Promise.resolve();
+        // Clear localStorage after successful completion
+        localStorage.removeItem("unclic-onboarding-progress");
+
+        return Promise.resolve();
+      } else {
+        throw new Error(result.message || "Failed to complete onboarding");
+      }
     } catch (error) {
       console.error("Error completing onboarding:", error);
       throw error;
