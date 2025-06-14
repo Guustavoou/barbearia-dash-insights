@@ -79,15 +79,14 @@ router.get("/dashboard/upcoming-appointments", getUpcomingAppointments);
 router.get("/dashboard/birthdays", getBirthdaysThisMonth);
 router.get("/dashboard/insights", getQuickInsights);
 
-// Placeholder routes for other modules (to be implemented)
-router.get("/appointments", (req, res) => {
-  res.json({
-    success: true,
-    message: "Appointments API - Coming soon with Neon PostgreSQL",
-    data: [],
-    note: "Will be implemented once Neon database is configured",
-  });
-});
+// Appointment routes
+router.get("/appointments", getAppointments);
+router.get("/appointments/stats", getAppointmentStats);
+router.get("/appointments/available-slots", getAvailableSlots);
+router.get("/appointments/:id", getAppointmentById);
+router.post("/appointments", createAppointment);
+router.put("/appointments/:id", updateAppointment);
+router.delete("/appointments/:id", deleteAppointment);
 
 router.get("/services", (req, res) => {
   res.json({
