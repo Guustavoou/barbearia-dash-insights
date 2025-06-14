@@ -68,8 +68,8 @@ export const getProducts = async (req: Request, res: Response) => {
 
     // Get total count
     const countQuery = `SELECT COUNT(*) as total FROM products ${whereClause}`;
-    const countResult = await sql.query(countQuery);
-    const total = parseInt(countResult.rows[0].total);
+    const countResult = await sql.unsafe(countQuery);
+    const total = parseInt(countResult[0].total);
 
     // Get products with pagination
     const productsQuery = `
@@ -82,7 +82,7 @@ export const getProducts = async (req: Request, res: Response) => {
       ORDER BY ${sortField} ${sortOrder}
       LIMIT ${limitNum} OFFSET ${offset}
     `;
-    const products = await sql.query(productsQuery);
+    const products = await sql.unsafe(productsQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);

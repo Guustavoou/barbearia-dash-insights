@@ -73,8 +73,8 @@ export const getTransactions = async (req: Request, res: Response) => {
 
     // Get total count
     const countQuery = `SELECT COUNT(*) as total FROM transactions ${whereClause}`;
-    const countResult = await sql.query(countQuery);
-    const total = parseInt(countResult.rows[0].total);
+    const countResult = await sql.unsafe(countQuery);
+    const total = parseInt(countResult[0].total);
 
     // Get transactions with pagination
     const transactionsQuery = `
@@ -86,7 +86,7 @@ export const getTransactions = async (req: Request, res: Response) => {
       ORDER BY ${sortField} ${sortOrder}
       LIMIT ${limitNum} OFFSET ${offset}
     `;
-    const transactions = await sql.query(transactionsQuery);
+    const transactions = await sql.unsafe(transactionsQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);

@@ -315,11 +315,11 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
       FROM appointments
       WHERE 1=1 ${dateFilter}
     `;
-    const stats = await sql.query(statsQuery);
+    const stats = await sql.unsafe(statsQuery);
 
     res.json({
       success: true,
-      data: stats.rows[0],
+      data: stats[0],
     });
   } catch (error) {
     console.error("Error fetching appointment stats:", error);
