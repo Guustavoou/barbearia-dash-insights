@@ -168,41 +168,54 @@ const UnclicAppContent: React.FC = () => {
       return (
         <div
           className={cn(
-            "min-h-screen transition-colors duration-300",
+            "min-h-screen flex transition-colors duration-300",
             darkMode ? "dark bg-gray-900" : "bg-gray-50",
           )}
         >
-          {/* Sidebar */}
-          <Sidebar
+          {/* Left Sidebar */}
+          <ModernSidebar
             currentPage={currentPage}
             onPageChange={setCurrentPage}
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
             darkMode={darkMode}
+            userSession={session}
           />
 
           {/* Main Content */}
-          <div
-            className={cn(
-              "transition-all duration-300",
-              sidebarCollapsed ? "ml-16" : "ml-64",
-            )}
-          >
+          <main className="flex-1 flex flex-col overflow-hidden transition-all duration-300">
             {/* Header */}
-            <Header
+            <ModernHeader
               darkMode={darkMode}
               onToggleDarkMode={() => setDarkMode(!darkMode)}
               currentTime={currentTime}
               onPageChange={setCurrentPage}
               onLogout={logout}
               userSession={session}
+              onToggleRightSidebar={() =>
+                setRightSidebarOpen(!rightSidebarOpen)
+              }
             />
 
             {/* Page Content */}
-            <main className="p-6">
-              <div className="max-w-7xl mx-auto">{renderCurrentPage()}</div>
-            </main>
-          </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              <div
+                className={cn(
+                  "transition-all duration-300",
+                  rightSidebarOpen ? "pr-6" : "",
+                )}
+              >
+                {renderCurrentPage()}
+              </div>
+            </div>
+          </main>
+
+          {/* Right Sidebar */}
+          <RightSidebar
+            isOpen={rightSidebarOpen}
+            onToggle={() => setRightSidebarOpen(!rightSidebarOpen)}
+            darkMode={darkMode}
+          />
         </div>
       );
 
