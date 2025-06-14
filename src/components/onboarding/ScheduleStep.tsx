@@ -352,10 +352,11 @@ export const ScheduleStep: React.FC = () => {
 
       {/* Navigation */}
       <div className="flex justify-between mt-8">
-        <Button variant="outline" onClick={previousStep}>
+        <Button type="button" variant="outline" onClick={previousStep}>
           Voltar
         </Button>
         <Button
+          type="button"
           onClick={handleNextStep}
           className="bg-blue-600 hover:bg-blue-700"
         >
