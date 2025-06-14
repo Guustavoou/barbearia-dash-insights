@@ -57,23 +57,20 @@ export const getServices = async (req: Request, res: Response) => {
     const sortField = validSortFields.includes(sort as string) ? sort : "name";
     const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
-    // Get total count
-    const countQuery = `SELECT COUNT(*) as total FROM services ${whereClause}`;
-    const countResult = await sql.unsafe(countQuery);
+    // Simplified query for now
+    const countResult = await sql`SELECT COUNT(*) as total FROM services`;
     const total = parseInt(countResult[0].total);
 
     // Get services with pagination
-    const servicesQuery = `
+    const services = await sql`
       SELECT
         id, name, description, category, price, duration, commission_rate,
         is_active, popularity, average_rating, total_bookings, image_url,
         created_at, updated_at
       FROM services
-      ${whereClause}
-      ORDER BY ${sortField} ${sortOrder}
+      ORDER BY name ASC
       LIMIT ${limitNum} OFFSET ${offset}
     `;
-    const services = await sql.unsafe(servicesQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);
@@ -299,7 +296,7 @@ export const getServiceStats = async (req: Request, res: Response) => {
 
     // Get top categories
     const topCategories = await sql`
-      SELECT 
+      SELECT
         category,
         COUNT(*) as service_count,
         ROUND(AVG(price), 2) as avg_price,
@@ -333,12 +330,12 @@ export const getPopularServices = async (req: Request, res: Response) => {
     const { limit = 10 } = req.query;
 
     const popularServices = await sql`
-      SELECT 
+      SELECT
         s.*,
         COUNT(a.id) as recent_bookings,
         COALESCE(SUM(a.price), 0) as recent_revenue
       FROM services s
-      LEFT JOIN appointments a ON s.id = a.service_id 
+      LEFT JOIN appointments a ON s.id = a.service_id
         AND a.date >= CURRENT_DATE - INTERVAL '30 days'
         AND a.status IN ('concluido', 'confirmado')
       WHERE s.is_active = true
@@ -364,7 +361,7 @@ export const getPopularServices = async (req: Request, res: Response) => {
 export const getServiceCategories = async (req: Request, res: Response) => {
   try {
     const categories = await sql`
-      SELECT 
+      SELECT
         category,
         COUNT(*) as service_count,
         ROUND(AVG(price), 2) as average_price,
