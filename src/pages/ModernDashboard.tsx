@@ -73,10 +73,25 @@ const StatCard: React.FC<StatCardProps> = ({
         <div
           className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center mr-3",
-            `bg-${color}-100 dark:bg-${color}-900/30`,
+            color === "blue" && "bg-blue-100 dark:bg-blue-900/30",
+            color === "green" && "bg-green-100 dark:bg-green-900/30",
+            color === "orange" && "bg-orange-100 dark:bg-orange-900/30",
+            color === "purple" && "bg-purple-100 dark:bg-purple-900/30",
+            color === "red" && "bg-red-100 dark:bg-red-900/30",
+            color === "yellow" && "bg-yellow-100 dark:bg-yellow-900/30",
           )}
         >
-          <Icon className={cn("w-5 h-5", `text-${color}-600`)} />
+          <Icon
+            className={cn(
+              "w-5 h-5",
+              color === "blue" && "text-blue-600",
+              color === "green" && "text-green-600",
+              color === "orange" && "text-orange-600",
+              color === "purple" && "text-purple-600",
+              color === "red" && "text-red-600",
+              color === "yellow" && "text-yellow-600",
+            )}
+          />
         </div>
         <div>
           <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
