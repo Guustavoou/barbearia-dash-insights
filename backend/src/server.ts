@@ -231,9 +231,4 @@ Ready to serve requests with PostgreSQL power! 🐘🚀
 // Start the server
 startServer();
 
-// Server timeout configuration
-server.timeout = 30000; // 30 seconds
-server.keepAliveTimeout = 5000; // 5 seconds
-server.headersTimeout = 6000; // 6 seconds
-
 export default app;
