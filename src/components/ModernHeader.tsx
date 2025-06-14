@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Bell,
   Search,
   HelpCircle,
   ChevronDown,
@@ -23,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SmartNotifications } from "@/components/SmartNotifications";
 import { UserSession } from "@/lib/multiTenantTypes";
 
 interface ModernHeaderProps {
@@ -49,7 +49,6 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   isMobile = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [notificationCount, setNotificationCount] = useState(3);
 
   const getUserInitials = (name: string) => {
     return name
@@ -77,7 +76,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between dark:bg-gray-800 dark:border-gray-700">
+    <header className="sticky top-0 z-40 bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between dark:bg-gray-800 dark:border-gray-700 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95">
       <div className="flex items-center space-x-4">
         {/* Mobile Menu Toggle */}
         {isMobile && onToggleSidebar && (
@@ -113,6 +112,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
               "border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm w-80 transition-all duration-200",
               "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
               "dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400",
+              "placeholder:text-gray-500 dark:placeholder:text-gray-400",
             )}
             placeholder="Pesquisar clientes, agendamentos, serviços..."
             value={searchQuery}
@@ -158,22 +158,8 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
           )}
         </Button>
 
-        {/* Notifications */}
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-10 h-10 rounded-full"
-            title="Notificações"
-          >
-            <Bell className="w-4 h-4" />
-            {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                {notificationCount > 9 ? "9+" : notificationCount}
-              </span>
-            )}
-          </Button>
-        </div>
+        {/* Smart Notifications */}
+        <SmartNotifications darkMode={darkMode} onPageChange={onPageChange} />
 
         {/* Help */}
         <Button
@@ -240,7 +226,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             <DropdownMenuSeparator className="dark:bg-gray-700" />
 
             <DropdownMenuItem
-              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700"
+              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700 cursor-pointer"
               onClick={() => onPageChange("settings")}
             >
               <Building2 className="w-4 h-4" />
@@ -248,7 +234,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700"
+              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700 cursor-pointer"
               onClick={() => onPageChange("settings")}
             >
               <User className="w-4 h-4" />
@@ -256,7 +242,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700"
+              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700 cursor-pointer"
               onClick={() => onPageChange("settings")}
             >
               <Settings className="w-4 h-4" />
@@ -266,7 +252,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             <DropdownMenuSeparator className="dark:bg-gray-700" />
 
             <DropdownMenuItem
-              className="flex items-center space-x-2 px-3 py-2 text-red-600 dark:text-red-400 dark:hover:bg-gray-700"
+              className="flex items-center space-x-2 px-3 py-2 text-red-600 dark:text-red-400 dark:hover:bg-gray-700 cursor-pointer"
               onClick={onLogout}
             >
               <LogOut className="w-4 h-4" />
