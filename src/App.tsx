@@ -20,16 +20,22 @@ import { Help } from "@/pages/Help";
 import { Payments } from "@/pages/Payments";
 import { Marketing } from "@/pages/Marketing";
 import { Documents } from "@/pages/Documents";
-import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { LoginPage } from "@/pages/Login";
+import { OnboardingPage } from "@/pages/Onboarding";
+import { SuccessStep } from "@/components/onboarding/SuccessStep";
 import { PageType } from "@/lib/types";
 
 const queryClient = new QueryClient();
 
+type AppState = "login" | "onboarding" | "main" | "success";
+
 const UnclicApp: React.FC = () => {
+  const [appState, setAppState] = useState<AppState>("login");
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute
@@ -46,6 +52,101 @@ const UnclicApp: React.FC = () => {
       document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
+
+  // Check authentication and onboarding status on mount
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      // Check if user is authenticated (mock for now)
+      const authToken = localStorage.getItem("unclic-auth-token");
+      const onboardingCompleted = localStorage.getItem(
+        "unclic-onboarding-completed",
+      );
+
+      if (authToken) {
+        setIsAuthenticated(true);
+        if (onboardingCompleted) {
+          setHasCompletedOnboarding(true);
+          setAppState("main");
+        } else {
+          setAppState("onboarding");
+        }
+      } else {
+        setAppState("login");
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  // Mock authentication functions
+  const handleLogin = (email: string, password: string) => {
+    // Mock login process
+    console.log("Login attempt:", email, password);
+
+    // Simulate API call
+    setTimeout(() => {
+      localStorage.setItem("unclic-auth-token", "mock-token-123");
+      setIsAuthenticated(true);
+
+      // Check if onboarding was completed
+      const onboardingCompleted = localStorage.getItem(
+        "unclic-onboarding-completed",
+      );
+
+      if (onboardingCompleted) {
+        setHasCompletedOnboarding(true);
+        setAppState("main");
+      } else {
+        setAppState("onboarding");
+      }
+    }, 1000);
+  };
+
+  const handleGoogleLogin = () => {
+    // Mock Google OAuth
+    console.log("Google login attempt");
+
+    // Simulate OAuth flow
+    setTimeout(() => {
+      localStorage.setItem("unclic-auth-token", "google-token-123");
+      setIsAuthenticated(true);
+
+      // New users typically need onboarding
+      setAppState("onboarding");
+    }, 1500);
+  };
+
+  const handleCreateAccount = () => {
+    // Mock account creation
+    console.log("Create account attempt");
+
+    // Simulate account creation
+    setTimeout(() => {
+      localStorage.setItem("unclic-auth-token", "new-user-token-123");
+      setIsAuthenticated(true);
+      setAppState("onboarding");
+    }, 1000);
+  };
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem("unclic-onboarding-completed", "true");
+    setHasCompletedOnboarding(true);
+    setAppState("success");
+  };
+
+  const handleGoToDashboard = () => {
+    setAppState("main");
+    setCurrentPage("dashboard");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("unclic-auth-token");
+    localStorage.removeItem("unclic-onboarding-completed");
+    setIsAuthenticated(false);
+    setHasCompletedOnboarding(false);
+    setAppState("login");
+    setCurrentPage("dashboard");
+  };
 
   const renderCurrentPage = () => {
     switch (currentPage) {
@@ -82,44 +183,67 @@ const UnclicApp: React.FC = () => {
     }
   };
 
-  return (
-    <div
-      className={cn(
-        "min-h-screen transition-colors duration-300",
-        darkMode ? "dark bg-gray-900" : "bg-gray-50",
-      )}
-    >
-      {/* Sidebar */}
-      <Sidebar
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        darkMode={darkMode}
-      />
-
-      {/* Main Content */}
-      <div
-        className={cn(
-          "transition-all duration-300",
-          sidebarCollapsed ? "ml-16" : "ml-64",
-        )}
-      >
-        {/* Header */}
-        <Header
-          darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode(!darkMode)}
-          currentTime={currentTime}
-          onPageChange={setCurrentPage}
+  // Render based on app state
+  switch (appState) {
+    case "login":
+      return (
+        <LoginPage
+          onLogin={handleLogin}
+          onGoogleLogin={handleGoogleLogin}
+          onCreateAccount={handleCreateAccount}
         />
+      );
 
-        {/* Page Content */}
-        <main className="p-6">
-          <div className="max-w-7xl mx-auto">{renderCurrentPage()}</div>
-        </main>
-      </div>
-    </div>
-  );
+    case "onboarding":
+      return <OnboardingPage onComplete={handleOnboardingComplete} />;
+
+    case "success":
+      return <SuccessStep onGoToDashboard={handleGoToDashboard} />;
+
+    case "main":
+      return (
+        <div
+          className={cn(
+            "min-h-screen transition-colors duration-300",
+            darkMode ? "dark bg-gray-900" : "bg-gray-50",
+          )}
+        >
+          {/* Sidebar */}
+          <Sidebar
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            darkMode={darkMode}
+          />
+
+          {/* Main Content */}
+          <div
+            className={cn(
+              "transition-all duration-300",
+              sidebarCollapsed ? "ml-16" : "ml-64",
+            )}
+          >
+            {/* Header */}
+            <Header
+              darkMode={darkMode}
+              onToggleDarkMode={() => setDarkMode(!darkMode)}
+              currentTime={currentTime}
+              onPageChange={setCurrentPage}
+              onLogout={handleLogout}
+            />
+
+            {/* Page Content */}
+            <main className="p-6">
+              <div className="max-w-7xl mx-auto">{renderCurrentPage()}</div>
+            </main>
+          </div>
+        </div>
+      );
+
+    default:
+      return null;
+  }
 };
 
 const App: React.FC = () => (

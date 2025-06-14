@@ -68,6 +68,27 @@ import {
 } from "../controllers/neon/financialController";
 
 import {
+  getServices,
+  getServiceById,
+  createService,
+  updateService,
+  deleteService,
+  getServiceStats,
+  getPopularServices,
+  getServiceCategories,
+} from "../controllers/neon/servicesController";
+import {
+  getProfessionals,
+  getProfessionalById,
+  createProfessional,
+  updateProfessional,
+  deleteProfessional,
+  getProfessionalStats,
+  getProfessionalPerformance,
+  getProfessionalSchedule,
+  getSpecialties,
+} from "../controllers/neon/professionalsController";
+import {
   getProducts,
   getProductById,
   createProduct,
@@ -79,17 +100,36 @@ import {
   getProductCategories,
   getProductBrands,
 } from "../controllers/neon/productsController";
-
+import {
+  getTransactions,
+  getTransactionById,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
+  getFinancialStats,
+  getMonthlyRevenue,
+  getPaymentMethodStats,
+  getCategoryStats,
+  getFinancialSummary,
+} from "../controllers/neon/financialController";
 import {
   getBusinessReports,
   getSalesPerformance,
-  getProfessionalPerformance as getReportProfessionalPerformance,
+  getProfessionalReports,
   getClientAnalysis,
   getAppointmentTrends,
   getFinancialAnalysis,
   getInventoryReport,
   exportReportData,
 } from "../controllers/neon/reportsController";
+import {
+  createBusiness,
+  createServices,
+  createProfessionals,
+  createWorkingHours,
+  completeOnboarding,
+  getOnboardingStatus,
+} from "../controllers/neon/onboardingController";
 
 const router = Router();
 
