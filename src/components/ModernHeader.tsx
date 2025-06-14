@@ -48,6 +48,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   onToggleRightSidebar,
   onToggleSidebar,
   isMobile = false,
+  rightSidebarOpen = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
