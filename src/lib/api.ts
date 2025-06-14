@@ -354,31 +354,64 @@ class ApiClient {
       end_date?: string;
     },
   ) {
-    return this.get("/financial/transactions", params);
+    return this.get("/transactions", params);
   }
 
   async getTransactionById(id: number) {
-    return this.get(`/financial/transactions/${id}`);
+    return this.get(`/transactions/${id}`);
   }
 
   async createTransaction(transactionData: any) {
-    return this.post("/financial/transactions", transactionData);
+    return this.post("/transactions", transactionData);
   }
 
   async updateTransaction(id: number, transactionData: any) {
-    return this.put(`/financial/transactions/${id}`, transactionData);
+    return this.put(`/transactions/${id}`, transactionData);
   }
 
   async deleteTransaction(id: number) {
-    return this.delete(`/financial/transactions/${id}`);
+    return this.delete(`/transactions/${id}`);
   }
 
   async getFinancialStats(period?: string) {
-    return this.get("/financial/stats", { period });
+    return this.get("/transactions/stats", { period });
   }
 
   async getMonthlyRevenue(months?: number) {
-    return this.get("/financial/monthly-revenue", { months });
+    return this.get("/transactions/monthly-revenue", { months });
+  }
+
+  // Reports API
+  async getBusinessReports(period?: string) {
+    return this.get("/reports/business", { period });
+  }
+
+  async getSalesPerformance(period?: string, limit?: number) {
+    return this.get("/reports/sales", { period, limit });
+  }
+
+  async getProfessionalReports(period?: string) {
+    return this.get("/reports/professionals", { period });
+  }
+
+  async getClientAnalysis(period?: string) {
+    return this.get("/reports/clients", { period });
+  }
+
+  async getAppointmentTrends(period?: string) {
+    return this.get("/reports/appointments", { period });
+  }
+
+  async getFinancialAnalysis(period?: string) {
+    return this.get("/reports/financial", { period });
+  }
+
+  async getInventoryReport() {
+    return this.get("/reports/inventory");
+  }
+
+  async exportReportData(reportType: string, period?: string) {
+    return this.get("/reports/export", { reportType, period });
   }
 
   // Health check
