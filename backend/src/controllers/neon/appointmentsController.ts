@@ -68,8 +68,8 @@ export const getAppointments = async (req: Request, res: Response) => {
 
     // Get total count using raw SQL since we have dynamic WHERE clause
     const countQuery = `SELECT COUNT(*) as total FROM appointments ${whereClause}`;
-    const countResult = await sql.query(countQuery);
-    const total = parseInt(countResult.rows[0].total);
+    const countResult = await sql.unsafe(countQuery);
+    const total = parseInt(countResult[0].total);
 
     // Get appointments with pagination using raw SQL
     const appointmentsQuery = `
@@ -82,14 +82,14 @@ export const getAppointments = async (req: Request, res: Response) => {
       ORDER BY ${sortField} ${sortOrder}, time ${sortOrder}
       LIMIT ${limitNum} OFFSET ${offset}
     `;
-    const appointments = await sql.query(appointmentsQuery);
+    const appointments = await sql.unsafe(appointmentsQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);
 
     res.json({
       success: true,
-      data: appointments.rows,
+      data: appointments,
       pagination: {
         page: pageNum,
         limit: limitNum,
