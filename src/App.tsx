@@ -247,9 +247,7 @@ const UnclicAppContent: React.FC = () => {
               onPageChange={setCurrentPage}
               onLogout={logout}
               userSession={session}
-              onToggleRightSidebar={() =>
-                setRightSidebarOpen(!rightSidebarOpen)
-              }
+              onToggleRightSidebar={rightSidebar.toggle}
               onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
               isMobile={isMobile}
             />
