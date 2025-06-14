@@ -96,7 +96,7 @@ const UnclicAppContent: React.FC = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "dashboard":
-        return <Dashboard darkMode={darkMode} onPageChange={setCurrentPage} />;
+        return <ModernDashboard darkMode={darkMode} />;
       case "clients":
         return <Clients darkMode={darkMode} />;
       case "appointments":
@@ -124,7 +124,7 @@ const UnclicAppContent: React.FC = () => {
       case "documents":
         return <Documents darkMode={darkMode} />;
       default:
-        return <Dashboard darkMode={darkMode} onPageChange={setCurrentPage} />;
+        return <ModernDashboard darkMode={darkMode} />;
     }
   };
 
