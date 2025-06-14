@@ -236,7 +236,7 @@ const UnclicAppContent: React.FC = () => {
               !isMobile && sidebarCollapsed && "ml-16",
               isMobile && "ml-0",
               // Responsive right margin for right sidebar
-              rightSidebarOpen && !isMobile && "mr-80",
+              rightSidebar.isOpen && !isMobile && "mr-80",
             )}
           >
             {/* Fixed Header */}
