@@ -302,7 +302,7 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
       dateFilter = "AND date >= CURRENT_DATE - INTERVAL '365 days'";
     }
 
-    const stats = await sql.query(`
+    const statsQuery = `
       SELECT
         COUNT(*) as total_appointments,
         COUNT(*) FILTER (WHERE status = 'agendado') as scheduled,
@@ -314,7 +314,8 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
         COALESCE(SUM(CASE WHEN status = 'concluido' THEN price ELSE 0 END), 0) as total_revenue
       FROM appointments
       WHERE 1=1 ${dateFilter}
-    `);
+    `;
+    const stats = await sql.query(statsQuery);
 
     res.json({
       success: true,
