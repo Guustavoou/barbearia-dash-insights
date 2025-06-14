@@ -152,8 +152,8 @@ app.get("/", (req, res) => {
   });
 });
 
-// API routes
-app.use("/api", apiRoutes);
+// API routes - Neon PostgreSQL
+app.use("/api", neonApiRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
