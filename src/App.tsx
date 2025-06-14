@@ -260,8 +260,8 @@ const UnclicAppContent: React.FC = () => {
 
           {/* Fixed Right Sidebar */}
           <RightSidebar
-            isOpen={rightSidebarOpen}
-            onToggle={() => setRightSidebarOpen(!rightSidebarOpen)}
+            isOpen={rightSidebar.isOpen}
+            onToggle={rightSidebar.toggle}
             darkMode={darkMode}
           />
 
