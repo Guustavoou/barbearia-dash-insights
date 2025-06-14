@@ -665,3 +665,5 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
     </div>
   );
 };
+
+export default Reports;

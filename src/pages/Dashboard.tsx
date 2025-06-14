@@ -511,3 +511,5 @@ export const Dashboard: React.FC<DashboardProps> = ({ darkMode }) => {
     </div>
   );
 };
+
+export default Dashboard;

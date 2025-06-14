@@ -626,3 +626,5 @@ export const Services: React.FC<ServicesProps> = ({ darkMode }) => {
     </div>
   );
 };
+
+export default Services;
