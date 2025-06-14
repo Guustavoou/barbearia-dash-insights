@@ -157,12 +157,20 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1 text-center mb-2">
-            {["D", "S", "T", "Q", "Q", "S", "S"].map((day, index) => (
+            {[
+              { label: "D", name: "domingo" },
+              { label: "S", name: "segunda" },
+              { label: "T", name: "terca" },
+              { label: "Q", name: "quarta" },
+              { label: "Q", name: "quinta" },
+              { label: "S", name: "sexta" },
+              { label: "S", name: "sabado" },
+            ].map((day, index) => (
               <div
-                key={`day-header-${index}`}
+                key={`day-header-${day.name}`}
                 className="text-xs font-medium text-gray-500 dark:text-gray-400"
               >
-                {day}
+                {day.label}
               </div>
             ))}
           </div>
