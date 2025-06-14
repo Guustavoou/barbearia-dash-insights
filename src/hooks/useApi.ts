@@ -266,3 +266,32 @@ export function useDeleteTransaction(
 ) {
   return useMutation((id) => api.deleteTransaction(id), options);
 }
+
+// Reports hooks
+export function useBusinessReports(period?: string) {
+  return useApi(() => api.getBusinessReports(period), [period]);
+}
+
+export function useSalesPerformance(period?: string, limit?: number) {
+  return useApi(() => api.getSalesPerformance(period, limit), [period, limit]);
+}
+
+export function useProfessionalReports(period?: string) {
+  return useApi(() => api.getProfessionalReports(period), [period]);
+}
+
+export function useClientAnalysis(period?: string) {
+  return useApi(() => api.getClientAnalysis(period), [period]);
+}
+
+export function useAppointmentTrends(period?: string) {
+  return useApi(() => api.getAppointmentTrends(period), [period]);
+}
+
+export function useFinancialAnalysis(period?: string) {
+  return useApi(() => api.getFinancialAnalysis(period), [period]);
+}
+
+export function useInventoryReport() {
+  return useApi(() => api.getInventoryReport());
+}
