@@ -165,7 +165,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               { label: "Q", name: "quinta" },
               { label: "S", name: "sexta" },
               { label: "S", name: "sabado" },
-            ].map((day, index) => (
+            ].map((day) => (
               <div
                 key={`day-header-${day.name}`}
                 className="text-xs font-medium text-gray-500 dark:text-gray-400"
