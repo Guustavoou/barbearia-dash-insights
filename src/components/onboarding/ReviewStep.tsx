@@ -29,14 +29,28 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onComplete }) => {
     setCompletionError(null);
 
     try {
+      console.log("ReviewStep: Starting onboarding completion");
       await completeOnboarding();
+      console.log("ReviewStep: Onboarding completed successfully");
       onComplete();
     } catch (error) {
-      setCompletionError(
+      console.error("ReviewStep: Error during completion:", error);
+
+      // For demo purposes, show a warning but continue anyway
+      const errorMessage =
         error instanceof Error
           ? error.message
-          : "Erro ao finalizar configuração",
-      );
+          : "Erro ao conectar com servidor";
+
+      console.warn("ReviewStep: Continuing despite error for demo");
+
+      // Show brief error message then continue
+      setCompletionError(`${errorMessage} - Continuando modo demonstração...`);
+
+      setTimeout(() => {
+        setCompletionError(null);
+        onComplete();
+      }, 2000);
     } finally {
       setIsCompleting(false);
     }
