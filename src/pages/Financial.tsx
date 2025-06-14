@@ -63,14 +63,23 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
   const [sortOrder, setSortOrder] = useState<TransactionSortOrder>("desc");
 
   // API integration with automatic fallback
-  const { data: apiTransactions, loading, error } = useTransactions();
-  const { data: apiStats } = useFinancialStats();
-  const { data: apiMonthlyData } = useMonthlyRevenue(12);
+  const { data: apiTransactions, loading: transactionsLoading } =
+    useTransactions({
+      page: 1,
+      limit: 50,
+      type: typeFilter !== "all" ? typeFilter : undefined,
+      category: categoryFilter !== "all" ? categoryFilter : undefined,
+    });
+  const { data: apiStats, loading: statsLoading } =
+    useFinancialStats(dateRange);
+  const { data: apiMonthlyData, loading: chartLoading } = useMonthlyRevenue(12);
 
   // Use API data or fallback to mock data
   const transactions = apiTransactions?.data || transactionsMockData;
   const stats = apiStats?.data || financialStats;
   const chartData = apiMonthlyData?.data || monthlyData;
+
+  const isLoading = transactionsLoading || statsLoading || chartLoading;
 
   // Filter and sort transactions
   const filteredTransactions = useMemo(() => {
@@ -214,7 +223,7 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp className="h-3 w-3 text-green-600" />
                 <span className="text-xs text-green-600 font-medium">
-                  +{financialStats.revenueGrowth}%
+                  {isLoading ? "..." : `+${stats?.revenue_growth || 0}%`}
                 </span>
               </div>
             </div>
@@ -248,12 +257,12 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                {formatCurrency(financialStats.totalExpenses)}
+                {isLoading ? "..." : formatCurrency(stats?.total_expenses || 0)}
               </p>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp className="h-3 w-3 text-red-600" />
                 <span className="text-xs text-red-600 font-medium">
-                  +{financialStats.expenseGrowth}%
+                  {isLoading ? "..." : `+${stats?.expense_growth || 0}%`}
                 </span>
               </div>
             </div>
@@ -287,11 +296,14 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                {formatCurrency(financialStats.netProfit)}
+                {isLoading ? "..." : formatCurrency(stats?.net_profit || 0)}
               </p>
               <div className="flex items-center gap-1 mt-1">
                 <span className="text-xs text-blue-600 font-medium">
-                  Margem: {financialStats.profitMargin.toFixed(1)}%
+                  Margem:{" "}
+                  {isLoading
+                    ? "..."
+                    : `${(stats?.profit_margin || 0).toFixed(1)}%`}
                 </span>
               </div>
             </div>
@@ -325,7 +337,9 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
                   darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                {transactionsMockData.length}
+                {isLoading
+                  ? "..."
+                  : stats?.total_transactions || transactions?.length || 0}
               </p>
               <p
                 className={cn(
@@ -526,21 +540,14 @@ export const Financial: React.FC<FinancialProps> = ({ darkMode }) => {
                   )}
                 />
               </div>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
+              <span
                 className={cn(
-                  "px-4 py-2 rounded-lg border transition-colors",
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white"
-                    : "bg-white border-gray-300",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
+                  "text-2xl font-bold mt-1",
+                  darkMode ? "text-white" : "text-gray-900",
                 )}
               >
-                <option value="all">Todos os tipos</option>
-                <option value="receita">Receitas</option>
-                <option value="despesa">Despesas</option>
-              </select>
+                {isLoading ? "..." : formatCurrency(stats?.total_revenue || 0)}
+              </span>
             </div>
           </div>
         </div>
