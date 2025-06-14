@@ -150,11 +150,13 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
                 : "Mostrar Agenda do Dia"
             }
           >
-            <Calendar className="w-4 h-4" />
-            {/* Visual indicator */}
-            {rightSidebarOpen && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            )}
+            <div className="relative">
+              <Calendar className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+              {/* Enhanced visual indicator */}
+              {rightSidebarOpen && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse shadow-lg" />
+              )}
+            </div>
           </Button>
         )}
 
