@@ -114,7 +114,7 @@ const StatCard: React.FC<StatCardProps> = ({
     <div className="flex items-end justify-between">
       <div>
         <p className="text-2xl font-bold text-gray-900 dark:text-white">
-          {value}
+          {value === "..." ? <LoadingSpinner size="sm" /> : value}
         </p>
         <div className="flex items-center mt-1">
           <span
