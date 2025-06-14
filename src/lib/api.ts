@@ -87,7 +87,19 @@ class ApiClient {
     endpoint: string,
     params?: Record<string, any>,
   ): Promise<ApiResponse<T>> {
-    const queryString = params ? new URLSearchParams(params).toString() : "";
+    // Filter out undefined values to avoid "undefined" strings in URL
+    const cleanParams = params
+      ? Object.fromEntries(
+          Object.entries(params).filter(
+            ([_, value]) => value !== undefined && value !== null,
+          ),
+        )
+      : {};
+
+    const queryString =
+      Object.keys(cleanParams).length > 0
+        ? new URLSearchParams(cleanParams).toString()
+        : "";
     const url = queryString ? `${endpoint}?${queryString}` : endpoint;
     return this.request<T>(url);
   }
