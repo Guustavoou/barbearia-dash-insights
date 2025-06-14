@@ -174,7 +174,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
               return (
                 <button
-                  key={index}
+                  key={`calendar-day-${day.getTime()}`}
                   className={cn(
                     "text-xs h-7 flex items-center justify-center rounded-full transition-colors",
                     isCurrentMonth
