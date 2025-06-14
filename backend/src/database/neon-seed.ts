@@ -240,7 +240,7 @@ async function seedDatabase() {
         ('receita', 'Serviços', 'Corte Feminino - Maria Silva', 80.00, 'PIX', 'appointment', '2024-11-20', 'concluido'),
         ('receita', 'Serviços', 'Design de Sobrancelha - Ana Costa', 60.00, 'Cartão de Crédito', 'appointment', '2024-11-18', 'concluido'),
         ('receita', 'Produtos', 'Venda de Shampoo', 85.00, 'Dinheiro', 'sale', '2024-11-22', 'concluido'),
-        ('despesa', 'Fornecedores', 'Compra de produtos L\'Oréal', 850.00, 'PIX', 'purchase', '2024-11-15', 'concluido'),
+        ('despesa', 'Fornecedores', 'Compra de produtos L Oreal', 850.00, 'PIX', 'purchase', '2024-11-15', 'concluido'),
         ('receita', 'Serviços', 'Coloração Completa - Carla Oliveira', 180.00, 'Cartão de Débito', 'appointment', '2024-11-19', 'concluido'),
         ('despesa', 'Operacional', 'Energia elétrica', 320.00, 'Boleto', 'expense', '2024-11-10', 'concluido'),
         ('receita', 'Serviços', 'Extensão de Cílios - Fernanda Lima', 150.00, 'PIX', 'appointment', '2024-11-21', 'concluido'),
