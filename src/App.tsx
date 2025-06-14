@@ -66,16 +66,7 @@ const UnclicAppContent: React.FC = () => {
     }
   }, [isMobile, isTablet, isDesktop]);
 
-  // Apply dark mode class to document
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
-
-  // Handle auth state changes
+  // Handle authentication state changes
   useEffect(() => {
     if (isLoading) return;
 
@@ -184,7 +175,7 @@ const UnclicAppContent: React.FC = () => {
       return (
         <div
           className={cn(
-            "min-h-screen flex transition-colors duration-300",
+            "min-h-screen transition-colors duration-300",
             darkMode ? "dark bg-gray-900" : "bg-gray-50",
           )}
         >
@@ -196,30 +187,33 @@ const UnclicAppContent: React.FC = () => {
             />
           )}
 
-          {/* Left Sidebar */}
+          {/* Fixed Left Sidebar */}
+          <ModernSidebar
+            currentPage={currentPage}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              if (isMobile) setSidebarCollapsed(true);
+            }}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            darkMode={darkMode}
+            userSession={session}
+            isMobile={isMobile}
+          />
+
+          {/* Main Content Area */}
           <div
             className={cn(
-              "relative z-50",
-              isMobile && sidebarCollapsed && "fixed -translate-x-full",
-              isMobile && !sidebarCollapsed && "fixed translate-x-0",
+              "flex flex-col min-h-screen transition-all duration-300",
+              // Responsive left margin for sidebar
+              !isMobile && !sidebarCollapsed && "ml-60",
+              !isMobile && sidebarCollapsed && "ml-16",
+              isMobile && "ml-0",
+              // Responsive right margin for right sidebar
+              rightSidebarOpen && !isMobile && "mr-80",
             )}
           >
-            <ModernSidebar
-              currentPage={currentPage}
-              onPageChange={(page) => {
-                setCurrentPage(page);
-                if (isMobile) setSidebarCollapsed(true);
-              }}
-              collapsed={sidebarCollapsed}
-              onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-              darkMode={darkMode}
-              userSession={session}
-            />
-          </div>
-
-          {/* Main Content */}
-          <main className="flex-1 flex flex-col overflow-hidden transition-all duration-300">
-            {/* Header */}
+            {/* Fixed Header */}
             <ModernHeader
               darkMode={darkMode}
               onToggleDarkMode={() => setDarkMode(!darkMode)}
@@ -230,22 +224,17 @@ const UnclicAppContent: React.FC = () => {
               onToggleRightSidebar={() =>
                 setRightSidebarOpen(!rightSidebarOpen)
               }
+              onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+              isMobile={isMobile}
             />
 
-            {/* Page Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div
-                className={cn(
-                  "transition-all duration-300",
-                  rightSidebarOpen ? "pr-6" : "",
-                )}
-              >
-                {renderCurrentPage()}
-              </div>
-            </div>
-          </main>
+            {/* Scrollable Page Content */}
+            <main className="flex-1 overflow-y-auto">
+              <div className="p-6">{renderCurrentPage()}</div>
+            </main>
+          </div>
 
-          {/* Right Sidebar */}
+          {/* Fixed Right Sidebar */}
           <RightSidebar
             isOpen={rightSidebarOpen}
             onToggle={() => setRightSidebarOpen(!rightSidebarOpen)}
