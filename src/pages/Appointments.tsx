@@ -1,15 +1,14 @@
-<<<<<<< HEAD
 import React, { useState, useMemo } from "react";
 import { Calendar, List, Plus, BarChart3 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/unclicUtils";
 import { CalendarView } from "@/components/CalendarView";
 import { NewAppointmentModal } from "@/components/NewAppointmentModal";
-import { appointmentsMockData } from "@/lib/appointmentMockData";
 import {
-  AppointmentItem,
-  AppointmentViewMode,
+  AppointmentWithDetails,
   CalendarViewType,
-  AppointmentStats,
+  AppointmentStatus,
+  AppointmentSortField,
+  AppointmentSortOrder,
 } from "@/lib/appointmentTypes";
 import {
   useAppointments,
@@ -17,164 +16,116 @@ import {
   useUpdateAppointment,
   useDeleteAppointment,
 } from "@/hooks/useApi";
-=======
-import React, { useState } from 'react';
-import { Calendar, Clock, User, Phone, Plus, Search, Filter } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { NewAppointmentModal } from '@/components/NewAppointmentModal';
-import { useAppointments } from '@/hooks/useAppointments';
-import { cn, formatCurrency, formatDate, formatTime } from '@/lib/unclicUtils';
->>>>>>> 01ae52e6fe1ca6b9e41b9437e7c3a93ac4d67157
 
 interface AppointmentsProps {
   darkMode: boolean;
 }
 
-<<<<<<< HEAD
 export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewType, setViewType] = useState<CalendarViewType>("semanal");
-  const [viewMode, setViewMode] = useState<AppointmentViewMode>("calendario");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [selectedProfessional, setSelectedProfessional] =
-    useState<string>("all");
-  const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [calendarView, setCalendarView] = useState<CalendarViewType>("semanal");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | "todos">(
+    "todos",
+  );
+  const [sortBy, setSortBy] = useState<AppointmentSortField>("date");
+  const [sortOrder, setSortOrder] = useState<AppointmentSortOrder>("desc");
+  const [showNewModal, setShowNewModal] = useState(false);
 
-  // API integration
+  // API integration with automatic fallback
   const {
     data: apiResponse,
     loading,
     error,
     refetch,
   } = useAppointments({
-    search: searchQuery,
-    status: selectedStatus === "all" ? undefined : selectedStatus,
-    professional_id:
-      selectedProfessional === "all"
-        ? undefined
-        : parseInt(selectedProfessional),
-    start_date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-      .toISOString()
-      .split("T")[0],
-    end_date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-      .toISOString()
-      .split("T")[0],
+    search: searchTerm,
+    status: statusFilter !== "todos" ? statusFilter : undefined,
+    sort: sortBy,
+    order: sortOrder.toUpperCase() as "ASC" | "DESC",
+    page: 1,
+    limit: 100,
   });
 
-  const createAppointment = useCreateAppointment({
+  const createAppointmentMutation = useCreateAppointment({
     onSuccess: () => {
-      setShowNewAppointmentModal(false);
       refetch();
-    },
-    onError: (error) => {
-      console.error("Error creating appointment:", error);
-      alert("Erro ao criar agendamento: " + error);
+      setShowNewModal(false);
     },
   });
 
-  const updateAppointment = useUpdateAppointment({
+  const updateAppointmentMutation = useUpdateAppointment({
     onSuccess: () => {
       refetch();
     },
   });
 
-  const deleteAppointment = useDeleteAppointment({
+  const deleteAppointmentMutation = useDeleteAppointment({
     onSuccess: () => {
       refetch();
     },
   });
 
-  // Fallback to mock data if API fails
-  const [fallbackData, setFallbackData] = useState<any>(null);
-
-  React.useEffect(() => {
-    if (error) {
-      import("@/lib/appointmentMockData").then((mockData) => {
-        setFallbackData(mockData);
-      });
-    }
-  }, [error]);
-
-  // Use API data or fallback to mock data
-  const appointments =
-    apiResponse?.data || fallbackData?.appointments || appointmentsMockData;
-  const professionals = fallbackData?.professionals || [];
+  // Use API data or fallback to empty array
+  const appointments = apiResponse?.data || [];
 
   // Calculate statistics
-  const stats: AppointmentStats = useMemo(() => {
+  const stats = useMemo(() => {
     const total = appointments.length;
-    const concluidos = appointments.filter(
-      (apt: any) => apt.status === "concluido",
+    const agendado = appointments.filter(
+      (a: any) => a.status === "agendado",
     ).length;
-    const agendados = appointments.filter(
-      (apt: any) => apt.status === "agendado",
+    const confirmado = appointments.filter(
+      (a: any) => a.status === "confirmado",
     ).length;
-    const cancelados = appointments.filter(
-      (apt: any) => apt.status === "cancelado",
+    const concluido = appointments.filter(
+      (a: any) => a.status === "concluido",
     ).length;
-    const confirmados = appointments.filter(
-      (apt: any) => apt.status === "confirmado",
+    const cancelado = appointments.filter(
+      (a: any) => a.status === "cancelado",
     ).length;
     const faltou = appointments.filter(
-      (apt: any) => apt.status === "faltou",
+      (a: any) => a.status === "faltou",
     ).length;
 
     return {
       total,
-      concluidos,
-      agendados,
-      cancelados,
-      confirmados,
+      agendado,
+      confirmado,
+      concluido,
+      cancelado,
       faltou,
     };
   }, [appointments]);
-=======
-const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showNewModal, setShowNewModal] = useState(false);
-  const { appointments, loading } = useAppointments();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'agendado':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'confirmado':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'cancelado':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'finalizado':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+  const handleNewAppointment = async (appointmentData: any) => {
+    await createAppointmentMutation.mutate(appointmentData);
+  };
+
+  const handleUpdateAppointment = async (id: number, appointmentData: any) => {
+    await updateAppointmentMutation.mutate({ id, data: appointmentData });
+  };
+
+  const handleDeleteAppointment = async (id: number) => {
+    if (confirm("Tem certeza que deseja excluir este agendamento?")) {
+      await deleteAppointmentMutation.mutate(id);
     }
   };
 
-  const formatAppointmentTime = (timeString: string) => {
-    // timeString is in HH:MM format, convert to Date for formatting
-    const [hours, minutes] = timeString.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    return formatTime(date);
-  };
->>>>>>> 01ae52e6fe1ca6b9e41b9437e7c3a93ac4d67157
-
-  const handleNewAppointment = async (appointmentData: any) => {
-    // This will be handled by the modal component
-    setShowNewModal(false);
-  };
-
-  const filteredAppointments = appointments.filter(appointment =>
-    appointment.clients?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    appointment.services?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter appointments based on search term
+  const filteredAppointments = appointments.filter(
+    (appointment: any) =>
+      appointment.client_name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      appointment.service_name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      appointment.professional_name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
 
-<<<<<<< HEAD
   const ListView: React.FC = () => (
     <div
       className={cn(
@@ -182,433 +133,558 @@ const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
         darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
       )}
     >
-      <div className="p-6">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <h3
           className={cn(
-            "text-lg font-semibold mb-4",
+            "text-lg font-semibold",
             darkMode ? "text-white" : "text-gray-900",
           )}
         >
           Lista de Agendamentos
         </h3>
-        <div className="space-y-4">
-          {appointments.map((appointment: any) => (
-            <div
-              key={appointment.id}
-              className={cn(
-                "p-4 rounded-lg border",
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-gray-50 border-gray-200",
-              )}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4
-                    className={cn(
-                      "font-medium",
-                      darkMode ? "text-white" : "text-gray-900",
-                    )}
-                  >
-                    {appointment.client}
-                  </h4>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead
+            className={cn(
+              "border-b",
+              darkMode
+                ? "bg-gray-700 border-gray-600"
+                : "bg-gray-50 border-gray-200",
+            )}
+          >
+            <tr>
+              <th
+                className={cn(
+                  "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
+                  darkMode ? "text-gray-300" : "text-gray-500",
+                )}
+              >
+                Cliente
+              </th>
+              <th
+                className={cn(
+                  "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
+                  darkMode ? "text-gray-300" : "text-gray-500",
+                )}
+              >
+                Serviço
+              </th>
+              <th
+                className={cn(
+                  "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
+                  darkMode ? "text-gray-300" : "text-gray-500",
+                )}
+              >
+                Profissional
+              </th>
+              <th
+                className={cn(
+                  "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
+                  darkMode ? "text-gray-300" : "text-gray-500",
+                )}
+              >
+                Data/Hora
+              </th>
+              <th
+                className={cn(
+                  "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
+                  darkMode ? "text-gray-300" : "text-gray-500",
+                )}
+              >
+                Status
+              </th>
+              <th
+                className={cn(
+                  "px-6 py-3 text-left text-xs font-medium uppercase tracking-wider",
+                  darkMode ? "text-gray-300" : "text-gray-500",
+                )}
+              >
+                Valor
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            className={cn(
+              "divide-y",
+              darkMode ? "divide-gray-700" : "divide-gray-200",
+            )}
+          >
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i}>
+                  <td className="px-6 py-4">
+                    <div
+                      className={cn(
+                        "h-4 rounded animate-pulse",
+                        darkMode ? "bg-gray-700" : "bg-gray-300",
+                      )}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div
+                      className={cn(
+                        "h-4 rounded animate-pulse",
+                        darkMode ? "bg-gray-700" : "bg-gray-300",
+                      )}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div
+                      className={cn(
+                        "h-4 rounded animate-pulse",
+                        darkMode ? "bg-gray-700" : "bg-gray-300",
+                      )}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div
+                      className={cn(
+                        "h-4 rounded animate-pulse",
+                        darkMode ? "bg-gray-700" : "bg-gray-300",
+                      )}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div
+                      className={cn(
+                        "h-4 rounded animate-pulse",
+                        darkMode ? "bg-gray-700" : "bg-gray-300",
+                      )}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div
+                      className={cn(
+                        "h-4 rounded animate-pulse",
+                        darkMode ? "bg-gray-700" : "bg-gray-300",
+                      )}
+                    />
+                  </td>
+                </tr>
+              ))
+            ) : filteredAppointments.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center">
                   <p
                     className={cn(
                       "text-sm",
                       darkMode ? "text-gray-400" : "text-gray-600",
                     )}
                   >
-                    {appointment.service} • {appointment.time} •{" "}
-                    {appointment.date instanceof Date
-                      ? appointment.date.toLocaleDateString("pt-BR")
-                      : new Date(appointment.date).toLocaleDateString("pt-BR")}
+                    Nenhum agendamento encontrado.
                   </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs font-medium",
-                      appointment.status === "agendado" &&
-                        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-                      appointment.status === "confirmado" &&
-                        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-                      appointment.status === "concluido" &&
-                        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-                      appointment.status === "cancelado" &&
-                        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-                      appointment.status === "faltou" &&
-                        "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
-                    )}
-                  >
-                    {appointment.status}
-                  </span>
-                  <span
-                    className={cn(
-                      "text-sm font-medium",
-                      darkMode ? "text-gray-300" : "text-gray-600",
-                    )}
-                  >
-                    {formatCurrency(appointment.price)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-=======
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando agendamentos...</p>
->>>>>>> 01ae52e6fe1ca6b9e41b9437e7c3a93ac4d67157
-        </div>
+                </td>
+              </tr>
+            ) : (
+              filteredAppointments.map((appointment: any) => (
+                <tr
+                  key={appointment.id}
+                  className={cn(
+                    "transition-colors",
+                    darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50",
+                  )}
+                >
+                  <td className="px-6 py-4">
+                    <span
+                      className={cn(
+                        "font-medium",
+                        darkMode ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      {appointment.client_name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={cn(
+                        "text-sm",
+                        darkMode ? "text-gray-300" : "text-gray-600",
+                      )}
+                    >
+                      {appointment.service_name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={cn(
+                        "text-sm",
+                        darkMode ? "text-gray-300" : "text-gray-600",
+                      )}
+                    >
+                      {appointment.professional_name || "Não definido"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div>
+                      <span
+                        className={cn(
+                          "text-sm font-medium",
+                          darkMode ? "text-white" : "text-gray-900",
+                        )}
+                      >
+                        {new Date(appointment.date).toLocaleDateString()}
+                      </span>
+                      <br />
+                      <span
+                        className={cn(
+                          "text-xs",
+                          darkMode ? "text-gray-400" : "text-gray-500",
+                        )}
+                      >
+                        {appointment.time}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={cn(
+                        "px-2 py-1 rounded-full text-xs font-medium",
+                        appointment.status === "confirmado"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                          : appointment.status === "agendado"
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                            : appointment.status === "concluido"
+                              ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"
+                              : appointment.status === "cancelado"
+                                ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+                      )}
+                    >
+                      {appointment.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        darkMode ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      {formatCurrency(appointment.price || 0)}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Agendamentos</h1>
-          <p className="text-muted-foreground">
-            Gerencie todos os seus agendamentos
+          <h1
+            className={cn(
+              "text-2xl font-bold",
+              darkMode ? "text-white" : "text-gray-900",
+            )}
+          >
+            Agendamentos
+          </h1>
+          <p
+            className={cn(
+              "text-sm mt-1",
+              darkMode ? "text-gray-400" : "text-gray-600",
+            )}
+          >
+            Gerencie todos os agendamentos do seu salão
           </p>
         </div>
-        <Button onClick={() => setShowNewModal(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+        <button
+          onClick={() => setShowNewModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
           Novo Agendamento
-        </Button>
-      </div>
-
-<<<<<<< HEAD
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {loading ? (
-          <>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </>
-        ) : (
-          <>
-            <div
-              className={cn(
-                "rounded-xl p-6 border",
-                darkMode
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-white border-gray-200",
-              )}
-            >
-              <h3
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Total de Agendamentos
-              </h3>
-              <p
-                className={cn(
-                  "text-2xl font-bold mt-1",
-                  darkMode ? "text-white" : "text-gray-900",
-                )}
-              >
-                {stats.total}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "rounded-xl p-6 border",
-                darkMode
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-white border-gray-200",
-              )}
-            >
-              <h3
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Concluídos
-              </h3>
-              <p className={cn("text-2xl font-bold mt-1 text-green-600")}>
-                {stats.concluidos}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "rounded-xl p-6 border",
-                darkMode
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-white border-gray-200",
-              )}
-            >
-              <h3
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Agendados
-              </h3>
-              <p className={cn("text-2xl font-bold mt-1 text-blue-600")}>
-                {stats.agendados}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "rounded-xl p-6 border",
-                darkMode
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-white border-gray-200",
-              )}
-            >
-              <h3
-                className={cn(
-                  "text-sm font-medium",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                Cancelados
-              </h3>
-              <p className={cn("text-2xl font-bold mt-1 text-red-600")}>
-                {stats.cancelados}
-              </p>
-            </div>
-          </>
-        )}
-=======
-      {/* Search and Filters */}
-      <div className="flex gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Buscar por cliente ou serviço..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button variant="outline" className="flex items-center gap-2">
-          <Filter className="h-4 w-4" />
-          Filtros
-        </Button>
->>>>>>> 01ae52e6fe1ca6b9e41b9437e7c3a93ac4d67157
+        </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{appointments.length}</div>
-            <p className="text-xs text-muted-foreground">
-              agendamentos
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Hoje</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {appointments.filter(apt => apt.appointment_date === new Date().toISOString().split('T')[0]).length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              para hoje
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Confirmados</CardTitle>
-            <User className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {appointments.filter(apt => apt.status === 'confirmado').length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              confirmados
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cancelados</CardTitle>
-            <Phone className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {appointments.filter(apt => apt.status === 'cancelado').length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              cancelados
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Appointments List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista de Agendamentos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredAppointments.length === 0 ? (
-            <div className="text-center py-8">
-              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Nenhum agendamento encontrado
-              </h3>
-              <p className="text-gray-500 mb-4">
-                {searchTerm ? 'Tente buscar por outros termos.' : 'Comece criando seu primeiro agendamento.'}
-              </p>
-              <Button onClick={() => setShowNewModal(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Agendamento
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredAppointments.map((appointment) => (
-                <div
-                  key={appointment.id}
-                  className={cn(
-                    "p-6 rounded-lg border transition-colors hover:bg-gray-50",
-                    darkMode ? "bg-gray-800 border-gray-700 hover:bg-gray-700" : "bg-white border-gray-200"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="h-6 w-6 text-blue-600" />
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className={cn(
-                          "text-lg font-semibold",
-                          darkMode ? "text-white" : "text-gray-900"
-                        )}>
-                          {appointment.clients?.name || 'Cliente não encontrado'}
-                        </h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                          <span className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            {formatDate(new Date(appointment.appointment_date))}
-                          </span>
-                          <span className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {formatAppointmentTime(appointment.appointment_time)}
-                          </span>
-                          <span className="flex items-center">
-                            <Phone className="h-4 w-4 mr-1" />
-                            {appointment.clients?.phone || 'N/A'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className={cn(
-                          "font-medium",
-                          darkMode ? "text-white" : "text-gray-900"
-                        )}>
-                          {appointment.services?.name || 'Serviço não encontrado'}
-                        </p>
-                        <p className="text-lg font-bold text-green-600">
-                          {formatCurrency(Number(appointment.price))}
-                        </p>
-                      </div>
-                      <Badge className={getStatusColor(appointment.status || 'agendado')}>
-                        {appointment.status || 'agendado'}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  {appointment.notes && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <p className={cn(
-                        "text-sm",
-                        darkMode ? "text-gray-300" : "text-gray-600"
-                      )}>
-                        <strong>Observações:</strong> {appointment.notes}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div
+          className={cn(
+            "rounded-xl p-4 border",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
           )}
-<<<<<<< HEAD
-
-          {/* Statistics */}
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              <span
-                className={cn(
-                  "font-medium",
-                  darkMode ? "text-gray-400" : "text-gray-600",
-                )}
-              >
-                {stats.total} total
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-green-600">
-                {stats.concluidos} concluídos
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-blue-600">
-                {stats.agendados} agendados
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-red-600">
-                {stats.cancelados} cancelados
-              </span>
-            </div>
+        >
+          <div className="text-center">
+            <p
+              className={cn(
+                "text-2xl font-bold",
+                darkMode ? "text-white" : "text-gray-900",
+              )}
+            >
+              {loading ? "..." : stats.total}
+            </p>
+            <p
+              className={cn(
+                "text-xs",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Total
+            </p>
           </div>
         </div>
 
-        {/* Content */}
-        {viewMode === "calendario" ? (
-          <CalendarView
-            appointments={appointments}
-            selectedDate={selectedDate}
-            onDateSelect={setSelectedDate}
-            onNewAppointment={() => setShowNewAppointmentModal(true)}
-            darkMode={darkMode}
-          />
-        ) : (
-          <ListView />
-        )}
+        <div
+          className={cn(
+            "rounded-xl p-4 border",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          <div className="text-center">
+            <p
+              className={cn(
+                "text-2xl font-bold text-blue-600",
+                darkMode ? "text-blue-400" : "text-blue-600",
+              )}
+            >
+              {loading ? "..." : stats.agendado}
+            </p>
+            <p
+              className={cn(
+                "text-xs",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Agendado
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "rounded-xl p-4 border",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          <div className="text-center">
+            <p
+              className={cn(
+                "text-2xl font-bold text-green-600",
+                darkMode ? "text-green-400" : "text-green-600",
+              )}
+            >
+              {loading ? "..." : stats.confirmado}
+            </p>
+            <p
+              className={cn(
+                "text-xs",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Confirmado
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "rounded-xl p-4 border",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          <div className="text-center">
+            <p
+              className={cn(
+                "text-2xl font-bold text-purple-600",
+                darkMode ? "text-purple-400" : "text-purple-600",
+              )}
+            >
+              {loading ? "..." : stats.concluido}
+            </p>
+            <p
+              className={cn(
+                "text-xs",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Concluído
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "rounded-xl p-4 border",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          <div className="text-center">
+            <p
+              className={cn(
+                "text-2xl font-bold text-red-600",
+                darkMode ? "text-red-400" : "text-red-600",
+              )}
+            >
+              {loading ? "..." : stats.cancelado}
+            </p>
+            <p
+              className={cn(
+                "text-xs",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Cancelado
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            "rounded-xl p-4 border",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          <div className="text-center">
+            <p
+              className={cn(
+                "text-2xl font-bold text-yellow-600",
+                darkMode ? "text-yellow-400" : "text-yellow-600",
+              )}
+            >
+              {loading ? "..." : stats.faltou}
+            </p>
+            <p
+              className={cn(
+                "text-xs",
+                darkMode ? "text-gray-400" : "text-gray-600",
+              )}
+            >
+              Faltou
+            </p>
+          </div>
+        </div>
       </div>
-=======
-        </CardContent>
-      </Card>
->>>>>>> 01ae52e6fe1ca6b9e41b9437e7c3a93ac4d67157
+
+      {/* View Controls */}
+      <div
+        className={cn(
+          "rounded-xl p-6 border",
+          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
+        )}
+      >
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <input
+                type="text"
+                placeholder="Buscar agendamentos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={cn(
+                  "pl-4 pr-4 py-2 w-full rounded-lg border transition-colors",
+                  darkMode
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "bg-white border-gray-300 placeholder-gray-500",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
+                )}
+              />
+            </div>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className={cn(
+                "px-4 py-2 rounded-lg border transition-colors",
+                darkMode
+                  ? "bg-gray-700 border-gray-600 text-white"
+                  : "bg-white border-gray-300",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500",
+              )}
+            >
+              <option value="todos">Todos os Status</option>
+              <option value="agendado">Agendado</option>
+              <option value="confirmado">Confirmado</option>
+              <option value="concluido">Concluído</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="faltou">Faltou</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewType("calendario")}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
+                viewType === "calendario"
+                  ? "bg-blue-600 text-white"
+                  : darkMode
+                    ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200",
+              )}
+            >
+              <Calendar className="w-4 h-4" />
+              Calendário
+            </button>
+            <button
+              onClick={() => setViewType("lista")}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
+                viewType === "lista"
+                  ? "bg-blue-600 text-white"
+                  : darkMode
+                    ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200",
+              )}
+            >
+              <List className="w-4 h-4" />
+              Lista
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      {viewType === "calendario" ? (
+        <CalendarView
+          appointments={filteredAppointments}
+          currentDate={currentDate}
+          onDateChange={setCurrentDate}
+          darkMode={darkMode}
+          onEditAppointment={(id, data) => handleUpdateAppointment(id, data)}
+          onDeleteAppointment={handleDeleteAppointment}
+        />
+      ) : (
+        <ListView />
+      )}
 
       {/* New Appointment Modal */}
-      <NewAppointmentModal
-        isOpen={showNewModal}
-        onClose={() => setShowNewModal(false)}
-        darkMode={darkMode}
-      />
+      {showNewModal && (
+        <NewAppointmentModal
+          isOpen={showNewModal}
+          onClose={() => setShowNewModal(false)}
+          onSave={handleNewAppointment}
+          darkMode={darkMode}
+        />
+      )}
+
+      {/* Show errors if any */}
+      {error && (
+        <div className="rounded-lg bg-red-100 dark:bg-red-900/30 p-4">
+          <p className="text-red-800 dark:text-red-400">
+            Erro ao carregar agendamentos: {error}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
-
-export default Appointments;
