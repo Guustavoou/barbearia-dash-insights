@@ -130,9 +130,16 @@ function onboardingReducer(
       };
 
     case "NEXT_STEP":
+      const newStep = Math.min(5, state.currentStep + 1);
+      console.log(
+        "OnboardingContext reducer: NEXT_STEP from",
+        state.currentStep,
+        "to",
+        newStep,
+      );
       return {
         ...state,
-        currentStep: Math.min(5, state.currentStep + 1),
+        currentStep: newStep,
       };
 
     case "PREVIOUS_STEP":
@@ -219,7 +226,15 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const nextStep = () => {
+    console.log(
+      "OnboardingContext: nextStep called, current step:",
+      data.currentStep,
+    );
     dispatch({ type: "NEXT_STEP" });
+    console.log(
+      "OnboardingContext: dispatch sent, new step should be:",
+      data.currentStep + 1,
+    );
   };
 
   const previousStep = () => {
