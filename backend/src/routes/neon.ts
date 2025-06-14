@@ -13,6 +13,16 @@ import {
 } from "../controllers/neon/clientsController";
 
 import {
+  getAppointments,
+  getAppointmentById,
+  createAppointment,
+  updateAppointment,
+  deleteAppointment,
+  getAppointmentStats,
+  getAvailableSlots,
+} from "../controllers/neon/appointmentsController";
+
+import {
   getDashboardStats,
   getRevenueData,
   getTopServices,
