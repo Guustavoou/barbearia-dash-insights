@@ -236,11 +236,19 @@ router.delete("/transactions/:id", deleteTransaction);
 // Reports routes
 router.get("/reports/business", getBusinessReports);
 router.get("/reports/sales", getSalesPerformance);
-router.get("/reports/professionals", getReportProfessionalPerformance);
+router.get("/reports/professionals", getProfessionalReports);
 router.get("/reports/clients", getClientAnalysis);
 router.get("/reports/appointments", getAppointmentTrends);
 router.get("/reports/financial", getFinancialAnalysis);
 router.get("/reports/inventory", getInventoryReport);
 router.get("/reports/export", exportReportData);
+
+// Onboarding routes
+router.post("/onboarding/business", createBusiness);
+router.post("/onboarding/services", createServices);
+router.post("/onboarding/professionals", createProfessionals);
+router.post("/onboarding/working-hours", createWorkingHours);
+router.post("/onboarding/complete", completeOnboarding);
+router.get("/onboarding/status", getOnboardingStatus);
 
 export default router;
