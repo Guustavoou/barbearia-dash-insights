@@ -15,6 +15,11 @@ export const ScheduleStep: React.FC = () => {
     console.log("ScheduleStep: Tentando avançar para próxima etapa");
     console.log("Current step:", data.currentStep);
     console.log("Working hours:", localHours);
+
+    // Ensure working hours are saved
+    updateWorkingHours(localHours);
+
+    // Force advance to next step
     nextStep();
   };
   const [localHours, setLocalHours] = useState<WorkingHours[]>(
