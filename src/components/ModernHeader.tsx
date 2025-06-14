@@ -35,6 +35,7 @@ interface ModernHeaderProps {
   onToggleRightSidebar?: () => void;
   onToggleSidebar?: () => void;
   isMobile?: boolean;
+  rightSidebarOpen?: boolean;
 }
 
 export const ModernHeader: React.FC<ModernHeaderProps> = ({
