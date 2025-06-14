@@ -23,11 +23,11 @@ import {
   checkDbConnection,
 } from "./middleware";
 
-// Import routes
-import apiRoutes from "./routes";
+// Import routes - using Neon PostgreSQL
+import neonApiRoutes from "./routes/neon";
 
-// Initialize database
-import "./database/config";
+// Initialize Neon database
+import { testConnection } from "./database/neon-config";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
