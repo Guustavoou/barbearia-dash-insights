@@ -126,13 +126,13 @@ function onboardingReducer(
     case "SET_CURRENT_STEP":
       return {
         ...state,
-        currentStep: Math.max(0, Math.min(4, action.payload)),
+        currentStep: Math.max(0, Math.min(5, action.payload)),
       };
 
     case "NEXT_STEP":
       return {
         ...state,
-        currentStep: Math.min(4, state.currentStep + 1),
+        currentStep: Math.min(5, state.currentStep + 1),
       };
 
     case "PREVIOUS_STEP":
