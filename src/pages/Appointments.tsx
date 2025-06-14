@@ -688,3 +688,5 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
     </div>
   );
 };
+
+export default Appointments;
