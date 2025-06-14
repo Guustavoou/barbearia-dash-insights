@@ -10,6 +10,13 @@ import { WorkingHours } from "@/lib/onboardingTypes";
 
 export const ScheduleStep: React.FC = () => {
   const { data, updateWorkingHours, nextStep, previousStep } = useOnboarding();
+
+  const handleNextStep = () => {
+    console.log("ScheduleStep: Tentando avançar para próxima etapa");
+    console.log("Current step:", data.currentStep);
+    console.log("Working hours:", localHours);
+    nextStep();
+  };
   const [localHours, setLocalHours] = useState<WorkingHours[]>(
     data.workingHours,
   );
@@ -343,7 +350,10 @@ export const ScheduleStep: React.FC = () => {
         <Button variant="outline" onClick={previousStep}>
           Voltar
         </Button>
-        <Button onClick={nextStep} className="bg-blue-600 hover:bg-blue-700">
+        <Button
+          onClick={handleNextStep}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
           Próximo: Revisão
         </Button>
       </div>
