@@ -7,8 +7,9 @@ import { cn } from "@/lib/unclicUtils";
 import { ModernSidebar } from "@/components/ModernSidebar";
 import { ModernHeader } from "@/components/ModernHeader";
 import { RightSidebar } from "@/components/RightSidebar";
-import { ModernDashboard } from "@/pages/ModernDashboard";
-import { Dashboard } from "@/pages/Dashboard";
+import { OptimizedDashboard } from "@/pages/OptimizedDashboard";
+import { QuickActionsHub } from "@/components/QuickActionsHub";
+import { SmartNotifications } from "@/components/SmartNotifications";
 import { Clients } from "@/pages/Clients";
 import { Appointments } from "@/pages/Appointments";
 import { Stock } from "@/pages/Stock";
@@ -43,7 +44,12 @@ const UnclicAppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(isDesktop);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("darkMode") === "true";
+    }
+    return false;
+  });
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute
@@ -51,6 +57,18 @@ const UnclicAppContent: React.FC = () => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Persist dark mode preference
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", darkMode.toString());
+      if (darkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  }, [darkMode]);
 
   // Handle responsive changes
   useEffect(() => {
@@ -103,7 +121,7 @@ const UnclicAppContent: React.FC = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "dashboard":
-        return <ModernDashboard darkMode={darkMode} />;
+        return <OptimizedDashboard darkMode={darkMode} />;
       case "clients":
         return <Clients darkMode={darkMode} />;
       case "appointments":
@@ -131,24 +149,24 @@ const UnclicAppContent: React.FC = () => {
       case "documents":
         return <Documents darkMode={darkMode} />;
       default:
-        return <ModernDashboard darkMode={darkMode} />;
+        return <OptimizedDashboard darkMode={darkMode} />;
     }
   };
 
   // Show loading screen while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-green-400 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-4 animate-pulse">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
+              <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce"></div>
             </div>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             Unclic Manager
           </h2>
-          <p className="text-gray-600">Carregando...</p>
+          <p className="text-gray-600 dark:text-gray-400">Carregando...</p>
         </div>
       </div>
     );
@@ -182,7 +200,7 @@ const UnclicAppContent: React.FC = () => {
           {/* Mobile Backdrop */}
           {isMobile && !sidebarCollapsed && (
             <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
               onClick={() => setSidebarCollapsed(true)}
             />
           )}
@@ -240,6 +258,9 @@ const UnclicAppContent: React.FC = () => {
             onToggle={() => setRightSidebarOpen(!rightSidebarOpen)}
             darkMode={darkMode}
           />
+
+          {/* Quick Actions Hub */}
+          <QuickActionsHub onPageChange={setCurrentPage} />
         </div>
       );
 
