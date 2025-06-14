@@ -25,17 +25,20 @@ import { OnboardingPage } from "@/pages/Onboarding";
 import { SuccessStep } from "@/components/onboarding/SuccessStep";
 import { PageType } from "@/lib/types";
 
+// Multi-tenant providers
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { MultiTenantOnboardingProvider } from "@/contexts/MultiTenantOnboardingContext";
+
 const queryClient = new QueryClient();
 
 type AppState = "login" | "onboarding" | "main" | "success";
 
-const UnclicApp: React.FC = () => {
+const UnclicAppContent: React.FC = () => {
+  const { session, isLoading, logout } = useAuth();
   const [appState, setAppState] = useState<AppState>("login");
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute
@@ -53,98 +56,37 @@ const UnclicApp: React.FC = () => {
     }
   }, [darkMode]);
 
-  // Check authentication and onboarding status on mount
+  // Handle auth state changes
   useEffect(() => {
-    const checkAuthStatus = () => {
-      // Check if user is authenticated (mock for now)
-      const authToken = localStorage.getItem("unclic-auth-token");
-      const onboardingCompleted = localStorage.getItem(
-        "unclic-onboarding-completed",
-      );
+    if (isLoading) return;
 
-      if (authToken) {
-        setIsAuthenticated(true);
-        if (onboardingCompleted) {
-          setHasCompletedOnboarding(true);
-          setAppState("main");
-        } else {
-          setAppState("onboarding");
-        }
-      } else {
-        setAppState("login");
-      }
-    };
+    if (!session) {
+      setAppState("login");
+      return;
+    }
 
-    checkAuthStatus();
-  }, []);
+    // Check if establishment needs onboarding
+    const needsOnboarding = checkIfNeedsOnboarding(session.establishment);
 
-  // Mock authentication functions
-  const handleLogin = (email: string, password: string) => {
-    // Mock login process
-    console.log("Login attempt:", email, password);
-
-    // Simulate API call
-    setTimeout(() => {
-      localStorage.setItem("unclic-auth-token", "mock-token-123");
-      setIsAuthenticated(true);
-
-      // Check if onboarding was completed
-      const onboardingCompleted = localStorage.getItem(
-        "unclic-onboarding-completed",
-      );
-
-      if (onboardingCompleted) {
-        setHasCompletedOnboarding(true);
-        setAppState("main");
-      } else {
-        setAppState("onboarding");
-      }
-    }, 1000);
-  };
-
-  const handleGoogleLogin = () => {
-    // Mock Google OAuth
-    console.log("Google login attempt");
-
-    // Simulate OAuth flow
-    setTimeout(() => {
-      localStorage.setItem("unclic-auth-token", "google-token-123");
-      setIsAuthenticated(true);
-
-      // New users typically need onboarding
+    if (needsOnboarding) {
       setAppState("onboarding");
-    }, 1500);
-  };
+    } else {
+      setAppState("main");
+    }
+  }, [session, isLoading]);
 
-  const handleCreateAccount = () => {
-    // Mock account creation
-    console.log("Create account attempt");
-
-    // Simulate account creation
-    setTimeout(() => {
-      localStorage.setItem("unclic-auth-token", "new-user-token-123");
-      setIsAuthenticated(true);
-      setAppState("onboarding");
-    }, 1000);
+  const checkIfNeedsOnboarding = (establishment: any): boolean => {
+    // Check if establishment has basic required data
+    // This could be based on missing services, professionals, etc.
+    return false; // For now, assume all establishments are complete
   };
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem("unclic-onboarding-completed", "true");
-    setHasCompletedOnboarding(true);
     setAppState("success");
   };
 
   const handleGoToDashboard = () => {
     setAppState("main");
-    setCurrentPage("dashboard");
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("unclic-auth-token");
-    localStorage.removeItem("unclic-onboarding-completed");
-    setIsAuthenticated(false);
-    setHasCompletedOnboarding(false);
-    setAppState("login");
     setCurrentPage("dashboard");
   };
 
@@ -183,24 +125,43 @@ const UnclicApp: React.FC = () => {
     }
   };
 
+  // Show loading screen while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-green-400 flex items-center justify-center mx-auto mb-4">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+              <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Unclic Manager
+          </h2>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Render based on app state
   switch (appState) {
     case "login":
-      return (
-        <LoginPage
-          onLogin={handleLogin}
-          onGoogleLogin={handleGoogleLogin}
-          onCreateAccount={handleCreateAccount}
-        />
-      );
+      return <LoginPage />;
 
     case "onboarding":
-      return <OnboardingPage onComplete={handleOnboardingComplete} />;
+      return (
+        <MultiTenantOnboardingProvider>
+          <OnboardingPage onComplete={handleOnboardingComplete} />
+        </MultiTenantOnboardingProvider>
+      );
 
     case "success":
       return <SuccessStep onGoToDashboard={handleGoToDashboard} />;
 
     case "main":
+      if (!session) return <LoginPage />;
+
       return (
         <div
           className={cn(
@@ -230,7 +191,8 @@ const UnclicApp: React.FC = () => {
               onToggleDarkMode={() => setDarkMode(!darkMode)}
               currentTime={currentTime}
               onPageChange={setCurrentPage}
-              onLogout={handleLogout}
+              onLogout={logout}
+              userSession={session}
             />
 
             {/* Page Content */}
@@ -242,16 +204,18 @@ const UnclicApp: React.FC = () => {
       );
 
     default:
-      return null;
+      return <LoginPage />;
   }
 };
 
 const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <UnclicApp />
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <UnclicAppContent />
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
