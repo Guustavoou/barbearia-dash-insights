@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import { Client, ClientSortField, ClientSortOrder } from "@/lib/types";
-import { clientsMockData } from "@/lib/mockData";
+import { clients as clientsMockData } from "@/lib/mockData";
 import {
   useClients,
   useCreateClient,
