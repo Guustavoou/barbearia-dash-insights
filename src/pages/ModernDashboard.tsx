@@ -324,7 +324,7 @@ export const ModernDashboard: React.FC<ModernDashboardProps> = ({
           value={currentStats.online_users.toString()}
           change="4"
           changeType="positive"
-          icon={UserVoice}
+          icon={Activity}
           color="green"
           period="ativos agora"
         />
