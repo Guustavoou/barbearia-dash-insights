@@ -236,7 +236,7 @@ router.delete("/transactions/:id", deleteTransaction);
 // Reports routes
 router.get("/reports/business", getBusinessReports);
 router.get("/reports/sales", getSalesPerformance);
-router.get("/reports/professionals", getProfessionalReports);
+router.get("/reports/professionals", getProfessionalPerformance);
 router.get("/reports/clients", getClientAnalysis);
 router.get("/reports/appointments", getAppointmentTrends);
 router.get("/reports/financial", getFinancialAnalysis);
