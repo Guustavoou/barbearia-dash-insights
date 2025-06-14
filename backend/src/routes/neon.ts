@@ -31,6 +31,55 @@ import {
   getQuickInsights,
 } from "../controllers/neon/dashboardController";
 
+import {
+  getServices,
+  getServiceById,
+  createService,
+  updateService,
+  deleteService,
+  getServiceStats,
+  getPopularServices,
+  getServiceCategories,
+} from "../controllers/neon/servicesController";
+
+import {
+  getProfessionals,
+  getProfessionalById,
+  createProfessional,
+  updateProfessional,
+  deleteProfessional,
+  getProfessionalStats,
+  getProfessionalPerformance,
+  getProfessionalSchedule,
+  getSpecialties,
+} from "../controllers/neon/professionalsController";
+
+import {
+  getTransactions,
+  getTransactionById,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
+  getFinancialStats,
+  getMonthlyRevenue,
+  getPaymentMethodStats,
+  getCategoryStats,
+  getFinancialSummary,
+} from "../controllers/neon/financialController";
+
+import {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getProductStats,
+  getLowStockProducts,
+  updateProductStock,
+  getProductCategories,
+  getProductBrands,
+} from "../controllers/neon/productsController";
+
 const router = Router();
 
 // Health check endpoint with Neon database test
@@ -88,40 +137,49 @@ router.post("/appointments", createAppointment);
 router.put("/appointments/:id", updateAppointment);
 router.delete("/appointments/:id", deleteAppointment);
 
-router.get("/services", (req, res) => {
-  res.json({
-    success: true,
-    message: "Services API - Coming soon with Neon PostgreSQL",
-    data: [],
-    note: "Will be implemented once Neon database is configured",
-  });
-});
+// Services routes
+router.get("/services", getServices);
+router.get("/services/stats", getServiceStats);
+router.get("/services/popular", getPopularServices);
+router.get("/services/categories", getServiceCategories);
+router.get("/services/:id", getServiceById);
+router.post("/services", createService);
+router.put("/services/:id", updateService);
+router.delete("/services/:id", deleteService);
 
-router.get("/professionals", (req, res) => {
-  res.json({
-    success: true,
-    message: "Professionals API - Coming soon with Neon PostgreSQL",
-    data: [],
-    note: "Will be implemented once Neon database is configured",
-  });
-});
+// Professionals routes
+router.get("/professionals", getProfessionals);
+router.get("/professionals/stats", getProfessionalStats);
+router.get("/professionals/specialties", getSpecialties);
+router.get("/professionals/:id", getProfessionalById);
+router.get("/professionals/:id/performance", getProfessionalPerformance);
+router.get("/professionals/:id/schedule", getProfessionalSchedule);
+router.post("/professionals", createProfessional);
+router.put("/professionals/:id", updateProfessional);
+router.delete("/professionals/:id", deleteProfessional);
 
-router.get("/products", (req, res) => {
-  res.json({
-    success: true,
-    message: "Products API - Coming soon with Neon PostgreSQL",
-    data: [],
-    note: "Will be implemented once Neon database is configured",
-  });
-});
+// Products routes
+router.get("/products", getProducts);
+router.get("/products/stats", getProductStats);
+router.get("/products/low-stock", getLowStockProducts);
+router.get("/products/categories", getProductCategories);
+router.get("/products/brands", getProductBrands);
+router.get("/products/:id", getProductById);
+router.post("/products", createProduct);
+router.put("/products/:id", updateProduct);
+router.put("/products/:id/stock", updateProductStock);
+router.delete("/products/:id", deleteProduct);
 
-router.get("/financial", (req, res) => {
-  res.json({
-    success: true,
-    message: "Financial API - Coming soon with Neon PostgreSQL",
-    data: [],
-    note: "Will be implemented once Neon database is configured",
-  });
-});
+// Financial routes
+router.get("/transactions", getTransactions);
+router.get("/transactions/stats", getFinancialStats);
+router.get("/transactions/monthly-revenue", getMonthlyRevenue);
+router.get("/transactions/payment-methods", getPaymentMethodStats);
+router.get("/transactions/categories", getCategoryStats);
+router.get("/transactions/summary", getFinancialSummary);
+router.get("/transactions/:id", getTransactionById);
+router.post("/transactions", createTransaction);
+router.put("/transactions/:id", updateTransaction);
+router.delete("/transactions/:id", deleteTransaction);
 
 export default router;
