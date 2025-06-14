@@ -258,15 +258,16 @@ async function createTables() {
     ];
 
     for (const table of tables) {
-      await sql`
-        DROP TRIGGER IF EXISTS ${sql(table + "_updated_at")} ON ${sql(table)}
-      `;
-      await sql`
-        CREATE TRIGGER ${sql(table + "_updated_at")}
-        BEFORE UPDATE ON ${sql(table)}
+      const triggerName = `${table}_updated_at`;
+
+      await sql.query(`DROP TRIGGER IF EXISTS ${triggerName} ON ${table}`);
+
+      await sql.query(`
+        CREATE TRIGGER ${triggerName}
+        BEFORE UPDATE ON ${table}
         FOR EACH ROW
         EXECUTE FUNCTION update_updated_at_column()
-      `;
+      `);
     }
 
     console.log("✅ Neon PostgreSQL tables created successfully!");
