@@ -38,10 +38,11 @@ type AppState = "login" | "onboarding" | "main" | "success";
 
 const UnclicAppContent: React.FC = () => {
   const { session, isLoading, logout } = useAuth();
+  const { isMobile, isTablet, isDesktop } = useResponsive();
   const [appState, setAppState] = useState<AppState>("login");
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(isDesktop);
   const [darkMode, setDarkMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
