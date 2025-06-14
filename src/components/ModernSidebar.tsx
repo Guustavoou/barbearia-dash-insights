@@ -55,8 +55,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
       className={cn(
         "w-full flex items-center px-3 py-2 rounded-md text-left transition-all duration-200 group relative",
         isActive
-bg-blue-50 border-l-4 border-blue-600 text-blue-600 font-medium dark:bg-blue-900/30 dark:border-blue-400 dark:text-blue-400
-          ? "bg-blue-50 border-l-3 border-blue-600 text-blue-600 font-medium dark:bg-blue-900/30 dark:border-blue-400 dark:text-blue-400"
+          ? "bg-blue-50 border-l-4 border-blue-600 text-blue-600 font-medium dark:bg-blue-900/30 dark:border-blue-400 dark:text-blue-400"
           : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700",
         collapsed ? "justify-center px-2" : "justify-start",
       )}
