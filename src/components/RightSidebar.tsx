@@ -121,8 +121,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       {/* Right Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 h-full bg-white border-l border-gray-200 transform transition-all duration-300 ease-in-out shadow-lg dark:bg-gray-800 dark:border-gray-700 z-30",
-          isOpen ? "translate-x-0 w-80" : "translate-x-full w-0",
+          "fixed top-0 right-0 h-full bg-white border-l border-gray-200 transform transition-all duration-300 ease-in-out shadow-lg dark:bg-gray-800 dark:border-gray-700 z-30 will-change-transform",
+          isOpen
+            ? "translate-x-0 w-80 opacity-100"
+            : "translate-x-full w-0 opacity-0",
         )}
       >
         <div className="h-full flex flex-col relative">
