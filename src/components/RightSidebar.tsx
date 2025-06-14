@@ -132,12 +132,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           <button
             onClick={onToggle}
             className={cn(
-              "absolute -left-12 top-4 bg-white border border-gray-200 rounded-l-lg p-2.5 flex items-center justify-center hover:bg-gray-50 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 z-40 group",
+              "absolute -left-12 top-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-l-lg p-3 flex items-center justify-center hover:bg-gray-50 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 z-40 group",
               "hidden lg:flex hover:scale-105 active:scale-95",
             )}
             title="Ocultar Agenda do Dia"
+            style={{ transform: "translateY(-50%)" }}
           >
-            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-200" />
+            <ChevronRight className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-200" />
           </button>
 
           {/* Calendar Header */}
