@@ -136,10 +136,12 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             variant="ghost"
             size="sm"
             onClick={onToggleRightSidebar}
-            className="w-10 h-10 rounded-full hidden lg:flex"
-            title="Toggle Calendar"
+            className="w-10 h-10 rounded-full hidden lg:flex relative"
+            title="Toggle Agenda do Dia"
           >
             <Calendar className="w-4 h-4" />
+            {/* Visual indicator if sidebar is closed */}
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full opacity-75"></div>
           </Button>
         )}
 
