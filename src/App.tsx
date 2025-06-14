@@ -26,6 +26,7 @@ import { LoginPage } from "@/pages/Login";
 import { OnboardingPage } from "@/pages/Onboarding";
 import { SuccessStep } from "@/components/onboarding/SuccessStep";
 import { PageType } from "@/lib/types";
+import { useResponsive } from "@/hooks/useResponsive";
 
 // Multi-tenant providers
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
