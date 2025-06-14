@@ -24,6 +24,7 @@ interface ModernSidebarProps {
   onToggleCollapse: () => void;
   darkMode: boolean;
   userSession?: any;
+  isMobile?: boolean;
 }
 
 interface MenuItemProps {
@@ -90,6 +91,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
   onToggleCollapse,
   darkMode,
   userSession,
+  isMobile = false,
 }) => {
   const menuItems = [
     { icon: BarChart3, label: "Dashboard", pageId: "dashboard" as PageType },
@@ -118,12 +120,16 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
   return (
     <aside
       className={cn(
-        "h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 shadow-sm dark:bg-gray-800 dark:border-gray-700",
+        "fixed top-0 left-0 h-full bg-white border-r border-gray-200 flex flex-col transition-all duration-300 shadow-sm dark:bg-gray-800 dark:border-gray-700 z-50",
+        // Width based on collapsed state
         collapsed ? "w-16" : "w-60",
+        // Mobile positioning
+        isMobile && collapsed && "-translate-x-full",
+        isMobile && !collapsed && "translate-x-0",
       )}
     >
       {/* Logo */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div
           className={cn(
             "transition-all duration-300",
@@ -143,7 +149,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-2 px-2">
+      <nav className="flex-1 overflow-y-auto py-2 px-2 scrollbar-hide">
         <ul className="space-y-1">
           {menuItems.map((item, index) => (
             <li key={index}>
@@ -163,7 +169,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
       </nav>
 
       {/* User Profile */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div
           className={cn(
             "flex items-center transition-all duration-300",
