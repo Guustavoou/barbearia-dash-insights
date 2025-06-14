@@ -6,7 +6,7 @@ import {
   Calendar,
   Clock,
   Star,
-  UserVoice,
+  Activity,
   CreditCard,
   Banknote,
   QrCode,
