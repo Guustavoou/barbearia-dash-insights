@@ -213,7 +213,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
             {mockAppointments.map((appointment, index) => (
               <div
-                key={appointment.id}
+                key={`appointment-${appointment.id}-${index}`}
                 className={cn(
                   "rounded-lg p-3 border transition-colors",
                   index === 0
