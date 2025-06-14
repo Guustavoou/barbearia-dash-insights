@@ -1,11 +1,12 @@
+
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, User, Mail, Phone, MapPin, FileText, Briefcase } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
-import { cities } from "@/lib/mockData";
 
 interface NewClientModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAddClient: (clientData: any) => void;
   darkMode: boolean;
 }
 
@@ -13,8 +14,8 @@ interface FormData {
   name: string;
   email: string;
   phone: string;
-  cpf: string;
   city: string;
+  cpf: string;
   profession: string;
   notes: string;
 }
@@ -22,29 +23,56 @@ interface FormData {
 export const NewClientModal: React.FC<NewClientModalProps> = ({
   isOpen,
   onClose,
+  onAddClient,
   darkMode,
 }) => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
+    city: "",
     cpf: "",
-    city: "São Paulo",
     profession: "",
     notes: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle the form submission
-    console.log("New client data:", formData);
-    onClose();
+    setLoading(true);
+
+    try {
+      await onAddClient({
+        name: formData.name,
+        email: formData.email || null,
+        phone: formData.phone || null,
+        city: formData.city || null,
+        cpf: formData.cpf || null,
+        profession: formData.profession || null,
+        notes: formData.notes || null,
+        status: 'ativo',
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        city: "",
+        cpf: "",
+        profession: "",
+        notes: "",
+      });
+    } catch (error) {
+      console.error('Error adding client:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -95,7 +123,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Name */}
+          {/* Name - Required */}
           <div>
             <label
               htmlFor="name"
@@ -104,7 +132,8 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                 darkMode ? "text-gray-300" : "text-gray-700",
               )}
             >
-              Nome completo *
+              <User className="inline h-4 w-4 mr-2" />
+              Nome *
             </label>
             <input
               type="text"
@@ -116,74 +145,101 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
               className={cn(
                 "w-full px-3 py-2 rounded-lg border transition-colors",
                 darkMode
-                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
-                  : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500",
+                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
                 "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
               )}
-              placeholder="Digite o nome completo"
+              placeholder="Nome completo do cliente"
             />
           </div>
 
-          {/* Email and Phone */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="email"
-                className={cn(
-                  "block text-sm font-medium mb-2",
-                  darkMode ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                E-mail *
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                className={cn(
-                  "w-full px-3 py-2 rounded-lg border transition-colors",
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-                )}
-                placeholder="email@exemplo.com"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="phone"
-                className={cn(
-                  "block text-sm font-medium mb-2",
-                  darkMode ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Telefone *
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                required
-                value={formData.phone}
-                onChange={handleInputChange}
-                className={cn(
-                  "w-full px-3 py-2 rounded-lg border transition-colors",
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-                )}
-                placeholder="(11) 99999-9999"
-              />
-            </div>
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="email"
+              className={cn(
+                "block text-sm font-medium mb-2",
+                darkMode ? "text-gray-300" : "text-gray-700",
+              )}
+            >
+              <Mail className="inline h-4 w-4 mr-2" />
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className={cn(
+                "w-full px-3 py-2 rounded-lg border transition-colors",
+                darkMode
+                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+              )}
+              placeholder="email@exemplo.com"
+            />
           </div>
 
-          {/* CPF and Profession */}
+          {/* Phone */}
+          <div>
+            <label
+              htmlFor="phone"
+              className={cn(
+                "block text-sm font-medium mb-2",
+                darkMode ? "text-gray-300" : "text-gray-700",
+              )}
+            >
+              <Phone className="inline h-4 w-4 mr-2" />
+              Telefone
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className={cn(
+                "w-full px-3 py-2 rounded-lg border transition-colors",
+                darkMode
+                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+              )}
+              placeholder="(11) 99999-9999"
+            />
+          </div>
+
+          {/* City and CPF */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="city"
+                className={cn(
+                  "block text-sm font-medium mb-2",
+                  darkMode ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                <MapPin className="inline h-4 w-4 mr-2" />
+                Cidade
+              </label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className={cn(
+                  "w-full px-3 py-2 rounded-lg border transition-colors",
+                  darkMode
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+                )}
+                placeholder="São Paulo"
+              />
+            </div>
             <div>
               <label
                 htmlFor="cpf"
@@ -192,6 +248,7 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   darkMode ? "text-gray-300" : "text-gray-700",
                 )}
               >
+                <FileText className="inline h-4 w-4 mr-2" />
                 CPF
               </label>
               <input
@@ -203,56 +260,32 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                 className={cn(
                   "w-full px-3 py-2 rounded-lg border transition-colors",
                   darkMode
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500",
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
                   "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
                 )}
                 placeholder="000.000.000-00"
               />
             </div>
-            <div>
-              <label
-                htmlFor="profession"
-                className={cn(
-                  "block text-sm font-medium mb-2",
-                  darkMode ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                Profissão
-              </label>
-              <input
-                type="text"
-                id="profession"
-                name="profession"
-                value={formData.profession}
-                onChange={handleInputChange}
-                className={cn(
-                  "w-full px-3 py-2 rounded-lg border transition-colors",
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-                )}
-                placeholder="Digite a profissão"
-              />
-            </div>
           </div>
 
-          {/* City */}
+          {/* Profession */}
           <div>
             <label
-              htmlFor="city"
+              htmlFor="profession"
               className={cn(
                 "block text-sm font-medium mb-2",
                 darkMode ? "text-gray-300" : "text-gray-700",
               )}
             >
-              Cidade
+              <Briefcase className="inline h-4 w-4 mr-2" />
+              Profissão
             </label>
-            <select
-              id="city"
-              name="city"
-              value={formData.city}
+            <input
+              type="text"
+              id="profession"
+              name="profession"
+              value={formData.profession}
               onChange={handleInputChange}
               className={cn(
                 "w-full px-3 py-2 rounded-lg border transition-colors",
@@ -261,13 +294,8 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
                   : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
                 "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
               )}
-            >
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
+              placeholder="Ex: Engenheiro, Professor, etc."
+            />
           </div>
 
           {/* Notes */}
@@ -303,20 +331,26 @@ export const NewClientModal: React.FC<NewClientModalProps> = ({
             <button
               type="button"
               onClick={onClose}
+              disabled={loading}
               className={cn(
                 "flex-1 px-4 py-2 rounded-lg border transition-colors",
                 darkMode
                   ? "border-gray-600 text-gray-300 hover:bg-gray-700"
                   : "border-gray-300 text-gray-600 hover:bg-gray-50",
+                loading && "opacity-50 cursor-not-allowed",
               )}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={loading || !formData.name.trim()}
+              className={cn(
+                "flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors",
+                (loading || !formData.name.trim()) && "opacity-50 cursor-not-allowed",
+              )}
             >
-              Salvar Cliente
+              {loading ? "Salvando..." : "Salvar Cliente"}
             </button>
           </div>
         </form>
