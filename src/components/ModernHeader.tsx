@@ -139,9 +139,9 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             size="sm"
             onClick={onToggleRightSidebar}
             className={cn(
-              "w-10 h-10 rounded-full hidden lg:flex relative transition-all duration-200",
+              "w-10 h-10 rounded-full hidden lg:flex relative transition-all duration-300 group",
               rightSidebarOpen
-                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-inner"
                 : "hover:bg-gray-100 dark:hover:bg-gray-700",
             )}
             title={

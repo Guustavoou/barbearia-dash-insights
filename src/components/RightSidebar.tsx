@@ -106,11 +106,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         <div className="fixed top-4 right-4 z-50 hidden lg:block">
           <Button
             onClick={onToggle}
-            className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+            className="w-14 h-14 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-110 active:scale-95 group"
             variant="ghost"
             title="Mostrar Agenda do Dia"
           >
-            <CalendarIcon className="w-5 h-5" />
+            <div className="relative">
+              <CalendarIcon className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
+            </div>
           </Button>
         </div>
       )}
@@ -127,12 +130,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           <button
             onClick={onToggle}
             className={cn(
-              "absolute -left-10 top-4 bg-white border border-gray-200 rounded-l-lg p-2 flex items-center justify-center hover:bg-gray-50 shadow-sm transition-all duration-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 z-40",
-              "hidden lg:flex group",
+              "absolute -left-12 top-4 bg-white border border-gray-200 rounded-l-lg p-2.5 flex items-center justify-center hover:bg-gray-50 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 z-40 group",
+              "hidden lg:flex hover:scale-105 active:scale-95",
             )}
             title="Ocultar Agenda do Dia"
           >
-            <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-200" />
           </button>
 
           {/* Calendar Header */}
