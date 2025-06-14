@@ -64,7 +64,7 @@ export const getServices = async (req: Request, res: Response) => {
     // Get services with pagination
     const services = await sql`
       SELECT
-        id, name, description, category, price, duration, commission_rate,
+        id, name, description, category, price, duration,
         is_active, popularity, average_rating, total_bookings, image_url,
         created_at, updated_at
       FROM services
