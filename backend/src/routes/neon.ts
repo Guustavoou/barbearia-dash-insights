@@ -80,6 +80,17 @@ import {
   getProductBrands,
 } from "../controllers/neon/productsController";
 
+import {
+  getBusinessReports,
+  getSalesPerformance,
+  getProfessionalPerformance as getReportProfessionalPerformance,
+  getClientAnalysis,
+  getAppointmentTrends,
+  getFinancialAnalysis,
+  getInventoryReport,
+  exportReportData,
+} from "../controllers/neon/reportsController";
+
 const router = Router();
 
 // Health check endpoint with Neon database test
@@ -181,5 +192,15 @@ router.get("/transactions/:id", getTransactionById);
 router.post("/transactions", createTransaction);
 router.put("/transactions/:id", updateTransaction);
 router.delete("/transactions/:id", deleteTransaction);
+
+// Reports routes
+router.get("/reports/business", getBusinessReports);
+router.get("/reports/sales", getSalesPerformance);
+router.get("/reports/professionals", getReportProfessionalPerformance);
+router.get("/reports/clients", getClientAnalysis);
+router.get("/reports/appointments", getAppointmentTrends);
+router.get("/reports/financial", getFinancialAnalysis);
+router.get("/reports/inventory", getInventoryReport);
+router.get("/reports/export", exportReportData);
 
 export default router;
