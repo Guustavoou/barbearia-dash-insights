@@ -55,6 +55,19 @@ import {
 } from "../controllers/neon/professionalsController";
 
 import {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getProductStats,
+  getLowStockProducts,
+  updateProductStock,
+  getProductCategories,
+  getProductBrands,
+} from "../controllers/neon/productsController";
+
+import {
   getTransactions,
   getTransactionById,
   createTransaction,
@@ -68,51 +81,6 @@ import {
 } from "../controllers/neon/financialController";
 
 import {
-  getServices,
-  getServiceById,
-  createService,
-  updateService,
-  deleteService,
-  getServiceStats,
-  getPopularServices,
-  getServiceCategories,
-} from "../controllers/neon/servicesController";
-import {
-  getProfessionals,
-  getProfessionalById,
-  createProfessional,
-  updateProfessional,
-  deleteProfessional,
-  getProfessionalStats,
-  getProfessionalPerformance,
-  getProfessionalSchedule,
-  getSpecialties,
-} from "../controllers/neon/professionalsController";
-import {
-  getProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getProductStats,
-  getLowStockProducts,
-  updateProductStock,
-  getProductCategories,
-  getProductBrands,
-} from "../controllers/neon/productsController";
-import {
-  getTransactions,
-  getTransactionById,
-  createTransaction,
-  updateTransaction,
-  deleteTransaction,
-  getFinancialStats,
-  getMonthlyRevenue,
-  getPaymentMethodStats,
-  getCategoryStats,
-  getFinancialSummary,
-} from "../controllers/neon/financialController";
-import {
   getBusinessReports,
   getSalesPerformance,
   getProfessionalPerformance,
@@ -122,6 +90,7 @@ import {
   getInventoryReport,
   exportReportData,
 } from "../controllers/neon/reportsController";
+
 import {
   createBusiness,
   createServices,
@@ -147,8 +116,8 @@ router.get("/health", async (req, res) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       database: {
-        type: "Neon PostgreSQL",
         status: "connected",
+        type: result[0].database,
         server_time: result[0].timestamp,
       },
     });
@@ -156,20 +125,11 @@ router.get("/health", async (req, res) => {
     console.error("Health check failed:", error);
     res.status(500).json({
       success: false,
-      message: "Database connection failed",
+      message: "Server is unhealthy",
       error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
-
-// Client routes
-router.get("/clients", getClients);
-router.get("/clients/stats", getClientStats);
-router.get("/clients/birthdays", getClientBirthdays);
-router.get("/clients/:id", getClientById);
-router.post("/clients", createClient);
-router.put("/clients/:id", updateClient);
-router.delete("/clients/:id", deleteClient);
 
 // Dashboard routes
 router.get("/dashboard/stats", getDashboardStats);
@@ -179,7 +139,16 @@ router.get("/dashboard/upcoming-appointments", getUpcomingAppointments);
 router.get("/dashboard/birthdays", getBirthdaysThisMonth);
 router.get("/dashboard/insights", getQuickInsights);
 
-// Appointment routes
+// Clients routes
+router.get("/clients", getClients);
+router.get("/clients/stats", getClientStats);
+router.get("/clients/birthdays", getClientBirthdays);
+router.get("/clients/:id", getClientById);
+router.post("/clients", createClient);
+router.put("/clients/:id", updateClient);
+router.delete("/clients/:id", deleteClient);
+
+// Appointments routes
 router.get("/appointments", getAppointments);
 router.get("/appointments/stats", getAppointmentStats);
 router.get("/appointments/available-slots", getAvailableSlots);
@@ -201,9 +170,9 @@ router.delete("/services/:id", deleteService);
 // Professionals routes
 router.get("/professionals", getProfessionals);
 router.get("/professionals/stats", getProfessionalStats);
+router.get("/professionals/performance", getProfessionalPerformance);
 router.get("/professionals/specialties", getSpecialties);
 router.get("/professionals/:id", getProfessionalById);
-router.get("/professionals/:id/performance", getProfessionalPerformance);
 router.get("/professionals/:id/schedule", getProfessionalSchedule);
 router.post("/professionals", createProfessional);
 router.put("/professionals/:id", updateProfessional);
