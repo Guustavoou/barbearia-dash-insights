@@ -41,6 +41,7 @@ import {
 } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 interface ModernDashboardProps {
   darkMode: boolean;
