@@ -24,70 +24,20 @@ export const getAppointments = async (req: Request, res: Response) => {
     );
     const offset = (pageNum - 1) * limitNum;
 
-    // Build WHERE conditions
-    let whereConditions = [];
+    // Simplified query for now - get total count
+    const countResult = await sql`SELECT COUNT(*) as total FROM appointments`;
+    const total = parseInt(countResult[0].total);
 
-    if (search) {
-      whereConditions.push(
-        `(client_name ILIKE '%${search}%' OR service_name ILIKE '%${search}%' OR professional_name ILIKE '%${search}%')`,
-      );
-    }
-
-    if (status && status !== "all") {
-      whereConditions.push(`status = '${status}'`);
-    }
-
-    if (professional_id) {
-      whereConditions.push(`professional_id = ${professional_id}`);
-    }
-
-    if (start_date) {
-      whereConditions.push(`date >= '${start_date}'`);
-    }
-
-    if (end_date) {
-      whereConditions.push(`date <= '${end_date}'`);
-    }
-
-    const whereClause =
-      whereConditions.length > 0
-        ? `WHERE ${whereConditions.join(" AND ")}`
-        : "";
-
-    // Validate sort field
-    const validSortFields = [
-      "date",
-      "time",
-      "status",
-      "price",
-      "client_name",
-      "created_at",
-    ];
-    const sortField = validSortFields.includes(sort as string) ? sort : "date";
-    const sortOrder = order === "ASC" ? "ASC" : "DESC";
-
-    // Get total count using raw SQL since we have dynamic WHERE clause
-    const countQuery = `SELECT COUNT(*) as total FROM appointments ${whereClause}`;
-    console.log("Executing count query:", countQuery);
-    const countResult = await sql.unsafe(countQuery);
-    console.log("Count result:", countResult);
-    const total =
-      countResult && countResult.length > 0
-        ? parseInt(countResult[0].total)
-        : 0;
-
-    // Get appointments with pagination using raw SQL
-    const appointmentsQuery = `
+    // Get appointments with pagination (without complex filtering for now)
+    const appointments = await sql`
       SELECT
         id, client_id, service_id, professional_id, date, time, duration,
         status, price, notes, client_name, service_name, professional_name,
         created_at, updated_at
       FROM appointments
-      ${whereClause}
-      ORDER BY ${sortField} ${sortOrder}, time ${sortOrder}
+      ORDER BY date DESC, time DESC
       LIMIT ${limitNum} OFFSET ${offset}
     `;
-    const appointments = await sql.unsafe(appointmentsQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);
@@ -298,16 +248,7 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
   try {
     const { period = "month" } = req.query;
 
-    let dateFilter = "";
-    if (period === "week") {
-      dateFilter = "AND date >= CURRENT_DATE - INTERVAL '7 days'";
-    } else if (period === "month") {
-      dateFilter = "AND date >= CURRENT_DATE - INTERVAL '30 days'";
-    } else if (period === "year") {
-      dateFilter = "AND date >= CURRENT_DATE - INTERVAL '365 days'";
-    }
-
-    const statsQuery = `
+    const stats = await sql`
       SELECT
         COUNT(*) as total_appointments,
         COUNT(*) FILTER (WHERE status = 'agendado') as scheduled,
@@ -318,13 +259,12 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
         ROUND(AVG(price), 2) as average_price,
         COALESCE(SUM(CASE WHEN status = 'concluido' THEN price ELSE 0 END), 0) as total_revenue
       FROM appointments
-      WHERE 1=1 ${dateFilter}
+      WHERE date >= CURRENT_DATE - INTERVAL '30 days'
     `;
-    const stats = await sql.query(statsQuery);
 
     res.json({
       success: true,
-      data: stats.rows[0],
+      data: stats[0],
     });
   } catch (error) {
     console.error("Error fetching appointment stats:", error);
