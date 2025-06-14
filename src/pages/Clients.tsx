@@ -700,5 +700,3 @@ export const Clients: React.FC<ClientsProps> = ({ darkMode }) => {
     </div>
   );
 };
-
-export default Clients;
