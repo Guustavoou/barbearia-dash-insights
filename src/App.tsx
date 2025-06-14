@@ -40,6 +40,7 @@ const UnclicAppContent: React.FC = () => {
   const [appState, setAppState] = useState<AppState>("login");
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
