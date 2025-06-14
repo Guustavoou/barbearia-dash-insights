@@ -49,6 +49,14 @@ const UnclicAppContent: React.FC = () => {
     persistKey: "unclicRightSidebar",
     isMobile,
   });
+
+  // Debug log para verificar estado
+  console.log("App.tsx - rightSidebar state:", {
+    isOpen: rightSidebar.isOpen,
+    isDesktop,
+    isMobile,
+    isTablet,
+  });
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("darkMode") === "true";
