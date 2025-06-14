@@ -115,7 +115,7 @@ import {
 import {
   getBusinessReports,
   getSalesPerformance,
-  getProfessionalReports,
+  getProfessionalPerformance,
   getClientAnalysis,
   getAppointmentTrends,
   getFinancialAnalysis,
