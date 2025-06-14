@@ -14,6 +14,8 @@ import {
   Printer,
   Share,
   RefreshCw,
+  Star,
+  Award,
 } from "lucide-react";
 import {
   BarChart,
