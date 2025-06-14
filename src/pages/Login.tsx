@@ -4,35 +4,68 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface LoginPageProps {
-  onLogin: (email: string, password: string) => void;
-  onGoogleLogin: () => void;
-  onCreateAccount: () => void;
-  isLoading?: boolean;
-}
-
-export const LoginPage: React.FC<LoginPageProps> = ({
-  onLogin,
-  onGoogleLogin,
-  onCreateAccount,
-  isLoading = false,
-}) => {
+export const LoginPage: React.FC = () => {
+  const { login, loginWithGoogle, signup, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [establishmentName, setEstablishmentName] = useState("");
+  const [establishmentPhone, setEstablishmentPhone] = useState("");
+  const [establishmentAddress, setEstablishmentAddress] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSignUp) {
-      if (password === confirmPassword) {
-        onCreateAccount();
+    setError(null);
+
+    try {
+      if (isSignUp) {
+        if (password !== confirmPassword) {
+          setError("As senhas não coincidem");
+          return;
+        }
+
+        if (
+          !name ||
+          !establishmentName ||
+          !establishmentPhone ||
+          !establishmentAddress
+        ) {
+          setError("Todos os campos são obrigatórios para criar uma conta");
+          return;
+        }
+
+        await signup({
+          name,
+          email,
+          password,
+          establishmentName,
+          establishmentPhone,
+          establishmentAddress,
+        });
+      } else {
+        await login(email, password);
       }
-    } else {
-      onLogin(email, password);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Erro desconhecido");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    try {
+      await loginWithGoogle();
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Erro no login com Google",
+      );
     }
   };
 
@@ -66,13 +99,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <div className="w-6 h-6 rounded-full bg-cyan-400 flex items-center justify-center mr-3">
                 <div className="w-2 h-2 bg-blue-900 rounded-full"></div>
               </div>
-              <span>Seguro e Confiável</span>
+              <span>Multi-estabelecimentos</span>
             </div>
             <div className="flex items-center">
               <div className="w-6 h-6 rounded-full bg-cyan-400 flex items-center justify-center mr-3">
                 <div className="w-2 h-2 bg-blue-900 rounded-full"></div>
               </div>
-              <span>Rápido e Eficiente</span>
+              <span>Dados isolados e seguros</span>
             </div>
             <div className="flex items-center">
               <div className="w-6 h-6 rounded-full bg-cyan-400 flex items-center justify-center mr-3">
@@ -94,17 +127,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </h2>
               <p className="text-gray-600 mt-2">
                 {isSignUp
-                  ? "Crie sua conta para acessar o sistema"
-                  : "Faça login ou crie uma conta para acessar o sistema"}
+                  ? "Crie sua conta e estabelecimento"
+                  : "Faça login para acessar seu estabelecimento"}
               </p>
             </CardHeader>
 
             <CardContent className="space-y-6">
+              {/* Error Alert */}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
               {/* Tabs */}
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   type="button"
-                  onClick={() => setIsSignUp(false)}
+                  onClick={() => {
+                    setIsSignUp(false);
+                    setError(null);
+                  }}
                   className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                     !isSignUp
                       ? "bg-white text-gray-900 shadow-sm"
@@ -115,7 +159,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsSignUp(true)}
+                  onClick={() => {
+                    setIsSignUp(true);
+                    setError(null);
+                  }}
                   className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                     isSignUp
                       ? "bg-white text-gray-900 shadow-sm"
@@ -127,6 +174,67 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Sign up fields */}
+                {isSignUp && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nome Completo</Label>
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Seu nome completo"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="establishmentName">
+                        Nome do Estabelecimento
+                      </Label>
+                      <Input
+                        id="establishmentName"
+                        type="text"
+                        placeholder="Nome do seu salão/barbearia"
+                        value={establishmentName}
+                        onChange={(e) => setEstablishmentName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="establishmentPhone">
+                        Telefone do Estabelecimento
+                      </Label>
+                      <Input
+                        id="establishmentPhone"
+                        type="tel"
+                        placeholder="(11) 99999-9999"
+                        value={establishmentPhone}
+                        onChange={(e) => setEstablishmentPhone(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="establishmentAddress">
+                        Endereço do Estabelecimento
+                      </Label>
+                      <Input
+                        id="establishmentAddress"
+                        type="text"
+                        placeholder="Rua, número, bairro - Cidade/Estado"
+                        value={establishmentAddress}
+                        onChange={(e) =>
+                          setEstablishmentAddress(e.target.value)
+                        }
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -186,15 +294,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   {isLoading
                     ? "Carregando..."
                     : isSignUp
-                      ? "Criar Conta"
+                      ? "Criar Estabelecimento"
                       : "Entrar"}
                 </Button>
               </form>
-
-              <div className="text-center text-sm text-gray-500">
-                *Ainda não implementamos senhas temporárias e nem enviar e-mail
-                de recuperação
-              </div>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -211,7 +314,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={onGoogleLogin}
+                onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
@@ -232,11 +335,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Entrar com Google
+                Continuar com Google
               </Button>
 
               <div className="text-center text-xs text-gray-500">
-                © 2024 Unclic Manager. Todos os direitos reservados.
+                {isSignUp ? (
+                  <p>
+                    Ao criar uma conta, você aceita nossos{" "}
+                    <a href="#" className="text-blue-600 hover:underline">
+                      Termos de Serviço
+                    </a>{" "}
+                    e{" "}
+                    <a href="#" className="text-blue-600 hover:underline">
+                      Política de Privacidade
+                    </a>
+                  </p>
+                ) : (
+                  <p>© 2024 Unclic Manager. Todos os direitos reservados.</p>
+                )}
               </div>
             </CardContent>
           </Card>

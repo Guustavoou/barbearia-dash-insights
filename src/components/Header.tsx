@@ -36,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentTime,
   onPageChange,
   onLogout,
+  userSession,
 }) => {
   return (
     <header
@@ -47,8 +48,25 @@ export const Header: React.FC<HeaderProps> = ({
       )}
     >
       <div className="flex items-center justify-between px-6 py-4">
-        {/* Left side - Time and Search */}
+        {/* Left side - Establishment, Time and Search */}
         <div className="flex items-center gap-4">
+          {/* Establishment Info */}
+          {userSession && (
+            <div
+              className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg",
+                darkMode
+                  ? "bg-gray-800 text-gray-300"
+                  : "bg-blue-50 text-blue-700 border border-blue-200",
+              )}
+            >
+              <Building2 className="h-4 w-4" />
+              <span className="text-sm font-medium max-w-32 truncate">
+                {userSession.establishment.name}
+              </span>
+            </div>
+          )}
+
           <div
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 rounded-lg",
@@ -123,15 +141,21 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-64">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    Maria Silva
+                    {userSession?.user.name || "Usuário"}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    maria@salao.com
+                    {userSession?.user.email || ""}
                   </p>
+                  <div className="flex items-center mt-2 pt-2 border-t">
+                    <Building2 className="h-3 w-3 mr-1 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">
+                      {userSession?.establishment.name || "Estabelecimento"}
+                    </p>
+                  </div>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
