@@ -44,7 +44,11 @@ const UnclicAppContent: React.FC = () => {
   const [appState, setAppState] = useState<AppState>("login");
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(isDesktop);
+  const rightSidebar = useRightSidebar({
+    defaultOpen: isDesktop,
+    persistKey: "unclicRightSidebar",
+    isMobile,
+  });
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("darkMode") === "true";
