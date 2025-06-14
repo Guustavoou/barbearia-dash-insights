@@ -52,6 +52,20 @@ const UnclicAppContent: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Handle responsive changes
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(true);
+      setRightSidebarOpen(false);
+    } else if (isTablet) {
+      setSidebarCollapsed(false);
+      setRightSidebarOpen(false);
+    } else {
+      setSidebarCollapsed(false);
+      setRightSidebarOpen(true);
+    }
+  }, [isMobile, isTablet, isDesktop]);
+
   // Apply dark mode class to document
   useEffect(() => {
     if (darkMode) {
