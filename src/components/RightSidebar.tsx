@@ -157,9 +157,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1 text-center mb-2">
-            {["D", "S", "T", "Q", "Q", "S", "S"].map((day) => (
+            {["D", "S", "T", "Q", "Q", "S", "S"].map((day, index) => (
               <div
-                key={day}
+                key={`day-header-${index}`}
                 className="text-xs font-medium text-gray-500 dark:text-gray-400"
               >
                 {day}
