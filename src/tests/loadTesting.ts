@@ -109,14 +109,16 @@ export class UnclicLoadTester {
           total_visits: Math.floor(Math.random() * 50),
           total_spent: Math.random() * 2000,
         });
-      });
+      }
 
       // Agendamentos por estabelecimento (500 agendamentos cada)
-      for (let appointmentIndex = 1; appointmentIndex <= 500; appointmentIndex++) {
+      for (
+        let appointmentIndex = 1;
+        appointmentIndex <= 500;
+        appointmentIndex++
+      ) {
         const date = new Date();
-        date.setDate(
-          date.getDate() + Math.floor(Math.random() * 60) - 30
-        ); // ±30 dias
+        date.setDate(date.getDate() + Math.floor(Math.random() * 60) - 30); // ±30 dias
 
         appointments.push({
           id: `appointment_${i}_${appointmentIndex}`,
@@ -161,7 +163,7 @@ export class UnclicLoadTester {
         try {
           // Simula delay real de API
           await new Promise((resolve) =>
-            setTimeout(resolve, Math.random() * 100)
+            setTimeout(resolve, Math.random() * 100),
           );
 
           // Simula validação de login
@@ -187,7 +189,9 @@ export class UnclicLoadTester {
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
       console.log(`   • Tempo total: ${duration}ms`);
-      console.log(`   • Taxa de sucesso: ${((successCount / testData.users.length) * 100).toFixed(2)}%`);
+      console.log(
+        `   • Taxa de sucesso: ${((successCount / testData.users.length) * 100).toFixed(2)}%`,
+      );
 
       return {
         testName: "Mass Login Test",
@@ -219,7 +223,9 @@ export class UnclicLoadTester {
 
     try {
       console.log(`🚀 Iniciando teste de onboarding em massa...`);
-      console.log(`📊 Testando ${this.config.establishments_count} estabelecimentos`);
+      console.log(
+        `📊 Testando ${this.config.establishments_count} estabelecimentos`,
+      );
 
       const onboardingPromises = [];
 
@@ -230,23 +236,23 @@ export class UnclicLoadTester {
               // Simula cada etapa do onboarding
               await this.simulateOnboardingStep(
                 "business_info",
-                100 + Math.random() * 200
+                100 + Math.random() * 200,
               );
               await this.simulateOnboardingStep(
                 "services",
-                200 + Math.random() * 300
+                200 + Math.random() * 300,
               );
               await this.simulateOnboardingStep(
                 "professionals",
-                150 + Math.random() * 250
+                150 + Math.random() * 250,
               );
               await this.simulateOnboardingStep(
                 "schedule",
-                100 + Math.random() * 150
+                100 + Math.random() * 150,
               );
               await this.simulateOnboardingStep(
                 "review",
-                50 + Math.random() * 100
+                50 + Math.random() * 100,
               );
 
               successCount++;
@@ -255,7 +261,7 @@ export class UnclicLoadTester {
               errorCount++;
               return { success: false, error, establishment: i };
             }
-          })()
+          })(),
         );
       }
 
@@ -267,7 +273,9 @@ export class UnclicLoadTester {
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
       console.log(`   • Tempo total: ${duration}ms`);
-      console.log(`   • Tempo médio por onboarding: ${Math.round(duration / this.config.establishments_count)}ms`);
+      console.log(
+        `   • Tempo médio por onboarding: ${Math.round(duration / this.config.establishments_count)}ms`,
+      );
 
       return {
         testName: "Mass Onboarding Test",
@@ -277,7 +285,8 @@ export class UnclicLoadTester {
           total_establishments: this.config.establishments_count,
           successful_onboardings: successCount,
           failed_onboardings: errorCount,
-          average_time_per_onboarding: duration / this.config.establishments_count,
+          average_time_per_onboarding:
+            duration / this.config.establishments_count,
         },
       };
     } catch (error) {
@@ -293,7 +302,7 @@ export class UnclicLoadTester {
   // Simula uma etapa do onboarding
   private async simulateOnboardingStep(
     step: string,
-    delay: number
+    delay: number,
   ): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -319,7 +328,7 @@ export class UnclicLoadTester {
           try {
             // Simula criação de agendamento
             await new Promise((resolve) =>
-              setTimeout(resolve, Math.random() * 50)
+              setTimeout(resolve, Math.random() * 50),
             );
 
             // Simula validações (conflitos de horário, etc.)
@@ -334,7 +343,7 @@ export class UnclicLoadTester {
             errorCount++;
             return { success: false, error, appointment: appointment.id };
           }
-        }
+        },
       );
 
       await Promise.all(appointmentPromises);
@@ -345,7 +354,9 @@ export class UnclicLoadTester {
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
       console.log(`   • Tempo total: ${duration}ms`);
-      console.log(`   • Agendamentos por segundo: ${Math.round(testData.appointments.length / (duration / 1000))}`);
+      console.log(
+        `   • Agendamentos por segundo: ${Math.round(testData.appointments.length / (duration / 1000))}`,
+      );
 
       return {
         testName: "Mass Appointments Test",
@@ -355,7 +366,8 @@ export class UnclicLoadTester {
           total_appointments: testData.appointments.length,
           successful_appointments: successCount,
           failed_appointments: errorCount,
-          appointments_per_second: testData.appointments.length / (duration / 1000),
+          appointments_per_second:
+            testData.appointments.length / (duration / 1000),
         },
       };
     } catch (error) {
@@ -400,15 +412,24 @@ export class UnclicLoadTester {
                 await this.generateReport(
                   reportType,
                   establishment.id,
-                  testData
+                  testData,
                 );
                 successCount++;
-                return { success: true, report: reportType, establishment: establishment.id };
+                return {
+                  success: true,
+                  report: reportType,
+                  establishment: establishment.id,
+                };
               } catch (error) {
                 errorCount++;
-                return { success: false, error, report: reportType, establishment: establishment.id };
+                return {
+                  success: false,
+                  error,
+                  report: reportType,
+                  establishment: establishment.id,
+                };
               }
-            })()
+            })(),
           );
         });
       });
@@ -423,7 +444,9 @@ export class UnclicLoadTester {
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
       console.log(`   • Tempo total: ${duration}ms`);
-      console.log(`   • Relatórios por segundo: ${Math.round(totalReports / (duration / 1000))}`);
+      console.log(
+        `   • Relatórios por segundo: ${Math.round(totalReports / (duration / 1000))}`,
+      );
 
       return {
         testName: "Mass Reports Test",
@@ -452,7 +475,7 @@ export class UnclicLoadTester {
   private async generateReport(
     reportType: string,
     establishmentId: string,
-    testData: any
+    testData: any,
   ): Promise<any> {
     // Simula tempo de processamento baseado no tipo de relatório
     const processingTimes = {
@@ -470,8 +493,8 @@ export class UnclicLoadTester {
       setTimeout(
         resolve,
         processingTimes[reportType as keyof typeof processingTimes] +
-          Math.random() * 100
-      )
+          Math.random() * 100,
+      ),
     );
 
     // Simula chance de erro (3%)
@@ -549,39 +572,52 @@ export class UnclicLoadTester {
         () => this.simulateUpdateService(userId),
       ];
 
-      const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+      const randomActivity =
+        activities[Math.floor(Math.random() * activities.length)];
       await randomActivity();
 
       // Pausa entre atividades (simula comportamento real)
       await new Promise((resolve) =>
-        setTimeout(resolve, Math.random() * 2000 + 1000)
+        setTimeout(resolve, Math.random() * 2000 + 1000),
       );
     }
   }
 
   // Simula atividades específicas do usuário
   private async simulateLogin(userId: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 100 + 50));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 100 + 50),
+    );
   }
 
   private async simulateViewDashboard(userId: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 200 + 100));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 200 + 100),
+    );
   }
 
   private async simulateCreateAppointment(userId: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 300 + 200));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 300 + 200),
+    );
   }
 
   private async simulateViewClients(userId: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 150 + 100));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 150 + 100),
+    );
   }
 
   private async simulateGenerateReport(userId: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 500 + 300));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 500 + 300),
+    );
   }
 
   private async simulateUpdateService(userId: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 200 + 150));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.random() * 200 + 150),
+    );
   }
 
   // Executa suite completa de testes
@@ -638,9 +674,13 @@ export class UnclicLoadTester {
     console.log(`🎯 RELATÓRIO FINAL DOS TESTES`);
     console.log(`================================================`);
     console.log(`⏱️ Tempo total de execução: ${Math.round(totalTime / 1000)}s`);
-    console.log(`✅ Testes bem-sucedidos: ${successfulTests}/${this.results.length}`);
+    console.log(
+      `✅ Testes bem-sucedidos: ${successfulTests}/${this.results.length}`,
+    );
     console.log(`❌ Testes falharam: ${failedTests}/${this.results.length}`);
-    console.log(`📊 Taxa de sucesso: ${Math.round((successfulTests / this.results.length) * 100)}%`);
+    console.log(
+      `📊 Taxa de sucesso: ${Math.round((successfulTests / this.results.length) * 100)}%`,
+    );
     console.log(`================================================\n`);
 
     console.log(`📋 DETALHES POR TESTE:`);
