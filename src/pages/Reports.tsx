@@ -31,11 +31,13 @@ import {
 } from "recharts";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import {
-  useDashboardStats,
-  useClients,
-  useAppointments,
-  useServices,
-  useTransactions,
+  useBusinessReports,
+  useSalesPerformance,
+  useProfessionalReports,
+  useClientAnalysis,
+  useAppointmentTrends,
+  useFinancialAnalysis,
+  useInventoryReport,
 } from "@/hooks/useApi";
 
 interface ReportsProps {
@@ -85,6 +87,27 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
   const [selectedReport, setSelectedReport] = useState("overview");
 
+  // API data hooks
+  const { data: businessData, loading: businessLoading } =
+    useBusinessReports(selectedPeriod);
+  const { data: salesData, loading: salesLoading } = useSalesPerformance(
+    selectedPeriod,
+    10,
+  );
+  const { data: professionalData, loading: professionalLoading } =
+    useProfessionalReports(selectedPeriod);
+  const { data: clientData, loading: clientLoading } =
+    useClientAnalysis(selectedPeriod);
+  const { data: appointmentData, loading: appointmentLoading } =
+    useAppointmentTrends(selectedPeriod);
+  const { data: financialData, loading: financialLoading } =
+    useFinancialAnalysis(selectedPeriod);
+  const { data: inventoryData, loading: inventoryLoading } =
+    useInventoryReport();
+
+  const isLoading =
+    businessLoading || salesLoading || professionalLoading || clientLoading;
+
   const reportSections = [
     { id: "overview", name: "Visão Geral", icon: BarChart3 },
     { id: "sales", name: "Vendas", icon: TrendingUp },
@@ -99,7 +122,15 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
     change: string;
     icon: React.ElementType;
     positive?: boolean;
-  }> = ({ title, value, change, icon: Icon, positive = true }) => (
+    loading?: boolean;
+  }> = ({
+    title,
+    value,
+    change,
+    icon: Icon,
+    positive = true,
+    loading = false,
+  }) => (
     <div
       className={cn(
         "rounded-xl p-6 border",
@@ -122,7 +153,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
               darkMode ? "text-white" : "text-gray-900",
             )}
           >
-            {value}
+            {loading ? "..." : value}
           </p>
           <div className="flex items-center gap-1 mt-1">
             <TrendingUp
@@ -137,7 +168,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
                 positive ? "text-green-600" : "text-red-600",
               )}
             >
-              {change}
+              {loading ? "..." : change}
             </span>
           </div>
         </div>
@@ -248,31 +279,42 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <ReportCard
               title="Receita Total"
-              value={formatCurrency(45780)}
-              change="+15.8%"
+              value={formatCurrency(
+                businessData?.overview?.current_revenue || 0,
+              )}
+              change={`${businessData?.overview?.revenue_growth >= 0 ? "+" : ""}${businessData?.overview?.revenue_growth || 0}%`}
               icon={DollarSign}
-              positive={true}
+              positive={businessData?.overview?.revenue_growth >= 0}
+              loading={businessLoading}
             />
             <ReportCard
               title="Agendamentos"
-              value="1,247"
-              change="+12.4%"
+              value={
+                businessData?.overview?.current_appointments?.toString() || "0"
+              }
+              change={`${businessData?.overview?.appointment_growth >= 0 ? "+" : ""}${businessData?.overview?.appointment_growth || 0}%`}
               icon={Calendar}
-              positive={true}
+              positive={businessData?.overview?.appointment_growth >= 0}
+              loading={businessLoading}
             />
             <ReportCard
-              title="Novos Clientes"
-              value="89"
-              change="+8.2%"
+              title="Clientes Únicos"
+              value={
+                businessData?.overview?.current_unique_clients?.toString() ||
+                "0"
+              }
+              change={`${clientData?.overview?.total_clients || 0} total`}
               icon={Users}
               positive={true}
+              loading={businessLoading || clientLoading}
             />
             <ReportCard
-              title="Satisfação"
-              value="4.8"
-              change="+0.3"
-              icon={Star}
+              title="Margem Lucro"
+              value={`${financialData?.revenue_breakdown?.[0]?.percentage || 0}%`}
+              change="Este período"
+              icon={TrendingUp}
               positive={true}
+              loading={financialLoading}
             />
           </div>
 
@@ -297,7 +339,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
               </h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={salesByServiceData}>
+                  <BarChart data={salesData || salesByServiceData}>
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke={darkMode ? "#374151" : "#E5E7EB"}
@@ -350,7 +392,12 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
               </h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={hourlyDistributionData}>
+                  <LineChart
+                    data={
+                      appointmentData?.hourly_distribution ||
+                      hourlyDistributionData
+                    }
+                  >
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke={darkMode ? "#374151" : "#E5E7EB"}
@@ -405,54 +452,60 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
               Performance por Profissional
             </h3>
             <div className="space-y-4">
-              {salesByProfessionalData.map((professional, index) => (
-                <div
-                  key={professional.name}
-                  className={cn(
-                    "p-4 rounded-lg border",
-                    darkMode
-                      ? "bg-gray-700 border-gray-600"
-                      : "bg-gray-50 border-gray-200",
-                  )}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span
-                      className={cn(
-                        "font-medium",
-                        darkMode ? "text-white" : "text-gray-900",
-                      )}
-                    >
-                      {professional.name}
-                    </span>
-                    <div className="text-right">
-                      <div
+              {(professionalData || salesByProfessionalData).map(
+                (professional, index) => (
+                  <div
+                    key={professional.name}
+                    className={cn(
+                      "p-4 rounded-lg border",
+                      darkMode
+                        ? "bg-gray-700 border-gray-600"
+                        : "bg-gray-50 border-gray-200",
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span
                         className={cn(
-                          "font-semibold",
-                          darkMode ? "text-green-400" : "text-green-600",
+                          "font-medium",
+                          darkMode ? "text-white" : "text-gray-900",
                         )}
                       >
-                        {formatCurrency(professional.revenue)}
-                      </div>
-                      <div
-                        className={cn(
-                          "text-xs",
-                          darkMode ? "text-gray-400" : "text-gray-600",
-                        )}
-                      >
-                        {professional.services} serviços
+                        {professional.name}
+                      </span>
+                      <div className="text-right">
+                        <div
+                          className={cn(
+                            "font-semibold",
+                            darkMode ? "text-green-400" : "text-green-600",
+                          )}
+                        >
+                          {formatCurrency(
+                            professional.total_revenue || professional.revenue,
+                          )}
+                        </div>
+                        <div
+                          className={cn(
+                            "text-xs",
+                            darkMode ? "text-gray-400" : "text-gray-600",
+                          )}
+                        >
+                          {professional.total_appointments ||
+                            professional.services}{" "}
+                          serviços
+                        </div>
                       </div>
                     </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${((professional.total_appointments || professional.services) / 300) * 100}%`,
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{
-                        width: `${(professional.services / 300) * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         </>
@@ -478,7 +531,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
               Vendas por Serviço
             </h3>
             <div className="space-y-4">
-              {salesByServiceData.map((service, index) => (
+              {(salesData || salesByServiceData).map((service, index) => (
                 <div
                   key={service.name}
                   className="flex items-center justify-between"
@@ -494,7 +547,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
                         darkMode ? "text-white" : "text-gray-900",
                       )}
                     >
-                      {service.name}
+                      {service.service_name || service.name}
                     </span>
                   </div>
                   <div className="text-right">
@@ -504,7 +557,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
                         darkMode ? "text-white" : "text-gray-900",
                       )}
                     >
-                      {service.value}
+                      {service.total_appointments || service.value}
                     </div>
                     <div
                       className={cn(
@@ -512,7 +565,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
                         darkMode ? "text-green-400" : "text-green-600",
                       )}
                     >
-                      {formatCurrency(service.revenue)}
+                      {formatCurrency(service.total_revenue || service.revenue)}
                     </div>
                   </div>
                 </div>
@@ -601,7 +654,7 @@ export const Reports: React.FC<ReportsProps> = ({ darkMode }) => {
                 darkMode ? "text-gray-400" : "text-gray-600",
               )}
             >
-              Esta seção de relatório está sendo desenvolvida e estar��
+              Esta seção de relatório está sendo desenvolvida e estará
               disponível em breve.
             </p>
           </div>
