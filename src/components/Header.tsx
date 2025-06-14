@@ -9,10 +9,12 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationCenter } from "./NotificationCenter";
+import { UserSession } from "@/lib/multiTenantTypes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,7 @@ interface HeaderProps {
   currentTime: Date;
   onPageChange: (page: string) => void;
   onLogout?: () => void;
+  userSession?: UserSession | null;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -38,6 +41,25 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   userSession,
 }) => {
+  const getUserInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getRoleName = (role: string) => {
+    const roleNames = {
+      owner: "Proprietário",
+      admin: "Administrador",
+      manager: "Gerente",
+      employee: "Funcionário",
+    };
+    return roleNames[role as keyof typeof roleNames] || role;
+  };
+
   return (
     <header
       className={cn(
@@ -131,7 +153,9 @@ export const Header: React.FC<HeaderProps> = ({
                     "bg-gradient-to-br from-pink-500 to-purple-600 text-white font-semibold text-sm",
                   )}
                 >
-                  M
+                  {userSession?.user.name
+                    ? getUserInitials(userSession.user.name)
+                    : "U"}
                 </div>
                 <ChevronDown
                   className={cn(
@@ -150,9 +174,14 @@ export const Header: React.FC<HeaderProps> = ({
                   <p className="text-xs leading-none text-muted-foreground">
                     {userSession?.user.email || ""}
                   </p>
+                  <p className="text-xs text-blue-600 font-medium">
+                    {userSession?.user.role
+                      ? getRoleName(userSession.user.role)
+                      : ""}
+                  </p>
                   <div className="flex items-center mt-2 pt-2 border-t">
                     <Building2 className="h-3 w-3 mr-1 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground truncate">
                       {userSession?.establishment.name || "Estabelecimento"}
                     </p>
                   </div>
@@ -166,6 +195,10 @@ export const Header: React.FC<HeaderProps> = ({
               <DropdownMenuItem onClick={() => onPageChange("settings")}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onPageChange("settings")}>
+                <Building2 className="mr-2 h-4 w-4" />
+                <span>Meu Estabelecimento</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
