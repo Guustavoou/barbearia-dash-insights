@@ -96,7 +96,7 @@ export class UnclicLoadTester {
             Math.floor(Math.random() * 4)
           ],
         });
-      });
+      }
 
       // Clientes por estabelecimento (100 clientes cada)
       for (let clientIndex = 1; clientIndex <= 100; clientIndex++) {
@@ -182,7 +182,7 @@ export class UnclicLoadTester {
       await Promise.all(loginPromises);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`✅ Login em massa concluído:`);
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
@@ -262,7 +262,7 @@ export class UnclicLoadTester {
       await Promise.all(onboardingPromises);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`✅ Onboarding em massa concluído:`);
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
@@ -340,7 +340,7 @@ export class UnclicLoadTester {
       await Promise.all(appointmentPromises);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`✅ Agendamentos em massa concluídos:`);
       console.log(`   • Sucessos: ${successCount}`);
       console.log(`   • Erros: ${errorCount}`);
@@ -417,7 +417,7 @@ export class UnclicLoadTester {
 
       const duration = Date.now() - startTime;
       const totalReports = testData.establishments.length * reportTypes.length;
-      
+
       console.log(`✅ Relatórios em massa concluídos:`);
       console.log(`   • Total de relatórios: ${totalReports}`);
       console.log(`   • Sucessos: ${successCount}`);
@@ -508,7 +508,7 @@ export class UnclicLoadTester {
       await Promise.all(stressPromises);
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`✅ Teste de stress concluído:`);
       console.log(`   • Usuários simultâneos: ${this.config.concurrent_users}`);
       console.log(`   • Tempo total: ${Math.round(duration / 1000)}s`);
@@ -659,7 +659,7 @@ export class UnclicLoadTester {
 
     // Recomendações baseadas nos resultados
     console.log(`💡 RECOMENDAÇÕES:`);
-    
+
     if (successfulTests === this.results.length) {
       console.log(`🎉 Parabéns! Todos os testes passaram.`);
       console.log(`✨ A aplicação está pronta para produção.`);
