@@ -136,10 +136,11 @@ app.use(
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "Unclic API Server",
-    version: "1.0.0",
+    message: "Unclic API Server - Neon PostgreSQL Edition",
+    version: "2.0.0",
     timestamp: new Date().toISOString(),
     environment: NODE_ENV,
+    database: "Neon PostgreSQL",
     endpoints: {
       health: "/api/health",
       clients: "/api/clients",
@@ -148,6 +149,7 @@ app.get("/", (req, res) => {
       professionals: "/api/professionals",
       products: "/api/products",
       dashboard: "/api/dashboard",
+      financial: "/api/financial",
     },
   });
 });
