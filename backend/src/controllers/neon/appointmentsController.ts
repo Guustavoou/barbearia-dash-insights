@@ -68,8 +68,13 @@ export const getAppointments = async (req: Request, res: Response) => {
 
     // Get total count using raw SQL since we have dynamic WHERE clause
     const countQuery = `SELECT COUNT(*) as total FROM appointments ${whereClause}`;
+    console.log("Executing count query:", countQuery);
     const countResult = await sql.unsafe(countQuery);
-    const total = parseInt(countResult[0].total);
+    console.log("Count result:", countResult);
+    const total =
+      countResult && countResult.length > 0
+        ? parseInt(countResult[0].total)
+        : 0;
 
     // Get appointments with pagination using raw SQL
     const appointmentsQuery = `
@@ -315,11 +320,11 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
       FROM appointments
       WHERE 1=1 ${dateFilter}
     `;
-    const stats = await sql.unsafe(statsQuery);
+    const stats = await sql.query(statsQuery);
 
     res.json({
       success: true,
-      data: stats[0],
+      data: stats.rows[0],
     });
   } catch (error) {
     console.error("Error fetching appointment stats:", error);
