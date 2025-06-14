@@ -66,25 +66,23 @@ export const getAppointments = async (req: Request, res: Response) => {
     const sortField = validSortFields.includes(sort as string) ? sort : "date";
     const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
-    // Get total count
-    const countResult = await sql.query(`
-      SELECT COUNT(*) as total 
-      FROM appointments 
-      ${whereClause}
-    `);
+    // Get total count using raw SQL since we have dynamic WHERE clause
+    const countQuery = `SELECT COUNT(*) as total FROM appointments ${whereClause}`;
+    const countResult = await sql.query(countQuery);
     const total = parseInt(countResult.rows[0].total);
 
-    // Get appointments with pagination
-    const appointments = await sql.query(`
-      SELECT 
+    // Get appointments with pagination using raw SQL
+    const appointmentsQuery = `
+      SELECT
         id, client_id, service_id, professional_id, date, time, duration,
         status, price, notes, client_name, service_name, professional_name,
         created_at, updated_at
-      FROM appointments 
+      FROM appointments
       ${whereClause}
       ORDER BY ${sortField} ${sortOrder}, time ${sortOrder}
       LIMIT ${limitNum} OFFSET ${offset}
-    `);
+    `;
+    const appointments = await sql.query(appointmentsQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);
@@ -192,7 +190,7 @@ export const createAppointment = async (req: Request, res: Response) => {
       )
       VALUES (
         ${client_id}, ${service_id}, ${professional_id || null}, ${date}, ${time}, ${duration},
-        ${price}, ${notes || null}, ${clientResult[0].name}, ${serviceResult[0].name}, 
+        ${price}, ${notes || null}, ${clientResult[0].name}, ${serviceResult[0].name},
         ${professionalResult ? professionalResult[0].name : null}
       )
       RETURNING *
@@ -230,8 +228,8 @@ export const updateAppointment = async (req: Request, res: Response) => {
     }
 
     const updatedAppointments = await sql`
-      UPDATE appointments 
-      SET 
+      UPDATE appointments
+      SET
         date = COALESCE(${date}, date),
         time = COALESCE(${time}, time),
         duration = COALESCE(${duration}, duration),
@@ -305,7 +303,7 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
     }
 
     const stats = await sql.query(`
-      SELECT 
+      SELECT
         COUNT(*) as total_appointments,
         COUNT(*) FILTER (WHERE status = 'agendado') as scheduled,
         COUNT(*) FILTER (WHERE status = 'confirmado') as confirmed,
@@ -314,7 +312,7 @@ export const getAppointmentStats = async (req: Request, res: Response) => {
         COUNT(*) FILTER (WHERE status = 'faltou') as no_show,
         ROUND(AVG(price), 2) as average_price,
         COALESCE(SUM(CASE WHEN status = 'concluido' THEN price ELSE 0 END), 0) as total_revenue
-      FROM appointments 
+      FROM appointments
       WHERE 1=1 ${dateFilter}
     `);
 
@@ -360,13 +358,13 @@ export const getAvailableSlots = async (req: Request, res: Response) => {
     // Get existing appointments for the date
     const existingAppointments = professional_id
       ? await sql`
-          SELECT time, duration FROM appointments 
-          WHERE date = ${date} 
+          SELECT time, duration FROM appointments
+          WHERE date = ${date}
           AND professional_id = ${professional_id}
           AND status NOT IN ('cancelado')
         `
       : await sql`
-          SELECT time, duration FROM appointments 
+          SELECT time, duration FROM appointments
           WHERE date = ${date}
           AND status NOT IN ('cancelado')
         `;
