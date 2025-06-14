@@ -250,6 +250,7 @@ const UnclicAppContent: React.FC = () => {
               onToggleRightSidebar={rightSidebar.toggle}
               onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
               isMobile={isMobile}
+              rightSidebarOpen={rightSidebar.isOpen}
             />
 
             {/* Scrollable Page Content */}
