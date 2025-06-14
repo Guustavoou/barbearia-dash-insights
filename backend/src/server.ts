@@ -185,10 +185,21 @@ process.on("unhandledRejection", (reason, promise) => {
   process.exit(1);
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-  console.log(`
-🚀 Unclic Backend Server Started!
+// Start server with Neon database test
+async function startServer() {
+  try {
+    // Test Neon connection first
+    console.log("🔗 Testing Neon PostgreSQL connection...");
+    const dbConnected = await testConnection();
+
+    if (!dbConnected) {
+      console.error("❌ Failed to connect to Neon PostgreSQL");
+      process.exit(1);
+    }
+
+    const server = app.listen(PORT, () => {
+      console.log(`
+🚀 Unclic Backend Server Started - Neon PostgreSQL Edition!
 
 📊 Environment: ${NODE_ENV}
 🌐 Port: ${PORT}
@@ -196,12 +207,29 @@ const server = app.listen(PORT, () => {
 🏥 Health: http://localhost:${PORT}/api/health
 📚 API Docs: http://localhost:${PORT}
 
-🔧 Database: SQLite (${NODE_ENV === "development" ? "development" : "production"})
+🔧 Database: Neon PostgreSQL ✅
+🎯 Project: curly-sea-91509101
+🌟 Branch: main
 🔒 CORS Origin: ${process.env.CORS_ORIGIN || "http://localhost:5173"}
 
-Ready to serve requests! 🎉
-  `);
-});
+Ready to serve requests with PostgreSQL power! 🐘🚀
+      `);
+    });
+
+    // Server timeout configuration
+    server.timeout = 30000; // 30 seconds
+    server.keepAliveTimeout = 5000; // 5 seconds
+    server.headersTimeout = 6000; // 6 seconds
+
+    return server;
+  } catch (error) {
+    console.error("💥 Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
 
 // Server timeout configuration
 server.timeout = 30000; // 30 seconds
