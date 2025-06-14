@@ -1,0 +1,239 @@
+import React, { useState } from "react";
+import {
+  Bell,
+  Search,
+  HelpCircle,
+  ChevronDown,
+  Building2,
+  User,
+  Settings,
+  LogOut,
+  Sun,
+  Moon,
+} from "lucide-react";
+import { cn } from "@/lib/unclicUtils";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { UserSession } from "@/lib/multiTenantTypes";
+
+interface ModernHeaderProps {
+  darkMode: boolean;
+  onToggleDarkMode: () => void;
+  currentTime: Date;
+  onPageChange: (page: string) => void;
+  onLogout?: () => void;
+  userSession?: UserSession | null;
+  onToggleRightSidebar?: () => void;
+}
+
+export const ModernHeader: React.FC<ModernHeaderProps> = ({
+  darkMode,
+  onToggleDarkMode,
+  currentTime,
+  onPageChange,
+  onLogout,
+  userSession,
+  onToggleRightSidebar,
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [notificationCount, setNotificationCount] = useState(3);
+
+  const getUserInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  return (
+    <header className="bg-white border-b border-gray-200 py-4 px-6 flex items-center justify-between dark:bg-gray-800 dark:border-gray-700">
+      <div className="flex items-center space-x-4">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Dashboard
+          </h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {formatDate(currentTime)} • {formatTime(currentTime)}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        {/* Search */}
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="w-4 h-4 text-gray-400" />
+          </div>
+          <input
+            type="search"
+            className={cn(
+              "border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm w-80 transition-all duration-200",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              "dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400",
+            )}
+            placeholder="Pesquisar clientes, agendamentos, serviços..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Dark Mode Toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onToggleDarkMode}
+          className="w-10 h-10 rounded-full"
+          title={darkMode ? "Modo claro" : "Modo escuro"}
+        >
+          {darkMode ? (
+            <Sun className="w-4 h-4" />
+          ) : (
+            <Moon className="w-4 h-4" />
+          )}
+        </Button>
+
+        {/* Notifications */}
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-10 h-10 rounded-full"
+            title="Notificações"
+          >
+            <Bell className="w-4 h-4" />
+            {notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                {notificationCount > 9 ? "9+" : notificationCount}
+              </span>
+            )}
+          </Button>
+        </div>
+
+        {/* Help */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onPageChange("help")}
+          className="w-10 h-10 rounded-full"
+          title="Ajuda"
+        >
+          <HelpCircle className="w-4 h-4" />
+        </Button>
+
+        {/* User Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-3 py-2"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {userSession?.establishment?.name || "Minha Loja"}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {userSession?.user?.role || "Administrador"}
+                  </p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <span className="text-white text-xs font-medium">
+                    {getUserInitials(
+                      userSession?.establishment?.name || "Minha Loja",
+                    )}
+                  </span>
+                </div>
+              </div>
+              <ChevronDown className="w-4 h-4 text-gray-400" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-64 p-2 dark:bg-gray-800 dark:border-gray-700"
+          >
+            <DropdownMenuLabel className="px-3 py-2">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                  <span className="text-white font-medium">
+                    {getUserInitials(
+                      userSession?.user?.name || "Rodrigo Almeida",
+                    )}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {userSession?.user?.name || "Rodrigo Almeida"}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {userSession?.user?.email || "rodrigo@unclic.com"}
+                  </p>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+
+            <DropdownMenuSeparator className="dark:bg-gray-700" />
+
+            <DropdownMenuItem
+              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700"
+              onClick={() => onPageChange("settings")}
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Minha Empresa</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700"
+              onClick={() => onPageChange("settings")}
+            >
+              <User className="w-4 h-4" />
+              <span>Perfil</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              className="flex items-center space-x-2 px-3 py-2 dark:hover:bg-gray-700"
+              onClick={() => onPageChange("settings")}
+            >
+              <Settings className="w-4 h-4" />
+              <span>Configurações</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator className="dark:bg-gray-700" />
+
+            <DropdownMenuItem
+              className="flex items-center space-x-2 px-3 py-2 text-red-600 dark:text-red-400 dark:hover:bg-gray-700"
+              onClick={onLogout}
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sair</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
+  );
+};
