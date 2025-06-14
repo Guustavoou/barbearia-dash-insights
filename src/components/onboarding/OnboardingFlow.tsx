@@ -35,6 +35,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   };
 
   const renderCurrentStep = () => {
+    console.log("OnboardingFlow: Renderizing step", data.currentStep);
+
     switch (data.currentStep) {
       case 0:
         return <WelcomeStep onSelectOption={handleWelcomeOption} />;
@@ -49,6 +51,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       case 5:
         return <ReviewStep onComplete={onComplete} />;
       default:
+        console.log("OnboardingFlow: Unknown step, rendering welcome");
         return <WelcomeStep onSelectOption={handleWelcomeOption} />;
     }
   };
