@@ -55,6 +55,20 @@ class ApiClient {
         );
       }
 
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const htmlContent = await response.text();
+        if (
+          htmlContent.includes("<script>") ||
+          htmlContent.includes("<html>")
+        ) {
+          throw new Error(
+            "Server returned HTML instead of JSON - backend may be unavailable",
+          );
+        }
+        throw new Error(`Server returned non-JSON response: ${contentType}`);
+      }
+
       const data: ApiResponse<T> = await response.json();
       return data;
     } catch (error) {
