@@ -188,15 +188,34 @@ const UnclicAppContent: React.FC = () => {
             darkMode ? "dark bg-gray-900" : "bg-gray-50",
           )}
         >
+          {/* Mobile Backdrop */}
+          {isMobile && !sidebarCollapsed && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={() => setSidebarCollapsed(true)}
+            />
+          )}
+
           {/* Left Sidebar */}
-          <ModernSidebar
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-            collapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            darkMode={darkMode}
-            userSession={session}
-          />
+          <div
+            className={cn(
+              "relative z-50",
+              isMobile && sidebarCollapsed && "fixed -translate-x-full",
+              isMobile && !sidebarCollapsed && "fixed translate-x-0",
+            )}
+          >
+            <ModernSidebar
+              currentPage={currentPage}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                if (isMobile) setSidebarCollapsed(true);
+              }}
+              collapsed={sidebarCollapsed}
+              onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+              darkMode={darkMode}
+              userSession={session}
+            />
+          </div>
 
           {/* Main Content */}
           <main className="flex-1 flex flex-col overflow-hidden transition-all duration-300">
