@@ -93,9 +93,6 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
         )}
 
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Dashboard
-          </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {formatDate(currentTime)} • {formatTime(currentTime)}
           </p>
