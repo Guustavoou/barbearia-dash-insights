@@ -354,34 +354,39 @@ export const StandardizedAppointments: React.FC<
   }) => {
     const variantStyles = {
       primary: {
-        bg: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20",
-        border: "border-blue-200 dark:border-blue-700",
-        icon: "text-blue-600 dark:text-blue-400",
-        accent: "bg-blue-600",
+        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
+        border: "border-[#00112F]/10 dark:border-[#F9FAFB]/20",
+        icon: "text-[#00112F] dark:text-[#F9FAFB]",
+        accent: "bg-[#00112F]",
+        iconBg: "bg-[#00112F]/5 dark:bg-[#F9FAFB]/10",
       },
       success: {
-        bg: "bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20",
-        border: "border-green-200 dark:border-green-700",
-        icon: "text-green-600 dark:text-green-400",
-        accent: "bg-green-600",
+        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
+        border: "border-[#00112F]/15 dark:border-[#F9FAFB]/25",
+        icon: "text-[#00112F] dark:text-[#F9FAFB]",
+        accent: "bg-[#00112F]",
+        iconBg: "bg-[#00112F]/8 dark:bg-[#F9FAFB]/15",
       },
       warning: {
-        bg: "bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20",
-        border: "border-yellow-200 dark:border-yellow-700",
-        icon: "text-yellow-600 dark:text-yellow-400",
-        accent: "bg-yellow-600",
+        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
+        border: "border-[#00112F]/12 dark:border-[#F9FAFB]/22",
+        icon: "text-[#00112F]/80 dark:text-[#F9FAFB]/90",
+        accent: "bg-[#00112F]/80",
+        iconBg: "bg-[#00112F]/6 dark:bg-[#F9FAFB]/12",
       },
       danger: {
-        bg: "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20",
-        border: "border-red-200 dark:border-red-700",
-        icon: "text-red-600 dark:text-red-400",
-        accent: "bg-red-600",
+        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
+        border: "border-[#00112F]/18 dark:border-[#F9FAFB]/28",
+        icon: "text-[#00112F]/90 dark:text-[#F9FAFB]/95",
+        accent: "bg-[#00112F]/90",
+        iconBg: "bg-[#00112F]/10 dark:bg-[#F9FAFB]/18",
       },
       info: {
-        bg: "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20",
-        border: "border-purple-200 dark:border-purple-700",
-        icon: "text-purple-600 dark:text-purple-400",
-        accent: "bg-purple-600",
+        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
+        border: "border-[#00112F]/8 dark:border-[#F9FAFB]/18",
+        icon: "text-[#00112F]/70 dark:text-[#F9FAFB]/80",
+        accent: "bg-[#00112F]/70",
+        iconBg: "bg-[#00112F]/4 dark:bg-[#F9FAFB]/8",
       },
     };
 
@@ -408,7 +413,7 @@ export const StandardizedAppointments: React.FC<
       >
         <div
           className={cn(
-            "absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-10",
+            "absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-5 dark:opacity-10",
             style.accent,
           )}
         />
@@ -416,14 +421,14 @@ export const StandardizedAppointments: React.FC<
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
+              <div className={cn("p-2 rounded-lg", style.iconBg)}>
                 <Icon className={cn("w-6 h-6", style.icon)} />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <h3 className="text-sm font-medium text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                   {title}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
+                <p className="text-xs text-[#00112F]/50 dark:text-[#F9FAFB]/60">
                   {period}
                 </p>
               </div>
@@ -454,14 +459,19 @@ export const StandardizedAppointments: React.FC<
           </div>
 
           <div className="mb-4">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+            <p className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-1">
               {formatValue(value)}
             </p>
             {change !== undefined && (
               <div className="flex items-center space-x-2">
                 <Badge
                   variant={change >= 0 ? "default" : "destructive"}
-                  className="text-xs"
+                  className={cn(
+                    "text-xs",
+                    change >= 0
+                      ? "bg-[#00112F]/10 text-[#00112F] dark:bg-[#F9FAFB]/20 dark:text-[#F9FAFB]"
+                      : "bg-[#00112F]/15 text-[#00112F] dark:bg-[#F9FAFB]/25 dark:text-[#F9FAFB]",
+                  )}
                 >
                   {change >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
@@ -470,7 +480,7 @@ export const StandardizedAppointments: React.FC<
                   )}
                   {Math.abs(change)}%
                 </Badge>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-[#00112F]/50 dark:text-[#F9FAFB]/60">
                   vs. semana anterior
                 </span>
               </div>
@@ -479,7 +489,7 @@ export const StandardizedAppointments: React.FC<
 
           {target && (
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-gray-500">
+              <div className="flex justify-between text-xs text-[#00112F]/60 dark:text-[#F9FAFB]/70">
                 <span>Progresso</span>
                 <span>
                   {Math.round(
@@ -559,7 +569,7 @@ export const StandardizedAppointments: React.FC<
 
     return (
       <Card
-        className="p-4 transition-all duration-300 hover:shadow-md cursor-pointer border-l-4 border-l-blue-500 group"
+        className="p-4 transition-all duration-300 hover:shadow-md cursor-pointer border-l-4 border-l-[#00112F] group bg-white dark:bg-[#0D1117] border-[#00112F]/10 dark:border-[#F9FAFB]/20"
         onClick={() => {
           setSelectedAppointment(appointment);
           setShowSidebar(true);
@@ -567,7 +577,7 @@ export const StandardizedAppointments: React.FC<
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
               {appointment.clientName}
             </span>
             <Badge
@@ -593,7 +603,7 @@ export const StandardizedAppointments: React.FC<
             </Badge>
           </div>
 
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-sm text-[#00112F]/70 dark:text-[#F9FAFB]/80">
             <div className="flex items-center space-x-2 mb-1">
               <Clock className="w-4 h-4" />
               <span>
@@ -613,11 +623,11 @@ export const StandardizedAppointments: React.FC<
               >
                 {professional?.initials}
               </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-[#00112F]/60 dark:text-[#F9FAFB]/70">
                 {professional?.name}
               </span>
             </div>
-            <span className="font-bold text-gray-900 dark:text-white">
+            <span className="font-bold text-[#00112F] dark:text-[#F9FAFB]">
               {formatCurrency(appointment.price)}
             </span>
           </div>
@@ -634,7 +644,7 @@ export const StandardizedAppointments: React.FC<
           : professionals
         ).map((professional) => (
           <Card key={professional.id} className="overflow-hidden">
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b">
+            <div className="p-4 bg-[#F9FAFB] dark:bg-[#0D1117] border-b border-[#00112F]/10 dark:border-[#F9FAFB]/20">
               <div className="flex items-center space-x-3">
                 <div
                   className={cn(
@@ -645,10 +655,10 @@ export const StandardizedAppointments: React.FC<
                   {professional.initials}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB]">
                     {professional.name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                     {professional.workingHours.start} -{" "}
                     {professional.workingHours.end}
                   </p>
@@ -676,8 +686,8 @@ export const StandardizedAppointments: React.FC<
                   (apt) =>
                     apt.date.toDateString() === currentDate.toDateString(),
                 ).length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <CalendarDays className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                <div className="text-center py-8 text-[#00112F]/60 dark:text-[#F9FAFB]/70">
+                  <CalendarDays className="w-12 h-12 mx-auto mb-3 text-[#00112F]/40 dark:text-[#F9FAFB]/50" />
                   <p className="text-sm">Nenhum agendamento</p>
                   <p className="text-xs mt-1">
                     Clique em "Novo Agendamento" para adicionar
@@ -705,11 +715,11 @@ export const StandardizedAppointments: React.FC<
       <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
         {weekDays.map((day) => (
           <Card key={day.toISOString()} className="overflow-hidden">
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 border-b">
-              <h3 className="font-medium text-gray-900 dark:text-white text-sm">
+            <div className="p-3 bg-[#F9FAFB] dark:bg-[#0D1117] border-b border-[#00112F]/10 dark:border-[#F9FAFB]/20">
+              <h3 className="font-medium text-[#00112F] dark:text-[#F9FAFB] text-sm">
                 {day.toLocaleDateString("pt-BR", { weekday: "short" })}
               </h3>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#00112F]/60 dark:text-[#F9FAFB]/70">
                 {day.toLocaleDateString("pt-BR", {
                   day: "numeric",
                   month: "short",
@@ -723,16 +733,16 @@ export const StandardizedAppointments: React.FC<
                 .map((appointment) => (
                   <div
                     key={appointment.id}
-                    className="p-2 rounded border-l-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                    className="p-2 rounded border-l-2 border-[#00112F] bg-[#00112F]/5 dark:bg-[#F9FAFB]/10 cursor-pointer hover:bg-[#00112F]/10 dark:hover:bg-[#F9FAFB]/20 transition-colors"
                     onClick={() => {
                       setSelectedAppointment(appointment);
                       setShowSidebar(true);
                     }}
                   >
-                    <div className="text-xs font-medium text-gray-900 dark:text-white">
+                    <div className="text-xs font-medium text-[#00112F] dark:text-[#F9FAFB]">
                       {appointment.clientName}
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                    <div className="text-xs text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                       {appointment.startTime}
                     </div>
                   </div>
@@ -763,11 +773,11 @@ export const StandardizedAppointments: React.FC<
 
     return (
       <Card className="overflow-hidden">
-        <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700">
+        <div className="grid grid-cols-7 gap-px bg-[#00112F]/20 dark:bg-[#F9FAFB]/30">
           {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
             <div
               key={day}
-              className="bg-gray-50 dark:bg-gray-800 p-3 text-center text-sm font-medium text-gray-900 dark:text-white"
+              className="bg-[#F9FAFB] dark:bg-[#0D1117] p-3 text-center text-sm font-medium text-[#00112F] dark:text-[#F9FAFB]"
             >
               {day}
             </div>
@@ -784,16 +794,16 @@ export const StandardizedAppointments: React.FC<
               <div
                 key={index}
                 className={cn(
-                  "bg-white dark:bg-gray-900 p-2 h-24 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
+                  "bg-white dark:bg-[#0D1117] p-2 h-24 transition-colors hover:bg-[#F9FAFB] dark:hover:bg-[#00112F]/20",
                   !isCurrentMonth &&
-                    "bg-gray-50 dark:bg-gray-800 text-gray-400",
+                    "bg-[#F9FAFB] dark:bg-[#00112F]/10 text-[#00112F]/40 dark:text-[#F9FAFB]/50",
                 )}
               >
                 <div
                   className={cn(
                     "text-sm font-medium mb-1",
                     isToday &&
-                      "bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs",
+                      "bg-[#00112F] text-white w-6 h-6 rounded-full flex items-center justify-center text-xs",
                   )}
                 >
                   {day.getDate()}
@@ -803,7 +813,7 @@ export const StandardizedAppointments: React.FC<
                   {dayAppointments.slice(0, 2).map((apt) => (
                     <div
                       key={apt.id}
-                      className="text-xs p-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 truncate cursor-pointer"
+                      className="text-xs p-1 rounded bg-[#00112F]/10 dark:bg-[#F9FAFB]/20 text-[#00112F] dark:text-[#F9FAFB] truncate cursor-pointer"
                       onClick={() => {
                         setSelectedAppointment(apt);
                         setShowSidebar(true);
@@ -813,7 +823,7 @@ export const StandardizedAppointments: React.FC<
                     </div>
                   ))}
                   {dayAppointments.length > 2 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-[#00112F]/60 dark:text-[#F9FAFB]/70">
                       +{dayAppointments.length - 2} mais
                     </div>
                   )}
@@ -834,10 +844,10 @@ export const StandardizedAppointments: React.FC<
     );
 
     return (
-      <div className="fixed top-0 right-0 h-full w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 shadow-xl">
+      <div className="fixed top-0 right-0 h-full w-96 bg-white dark:bg-[#0D1117] border-l border-[#00112F]/20 dark:border-[#F9FAFB]/30 z-50 shadow-xl">
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-between p-4 border-b border-[#00112F]/20 dark:border-[#F9FAFB]/30">
+            <h2 className="text-lg font-semibold text-[#00112F] dark:text-[#F9FAFB]">
               Detalhes do Agendamento
             </h2>
             <Button
@@ -861,10 +871,10 @@ export const StandardizedAppointments: React.FC<
                   {professional?.initials}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white">
+                  <h3 className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
                     {selectedAppointment.clientName}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                     {selectedAppointment.clientPhone}
                   </p>
                 </div>
@@ -872,34 +882,34 @@ export const StandardizedAppointments: React.FC<
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                     Serviço:
                   </span>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
                     {selectedAppointment.service}
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                     Profissional:
                   </span>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
                     {professional?.name}
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                     Data:
                   </span>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
                     {selectedAppointment.date.toLocaleDateString("pt-BR")}
                   </p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-[#00112F]/70 dark:text-[#F9FAFB]/80">
                     Horário:
                   </span>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
                     {selectedAppointment.startTime} -{" "}
                     {selectedAppointment.endTime}
                   </p>
@@ -919,8 +929,8 @@ export const StandardizedAppointments: React.FC<
             </div>
           </div>
 
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+          <div className="p-4 border-t border-[#00112F]/20 dark:border-[#F9FAFB]/30">
+            <Button className="w-full bg-[#00112F] hover:bg-[#00112F]/90 text-white">
               Cobrar {formatCurrency(selectedAppointment.price)}
             </Button>
           </div>
@@ -934,10 +944,10 @@ export const StandardizedAppointments: React.FC<
       {/* Header with same style as dashboard */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
             Agenda
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-[#00112F]/70 dark:text-[#F9FAFB]/80 mt-1">
             Gerenciamento de agendamentos • Atualizado às{" "}
             {lastUpdate.toLocaleTimeString("pt-BR", {
               hour: "2-digit",
@@ -956,7 +966,7 @@ export const StandardizedAppointments: React.FC<
           </Button>
           <Button
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-[#00112F] hover:bg-[#00112F]/90 text-white"
             onClick={handleExportData}
           >
             <Download className="w-4 h-4 mr-2" />
@@ -964,7 +974,7 @@ export const StandardizedAppointments: React.FC<
           </Button>
           <Button
             onClick={() => setShowNewAppointment(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-[#00112F] hover:bg-[#00112F]/90 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Novo Agendamento
@@ -1049,7 +1059,7 @@ export const StandardizedAppointments: React.FC<
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               <div className="min-w-0">
-                <h2 className="font-semibold text-gray-900 dark:text-white">
+                <h2 className="font-semibold text-[#00112F] dark:text-[#F9FAFB]">
                   {viewType === "mes"
                     ? currentDate.toLocaleDateString("pt-BR", {
                         month: "long",
@@ -1089,7 +1099,7 @@ export const StandardizedAppointments: React.FC<
                 placeholder="Buscar cliente ou serviço..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="pl-10 pr-4 py-2 w-full border border-[#00112F]/20 dark:border-[#F9FAFB]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-white dark:bg-[#0D1117] text-[#00112F] dark:text-[#F9FAFB]"
               />
             </div>
 
@@ -1100,7 +1110,7 @@ export const StandardizedAppointments: React.FC<
                   e.target.value === "todos" ? null : e.target.value,
                 )
               }
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="px-4 py-2 border border-[#00112F]/20 dark:border-[#F9FAFB]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-white dark:bg-[#0D1117] text-[#00112F] dark:text-[#F9FAFB]"
             >
               <option value="todos">Todos os Profissionais</option>
               {professionals.map((prof) => (
