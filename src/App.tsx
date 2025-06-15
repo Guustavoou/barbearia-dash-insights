@@ -270,12 +270,6 @@ const UnclicAppContent: React.FC = () => {
 
           {/* Quick Actions Hub */}
           <QuickActionsHub onPageChange={setCurrentPage} />
-
-          {/* Debug Component - REMOVER EM PRODUÇÃO */}
-          <RightSidebarDebug
-            isOpen={rightSidebar.isOpen}
-            onToggle={rightSidebar.toggle}
-          />
         </div>
       );
 
