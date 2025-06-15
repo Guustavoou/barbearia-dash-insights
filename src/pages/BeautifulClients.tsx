@@ -180,10 +180,11 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   // Filter and sort clients
   const filteredClients = useMemo(() => {
-    let filtered = clients.filter((client: Client) => {
+    const safeClients = clients || [];
+    let filtered = safeClients.filter((client: Client) => {
       const matchesSearch =
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.phone?.includes(searchTerm);
 
       const matchesStatus =
