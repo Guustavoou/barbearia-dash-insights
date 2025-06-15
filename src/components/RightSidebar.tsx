@@ -40,7 +40,7 @@ interface Appointment {
   clientPhone?: string;
   notes?: string;
   status: "confirmado" | "agendado" | "concluido";
-  date: Date; // Data do agendamento
+  date: Date;
 }
 
 export const RightSidebar: React.FC<RightSidebarProps> = ({
@@ -50,9 +50,15 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
   onPageChange,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 5, 1)); // Junho 2025
-  const [selectedDay, setSelectedDay] = useState<number | null>(14); // Dia 14 selecionado
+  const [selectedDay, setSelectedDay] = useState<number | null>(14);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
+
+  // Debug handler for toggle
+  const handleToggle = () => {
+    console.log("🔄 RightSidebar toggle clicked - current isOpen:", isOpen);
+    onToggle();
+  };
 
   const formatMonthYear = (date: Date) => {
     return date.toLocaleDateString("pt-BR", {
@@ -81,7 +87,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + (direction === "next" ? 1 : -1));
     setCurrentDate(newDate);
-    setSelectedDay(null); // Reset selected day when changing month
+    setSelectedDay(null);
   };
 
   const handleDayClick = (day: Date) => {
@@ -117,7 +123,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       clientPhone: "(11) 99999-1234",
       notes: "Cliente prefere barba mais baixa",
       status: "confirmado",
-      date: new Date(2025, 5, 14), // 14 de junho
+      date: new Date(2025, 5, 14),
     },
     {
       id: 2,
@@ -130,7 +136,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       clientPhone: "(11) 99999-5678",
       notes: "Primeira vez fazendo coloração",
       status: "agendado",
-      date: new Date(2025, 5, 14), // 14 de junho
+      date: new Date(2025, 5, 14),
     },
     {
       id: 3,
@@ -142,7 +148,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       avatarBg: "bg-green-500",
       clientPhone: "(11) 99999-9012",
       status: "agendado",
-      date: new Date(2025, 5, 15), // 15 de junho
+      date: new Date(2025, 5, 15),
     },
     {
       id: 4,
@@ -155,7 +161,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       clientPhone: "(11) 99999-3456",
       notes: "Cliente regular, corte habitual",
       status: "agendado",
-      date: new Date(2025, 5, 16), // 16 de junho
+      date: new Date(2025, 5, 16),
     },
     {
       id: 5,
@@ -167,7 +173,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       avatarBg: "bg-pink-500",
       clientPhone: "(11) 99999-7890",
       status: "confirmado",
-      date: new Date(2025, 5, 17), // 17 de junho
+      date: new Date(2025, 5, 17),
     },
     {
       id: 6,
@@ -180,7 +186,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       clientPhone: "(11) 99999-4567",
       notes: "Cabelo muito cacheado",
       status: "agendado",
-      date: new Date(2025, 5, 18), // 18 de junho
+      date: new Date(2025, 5, 18),
     },
   ];
 
@@ -194,7 +200,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         );
       })
     : allAppointments.filter((appointment) => {
-        // Se nenhum dia selecionado, mostrar agendamentos de hoje (dia 14 por padrão)
         const today = new Date(2025, 5, 14);
         return (
           appointment.date.getDate() === today.getDate() &&
@@ -219,7 +224,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     }
   };
 
-  // Count appointments for each day to show dots
   const getAppointmentCountForDay = (day: Date) => {
     return allAppointments.filter((appointment) => {
       return (
@@ -230,22 +234,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     }).length;
   };
 
-  const handleToggle = () => {
-    console.log("🔄 RightSidebar toggle clicked - current isOpen:", isOpen);
-    onToggle();
-  };
-
-  // Force hide with multiple CSS properties
-  const sidebarStyle = {
-    transform: isOpen ? "translateX(0)" : "translateX(100%)",
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    visibility: isOpen ? "visible" : "hidden",
-    opacity: isOpen ? 1 : 0,
-    display: isOpen ? "flex" : "none", // Force display none when closed
-    right: isOpen ? "0px" : "-100%", // Double ensure it's off screen
-  };
-
-  // Don't render at all if not open (alternative approach)
+  // Don't render if not open
   if (!isOpen) {
     return null;
   }
@@ -259,12 +248,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       />
 
       {/* Right Sidebar */}
-      <aside className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col shadow-xl transition-all duration-300 ease-in-out">
-      >
-        {/* Debug Info - Remove in production */}
-        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-60">
-          {isOpen ? "OPEN" : "CLOSED"}
-        </div>
+      <aside className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col shadow-xl animate-in slide-in-from-right duration-300">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -280,10 +264,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={handleToggle}
-                  className="rounded-full w-8 h-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
-                  title="Ocultar agenda"
+                  className="rounded-full w-8 h-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                  title="Fechar agenda"
                 >
-                  <EyeOff className="w-4 h-4" />
+                  <X className="w-4 h-4" />
                 </Button>
               </div>
             </div>
@@ -364,7 +348,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Appointments List - FILTRADA POR DIA */}
+          {/* Appointments List */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
             {filteredAppointments.length > 0 ? (
               filteredAppointments.map((appointment) => (
@@ -551,7 +535,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             )}
           </div>
 
-          {/* New Appointment Button - FUNCIONAL */}
+          {/* New Appointment Button */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <Button
               onClick={handleNewAppointment}
