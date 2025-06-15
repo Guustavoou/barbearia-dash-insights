@@ -1,39 +1,52 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Clock,
   Users,
+  Phone,
+  MessageCircle,
   DollarSign,
+  Edit3,
+  X,
+  Search,
+  Filter,
+  MoreHorizontal,
+  Trash2,
+  Check,
+  AlertTriangle,
+  ChevronDown,
+  Menu,
+  Eye,
   TrendingUp,
   TrendingDown,
-  Clock,
-  Scissors,
-  Package,
-  Eye,
   Activity,
+  CalendarDays,
   Target,
   UserCheck,
   Ban,
   RefreshCw,
   Download,
   ExternalLink,
-  MoreHorizontal,
-  Sparkles,
-  Star,
-  Zap,
   BarChart3,
   PieChart,
   LineChart,
-  CalendarDays,
-  Coins,
+  Sparkles,
+  Star,
+  Zap,
+  Scissors,
+  Package,
   CreditCard,
-  ShoppingBag,
+  Receipt,
+  Coins,
   Heart,
-  Gift,
-  Phone,
-  MessageCircle,
-  Mail,
+  Banknote,
+  ShoppingCart,
+  Calculator,
+  TrendingDownIcon,
   ArrowUpRight,
-  ArrowDownRight,
 } from "lucide-react";
 import {
   LineChart as RechartsLine,
@@ -51,10 +64,16 @@ import {
 } from "recharts";
 import { cn, formatCurrency, formatDate, formatTime } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,7 +130,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   const loading =
     statsLoading || revenueLoading || servicesLoading || appointmentsLoading;
 
-  // Fallback data for when API is not available
+  // Fallback data with complete dashboard metrics
   const defaultStats = {
     total_clients: 1250,
     total_professionals: 8,
@@ -122,13 +141,42 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     profit_margin: 60.1,
     growth_rate: 12.5,
     conversion_rate: 78.3,
-    average_ticket: 85.5,
+    average_ticket: 185.5,
     retention_rate: 89.2,
+    occupancy_rate: 75.8,
+    cancellation_rate: 8.5,
+    average_service_time: 65,
+    monthly_goal: 50000,
+    weekly_appointments: 145,
+    pending_payments: 3450,
+    confirmed_today: 18,
   };
 
   const currentStats = stats?.data || defaultStats;
 
-  // Mock data for charts
+  // Calculate comprehensive metrics
+  const metrics = useMemo(() => {
+    return {
+      todayAppointments: currentStats.today_appointments || 23,
+      confirmationRate: currentStats.conversion_rate || 78.3,
+      totalRevenue: currentStats.month_revenue || 45680,
+      avgServiceTime: currentStats.average_service_time || 65,
+      occupancyRate: currentStats.occupancy_rate || 75.8,
+      cancellationRate: currentStats.cancellation_rate || 8.5,
+      totalClients: currentStats.total_clients || 1250,
+      averageTicket: currentStats.average_ticket || 185.5,
+      retentionRate: currentStats.retention_rate || 89.2,
+      netIncome: currentStats.net_income || 27450,
+      profitMargin: currentStats.profit_margin || 60.1,
+      totalProfessionals: currentStats.total_professionals || 8,
+      weeklyAppointments: currentStats.weekly_appointments || 145,
+      pendingPayments: currentStats.pending_payments || 3450,
+      monthlyGoal: currentStats.monthly_goal || 50000,
+      confirmedToday: currentStats.confirmed_today || 18,
+    };
+  }, [currentStats]);
+
+  // Mock data for charts (same as BeautifulAppointments style)
   const revenueChartData = revenueData?.data || [
     { month: "Jan", revenue: 35000, expenses: 15000, profit: 20000 },
     { month: "Fev", revenue: 38000, expenses: 16000, profit: 22000 },
@@ -174,16 +222,6 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     },
   ];
 
-  const clientBirthdays = birthdays?.data || [
-    { name: "Sofia Lima", date: "Hoje", avatar: "/api/placeholder/32/32" },
-    {
-      name: "Pedro Oliveira",
-      date: "Amanhã",
-      avatar: "/api/placeholder/32/32",
-    },
-    { name: "Julia Santos", date: "25/12", avatar: "/api/placeholder/32/32" },
-  ];
-
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
       onPageChange(page);
@@ -213,7 +251,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     });
   };
 
-  // Beautiful KPI Card Component
+  // Beautiful KPI Card Component (exactly like BeautifulAppointments)
   const BeautifulKPICard: React.FC<KPICardProps> = ({
     title,
     value,
@@ -378,7 +416,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
                   {Math.abs(change)}%
                 </div>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  vs. período anterior
+                  vs. semana anterior
                 </span>
               </div>
             )}
@@ -492,51 +530,9 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     );
   };
 
-  const BeautifulBirthdayCard: React.FC<{ client: any }> = ({ client }) => {
-    return (
-      <Card className="p-3 bg-gradient-to-r from-pink-50/50 to-purple-50/50 dark:from-pink-900/20 dark:to-purple-900/20 border-0 shadow-md hover:shadow-lg transition-all duration-300 group cursor-pointer hover:-translate-y-1">
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
-              {client.name.charAt(0)}
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Gift className="w-2 h-2 text-white" />
-            </div>
-          </div>
-          <div className="flex-1">
-            <h4 className="font-semibold text-[#00112F] dark:text-white text-sm">
-              {client.name}
-            </h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center">
-              <Heart className="w-3 h-3 mr-1 text-pink-400" />
-              Aniversário {client.date}
-            </p>
-          </div>
-          <div className="flex space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-pink-100 dark:hover:bg-pink-900/30"
-            >
-              <Phone className="w-3 h-3 text-pink-500" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/30"
-            >
-              <MessageCircle className="w-3 h-3 text-purple-500" />
-            </Button>
-          </div>
-        </div>
-      </Card>
-    );
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
-      {/* Beautiful animated background */}
+      {/* Beautiful animated background - exactly like BeautifulAppointments */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse" />
         <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-purple-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000" />
@@ -544,7 +540,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
       </div>
 
       <div className="relative z-10 p-6 space-y-6">
-        {/* Beautiful Header */}
+        {/* Beautiful Header - exactly like BeautifulAppointments */}
         <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
           <div className="absolute inset-0 bg-black/20" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_70%)]" />
@@ -599,25 +595,25 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
               </div>
             </div>
 
-            {/* Floating sparkles animation */}
+            {/* Floating sparkles animation - exactly like BeautifulAppointments */}
             <div className="absolute top-4 right-20 w-2 h-2 bg-yellow-300 rounded-full animate-ping" />
             <div className="absolute top-8 right-32 w-1 h-1 bg-white rounded-full animate-pulse delay-500" />
             <div className="absolute bottom-8 left-20 w-1.5 h-1.5 bg-pink-300 rounded-full animate-bounce delay-1000" />
           </div>
         </Card>
 
-        {/* Beautiful KPI Cards */}
+        {/* Beautiful KPI Cards - exactly like BeautifulAppointments layout */}
         <section>
-          <h2 className="text-xl font-bold text-[#00112F] dark:text-white mb-4 flex items-center">
-            <BarChart3 className="w-5 h-5 mr-2 text-blue-500" />
-            Indicadores Principais
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-white mb-6 flex items-center">
+            <BarChart3 className="w-6 h-6 mr-2 text-purple-500" />
+            Indicadores Premium
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <BeautifulKPICard
               title="Agendamentos Hoje"
-              value={currentStats.today_appointments}
-              change={8}
-              period="Meta: 30 agendamentos"
+              value={metrics.todayAppointments}
+              change={7}
+              period="Hoje"
               icon={CalendarDays}
               variant="primary"
               onCardClick={() => handleNavigate("appointments")}
@@ -625,18 +621,18 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
             />
             <BeautifulKPICard
               title="Taxa Confirmação"
-              value={currentStats.conversion_rate}
+              value={metrics.confirmationRate}
               change={5}
-              period="Últimos 30 dias"
+              period="Percentual"
               icon={UserCheck}
               variant="success"
               format="percentage"
             />
             <BeautifulKPICard
               title="Faturamento"
-              value={currentStats.month_revenue}
+              value={metrics.totalRevenue}
               change={12}
-              target={50000}
+              target={metrics.monthlyGoal}
               period="Meta: R$ 50.000"
               icon={DollarSign}
               variant="premium"
@@ -645,17 +641,39 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
               navigateTo="financial"
             />
             <BeautifulKPICard
-              title="Ticket Médio"
-              value={currentStats.average_ticket}
-              change={3}
-              period="Por cliente"
-              icon={CreditCard}
+              title="Taxa Ocupação"
+              value={metrics.occupancyRate}
+              change={-2}
+              period="Slots preenchidos"
+              icon={Activity}
               variant="info"
-              format="currency"
+              format="percentage"
             />
             <BeautifulKPICard
+              title="Taxa Cancelamento"
+              value={metrics.cancellationRate}
+              change={-1.5}
+              period="Últimos 30 dias"
+              icon={Ban}
+              variant="warning"
+              format="percentage"
+            />
+            <BeautifulKPICard
+              title="Tempo Médio"
+              value={metrics.avgServiceTime}
+              period="Minutos por serviço"
+              icon={Clock}
+              variant="info"
+            />
+          </div>
+        </section>
+
+        {/* Additional KPI Cards Row */}
+        <section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <BeautifulKPICard
               title="Clientes Ativos"
-              value={currentStats.total_clients}
+              value={metrics.totalClients}
               change={15}
               period="Base ativa"
               icon={Users}
@@ -664,18 +682,54 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
               navigateTo="clients"
             />
             <BeautifulKPICard
+              title="Ticket Médio"
+              value={metrics.averageTicket}
+              change={3}
+              period="Por cliente"
+              icon={CreditCard}
+              variant="info"
+              format="currency"
+            />
+            <BeautifulKPICard
               title="Taxa Retenção"
-              value={currentStats.retention_rate}
+              value={metrics.retentionRate}
               change={2}
               period="Últimos 6 meses"
               icon={Heart}
               variant="warning"
               format="percentage"
             />
+            <BeautifulKPICard
+              title="Lucro Líquido"
+              value={metrics.netIncome}
+              change={18}
+              period="Resultado final"
+              icon={TrendingUp}
+              variant="success"
+              format="currency"
+            />
+            <BeautifulKPICard
+              title="Profissionais"
+              value={metrics.totalProfessionals}
+              period="Equipe ativa"
+              icon={Scissors}
+              variant="primary"
+              onCardClick={() => handleNavigate("professionals")}
+              navigateTo="professionals"
+            />
+            <BeautifulKPICard
+              title="Margem de Lucro"
+              value={metrics.profitMargin}
+              change={4}
+              period="Percentual"
+              icon={Target}
+              variant="premium"
+              format="percentage"
+            />
           </div>
         </section>
 
-        {/* Main Content Grid */}
+        {/* Main Content Grid - same structure as BeautifulAppointments */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Revenue Chart */}
           <Card className="lg:col-span-2 p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
@@ -808,59 +862,32 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
           </Card>
         </div>
 
-        {/* Bottom Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Today's Appointments */}
-          <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
-                <Calendar className="w-5 h-5 mr-2 text-green-500" />
-                Agendamentos de Hoje
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleNavigate("appointments")}
-                className="text-[#00112F] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                Ver todos
-                <ArrowUpRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              {appointmentsToday.map((appointment) => (
-                <BeautifulAppointmentCard
-                  key={appointment.id}
-                  appointment={appointment}
-                />
-              ))}
-            </div>
-          </Card>
-
-          {/* Client Birthdays */}
-          <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
-                <Gift className="w-5 h-5 mr-2 text-pink-500" />
-                Aniversariantes
-              </h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleNavigate("clients")}
-                className="text-[#00112F] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                Ver todos
-                <ArrowUpRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
-            <div className="space-y-3">
-              {clientBirthdays.map((client, index) => (
-                <BeautifulBirthdayCard key={index} client={client} />
-              ))}
-            </div>
-          </Card>
-        </div>
+        {/* Bottom Content - Today's Appointments */}
+        <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
+              <Calendar className="w-5 h-5 mr-2 text-green-500" />
+              Agendamentos de Hoje
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleNavigate("appointments")}
+              className="text-[#00112F] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Ver todos
+              <ArrowUpRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {appointmentsToday.map((appointment) => (
+              <BeautifulAppointmentCard
+                key={appointment.id}
+                appointment={appointment}
+              />
+            ))}
+          </div>
+        </Card>
       </div>
     </div>
   );
