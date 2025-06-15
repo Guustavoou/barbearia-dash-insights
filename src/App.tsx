@@ -159,7 +159,7 @@ const UnclicAppContent: React.FC = () => {
       case "documents":
         return <Documents darkMode={darkMode} />;
       default:
-        return <OptimizedDashboard darkMode={darkMode} />;
+        return <SimpleDashboard darkMode={darkMode} />;
     }
   };
 
