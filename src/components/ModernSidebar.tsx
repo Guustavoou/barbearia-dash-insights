@@ -130,7 +130,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
       )}
     >
       {/* Logo */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+      <div className="-mt-0.5 px-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div
           className={cn(
             "transition-all duration-300",
