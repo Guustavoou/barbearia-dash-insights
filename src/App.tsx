@@ -7,7 +7,7 @@ import { cn } from "@/lib/unclicUtils";
 import { ModernSidebar } from "@/components/ModernSidebar";
 import { ModernHeader } from "@/components/ModernHeader";
 import { RightSidebar } from "@/components/RightSidebar";
-import { RightSidebarDebug } from "@/components/RightSidebarDebug";
+
 import { OptimizedDashboard } from "@/pages/OptimizedDashboard";
 import { SimpleDashboard } from "@/pages/SimpleDashboard";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
