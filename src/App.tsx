@@ -146,10 +146,6 @@ const UnclicAppContent: React.FC = () => {
             onPageChange={setCurrentPage}
           />
         );
-            darkMode={darkMode}
-            onPageChange={setCurrentPage}
-          />
-        );
       case "stock":
         return <Stock darkMode={darkMode} />;
       case "services":
