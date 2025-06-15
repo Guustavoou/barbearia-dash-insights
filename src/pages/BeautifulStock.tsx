@@ -777,6 +777,19 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
                 <option value="baixo_estoque">Baixo Estoque</option>
                 <option value="esgotado">Esgotado</option>
               </select>
+
+              {(searchTerm ||
+                selectedCategory !== "todas" ||
+                statusFilter !== "todos") && (
+                <Button
+                  variant="outline"
+                  onClick={handleClearFilters}
+                  className="px-4 py-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Limpar
+                </Button>
+              )}
             </div>
           </div>
         </Card>
