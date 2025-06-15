@@ -56,7 +56,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
   const days = getDaysInMonth(currentDate);
 
-  // Agendamentos exatamente como mostrado na imagem
+  // Agendamentos exatamente como na imagem
   const appointments = [
     {
       id: 1,
@@ -114,13 +114,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       {/* Right Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-xl z-30 transition-all duration-300 ease-in-out",
+          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-2xl z-30 transition-all duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700",
           isOpen ? "translate-x-0 w-80" : "translate-x-full w-0",
         )}
       >
-        <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
-          {/* Header */}
-          <div className="px-4 py-4 bg-gray-100 dark:bg-gray-800">
+        <div className="h-full flex flex-col">
+          {/* Header - Fundo cinza claro */}
+          <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -149,8 +149,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Calendar */}
-          <div className="px-4 py-4 bg-white dark:bg-gray-800">
+          {/* Calendar - Fundo branco */}
+          <div className="px-4 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-4">
               <button
@@ -209,12 +209,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Appointments List */}
-          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
+          {/* Appointments List - Scrollable com scroll visível */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800">
             {appointments.map((appointment) => (
               <div
                 key={appointment.id}
-                className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700"
+                className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 shadow-sm"
               >
                 {/* Time and Actions Row */}
                 <div className="flex items-center justify-between mb-2">
@@ -228,7 +228,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-8 h-8 p-0 hover:bg-green-100 dark:hover:bg-green-800/30 rounded-full"
+                      className="w-8 h-8 p-0 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-full"
                       title={`Ligar para ${appointment.client}`}
                     >
                       <Phone className="w-4 h-4 text-green-600 dark:text-green-400" />
@@ -236,7 +236,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-8 h-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-800/30 rounded-full"
+                      className="w-8 h-8 p-0 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full"
                       title={`Enviar mensagem para ${appointment.client}`}
                     >
                       <MessageCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -253,19 +253,20 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                 <div className="flex items-center space-x-2">
                   <div
                     className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold",
+                      "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0",
                       appointment.avatarBg,
                     )}
                   >
                     {appointment.clientInitial}
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
                     {appointment.client}
                   </span>
                 </div>
               </div>
             ))}
 
+            {/* Empty State */}
             {appointments.length === 0 && (
               <div className="text-center py-8">
                 <CalendarIcon className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
@@ -277,8 +278,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           </div>
 
           {/* New Appointment Button */}
-          <div className="p-4">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-300">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center">
               <Plus className="w-5 h-5 mr-2" />
               Novo Agendamento
             </Button>
@@ -288,7 +289,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
       {/* Red Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <Button className="w-12 h-12 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <Button className="w-12 h-12 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95">
           <Phone className="w-5 h-5" />
         </Button>
       </div>
