@@ -56,7 +56,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
   const days = getDaysInMonth(currentDate);
 
-  // Agendamentos seguindo exatamente a imagem
+  // Agendamentos exatamente como mostrado na imagem
   const appointments = [
     {
       id: 1,
@@ -118,9 +118,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           isOpen ? "translate-x-0 w-80" : "translate-x-full w-0",
         )}
       >
-        <div className="h-full flex flex-col">
-          {/* Header - Exatamente como na imagem */}
-          <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800/50">
+        <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
+          {/* Header */}
+          <div className="px-4 py-4 bg-gray-100 dark:bg-gray-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -136,7 +136,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                 </div>
               </div>
 
-              {/* Toggle Button - exatamente como na imagem */}
+              {/* Toggle Button */}
               <Button
                 onClick={onToggle}
                 variant="ghost"
@@ -149,8 +149,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Calendar - Seguindo layout da imagem */}
-          <div className="px-4 py-4">
+          {/* Calendar */}
+          <div className="px-4 py-4 bg-white dark:bg-gray-800">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-4">
               <button
@@ -187,7 +187,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               {days.map((day, index) => {
                 const isCurrentMonth =
                   day.getMonth() === currentDate.getMonth();
-                const isToday = day.getDate() === 14 && isCurrentMonth; // Dia 14 destacado
+                const isToday = day.getDate() === 14 && isCurrentMonth;
                 const dayNumber = day.getDate();
 
                 return (
@@ -209,14 +209,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Scrollable appointments area */}
-          <div className="flex-1 overflow-y-auto px-4 space-y-3">
+          {/* Appointments List */}
+          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
             {appointments.map((appointment) => (
               <div
                 key={appointment.id}
-                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700"
+                className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700"
               >
-                {/* Time row with actions */}
+                {/* Time and Actions Row */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
@@ -244,12 +244,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                   </div>
                 </div>
 
-                {/* Service name */}
+                {/* Service */}
                 <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
                   {appointment.service}
                 </p>
 
-                {/* Client info */}
+                {/* Client */}
                 <div className="flex items-center space-x-2">
                   <div
                     className={cn(
@@ -266,7 +266,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               </div>
             ))}
 
-            {/* Empty state */}
             {appointments.length === 0 && (
               <div className="text-center py-8">
                 <CalendarIcon className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
@@ -277,7 +276,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             )}
           </div>
 
-          {/* Bottom button - exatamente como na imagem */}
+          {/* New Appointment Button */}
           <div className="p-4">
             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-300">
               <Plus className="w-5 h-5 mr-2" />
@@ -287,7 +286,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         </div>
       </aside>
 
-      {/* Red Floating Action Button - exatamente como na imagem */}
+      {/* Red Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button className="w-12 h-12 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
           <Phone className="w-5 h-5" />
