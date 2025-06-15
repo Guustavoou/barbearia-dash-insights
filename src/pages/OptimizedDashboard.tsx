@@ -421,6 +421,15 @@ export const OptimizedDashboard: React.FC<OptimizedDashboardProps> = ({
   const { data: operationalMetrics, loading: operationalLoading } =
     useOperationalMetrics();
 
+  // Debug logs
+  useEffect(() => {
+    console.log("Dashboard Debug - Stats:", { stats, loading: statsLoading });
+    console.log("Dashboard Debug - Revenue:", {
+      revenueData,
+      loading: revenueLoading,
+    });
+  }, [stats, statsLoading, revenueData, revenueLoading]);
+
   // Memoized data processing
   const processedStats = useMemo(() => {
     // Use data from API or fallback to default values
