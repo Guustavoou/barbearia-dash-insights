@@ -133,7 +133,7 @@ const UnclicAppContent: React.FC = () => {
     switch (currentPage) {
       case "dashboard":
         return (
-          <EnhancedInteractiveDashboard
+          <BeautifulDashboard
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
@@ -171,7 +171,7 @@ const UnclicAppContent: React.FC = () => {
         return <Documents darkMode={darkMode} />;
       default:
         return (
-          <EnhancedInteractiveDashboard
+          <BeautifulDashboard
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
