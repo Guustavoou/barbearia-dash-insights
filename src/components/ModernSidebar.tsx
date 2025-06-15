@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { PageType } from "@/lib/types";
+import { UnclicLogo } from "@/components/UnclicLogo";
 
 interface ModernSidebarProps {
   currentPage: PageType;
