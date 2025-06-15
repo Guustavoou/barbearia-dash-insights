@@ -19,6 +19,9 @@ import { Appointments } from "@/pages/Appointments";
 import { BeautifulAppointments } from "@/pages/BeautifulAppointments";
 import { BeautifulClients } from "@/pages/BeautifulClients";
 import { BeautifulFinancial } from "@/pages/BeautifulFinancial";
+import { BeautifulServices } from "@/pages/BeautifulServices";
+import { BeautifulProfessionals } from "@/pages/BeautifulProfessionals";
+import { BeautifulStock } from "@/pages/BeautifulStock";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
 import { Professionals } from "@/pages/Professionals";
@@ -152,11 +155,23 @@ const UnclicAppContent: React.FC = () => {
           />
         );
       case "stock":
-        return <Stock darkMode={darkMode} />;
+        return (
+          <BeautifulStock darkMode={darkMode} onPageChange={setCurrentPage} />
+        );
       case "services":
-        return <Services darkMode={darkMode} />;
+        return (
+          <BeautifulServices
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
       case "professionals":
-        return <Professionals darkMode={darkMode} />;
+        return (
+          <BeautifulProfessionals
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
       case "financial":
         return (
           <BeautifulFinancial
