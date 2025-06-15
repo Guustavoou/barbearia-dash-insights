@@ -125,6 +125,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
       {/* Right Sidebar */}
       <aside
+        data-testid="right-sidebar"
         className={cn(
           "fixed top-0 right-0 h-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 shadow-xl z-30 transition-all duration-300 ease-in-out",
           isOpen ? "translate-x-0 w-80" : "translate-x-full w-80",
@@ -133,7 +134,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           display: "block", // Garantir que sempre seja exibida
         }}
       >
-        {/* Sidebar Content */}
         <div className="h-full flex flex-col relative">
           {/* External Toggle Button (when sidebar is open) - CENTRO VERTICAL */}
           <button
