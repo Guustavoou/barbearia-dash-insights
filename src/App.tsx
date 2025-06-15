@@ -140,7 +140,12 @@ const UnclicAppContent: React.FC = () => {
       case "clients":
         return <Clients darkMode={darkMode} />;
       case "appointments":
-        return <BeautifulAppointments darkMode={darkMode} onPageChange={setCurrentPage} />;
+        return (
+          <BeautifulAppointments
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
