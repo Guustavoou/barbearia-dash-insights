@@ -46,9 +46,7 @@ export const UnclicLogo: React.FC<UnclicLogoProps> = ({
           color: "rgba(9, 24, 61, 1)",
           padding: "10px 0 10px 38px",
         }}
-      >
-        {/* Conteúdo da logo já está na imagem de fundo */}
-      </div>
+      />
     </div>
   );
 };
