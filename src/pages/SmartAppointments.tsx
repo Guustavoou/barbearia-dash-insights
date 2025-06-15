@@ -18,6 +18,7 @@ import {
   Check,
   AlertCircle,
   ChevronDown,
+  Menu,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { NewAppointmentModal } from "@/components/NewAppointmentModal";
 
 interface SmartAppointmentsProps {
   darkMode: boolean;
@@ -241,7 +243,21 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
   const [selectedProfessional, setSelectedProfessional] = useState<
     string | null
   >(null);
-  const [appointments] = useState<Appointment[]>(mockAppointments);
+  const [appointments, setAppointments] =
+    useState<Appointment[]>(mockAppointments);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileProfessionals, setShowMobileProfessionals] = useState(false);
+
+  // Check for mobile screen
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -291,6 +307,24 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
     const message = `Olá ${clientName}! Este é um lembrete do seu agendamento. Nos vemos em breve!`;
     const whatsappURL = `https://wa.me/55${phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, "_blank");
+  };
+
+  const handleNewAppointment = (appointmentData: any) => {
+    const newAppointment: Appointment = {
+      id: (appointments.length + 1).toString(),
+      clientName: appointmentData.client.name,
+      clientPhone: appointmentData.client.phone,
+      professionalId: appointmentData.professional.id,
+      service: appointmentData.service.name,
+      startTime: appointmentData.time,
+      endTime: appointmentData.time, // Calculate end time based on service duration
+      duration: appointmentData.service.duration,
+      price: appointmentData.service.price,
+      status: "pending",
+    };
+
+    setAppointments([...appointments, newAppointment]);
+    setShowNewAppointment(false);
   };
 
   const calculateTotal = () => {
@@ -586,11 +620,11 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Date Navigation */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <div className="flex items-center space-x-1 md:space-x-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -598,8 +632,10 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <h1 className="text-lg font-semibold text-gray-900">
-                {formatDate(currentDate)}
+              <h1 className="text-sm md:text-lg font-semibold text-gray-900 min-w-0">
+                {isMobile
+                  ? currentDate.toLocaleDateString("pt-BR")
+                  : formatDate(currentDate)}
               </h1>
               <Button
                 variant="ghost"
@@ -615,58 +651,94 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-3">
-            <Button variant="outline">Block time</Button>
+          <div className="flex items-center space-x-2 md:space-x-3">
+            {!isMobile && <Button variant="outline">Block time</Button>}
             <Button
-              className="bg-black hover:bg-gray-800 text-white"
+              className="bg-black hover:bg-gray-800 text-white text-xs md:text-sm px-2 md:px-4"
               onClick={() => setShowNewAppointment(true)}
             >
-              New appointment
+              {isMobile ? <Plus className="w-4 h-4" /> : "New appointment"}
             </Button>
           </div>
         </div>
       </div>
 
       {/* Professionals Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center space-x-6">
-          <div className="w-16"></div> {/* Time column spacer */}
-          {professionals.map((professional) => (
-            <div
-              key={professional.id}
-              className="flex-1 flex items-center space-x-3 min-w-0"
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
+        {isMobile ? (
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => setShowMobileProfessionals(true)}
+              className="flex items-center space-x-2"
             >
-              <div
-                className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium",
-                  professional.color,
-                )}
-              >
-                {professional.initials}
-              </div>
-              <div className="min-w-0">
-                <div className="font-medium text-gray-900 truncate">
-                  {professional.name}
+              <Menu className="w-4 h-4" />
+              <span>Profissionais</span>
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+            {selectedProfessional && (
+              <div className="flex items-center space-x-2">
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium",
+                    professionals.find((p) => p.id === selectedProfessional)
+                      ?.color,
+                  )}
+                >
+                  {
+                    professionals.find((p) => p.id === selectedProfessional)
+                      ?.initials
+                  }
                 </div>
+                <span className="text-sm font-medium">
+                  {
+                    professionals.find((p) => p.id === selectedProfessional)
+                      ?.name
+                  }
+                </span>
               </div>
-              <Button variant="ghost" size="sm">
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center space-x-6">
+            <div className="w-16"></div> {/* Time column spacer */}
+            {professionals.map((professional) => (
+              <div
+                key={professional.id}
+                className="flex-1 flex items-center space-x-3 min-w-0"
+              >
+                <div
+                  className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium",
+                    professional.color,
+                  )}
+                >
+                  {professional.initials}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-medium text-gray-900 truncate">
+                    {professional.name}
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Schedule Grid */}
       <div className="flex-1 overflow-auto">
-        <div className="px-6">
+        <div className="px-2 md:px-6">
           <div className="flex">
             {/* Time Column */}
-            <div className="w-16 flex-shrink-0">
+            <div className="w-12 md:w-16 flex-shrink-0">
               {timeSlots.map((slot) => (
                 <div
                   key={slot.time}
-                  className="h-16 flex items-start justify-end pr-2 pt-2 text-sm text-gray-500 border-b border-gray-100"
+                  className="h-12 md:h-16 flex items-start justify-end pr-1 md:pr-2 pt-1 md:pt-2 text-xs md:text-sm text-gray-500 border-b border-gray-100"
                 >
                   {slot.time}
                 </div>
@@ -674,12 +746,15 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
             </div>
 
             {/* Professional Columns */}
-            {professionals.map((professional) => (
+            {(isMobile && selectedProfessional
+              ? professionals.filter((p) => p.id === selectedProfessional)
+              : professionals
+            ).map((professional) => (
               <div key={professional.id} className="flex-1 min-w-0 relative">
                 {timeSlots.map((slot) => (
                   <div
                     key={`${professional.id}-${slot.time}`}
-                    className="h-16 border-b border-r border-gray-100 relative"
+                    className="h-12 md:h-16 border-b border-r border-gray-100 relative"
                   >
                     {/* Render appointment if it starts at this hour */}
                     {(() => {
@@ -708,6 +783,67 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
 
       {/* Product Modal */}
       <ProductModal />
+
+      {/* New Appointment Modal */}
+      <NewAppointmentModal
+        isOpen={showNewAppointment}
+        onClose={() => setShowNewAppointment(false)}
+        onSave={handleNewAppointment}
+        darkMode={darkMode}
+      />
+
+      {/* Mobile Professional Selector */}
+      {isMobile && (
+        <Dialog
+          open={showMobileProfessionals}
+          onOpenChange={setShowMobileProfessionals}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Selecionar Profissional</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <Button
+                variant={!selectedProfessional ? "default" : "outline"}
+                className="w-full justify-start"
+                onClick={() => {
+                  setSelectedProfessional(null);
+                  setShowMobileProfessionals(false);
+                }}
+              >
+                Todos os Profissionais
+              </Button>
+              {professionals.map((professional) => (
+                <Button
+                  key={professional.id}
+                  variant={
+                    selectedProfessional === professional.id
+                      ? "default"
+                      : "outline"
+                  }
+                  className="w-full justify-start"
+                  onClick={() => {
+                    setSelectedProfessional(professional.id);
+                    setShowMobileProfessionals(false);
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium",
+                        professional.color,
+                      )}
+                    >
+                      {professional.initials}
+                    </div>
+                    <span>{professional.name}</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Backdrop for sidebar on mobile */}
       {showSidebar && (
