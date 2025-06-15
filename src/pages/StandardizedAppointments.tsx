@@ -363,44 +363,69 @@ export const StandardizedAppointments: React.FC<
     return (
       <Card
         className={cn(
-          "p-6 transition-all duration-300 group relative overflow-hidden",
-          "bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-gray-700",
+          "p-4 transition-all duration-300 group relative overflow-hidden border-0 shadow-sm",
+          "bg-white dark:bg-[#0D1117] hover:shadow-md",
           isClickable
-            ? "hover:shadow-md cursor-pointer hover:border-[#00112F]/20 dark:hover:border-gray-600"
-            : "hover:shadow-sm",
+            ? "cursor-pointer hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
+            : "",
         )}
         onClick={onCardClick}
       >
-        {/* Subtle accent circle */}
-        <div className="absolute -right-3 -top-3 w-12 h-12 rounded-full bg-[#00112F]/5 dark:bg-gray-600/10" />
+        {/* Modern accent line */}
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#00112F]/20 via-[#00112F]/10 to-transparent" />
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <Icon className="w-6 h-6 text-[#00112F] dark:text-gray-300" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="p-1.5 rounded-md bg-[#00112F]/8 dark:bg-gray-700">
+                  <Icon className="w-4 h-4 text-[#00112F] dark:text-gray-300" />
+                </div>
+                <h3 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                   {title}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
-                  {period}
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-[#00112F] dark:text-white leading-none">
+                  {formatValue(value)}
                 </p>
+
+                <div className="flex items-center space-x-2">
+                  {change !== undefined && (
+                    <div className="flex items-center">
+                      {change >= 0 ? (
+                        <TrendingUp className="w-3 h-3 text-green-600 mr-1" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3 text-red-500 mr-1" />
+                      )}
+                      <span
+                        className={cn(
+                          "text-xs font-medium",
+                          change >= 0 ? "text-green-600" : "text-red-500",
+                        )}
+                      >
+                        {Math.abs(change)}%
+                      </span>
+                    </div>
+                  )}
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {period}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+
+            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
               {isClickable && (
-                <ExternalLink className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <ExternalLink className="w-3 h-3 text-gray-400" />
+                </Button>
               )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <MoreHorizontal className="w-3 h-3 text-gray-400" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -414,35 +439,11 @@ export const StandardizedAppointments: React.FC<
             </div>
           </div>
 
-          <div className="mb-4">
-            <p className="text-3xl font-bold text-[#00112F] dark:text-white mb-1">
-              {formatValue(value)}
-            </p>
-            {change !== undefined && (
-              <div className="flex items-center space-x-2">
-                <Badge
-                  variant="secondary"
-                  className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-0"
-                >
-                  {change >= 0 ? (
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3 mr-1" />
-                  )}
-                  {Math.abs(change)}%
-                </Badge>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  vs. semana anterior
-                </span>
-              </div>
-            )}
-          </div>
-
           {target && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                <span>Progresso</span>
-                <span>
+            <div className="mt-3 space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500 dark:text-gray-400">Meta</span>
+                <span className="text-gray-700 dark:text-gray-300 font-medium">
                   {Math.round(
                     (Number(value.toString().replace(/[^\d]/g, "")) / target) *
                       100,
@@ -455,7 +456,7 @@ export const StandardizedAppointments: React.FC<
                   (Number(value.toString().replace(/[^\d]/g, "")) / target) *
                   100
                 }
-                className="h-2"
+                className="h-1"
               />
             </div>
           )}
@@ -520,27 +521,34 @@ export const StandardizedAppointments: React.FC<
 
     return (
       <Card
-        className="p-4 transition-all duration-300 hover:shadow-sm cursor-pointer border-l-2 border-l-gray-300 group bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-gray-700"
+        className="p-3 transition-all duration-200 hover:shadow-md cursor-pointer group bg-white dark:bg-[#0D1117] border-0 shadow-sm hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
         onClick={() => {
           setSelectedAppointment(appointment);
           setShowSidebar(true);
         }}
       >
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="font-medium text-[#00112F] dark:text-white">
-              {appointment.clientName}
-            </span>
+        <div className="space-y-2.5">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <h4 className="font-medium text-[#00112F] dark:text-white truncate">
+                {appointment.clientName}
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                {appointment.service}
+              </p>
+            </div>
             <Badge
-              variant={
+              variant="outline"
+              className={cn(
+                "text-xs border-0 px-2 py-0.5",
                 appointment.status === "confirmado"
-                  ? "default"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                   : appointment.status === "pendente"
-                    ? "secondary"
+                    ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                     : appointment.status === "concluido"
-                      ? "outline"
-                      : "destructive"
-              }
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+              )}
             >
               {appointment.status === "confirmado"
                 ? "Confirmado"
@@ -554,31 +562,28 @@ export const StandardizedAppointments: React.FC<
             </Badge>
           </div>
 
-          <div className="text-sm text-gray-600 dark:text-gray-300">
-            <div className="flex items-center space-x-2 mb-1">
-              <Clock className="w-4 h-4" />
-              <span>
-                {appointment.startTime} - {appointment.endTime}
-              </span>
-            </div>
-            <div>{appointment.service}</div>
+          <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+            <Clock className="w-3.5 h-3.5" />
+            <span>
+              {appointment.startTime} - {appointment.endTime}
+            </span>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-1 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center space-x-2">
               <div
                 className={cn(
-                  "w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium",
+                  "w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-medium",
                   professional?.color,
                 )}
               >
                 {professional?.initials}
               </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {professional?.name}
               </span>
             </div>
-            <span className="font-bold text-[#00112F] dark:text-white">
+            <span className="font-semibold text-[#00112F] dark:text-white text-sm">
               {formatCurrency(appointment.price)}
             </span>
           </div>
@@ -588,36 +593,51 @@ export const StandardizedAppointments: React.FC<
   };
 
   const DayView = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {(selectedProfessional
           ? professionals.filter((p) => p.id === selectedProfessional)
           : professionals
         ).map((professional) => (
-          <Card key={professional.id} className="overflow-hidden">
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <Card
+            key={professional.id}
+            className="overflow-hidden border-0 shadow-sm"
+          >
+            <div className="p-3 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/80 border-b border-gray-100 dark:border-gray-700">
               <div className="flex items-center space-x-3">
                 <div
                   className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center text-white font-medium",
+                    "w-10 h-10 rounded-lg flex items-center justify-center text-white font-medium shadow-sm",
                     professional.color,
                   )}
                 >
                   {professional.initials}
                 </div>
-                <div>
-                  <h3 className="font-semibold text-[#00112F] dark:text-white">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-[#00112F] dark:text-white text-sm">
                     {professional.name}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {professional.workingHours.start} -{" "}
                     {professional.workingHours.end}
                   </p>
                 </div>
+                <div className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {
+                      filteredAppointments.filter(
+                        (apt) =>
+                          apt.professionalId === professional.id &&
+                          apt.date.toDateString() ===
+                            currentDate.toDateString(),
+                      ).length
+                    }
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
+            <div className="p-3 space-y-2 max-h-80 overflow-y-auto">
               {filteredAppointments
                 .filter((apt) => apt.professionalId === professional.id)
                 .filter(
@@ -891,7 +911,7 @@ export const StandardizedAppointments: React.FC<
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header with same style as dashboard */}
       <div className="flex items-center justify-between">
         <div>
@@ -933,10 +953,10 @@ export const StandardizedAppointments: React.FC<
         </div>
       </div>
 
-      {/* KPI Cards with subtle colors */}
+      {/* KPI Cards with modern thin design */}
       <section>
         <h2 className="sr-only">Indicadores de Agendamentos</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           <KPICard
             title="Agendamentos Hoje"
             value={metrics.todayAppointments}
