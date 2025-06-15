@@ -354,39 +354,39 @@ export const StandardizedAppointments: React.FC<
   }) => {
     const variantStyles = {
       primary: {
-        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
-        border: "border-[#00112F]/10 dark:border-[#F9FAFB]/20",
+        bg: "bg-gradient-to-br from-white to-[#F9FAFB] dark:from-[#0D1117] dark:to-[#00112F]/30",
+        border: "border-gray-200 dark:border-[#F9FAFB]/10",
         icon: "text-[#00112F] dark:text-[#F9FAFB]",
         accent: "bg-[#00112F]",
-        iconBg: "bg-[#00112F]/5 dark:bg-[#F9FAFB]/10",
+        iconBg: "bg-[#F9FAFB] dark:bg-[#00112F]/20",
       },
       success: {
-        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
-        border: "border-[#00112F]/15 dark:border-[#F9FAFB]/25",
+        bg: "bg-gradient-to-br from-white to-[#F9FAFB] dark:from-[#0D1117] dark:to-[#00112F]/30",
+        border: "border-gray-200 dark:border-[#F9FAFB]/10",
         icon: "text-[#00112F] dark:text-[#F9FAFB]",
         accent: "bg-[#00112F]",
-        iconBg: "bg-[#00112F]/8 dark:bg-[#F9FAFB]/15",
+        iconBg: "bg-[#F9FAFB] dark:bg-[#00112F]/20",
       },
       warning: {
-        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
-        border: "border-[#00112F]/12 dark:border-[#F9FAFB]/22",
-        icon: "text-[#00112F]/80 dark:text-[#F9FAFB]/90",
-        accent: "bg-[#00112F]/80",
-        iconBg: "bg-[#00112F]/6 dark:bg-[#F9FAFB]/12",
+        bg: "bg-gradient-to-br from-white to-[#F9FAFB] dark:from-[#0D1117] dark:to-[#00112F]/30",
+        border: "border-gray-200 dark:border-[#F9FAFB]/10",
+        icon: "text-[#00112F] dark:text-[#F9FAFB]",
+        accent: "bg-[#00112F]",
+        iconBg: "bg-[#F9FAFB] dark:bg-[#00112F]/20",
       },
       danger: {
-        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
-        border: "border-[#00112F]/18 dark:border-[#F9FAFB]/28",
-        icon: "text-[#00112F]/90 dark:text-[#F9FAFB]/95",
-        accent: "bg-[#00112F]/90",
-        iconBg: "bg-[#00112F]/10 dark:bg-[#F9FAFB]/18",
+        bg: "bg-gradient-to-br from-white to-[#F9FAFB] dark:from-[#0D1117] dark:to-[#00112F]/30",
+        border: "border-gray-200 dark:border-[#F9FAFB]/10",
+        icon: "text-[#00112F] dark:text-[#F9FAFB]",
+        accent: "bg-[#00112F]",
+        iconBg: "bg-[#F9FAFB] dark:bg-[#00112F]/20",
       },
       info: {
-        bg: "bg-gradient-to-br from-[#F9FAFB] to-white dark:from-[#0D1117] dark:to-[#00112F]/50",
-        border: "border-[#00112F]/8 dark:border-[#F9FAFB]/18",
-        icon: "text-[#00112F]/70 dark:text-[#F9FAFB]/80",
-        accent: "bg-[#00112F]/70",
-        iconBg: "bg-[#00112F]/4 dark:bg-[#F9FAFB]/8",
+        bg: "bg-gradient-to-br from-white to-[#F9FAFB] dark:from-[#0D1117] dark:to-[#00112F]/30",
+        border: "border-gray-200 dark:border-[#F9FAFB]/10",
+        icon: "text-[#00112F] dark:text-[#F9FAFB]",
+        accent: "bg-[#00112F]",
+        iconBg: "bg-[#F9FAFB] dark:bg-[#00112F]/20",
       },
     };
 
@@ -413,7 +413,7 @@ export const StandardizedAppointments: React.FC<
       >
         <div
           className={cn(
-            "absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-5 dark:opacity-10",
+            "absolute -right-4 -top-4 w-16 h-16 rounded-full opacity-3 dark:opacity-5",
             style.accent,
           )}
         />
@@ -425,10 +425,10 @@ export const StandardizedAppointments: React.FC<
                 <Icon className={cn("w-6 h-6", style.icon)} />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-[#00112F]/70 dark:text-[#F9FAFB]/80">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                   {title}
                 </h3>
-                <p className="text-xs text-[#00112F]/50 dark:text-[#F9FAFB]/60">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {period}
                 </p>
               </div>
@@ -465,22 +465,21 @@ export const StandardizedAppointments: React.FC<
             {change !== undefined && (
               <div className="flex items-center space-x-2">
                 <Badge
-                  variant={change >= 0 ? "default" : "destructive"}
+                  variant="outline"
                   className={cn(
-                    "text-xs",
+                    "text-xs border-none px-2 py-1 rounded-full text-[#00112F] dark:text-[#F9FAFB]",
                     change >= 0
-                      ? "bg-[#00112F]/10 text-[#00112F] dark:bg-[#F9FAFB]/20 dark:text-[#F9FAFB]"
-                      : "bg-[#00112F]/15 text-[#00112F] dark:bg-[#F9FAFB]/25 dark:text-[#F9FAFB]",
+                      ? "bg-[#00112F]/8 dark:bg-[#F9FAFB]/15"
+                      : "bg-[#00112F]/8 dark:bg-[#F9FAFB]/15"
                   )}
                 >
-                  {change >= 0 ? (
                     <TrendingUp className="w-3 h-3 mr-1" />
                   ) : (
                     <TrendingDown className="w-3 h-3 mr-1" />
                   )}
                   {Math.abs(change)}%
                 </Badge>
-                <span className="text-xs text-[#00112F]/50 dark:text-[#F9FAFB]/60">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   vs. semana anterior
                 </span>
               </div>
@@ -489,7 +488,7 @@ export const StandardizedAppointments: React.FC<
 
           {target && (
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-[#00112F]/60 dark:text-[#F9FAFB]/70">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>Progresso</span>
                 <span>
                   {Math.round(
@@ -569,7 +568,7 @@ export const StandardizedAppointments: React.FC<
 
     return (
       <Card
-        className="p-4 transition-all duration-300 hover:shadow-md cursor-pointer border-l-4 border-l-[#00112F] group bg-white dark:bg-[#0D1117] border-[#00112F]/10 dark:border-[#F9FAFB]/20"
+        className="p-4 transition-all duration-300 hover:shadow-sm cursor-pointer border-l-2 border-l-[#00112F]/20 group bg-white dark:bg-[#0D1117] border border-gray-200 dark:border-[#F9FAFB]/10"
         onClick={() => {
           setSelectedAppointment(appointment);
           setShowSidebar(true);
@@ -603,7 +602,7 @@ export const StandardizedAppointments: React.FC<
             </Badge>
           </div>
 
-          <div className="text-sm text-[#00112F]/70 dark:text-[#F9FAFB]/80">
+          <div className="text-sm text-gray-600 dark:text-gray-300">
             <div className="flex items-center space-x-2 mb-1">
               <Clock className="w-4 h-4" />
               <span>
@@ -623,7 +622,7 @@ export const StandardizedAppointments: React.FC<
               >
                 {professional?.initials}
               </div>
-              <span className="text-sm text-[#00112F]/60 dark:text-[#F9FAFB]/70">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {professional?.name}
               </span>
             </div>
@@ -686,8 +685,8 @@ export const StandardizedAppointments: React.FC<
                   (apt) =>
                     apt.date.toDateString() === currentDate.toDateString(),
                 ).length === 0 && (
-                <div className="text-center py-8 text-[#00112F]/60 dark:text-[#F9FAFB]/70">
-                  <CalendarDays className="w-12 h-12 mx-auto mb-3 text-[#00112F]/40 dark:text-[#F9FAFB]/50" />
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <CalendarDays className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
                   <p className="text-sm">Nenhum agendamento</p>
                   <p className="text-xs mt-1">
                     Clique em "Novo Agendamento" para adicionar
@@ -733,7 +732,7 @@ export const StandardizedAppointments: React.FC<
                 .map((appointment) => (
                   <div
                     key={appointment.id}
-                    className="p-2 rounded border-l-2 border-[#00112F] bg-[#00112F]/5 dark:bg-[#F9FAFB]/10 cursor-pointer hover:bg-[#00112F]/10 dark:hover:bg-[#F9FAFB]/20 transition-colors"
+                    className="p-2 rounded border-l-2 border-[#00112F]/30 bg-[#F9FAFB] dark:bg-[#00112F]/10 cursor-pointer hover:bg-gray-100 dark:hover:bg-[#00112F]/20 transition-colors"
                     onClick={() => {
                       setSelectedAppointment(appointment);
                       setShowSidebar(true);
@@ -813,7 +812,7 @@ export const StandardizedAppointments: React.FC<
                   {dayAppointments.slice(0, 2).map((apt) => (
                     <div
                       key={apt.id}
-                      className="text-xs p-1 rounded bg-[#00112F]/10 dark:bg-[#F9FAFB]/20 text-[#00112F] dark:text-[#F9FAFB] truncate cursor-pointer"
+                      className="text-xs p-1 rounded bg-[#F9FAFB] dark:bg-[#00112F]/15 text-[#00112F] dark:text-[#F9FAFB] truncate cursor-pointer"
                       onClick={() => {
                         setSelectedAppointment(apt);
                         setShowSidebar(true);
@@ -966,7 +965,7 @@ export const StandardizedAppointments: React.FC<
           </Button>
           <Button
             size="sm"
-            className="bg-[#00112F] hover:bg-[#00112F]/90 text-white"
+            className="bg-[#00112F] hover:bg-[#00112F]/90 text-white border-0"
             onClick={handleExportData}
           >
             <Download className="w-4 h-4 mr-2" />
