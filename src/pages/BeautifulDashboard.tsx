@@ -176,7 +176,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     };
   }, [currentStats]);
 
-  // Mock data for charts (same as BeautifulAppointments style)
+  // Mock data for charts usando paleta oficial
   const revenueChartData = revenueData?.data || [
     { month: "Jan", revenue: 35000, expenses: 15000, profit: 20000 },
     { month: "Fev", revenue: 38000, expenses: 16000, profit: 22000 },
@@ -185,11 +185,11 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   ];
 
   const servicesData = topServices?.data || [
-    { name: "Corte Masculino", count: 145, revenue: 7250, color: "#8B5CF6" },
-    { name: "Barba", count: 89, revenue: 4450, color: "#06B6D4" },
-    { name: "Coloração", count: 67, revenue: 6700, color: "#10B981" },
-    { name: "Tratamentos", count: 45, revenue: 4500, color: "#F59E0B" },
-    { name: "Escova", count: 32, revenue: 1600, color: "#EF4444" },
+    { name: "Corte Masculino", count: 145, revenue: 7250, color: "#00112F" },
+    { name: "Barba", count: 89, revenue: 4450, color: "#4B5563" },
+    { name: "Coloração", count: 67, revenue: 6700, color: "#6B7280" },
+    { name: "Tratamentos", count: 45, revenue: 4500, color: "#9CA3AF" },
+    { name: "Escova", count: 32, revenue: 1600, color: "#D1D5DB" },
   ];
 
   const appointmentsToday = upcomingAppointments?.data || [
@@ -251,7 +251,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     });
   };
 
-  // Beautiful KPI Card Component (exactly like BeautifulAppointments)
+  // Beautiful KPI Card Component usando paleta oficial
   const BeautifulKPICard: React.FC<KPICardProps> = ({
     title,
     value,
@@ -273,37 +273,37 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
       return val.toString();
     };
 
+    // Paleta oficial da marca - apenas tons de azul e cinza
     const variantStyles = {
       primary: {
-        gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-blue-500 to-blue-600",
-        accent: "bg-blue-500",
+        gradient: "from-[#00112F]/10 via-[#00112F]/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-[#00112F] to-blue-800",
+        accent: "bg-[#00112F]",
       },
       success: {
-        gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-emerald-500 to-emerald-600",
-        accent: "bg-emerald-500",
+        gradient: "from-blue-600/10 via-blue-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-blue-600 to-blue-700",
+        accent: "bg-blue-600",
       },
       warning: {
-        gradient: "from-amber-500/10 via-amber-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-amber-500 to-amber-600",
-        accent: "bg-amber-500",
+        gradient: "from-gray-600/10 via-gray-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-gray-600 to-gray-700",
+        accent: "bg-gray-600",
       },
       danger: {
-        gradient: "from-red-500/10 via-red-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-red-500 to-red-600",
-        accent: "bg-red-500",
+        gradient: "from-slate-600/10 via-slate-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-slate-600 to-slate-700",
+        accent: "bg-slate-600",
       },
       info: {
-        gradient: "from-violet-500/10 via-violet-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-violet-500 to-violet-600",
-        accent: "bg-violet-500",
+        gradient: "from-blue-700/10 via-blue-700/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-blue-700 to-blue-800",
+        accent: "bg-blue-700",
       },
       premium: {
-        gradient:
-          "from-gradient-to-br from-purple-500/20 via-pink-500/10 to-transparent",
-        iconBg: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
-        accent: "bg-gradient-to-r from-purple-500 to-pink-500",
+        gradient: "from-[#00112F]/20 via-[#0D1117]/10 to-transparent",
+        iconBg: "bg-gradient-to-br from-[#00112F] via-blue-900 to-[#0D1117]",
+        accent: "bg-gradient-to-r from-[#00112F] to-blue-900",
       },
     };
 
@@ -313,7 +313,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
       <Card
         className={cn(
           "group relative overflow-hidden transition-all duration-500 border-0 shadow-lg hover:shadow-xl",
-          "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl",
+          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl",
           isClickable &&
             "cursor-pointer hover:-translate-y-1 hover:scale-[1.02]",
         )}
@@ -331,8 +331,8 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
           )}
         />
 
-        {/* Glow effect on hover */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
+        {/* Glow effect on hover usando cores da marca */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#00112F]/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
 
         <div className="relative p-4">
           <div className="flex items-start justify-between mb-3">
@@ -394,7 +394,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
           </div>
 
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-[#00112F] dark:text-white leading-none tracking-tight">
+            <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] leading-none tracking-tight">
               {formatValue(value)}
             </p>
 
@@ -404,8 +404,8 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
                   className={cn(
                     "flex items-center px-2 py-1 rounded-full text-xs font-medium",
                     change >= 0
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
                   )}
                 >
                   {change >= 0 ? (
@@ -446,7 +446,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
                   className="h-1.5"
                 />
                 <div
-                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 animate-pulse"
+                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-[#00112F] to-blue-600 rounded-full opacity-20 animate-pulse"
                   style={{
                     width: `${(Number(value.toString().replace(/[^\d]/g, "")) / target) * 100}%`,
                   }}
@@ -464,16 +464,16 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   }> = ({ appointment }) => {
     const statusStyles = {
       confirmado: {
-        bg: "bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-400",
-        border: "border-l-green-400",
+        bg: "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 dark:from-blue-900/30 dark:to-blue-800/30 dark:text-blue-400",
+        border: "border-l-blue-500",
       },
       pendente: {
-        bg: "bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-700 dark:from-yellow-900/30 dark:to-amber-900/30 dark:text-yellow-400",
-        border: "border-l-yellow-400",
+        bg: "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 dark:from-gray-900/30 dark:to-gray-800/30 dark:text-gray-400",
+        border: "border-l-gray-500",
       },
       cancelado: {
-        bg: "bg-gradient-to-r from-red-100 to-rose-100 text-red-700 dark:from-red-900/30 dark:to-rose-900/30 dark:text-red-400",
-        border: "border-l-red-400",
+        bg: "bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 dark:from-slate-900/30 dark:to-slate-800/30 dark:text-slate-400",
+        border: "border-l-slate-500",
       },
     };
 
@@ -484,21 +484,21 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
       <Card
         className={cn(
           "group relative overflow-hidden transition-all duration-300 border-0 shadow-md hover:shadow-lg cursor-pointer border-l-4",
-          "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-900",
+          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-sm hover:bg-white dark:hover:bg-[#0D1117]",
           "hover:-translate-y-1 hover:scale-[1.02]",
           status.border,
         )}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         <div className="relative p-3 space-y-2">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h4 className="font-semibold text-[#00112F] dark:text-white text-sm">
+              <h4 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] text-sm">
                 {appointment.client_name}
               </h4>
               <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center">
-                <Sparkles className="w-3 h-3 mr-1 text-purple-400" />
+                <Sparkles className="w-3 h-3 mr-1 text-[#00112F] dark:text-blue-400" />
                 {appointment.service}
               </p>
             </div>
@@ -521,7 +521,7 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
               <span className="text-gray-300">•</span>
               <span>{appointment.professional}</span>
             </div>
-            <span className="font-bold text-[#00112F] dark:text-white text-sm">
+            <span className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-sm">
               {formatCurrency(appointment.value)}
             </span>
           </div>
@@ -531,81 +531,82 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
-      {/* Beautiful animated background - exactly like BeautifulAppointments */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse" />
-        <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-purple-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000" />
-        <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-pink-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000" />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
+      <div className="space-y-6 p-6">
+        {/* Beautiful Header - cores da marca */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 p-8 text-white shadow-2xl">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)]" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
 
-      <div className="relative z-10 p-6 space-y-6">
-        {/* Beautiful Header - exactly like BeautifulAppointments */}
-        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_70%)]" />
-
-          <div className="relative p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-3xl font-bold flex items-center">
-                  <Sparkles className="w-8 h-8 mr-3 text-yellow-300" />
+          <div className="relative flex items-center justify-between">
+            <div>
+              <div className="flex items-center space-x-3 mb-2">
+                <Sparkles className="w-8 h-8 text-blue-200 animate-pulse" />
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
                   Dashboard Premium
                 </h1>
-                <p className="text-white/90 mt-2">
-                  Visão completa do seu negócio • Última atualização:{" "}
-                  {formatTime(lastUpdate)}
-                </p>
               </div>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="ghost"
-                  onClick={handleRefreshData}
-                  disabled={isLoading}
-                  className="text-white hover:bg-white/20"
-                >
-                  <RefreshCw
-                    className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
-                  />
-                  {isLoading ? "Atualizando..." : "Atualizar"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={handleExportData}
-                  className="text-white hover:bg-white/20"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar
-                </Button>
-                <select
-                  value={selectedPeriod}
-                  onChange={(e) => setSelectedPeriod(e.target.value)}
-                  className="px-4 py-2 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 backdrop-blur-sm"
-                >
-                  <option value="week" className="text-gray-900">
-                    Esta Semana
-                  </option>
-                  <option value="month" className="text-gray-900">
-                    Este Mês
-                  </option>
-                  <option value="year" className="text-gray-900">
-                    Este Ano
-                  </option>
-                </select>
-              </div>
+              <p className="text-blue-200 text-lg">
+                Visão completa do seu negócio • Atualizado às{" "}
+                {lastUpdate.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
             </div>
-
-            {/* Floating sparkles animation - exactly like BeautifulAppointments */}
-            <div className="absolute top-4 right-20 w-2 h-2 bg-yellow-300 rounded-full animate-ping" />
-            <div className="absolute top-8 right-32 w-1 h-1 bg-white rounded-full animate-pulse delay-500" />
-            <div className="absolute bottom-8 left-20 w-1.5 h-1.5 bg-pink-300 rounded-full animate-bounce delay-1000" />
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleRefreshData}
+                disabled={isLoading}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              >
+                <RefreshCw
+                  className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
+                />
+                {isLoading ? "Atualizando..." : "Atualizar"}
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filtros
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleExportData}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Exportar
+              </Button>
+              <select
+                value={selectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value)}
+                className="px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+              >
+                <option value="week" className="text-gray-900">
+                  Esta Semana
+                </option>
+                <option value="month" className="text-gray-900">
+                  Este Mês
+                </option>
+                <option value="year" className="text-gray-900">
+                  Este Ano
+                </option>
+              </select>
+            </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Beautiful KPI Cards - exactly like BeautifulAppointments layout */}
+        {/* Beautiful KPI Cards */}
         <section>
-          <h2 className="text-2xl font-bold text-[#00112F] dark:text-white mb-6 flex items-center">
-            <BarChart3 className="w-6 h-6 mr-2 text-purple-500" />
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+            <BarChart3 className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Indicadores Premium
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -729,24 +730,24 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
           </div>
         </section>
 
-        {/* Main Content Grid - same structure as BeautifulAppointments */}
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Revenue Chart */}
-          <Card className="lg:col-span-2 p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
+          <Card className="lg:col-span-2 p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
-                <LineChart className="w-5 h-5 mr-2 text-blue-500" />
+              <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
+                <LineChart className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
                 Faturamento Mensal
               </h3>
               <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                  <div className="w-3 h-3 bg-[#00112F] rounded-full" />
                   <span className="text-xs text-gray-600 dark:text-gray-400">
                     Receita
                   </span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full" />
+                  <div className="w-3 h-3 bg-blue-600 rounded-full" />
                   <span className="text-xs text-gray-600 dark:text-gray-400">
                     Lucro
                   </span>
@@ -781,18 +782,18 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
                   <Line
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#3B82F6"
+                    stroke="#00112F"
                     strokeWidth={3}
-                    dot={{ fill: "#3B82F6", strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, fill: "#3B82F6" }}
+                    dot={{ fill: "#00112F", strokeWidth: 2, r: 6 }}
+                    activeDot={{ r: 8, fill: "#00112F" }}
                   />
                   <Line
                     type="monotone"
                     dataKey="profit"
-                    stroke="#8B5CF6"
+                    stroke="#2563EB"
                     strokeWidth={3}
-                    dot={{ fill: "#8B5CF6", strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, fill: "#8B5CF6" }}
+                    dot={{ fill: "#2563EB", strokeWidth: 2, r: 6 }}
+                    activeDot={{ r: 8, fill: "#2563EB" }}
                   />
                 </RechartsLine>
               </ResponsiveContainer>
@@ -800,9 +801,9 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
           </Card>
 
           {/* Services Chart */}
-          <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
-            <h3 className="text-lg font-bold text-[#00112F] dark:text-white mb-6 flex items-center">
-              <PieChart className="w-5 h-5 mr-2 text-purple-500" />
+          <Card className="p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
+            <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+              <PieChart className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
               Serviços Populares
             </h3>
             <div className="h-64 mb-4">
@@ -844,12 +845,12 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: service.color }}
                     />
-                    <span className="text-sm font-medium text-[#00112F] dark:text-white">
+                    <span className="text-sm font-medium text-[#00112F] dark:text-[#F9FAFB]">
                       {service.name}
                     </span>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-bold text-[#00112F] dark:text-white">
+                    <div className="text-sm font-bold text-[#00112F] dark:text-[#F9FAFB]">
                       {service.count}
                     </div>
                     <div className="text-xs text-gray-500">
@@ -863,17 +864,17 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
         </div>
 
         {/* Bottom Content - Today's Appointments */}
-        <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
+        <Card className="p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
-              <Calendar className="w-5 h-5 mr-2 text-green-500" />
+            <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
+              <Calendar className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
               Agendamentos de Hoje
             </h3>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleNavigate("appointments")}
-              className="text-[#00112F] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="text-[#00112F] dark:text-[#F9FAFB] hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               Ver todos
               <ArrowUpRight className="w-4 h-4 ml-1" />
