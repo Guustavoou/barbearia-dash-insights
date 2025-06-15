@@ -107,10 +107,48 @@ export const BeautifulSettings: React.FC<BeautifulSettingsProps> = ({
   };
 
   const handleSaveSettings = () => {
-    toast({
-      title: "✅ Configurações Salvas",
-      description: "Suas preferências foram atualizadas",
-    });
+    // Validação básica
+    if (!settings.business.name?.trim()) {
+      toast({
+        title: "❌ Erro de Validação",
+        description: "Nome da empresa é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (
+      !settings.business.email?.trim() ||
+      !settings.business.email.includes("@")
+    ) {
+      toast({
+        title: "❌ Erro de Validação",
+        description: "Email válido é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!settings.business.phone?.trim()) {
+      toast({
+        title: "❌ Erro de Validação",
+        description: "Telefone é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simular persistência
+    setIsLoading(true);
+    setTimeout(() => {
+      // Aqui seria feita a persistência real (API call)
+      localStorage.setItem("unclicSettings", JSON.stringify(settings));
+      setIsLoading(false);
+      toast({
+        title: "✅ Configurações Salvas",
+        description: "Suas preferências foram atualizadas com sucesso",
+      });
+    }, 1000);
   };
 
   const updateSetting = (category: string, key: string, value: any) => {
