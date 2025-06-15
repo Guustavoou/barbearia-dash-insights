@@ -254,9 +254,16 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
       {/* Right Sidebar */}
       <aside
-        className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col shadow-xl"
+        className={cn(
+          "fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col shadow-xl",
+          isOpen ? "pointer-events-auto" : "pointer-events-none",
+        )}
         style={sidebarStyle}
       >
+        {/* Debug Info - Remove in production */}
+        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-60">
+          {isOpen ? "OPEN" : "CLOSED"}
+        </div>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
