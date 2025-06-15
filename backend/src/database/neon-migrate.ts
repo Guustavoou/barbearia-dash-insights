@@ -219,6 +219,86 @@ async function createTables() {
       );
     `;
 
+    // Client ratings table (for service ratings and feedback)
+    await sql`
+      CREATE TABLE IF NOT EXISTS client_ratings (
+        id SERIAL PRIMARY KEY,
+        client_id INTEGER NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+        appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+        service_id INTEGER NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+        professional_id INTEGER NOT NULL REFERENCES professionals(id) ON DELETE CASCADE,
+        rating INTEGER CHECK(rating >= 1 AND rating <= 5) NOT NULL,
+        comment TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // User sessions table (for tracking online users)
+    await sql`
+      CREATE TABLE IF NOT EXISTS user_sessions (
+        id SERIAL PRIMARY KEY,
+        user_id VARCHAR(100) NOT NULL, -- can be client_id, professional_id, or admin_id
+        user_type VARCHAR(20) CHECK(user_type IN ('client', 'professional', 'admin')) NOT NULL,
+        session_token VARCHAR(255) UNIQUE NOT NULL,
+        ip_address INET,
+        user_agent TEXT,
+        last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP
+      );
+    `;
+
+    // Notifications/Messages table
+    await sql`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        recipient_id INTEGER NOT NULL,
+        recipient_type VARCHAR(20) CHECK(recipient_type IN ('client', 'professional', 'admin')) NOT NULL,
+        type VARCHAR(50) NOT NULL, -- 'appointment_reminder', 'birthday', 'promotion', etc.
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        channel VARCHAR(20) CHECK(channel IN ('email', 'sms', 'whatsapp', 'push', 'system')) NOT NULL,
+        status VARCHAR(20) CHECK(status IN ('pending', 'sent', 'delivered', 'read', 'failed')) DEFAULT 'pending',
+        sent_at TIMESTAMP,
+        read_at TIMESTAMP,
+        data JSONB, -- Additional data for the notification
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Commission payments table
+    await sql`
+      CREATE TABLE IF NOT EXISTS commission_payments (
+        id SERIAL PRIMARY KEY,
+        professional_id INTEGER NOT NULL REFERENCES professionals(id) ON DELETE CASCADE,
+        period_start DATE NOT NULL,
+        period_end DATE NOT NULL,
+        total_services INTEGER DEFAULT 0,
+        total_revenue DECIMAL(10,2) DEFAULT 0,
+        commission_rate DECIMAL(5,2) NOT NULL,
+        commission_amount DECIMAL(10,2) NOT NULL,
+        status VARCHAR(20) CHECK(status IN ('calculated', 'paid', 'cancelled')) DEFAULT 'calculated',
+        payment_date DATE,
+        payment_method VARCHAR(50),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Peak hours analytics table
+    await sql`
+      CREATE TABLE IF NOT EXISTS peak_hours_analytics (
+        id SERIAL PRIMARY KEY,
+        date DATE NOT NULL,
+        hour INTEGER CHECK(hour >= 0 AND hour <= 23) NOT NULL,
+        appointment_count INTEGER DEFAULT 0,
+        revenue DECIMAL(10,2) DEFAULT 0,
+        occupancy_rate DECIMAL(5,2) DEFAULT 0, -- percentage
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(date, hour)
+      );
+    `;
+
     // Create indexes for better performance
     await sql`CREATE INDEX IF NOT EXISTS idx_clients_status ON clients(status)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_clients_email ON clients(email)`;
