@@ -6,26 +6,22 @@ import {
   getUpcomingAppointments,
   getBirthdaysThisMonth,
   getQuickInsights,
+  getFinancialMetrics,
+  getOperationalMetrics,
 } from "../../controllers/neon/dashboardController";
 
 const router = Router();
 
-// GET /api/dashboard/stats - Get dashboard statistics
+// Dashboard routes
 router.get("/stats", getDashboardStats);
-
-// GET /api/dashboard/revenue - Get revenue data for charts
 router.get("/revenue", getRevenueData);
-
-// GET /api/dashboard/top-services - Get top performing services
 router.get("/top-services", getTopServices);
-
-// GET /api/dashboard/upcoming-appointments - Get upcoming appointments
 router.get("/upcoming-appointments", getUpcomingAppointments);
-
-// GET /api/dashboard/birthdays - Get clients with birthdays this month
 router.get("/birthdays", getBirthdaysThisMonth);
-
-// GET /api/dashboard/insights - Get business insights
 router.get("/insights", getQuickInsights);
+
+// New advanced metrics routes
+router.get("/financial-metrics", getFinancialMetrics);
+router.get("/operational-metrics", getOperationalMetrics);
 
 export default router;
