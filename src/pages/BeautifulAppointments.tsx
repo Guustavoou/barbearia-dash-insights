@@ -965,7 +965,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={() => navigateDate("next")}
-                  className="hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                  className="hover:bg-blue-100 dark:hover:bg-blue-900/20"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
