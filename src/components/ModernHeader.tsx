@@ -137,12 +137,18 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onToggleRightSidebar}
+            onClick={() => {
+              console.log(
+                "Header toggle clicked, rightSidebarOpen:",
+                rightSidebarOpen,
+              );
+              onToggleRightSidebar();
+            }}
             className={cn(
-              "w-10 h-10 rounded-full hidden lg:flex relative transition-all duration-300 group",
+              "w-12 h-12 rounded-full hidden lg:flex relative transition-all duration-300 group border-2",
               rightSidebarOpen
-                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-inner"
-                : "hover:bg-gray-100 dark:hover:bg-gray-700",
+                ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:bg-blue-100 dark:hover:bg-blue-800",
             )}
             title={
               rightSidebarOpen
@@ -151,11 +157,16 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             }
           >
             <div className="relative">
-              <Calendar className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+              <Calendar className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
               {/* Enhanced visual indicator */}
-              {rightSidebarOpen && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse shadow-lg" />
-              )}
+              <div
+                className={cn(
+                  "absolute -top-1 -right-1 w-3 h-3 rounded-full shadow-lg transition-all duration-200",
+                  rightSidebarOpen
+                    ? "bg-green-400 animate-pulse"
+                    : "bg-red-400",
+                )}
+              />
             </div>
           </Button>
         )}
