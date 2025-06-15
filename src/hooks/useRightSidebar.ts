@@ -12,16 +12,28 @@ export const useRightSidebar = ({
   isMobile = false,
 }: UseRightSidebarProps = {}) => {
   const [isOpen, setIsOpen] = useState(() => {
+    console.log("useRightSidebar initializing with:", {
+      defaultOpen,
+      isMobile,
+    });
+
     // Don't show on mobile by default
-    if (isMobile) return false;
+    if (isMobile) {
+      console.log("useRightSidebar: mobile detected, setting to false");
+      return false;
+    }
 
     // Try to get from localStorage
     if (typeof window !== "undefined" && persistKey) {
       const stored = localStorage.getItem(persistKey);
       if (stored !== null) {
-        return JSON.parse(stored);
+        const storedValue = JSON.parse(stored);
+        console.log("useRightSidebar: loaded from localStorage:", storedValue);
+        return storedValue;
       }
     }
+
+    console.log("useRightSidebar: using defaultOpen:", defaultOpen);
     return defaultOpen;
   });
 
