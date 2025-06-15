@@ -10,6 +10,7 @@ import { RightSidebar } from "@/components/RightSidebar";
 
 import { OptimizedDashboard } from "@/pages/OptimizedDashboard";
 import { SimpleDashboard } from "@/pages/SimpleDashboard";
+import { EnhancedInteractiveDashboard } from "@/pages/EnhancedInteractiveDashboard";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
 import { Clients } from "@/pages/Clients";
