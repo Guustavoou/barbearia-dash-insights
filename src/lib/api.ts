@@ -183,18 +183,58 @@ class ApiClient {
     }
 
     if (endpoint.includes("/dashboard/revenue")) {
-      const mockData = [];
-      for (let i = 30; i >= 0; i--) {
+      const mockCurrentData = [];
+      const mockPreviousData = [];
+
+      for (let i = 6; i >= 0; i--) {
         const date = new Date();
-        date.setDate(date.getDate() - i);
-        mockData.push({
-          date: date.toISOString().split("T")[0],
-          value: Math.floor(Math.random() * 2000) + 500,
+        date.setMonth(date.getMonth() - i);
+        const revenue = Math.floor(Math.random() * 10000) + 15000;
+        const expenses =
+          Math.floor(revenue * 0.3) + Math.floor(Math.random() * 2000);
+
+        mockCurrentData.push({
+          period: date.toLocaleDateString("pt-BR", { month: "short" }),
+          revenue: revenue,
+          expenses: expenses,
+          profit: revenue - expenses,
+          transaction_count: Math.floor(Math.random() * 50) + 20,
+        });
+
+        // Previous period data for comparison
+        mockPreviousData.push({
+          period: date.toLocaleDateString("pt-BR", { month: "short" }),
+          revenue: revenue * 0.9,
+          expenses: expenses * 0.85,
+          profit: revenue * 0.9 - expenses * 0.85,
+          transaction_count: Math.floor(Math.random() * 40) + 15,
         });
       }
+
       return {
         success: true,
-        data: mockData as T,
+        data: {
+          current: mockCurrentData,
+          previous: mockPreviousData,
+          summary: {
+            total_revenue: mockCurrentData.reduce(
+              (sum, item) => sum + item.revenue,
+              0,
+            ),
+            total_expenses: mockCurrentData.reduce(
+              (sum, item) => sum + item.expenses,
+              0,
+            ),
+            total_profit: mockCurrentData.reduce(
+              (sum, item) => sum + item.profit,
+              0,
+            ),
+            total_transactions: mockCurrentData.reduce(
+              (sum, item) => sum + item.transaction_count,
+              0,
+            ),
+          },
+        } as T,
       };
     }
 
