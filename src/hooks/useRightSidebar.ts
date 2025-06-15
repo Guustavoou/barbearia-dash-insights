@@ -49,9 +49,18 @@ export const useRightSidebar = ({
 
   const toggle = () => {
     console.log("🔄 Toggle called - current state:", isOpen);
+    console.log("📱 isMobile:", isMobile);
+
     setIsOpen((prev) => {
       const newState = !prev;
       console.log("🔄 State changing from", prev, "to", newState);
+
+      // Force update localStorage immediately
+      if (typeof window !== "undefined" && persistKey) {
+        localStorage.setItem(persistKey, JSON.stringify(newState));
+        console.log("💾 Saved to localStorage:", newState);
+      }
+
       return newState;
     });
   };
