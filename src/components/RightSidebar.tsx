@@ -7,9 +7,19 @@ import {
   Plus,
   Calendar as CalendarIcon,
   EyeOff,
+  X,
+  Clock,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface RightSidebarProps {
   isOpen: boolean;
@@ -18,12 +28,28 @@ interface RightSidebarProps {
   upcomingAppointments?: any[];
 }
 
+interface Appointment {
+  id: number;
+  startTime: string;
+  endTime: string;
+  service: string;
+  client: string;
+  clientInitial: string;
+  avatarBg: string;
+  clientPhone?: string;
+  notes?: string;
+  status: "confirmado" | "agendado" | "concluido";
+}
+
 export const RightSidebar: React.FC<RightSidebarProps> = ({
   isOpen,
   onToggle,
   darkMode,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 5, 1)); // Junho 2025
+  const [selectedDay, setSelectedDay] = useState<number | null>(14); // Dia 14 selecionado
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
 
   const formatMonthYear = (date: Date) => {
     return date.toLocaleDateString("pt-BR", {
@@ -52,12 +78,24 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + (direction === "next" ? 1 : -1));
     setCurrentDate(newDate);
+    setSelectedDay(null); // Reset selected day when changing month
+  };
+
+  const handleDayClick = (day: Date) => {
+    const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+    if (isCurrentMonth) {
+      setSelectedDay(day.getDate());
+    }
+  };
+
+  const handleAppointmentClick = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
   };
 
   const days = getDaysInMonth(currentDate);
 
-  // Agendamentos exatamente como na imagem
-  const appointments = [
+  // Agendamentos com mais detalhes
+  const appointments: Appointment[] = [
     {
       id: 1,
       startTime: "10:30",
@@ -66,6 +104,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       client: "André Ferreira",
       clientInitial: "A",
       avatarBg: "bg-blue-500",
+      clientPhone: "(11) 99999-1234",
+      notes: "Cliente prefere barba mais baixa",
+      status: "confirmado",
     },
     {
       id: 2,
@@ -75,6 +116,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       client: "Juliana Santos",
       clientInitial: "J",
       avatarBg: "bg-indigo-600",
+      clientPhone: "(11) 99999-5678",
+      notes: "Primeira vez fazendo coloração",
+      status: "agendado",
     },
     {
       id: 3,
@@ -84,6 +128,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       client: "Felipe Moreira",
       clientInitial: "F",
       avatarBg: "bg-green-500",
+      clientPhone: "(11) 99999-9012",
+      status: "agendado",
     },
     {
       id: 4,
@@ -93,8 +139,26 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       client: "Bruno Almeida",
       clientInitial: "B",
       avatarBg: "bg-purple-600",
+      clientPhone: "(11) 99999-3456",
+      notes: "Cliente regular, corte habitual",
+      status: "agendado",
     },
   ];
+
+  const handleCall = (appointment: Appointment) => {
+    if (appointment.clientPhone) {
+      window.open(`tel:${appointment.clientPhone}`);
+    }
+  };
+
+  const handleMessage = (appointment: Appointment) => {
+    if (appointment.clientPhone) {
+      const message = `Olá ${appointment.client}! Lembrando do seu agendamento hoje às ${appointment.startTime} para ${appointment.service}.`;
+      window.open(
+        `https://wa.me/${appointment.clientPhone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`,
+      );
+    }
+  };
 
   return (
     <>
@@ -119,7 +183,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         )}
       >
         <div className="h-full flex flex-col">
-          {/* Header - Fundo cinza claro */}
+          {/* Header */}
           <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -131,7 +195,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                     Agenda do Dia
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    14 de junho
+                    {selectedDay ? `${selectedDay} de junho` : "14 de junho"}
                   </p>
                 </div>
               </div>
@@ -149,13 +213,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Calendar - Fundo branco */}
+          {/* Calendar */}
           <div className="px-4 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => navigateMonth("prev")}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Mês anterior"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
@@ -165,6 +230,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               <button
                 onClick={() => navigateMonth("next")}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Próximo mês"
               >
                 <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
@@ -182,25 +248,30 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               ))}
             </div>
 
-            {/* Calendar Grid */}
+            {/* Calendar Grid - CLICÁVEL */}
             <div className="grid grid-cols-7 gap-1 text-center">
               {days.map((day, index) => {
                 const isCurrentMonth =
                   day.getMonth() === currentDate.getMonth();
-                const isToday = day.getDate() === 14 && isCurrentMonth;
+                const isSelected =
+                  selectedDay === day.getDate() && isCurrentMonth;
+                const isToday =
+                  day.getDate() === 14 && isCurrentMonth && !selectedDay;
                 const dayNumber = day.getDate();
 
                 return (
                   <button
                     key={`calendar-day-${day.getTime()}`}
+                    onClick={() => handleDayClick(day)}
                     className={cn(
-                      "text-xs h-8 w-8 flex items-center justify-center rounded-full transition-all duration-200",
+                      "text-xs h-8 w-8 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer",
                       isCurrentMonth
-                        ? isToday
+                        ? isSelected || isToday
                           ? "bg-blue-600 text-white font-semibold"
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        : "text-gray-300 dark:text-gray-600",
+                        : "text-gray-300 dark:text-gray-600 cursor-not-allowed",
                     )}
+                    disabled={!isCurrentMonth}
                   >
                     {dayNumber}
                   </button>
@@ -209,61 +280,172 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             </div>
           </div>
 
-          {/* Appointments List - Scrollable com scroll visível */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800">
+          {/* Appointments List - CLICÁVEIS */}
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
             {appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 shadow-sm"
-              >
-                {/* Time and Actions Row */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {appointment.startTime} - {appointment.endTime}
-                    </span>
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-8 h-8 p-0 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-full"
-                      title={`Ligar para ${appointment.client}`}
-                    >
-                      <Phone className="w-4 h-4 text-green-600 dark:text-green-400" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-8 h-8 p-0 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full"
-                      title={`Enviar mensagem para ${appointment.client}`}
-                    >
-                      <MessageCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Service */}
-                <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                  {appointment.service}
-                </p>
-
-                {/* Client */}
-                <div className="flex items-center space-x-2">
+              <Dialog key={appointment.id}>
+                <DialogTrigger asChild>
                   <div
-                    className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0",
-                      appointment.avatarBg,
-                    )}
+                    className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer"
+                    onClick={() => handleAppointmentClick(appointment)}
                   >
-                    {appointment.clientInitial}
+                    {/* Time and Actions Row */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {appointment.startTime} - {appointment.endTime}
+                        </span>
+                      </div>
+                      <div
+                        className="flex space-x-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-8 h-8 p-0 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-full"
+                          title={`Ligar para ${appointment.client}`}
+                          onClick={() => handleCall(appointment)}
+                        >
+                          <Phone className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-8 h-8 p-0 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full"
+                          title={`Enviar mensagem para ${appointment.client}`}
+                          onClick={() => handleMessage(appointment)}
+                        >
+                          <MessageCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Service */}
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      {appointment.service}
+                    </p>
+
+                    {/* Client */}
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={cn(
+                          "w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0",
+                          appointment.avatarBg,
+                        )}
+                      >
+                        {appointment.clientInitial}
+                      </div>
+                      <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {appointment.client}
+                      </span>
+                      <div
+                        className={cn(
+                          "ml-auto px-2 py-1 rounded-full text-xs font-medium",
+                          appointment.status === "confirmado"
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                            : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+                        )}
+                      >
+                        {appointment.status}
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                    {appointment.client}
-                  </span>
-                </div>
-              </div>
+                </DialogTrigger>
+
+                {/* Modal de Detalhes do Agendamento */}
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center space-x-2">
+                      <Clock className="w-5 h-5 text-blue-600" />
+                      <span>Detalhes do Agendamento</span>
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={cn(
+                          "w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-semibold",
+                          appointment.avatarBg,
+                        )}
+                      >
+                        {appointment.clientInitial}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                          {appointment.client}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {appointment.clientPhone}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Serviço:
+                        </span>
+                        <span className="text-sm text-gray-900 dark:text-white">
+                          {appointment.service}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Horário:
+                        </span>
+                        <span className="text-sm text-gray-900 dark:text-white">
+                          {appointment.startTime} - {appointment.endTime}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Status:
+                        </span>
+                        <span
+                          className={cn(
+                            "text-sm px-2 py-1 rounded-full font-medium",
+                            appointment.status === "confirmado"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700",
+                          )}
+                        >
+                          {appointment.status}
+                        </span>
+                      </div>
+                      {appointment.notes && (
+                        <div>
+                          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                            Observações:
+                          </span>
+                          <p className="text-sm text-gray-900 dark:text-white mt-1">
+                            {appointment.notes}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-2 pt-4">
+                      <Button
+                        onClick={() => handleCall(appointment)}
+                        className="flex-1 bg-green-600 hover:bg-green-700"
+                      >
+                        <Phone className="w-4 h-4 mr-2" />
+                        Ligar
+                      </Button>
+                      <Button
+                        onClick={() => handleMessage(appointment)}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Mensagem
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             ))}
 
             {/* Empty State */}
@@ -271,7 +453,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
               <div className="text-center py-8">
                 <CalendarIcon className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Nenhum agendamento para hoje
+                  Nenhum agendamento para{" "}
+                  {selectedDay ? `o dia ${selectedDay}` : "hoje"}
                 </p>
               </div>
             )}
