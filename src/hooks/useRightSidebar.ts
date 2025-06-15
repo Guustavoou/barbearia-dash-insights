@@ -39,12 +39,13 @@ export const useRightSidebar = ({
     }
   }, [isOpen, persistKey]);
 
-  // Auto-hide on mobile
+  // Auto-hide on mobile when becoming mobile, but allow manual toggle
   useEffect(() => {
     if (isMobile && isOpen) {
+      console.log("📱 Mobile detected, auto-closing sidebar");
       setIsOpen(false);
     }
-  }, [isMobile, isOpen]);
+  }, [isMobile]); // Remove isOpen from dependencies to prevent infinite loop
 
   const toggle = () => {
     console.log("🔄 Toggle called - current state:", isOpen);
