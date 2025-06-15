@@ -60,8 +60,8 @@ export function useDashboardStats() {
   return useApi(() => api.getDashboardStats());
 }
 
-export function useRevenueData(period?: string) {
-  return useApi(() => api.getRevenueData(period), [period]);
+export function useRevenueData(period?: string, compare?: boolean) {
+  return useApi(() => api.getRevenueData(period, compare), [period, compare]);
 }
 
 export function useTopServices(limit?: number) {
