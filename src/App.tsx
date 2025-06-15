@@ -185,7 +185,9 @@ const UnclicAppContent: React.FC = () => {
           />
         );
       case "reports":
-        return <Reports darkMode={darkMode} />;
+        return (
+          <BeautifulReports darkMode={darkMode} onPageChange={setCurrentPage} />
+        );
       case "settings":
         return (
           <BeautifulSettings
@@ -205,9 +207,19 @@ const UnclicAppContent: React.FC = () => {
           />
         );
       case "marketing":
-        return <Marketing darkMode={darkMode} />;
+        return (
+          <BeautifulMarketing
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
       case "documents":
-        return <Documents darkMode={darkMode} />;
+        return (
+          <BeautifulDocuments
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
       default:
         return (
           <BeautifulDashboard
