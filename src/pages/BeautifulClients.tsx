@@ -146,11 +146,12 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   // Calculate metrics
   const metrics = useMemo(() => {
-    const totalClients = clients.length;
-    const activeClients = clients.filter(
+    const safeClients = clients || [];
+    const totalClients = safeClients.length;
+    const activeClients = safeClients.filter(
       (c: any) => c.status === "ativo",
     ).length;
-    const newThisMonth = clients.filter((c: any) => {
+    const newThisMonth = safeClients.filter((c: any) => {
       const created = new Date(c.createdAt);
       const now = new Date();
       return (
