@@ -146,9 +146,10 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
 
   // Calculate filtered and sorted services
   const filteredServices = useMemo(() => {
-    let filtered = servicesData.filter((service: Service) => {
+    const safeServices = servicesData || [];
+    let filtered = safeServices.filter((service: Service) => {
       const matchesSearch =
-        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory =
         selectedCategory === "todas" || service.category === selectedCategory;
