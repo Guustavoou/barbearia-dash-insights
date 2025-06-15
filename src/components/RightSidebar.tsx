@@ -102,7 +102,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       {!isOpen && (
         <div className="fixed top-20 right-4 z-50 hidden lg:block">
           <Button
-            onClick={onToggle}
+            onClick={handleToggle}
             className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-110"
             title="Mostrar Agenda do Dia"
           >
@@ -114,11 +114,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       {/* Right Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-2xl z-30 transition-all duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700",
-          isOpen ? "translate-x-0 w-80" : "translate-x-full w-0",
+          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-xl z-30 transition-all duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700",
+          isOpen ? "translate-x-0 w-80" : "translate-x-full w-80",
         )}
+        style={{
+          visibility: isOpen ? 'visible' : 'hidden',
+        }}
       >
-        <div className="h-full flex flex-col">
           {/* Header - Fundo cinza claro */}
           <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
@@ -138,7 +140,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
 
               {/* Toggle Button */}
               <Button
-                onClick={onToggle}
+                onClick={handleToggle}
                 variant="ghost"
                 size="sm"
                 className="w-8 h-8 p-0 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"
