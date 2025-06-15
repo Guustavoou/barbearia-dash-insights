@@ -277,6 +277,7 @@ const UnclicAppContent: React.FC = () => {
             isOpen={rightSidebar.isOpen}
             onToggle={rightSidebar.toggle}
             darkMode={darkMode}
+            onPageChange={setCurrentPage}
           />
 
           {/* Quick Actions Hub */}
