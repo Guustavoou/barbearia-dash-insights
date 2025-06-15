@@ -47,14 +47,21 @@ export const useRightSidebar = ({
   }, [isMobile, isOpen]);
 
   const toggle = () => {
-    setIsOpen((prev) => !prev);
+    console.log("🔄 Toggle called - current state:", isOpen);
+    setIsOpen((prev) => {
+      const newState = !prev;
+      console.log("🔄 State changing from", prev, "to", newState);
+      return newState;
+    });
   };
 
   const open = () => {
+    console.log("📂 Open called");
     setIsOpen(true);
   };
 
   const close = () => {
+    console.log("📁 Close called");
     setIsOpen(false);
   };
 
