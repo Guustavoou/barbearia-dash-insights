@@ -522,32 +522,6 @@ export const OptimizedDashboard: React.FC<OptimizedDashboardProps> = ({
         </Card>
       </section>
 
-      {/* Debug Sidebar Test Button */}
-      <div className="fixed bottom-20 right-6 z-50">
-        <Button
-          onClick={() => {
-            console.log(
-              "Test button clicked - checking if sidebar exists in DOM",
-            );
-            const sidebar = document.querySelector(
-              '[data-testid="right-sidebar"]',
-            );
-            console.log("Sidebar element found:", sidebar);
-            // Try to find and click the toggle
-            const toggleBtn = document.querySelector(
-              '[data-testid="sidebar-toggle"]',
-            );
-            if (toggleBtn) {
-              (toggleBtn as HTMLElement).click();
-            }
-          }}
-          className="rounded-full w-12 h-12 bg-red-600 hover:bg-red-700 text-white shadow-lg"
-          title="Test Sidebar"
-        >
-          🔧
-        </Button>
-      </div>
-
       {/* Quick Actions FAB */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button

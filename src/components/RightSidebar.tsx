@@ -286,13 +286,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
           </div>
         </div>
       </aside>
-
-      {/* Red Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button className="w-12 h-12 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95">
-          <Phone className="w-5 h-5" />
-        </Button>
-      </div>
     </>
   );
 };
