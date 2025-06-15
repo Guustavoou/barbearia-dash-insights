@@ -178,9 +178,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       {/* Right Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-xl z-30 transition-all duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700",
-          isOpen ? "translate-x-0 w-80" : "translate-x-full w-80",
+          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-xl z-30 transition-transform duration-300 ease-in-out border-l border-gray-200 dark:border-gray-700",
+          "w-80", // Largura fixa
+          isOpen ? "translate-x-0" : "translate-x-full",
         )}
+        style={{
+          transform: isOpen ? "translateX(0)" : "translateX(100%)",
+        }}
       >
         <div className="h-full flex flex-col">
           {/* Header */}
