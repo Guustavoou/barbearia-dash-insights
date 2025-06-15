@@ -1,428 +1,625 @@
-
 import React, { useState } from "react";
-import { X, Calendar, Clock, User, Briefcase } from "lucide-react";
-import { cn, formatCurrency } from "@/lib/unclicUtils";
-import { useClients } from "@/hooks/useClients";
-import { useServices } from "@/hooks/useServices";
-import { useProfessionals } from "@/hooks/useProfessionals";
-import { useAppointments } from "@/hooks/useAppointments";
-import { toast } from "sonner";
+import {
+  Calendar,
+  Clock,
+  User,
+  Search,
+  X,
+  Phone,
+  Mail,
+  MapPin,
+  Plus,
+  Check,
+} from "lucide-react";
+import { cn } from "@/lib/unclicUtils";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 interface NewAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedDate?: Date;
-  darkMode: boolean;
+  onSave: (appointmentData: any) => void;
+  darkMode?: boolean;
 }
 
-interface FormData {
-  clientId: string;
-  serviceId: string;
-  professionalId: string;
-  date: string;
-  time: string;
-  notes: string;
+interface Client {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  avatar?: string;
+  initials: string;
 }
+
+interface Service {
+  id: string;
+  name: string;
+  duration: number;
+  price: number;
+  category: string;
+}
+
+interface Professional {
+  id: string;
+  name: string;
+  avatar: string;
+  color: string;
+  initials: string;
+}
+
+const mockClients: Client[] = [
+  {
+    id: "1",
+    name: "Lincoln Steffes",
+    phone: "(11) 99999-1234",
+    email: "lincoln@email.com",
+    initials: "LS",
+  },
+  {
+    id: "2",
+    name: "Cameron Williamson",
+    phone: "(11) 99999-5678",
+    email: "cameron@email.com",
+    initials: "CW",
+  },
+  {
+    id: "3",
+    name: "Andrea McCoy",
+    phone: "(11) 99999-9012",
+    email: "andrea@email.com",
+    initials: "AM",
+  },
+];
+
+const mockServices: Service[] = [
+  {
+    id: "1",
+    name: "Corte Masculino",
+    duration: 45,
+    price: 80,
+    category: "Corte",
+  },
+  {
+    id: "2",
+    name: "Barba",
+    duration: 30,
+    price: 60,
+    category: "Barba",
+  },
+  {
+    id: "3",
+    name: "Corte + Barba",
+    duration: 90,
+    price: 150,
+    category: "Combo",
+  },
+  {
+    id: "4",
+    name: "Degradê",
+    duration: 45,
+    price: 90,
+    category: "Corte",
+  },
+];
+
+const mockProfessionals: Professional[] = [
+  {
+    id: "james",
+    name: "James F.",
+    avatar: "/api/placeholder/40/40",
+    color: "bg-blue-500",
+    initials: "JF",
+  },
+  {
+    id: "jack",
+    name: "Jack C.",
+    avatar: "/api/placeholder/40/40",
+    color: "bg-purple-500",
+    initials: "JC",
+  },
+  {
+    id: "mike",
+    name: "Mike D.",
+    avatar: "/api/placeholder/40/40",
+    color: "bg-green-500",
+    initials: "MD",
+  },
+];
+
+const timeSlots = [
+  "08:00",
+  "08:30",
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+];
 
 export const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({
   isOpen,
   onClose,
-  selectedDate,
-  darkMode,
+  onSave,
+  darkMode = false,
 }) => {
-  const [formData, setFormData] = useState<FormData>({
-    clientId: "",
-    serviceId: "",
-    professionalId: "",
-    date: selectedDate
-      ? selectedDate.toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0],
-    time: "",
-    notes: "",
+  const [step, setStep] = useState<
+    "client" | "service" | "datetime" | "payment"
+  >("client");
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [newClient, setNewClient] = useState({
+    name: "",
+    phone: "",
+    email: "",
   });
+  const [isNewClient, setIsNewClient] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedProfessional, setSelectedProfessional] =
+    useState<Professional | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "pix" | "dinheiro" | "cartao"
+  >("pix");
+  const [notes, setNotes] = useState("");
+  const [clientSearch, setClientSearch] = useState("");
 
-  const [loading, setLoading] = useState(false);
-
-  const { clients } = useClients();
-  const { services } = useServices();
-  const { professionals } = useProfessionals();
-  const { addAppointment } = useAppointments();
-
-  const selectedService = services.find(
-    (s) => s.id === formData.serviceId,
+  const filteredClients = mockClients.filter((client) =>
+    client.name.toLowerCase().includes(clientSearch.toLowerCase()),
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSave = () => {
+    const appointmentData = {
+      client: isNewClient ? newClient : selectedClient,
+      service: selectedService,
+      professional: selectedProfessional,
+      date: selectedDate,
+      time: selectedTime,
+      paymentMethod,
+      notes,
+    };
 
-    try {
-      const appointmentData = {
-        client_id: formData.clientId,
-        service_id: formData.serviceId,
-        professional_id: formData.professionalId || null,
-        appointment_date: formData.date,
-        appointment_time: formData.time,
-        duration: selectedService?.duration || 30,
-        price: selectedService?.price || 0,
-        notes: formData.notes || null,
-        status: 'agendado' as const,
-      };
+    onSave(appointmentData);
+    handleClose();
+  };
 
-      const result = await addAppointment(appointmentData);
-      
-      if (result) {
-        toast.success("Agendamento criado com sucesso!");
-        
-        // Reset form
-        setFormData({
-          clientId: "",
-          serviceId: "",
-          professionalId: "",
-          date: selectedDate
-            ? selectedDate.toISOString().split("T")[0]
-            : new Date().toISOString().split("T")[0],
-          time: "",
-          notes: "",
-        });
-        
-        onClose();
-      } else {
-        toast.error("Erro ao criar agendamento");
-      }
-    } catch (error) {
-      console.error('Error creating appointment:', error);
-      toast.error("Erro ao criar agendamento");
-    } finally {
-      setLoading(false);
+  const handleClose = () => {
+    setStep("client");
+    setSelectedClient(null);
+    setNewClient({ name: "", phone: "", email: "" });
+    setIsNewClient(false);
+    setSelectedService(null);
+    setSelectedProfessional(null);
+    setSelectedTime("");
+    setPaymentMethod("pix");
+    setNotes("");
+    setClientSearch("");
+    onClose();
+  };
+
+  const canProceed = () => {
+    switch (step) {
+      case "client":
+        return isNewClient ? newClient.name && newClient.phone : selectedClient;
+      case "service":
+        return selectedService && selectedProfessional;
+      case "datetime":
+        return selectedDate && selectedTime;
+      case "payment":
+        return paymentMethod;
+      default:
+        return false;
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div
-        className={cn(
-          "w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl",
-          darkMode ? "bg-gray-800" : "bg-white",
-        )}
-      >
-        {/* Header */}
-        <div
-          className={cn(
-            "sticky top-0 flex items-center justify-between p-6 border-b",
-            darkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-gray-200",
-          )}
-        >
-          <h2
+  const StepIndicator = () => (
+    <div className="flex items-center justify-center space-x-2 mb-6">
+      {["client", "service", "datetime", "payment"].map((stepName, index) => (
+        <div key={stepName} className="flex items-center">
+          <div
             className={cn(
-              "text-xl font-semibold",
-              darkMode ? "text-white" : "text-gray-900",
+              "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
+              step === stepName
+                ? "bg-blue-600 text-white"
+                : index <
+                    ["client", "service", "datetime", "payment"].indexOf(step)
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-200 text-gray-500",
             )}
           >
-            Novo Agendamento
-          </h2>
-          <button
-            onClick={onClose}
-            className={cn(
-              "p-2 rounded-lg transition-colors",
-              darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100",
+            {index <
+            ["client", "service", "datetime", "payment"].indexOf(step) ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              index + 1
             )}
-          >
-            <X
-              className={cn(
-                "h-5 w-5",
-                darkMode ? "text-gray-400" : "text-gray-500",
-              )}
-            />
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Client Selection */}
-          <div>
-            <label
-              htmlFor="clientId"
-              className={cn(
-                "block text-sm font-medium mb-2",
-                darkMode ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              <User className="inline h-4 w-4 mr-2" />
-              Cliente *
-            </label>
-            <select
-              id="clientId"
-              name="clientId"
-              required
-              value={formData.clientId}
-              onChange={handleInputChange}
-              className={cn(
-                "w-full px-3 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-              )}
-            >
-              <option value="">Selecione um cliente</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
           </div>
-
-          {/* Service Selection */}
-          <div>
-            <label
-              htmlFor="serviceId"
-              className={cn(
-                "block text-sm font-medium mb-2",
-                darkMode ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              <Briefcase className="inline h-4 w-4 mr-2" />
-              Serviço *
-            </label>
-            <select
-              id="serviceId"
-              name="serviceId"
-              required
-              value={formData.serviceId}
-              onChange={handleInputChange}
-              className={cn(
-                "w-full px-3 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-              )}
-            >
-              <option value="">Selecione um serviço</option>
-              {services.filter(s => s.is_active).map((service) => (
-                <option key={service.id} value={service.id}>
-                  {service.name} - {formatCurrency(service.price)} (
-                  {service.duration}min)
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Professional Selection */}
-          <div>
-            <label
-              htmlFor="professionalId"
-              className={cn(
-                "block text-sm font-medium mb-2",
-                darkMode ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Profissional
-            </label>
-            <select
-              id="professionalId"
-              name="professionalId"
-              value={formData.professionalId}
-              onChange={handleInputChange}
-              className={cn(
-                "w-full px-3 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-              )}
-            >
-              <option value="">Selecione um profissional (opcional)</option>
-              {professionals.filter(p => p.status === 'ativo').map((professional) => (
-                <option
-                  key={professional.id}
-                  value={professional.id}
-                >
-                  {professional.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Date and Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="date"
-                className={cn(
-                  "block text-sm font-medium mb-2",
-                  darkMode ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                <Calendar className="inline h-4 w-4 mr-2" />
-                Data *
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                required
-                value={formData.date}
-                onChange={handleInputChange}
-                className={cn(
-                  "w-full px-3 py-2 rounded-lg border transition-colors",
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-                )}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="time"
-                className={cn(
-                  "block text-sm font-medium mb-2",
-                  darkMode ? "text-gray-300" : "text-gray-700",
-                )}
-              >
-                <Clock className="inline h-4 w-4 mr-2" />
-                Horário *
-              </label>
-              <input
-                type="time"
-                id="time"
-                name="time"
-                required
-                value={formData.time}
-                onChange={handleInputChange}
-                className={cn(
-                  "w-full px-3 py-2 rounded-lg border transition-colors",
-                  darkMode
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Service Details */}
-          {selectedService && (
+          {index < 3 && (
             <div
               className={cn(
-                "p-4 rounded-lg border",
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-blue-50 border-blue-200",
+                "w-8 h-0.5 mx-2",
+                index <
+                  ["client", "service", "datetime", "payment"].indexOf(step)
+                  ? "bg-green-600"
+                  : "bg-gray-200",
               )}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
+  const ClientStep = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Selecionar Cliente
+        </h3>
+
+        <div className="flex items-center space-x-4 mb-6">
+          <Button
+            variant={!isNewClient ? "default" : "outline"}
+            onClick={() => setIsNewClient(false)}
+            className="flex-1"
+          >
+            Cliente Existente
+          </Button>
+          <Button
+            variant={isNewClient ? "default" : "outline"}
+            onClick={() => setIsNewClient(true)}
+            className="flex-1"
+          >
+            Novo Cliente
+          </Button>
+        </div>
+
+        {!isNewClient ? (
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+              <Input
+                placeholder="Buscar cliente..."
+                value={clientSearch}
+                onChange={(e) => setClientSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            <div className="max-h-64 overflow-y-auto space-y-2">
+              {filteredClients.map((client) => (
+                <div
+                  key={client.id}
+                  className={cn(
+                    "p-3 rounded-lg border cursor-pointer transition-colors",
+                    selectedClient?.id === client.id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300",
+                  )}
+                  onClick={() => setSelectedClient(client)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-600">
+                      {client.initials}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">
+                        {client.name}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {client.phone}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Nome Completo *</Label>
+              <Input
+                id="name"
+                value={newClient.name}
+                onChange={(e) =>
+                  setNewClient({ ...newClient, name: e.target.value })
+                }
+                placeholder="Digite o nome do cliente"
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Telefone *</Label>
+              <Input
+                id="phone"
+                value={newClient.phone}
+                onChange={(e) =>
+                  setNewClient({ ...newClient, phone: e.target.value })
+                }
+                placeholder="(11) 99999-9999"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">E-mail</Label>
+              <Input
+                id="email"
+                type="email"
+                value={newClient.email}
+                onChange={(e) =>
+                  setNewClient({ ...newClient, email: e.target.value })
+                }
+                placeholder="cliente@email.com"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const ServiceStep = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Selecionar Serviço
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+          {mockServices.map((service) => (
+            <div
+              key={service.id}
+              className={cn(
+                "p-4 rounded-lg border cursor-pointer transition-colors",
+                selectedService?.id === service.id
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300",
+              )}
+              onClick={() => setSelectedService(service)}
             >
-              <h4
-                className={cn(
-                  "font-medium mb-2",
-                  darkMode ? "text-white" : "text-gray-900",
-                )}
-              >
-                Detalhes do Serviço
-              </h4>
-              <div className="space-y-1">
-                <p
+              <div className="font-medium text-gray-900">{service.name}</div>
+              <div className="text-sm text-gray-500 mt-1">
+                {service.duration}min • R$ {service.price}
+              </div>
+              <Badge variant="secondary" className="mt-2">
+                {service.category}
+              </Badge>
+            </div>
+          ))}
+        </div>
+
+        <h4 className="font-semibold text-gray-900 mb-3">
+          Selecionar Profissional
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {mockProfessionals.map((professional) => (
+            <div
+              key={professional.id}
+              className={cn(
+                "p-3 rounded-lg border cursor-pointer transition-colors",
+                selectedProfessional?.id === professional.id
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300",
+              )}
+              onClick={() => setSelectedProfessional(professional)}
+            >
+              <div className="flex items-center space-x-3">
+                <div
                   className={cn(
-                    "text-sm",
-                    darkMode ? "text-gray-300" : "text-gray-600",
+                    "w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-medium",
+                    professional.color,
                   )}
                 >
-                  Duração: {selectedService.duration} minutos
-                </p>
-                <p
-                  className={cn(
-                    "text-sm",
-                    darkMode ? "text-gray-300" : "text-gray-600",
-                  )}
-                >
-                  Valor: {formatCurrency(selectedService.price)}
-                </p>
-                {selectedService.description && (
-                  <p
-                    className={cn(
-                      "text-sm",
-                      darkMode ? "text-gray-300" : "text-gray-600",
-                    )}
-                  >
-                    {selectedService.description}
-                  </p>
-                )}
+                  {professional.initials}
+                </div>
+                <div className="font-medium text-gray-900">
+                  {professional.name}
+                </div>
               </div>
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
-          {/* Notes */}
+  const DateTimeStep = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Selecionar Data e Horário
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label
-              htmlFor="notes"
-              className={cn(
-                "block text-sm font-medium mb-2",
-                darkMode ? "text-gray-300" : "text-gray-700",
-              )}
-            >
-              Observações
-            </label>
-            <textarea
-              id="notes"
-              name="notes"
-              rows={3}
-              value={formData.notes}
-              onChange={handleInputChange}
-              className={cn(
-                "w-full px-3 py-2 rounded-lg border transition-colors resize-none",
-                darkMode
-                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
-                  : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500",
-                "focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-              )}
-              placeholder="Informações adicionais sobre o agendamento..."
+            <Label>Data</Label>
+            <Input
+              type="date"
+              value={selectedDate.toISOString().split("T")[0]}
+              onChange={(e) => setSelectedDate(new Date(e.target.value))}
             />
           </div>
 
-          {/* Form Actions */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              className={cn(
-                "flex-1 px-4 py-2 rounded-lg border transition-colors",
-                darkMode
-                  ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                  : "border-gray-300 text-gray-600 hover:bg-gray-50",
-                loading && "opacity-50 cursor-not-allowed",
-              )}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !formData.clientId || !formData.serviceId || !formData.date || !formData.time}
-              className={cn(
-                "flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors",
-                (loading || !formData.clientId || !formData.serviceId || !formData.date || !formData.time) && "opacity-50 cursor-not-allowed",
-              )}
-            >
-              {loading ? "Agendando..." : "Agendar"}
-            </button>
+          <div>
+            <Label>Horário</Label>
+            <div className="grid grid-cols-3 gap-2 mt-2 max-h-48 overflow-y-auto">
+              {timeSlots.map((time) => (
+                <Button
+                  key={time}
+                  variant={selectedTime === time ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedTime(time)}
+                  className="text-xs"
+                >
+                  {time}
+                </Button>
+              ))}
+            </div>
           </div>
-        </form>
+        </div>
+
+        <div>
+          <Label htmlFor="notes">Observações</Label>
+          <textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Adicione observações sobre o agendamento..."
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg resize-none h-20 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
     </div>
+  );
+
+  const PaymentStep = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Forma de Pagamento
+        </h3>
+
+        <div className="space-y-3">
+          {[
+            { id: "pix", label: "PIX", icon: "💳" },
+            { id: "dinheiro", label: "Dinheiro", icon: "💵" },
+            { id: "cartao", label: "Cartão", icon: "💳" },
+          ].map((method) => (
+            <div
+              key={method.id}
+              className={cn(
+                "p-4 rounded-lg border cursor-pointer transition-colors",
+                paymentMethod === method.id
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300",
+              )}
+              onClick={() => setPaymentMethod(method.id as any)}
+            >
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">{method.icon}</span>
+                <span className="font-medium text-gray-900">
+                  {method.label}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Summary */}
+        <div className="bg-gray-50 rounded-lg p-4 mt-6">
+          <h4 className="font-semibold text-gray-900 mb-3">
+            Resumo do Agendamento
+          </h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Cliente:</span>
+              <span className="font-medium">
+                {isNewClient ? newClient.name : selectedClient?.name}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>Serviço:</span>
+              <span className="font-medium">{selectedService?.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Profissional:</span>
+              <span className="font-medium">{selectedProfessional?.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Data/Hora:</span>
+              <span className="font-medium">
+                {selectedDate.toLocaleDateString()} às {selectedTime}
+              </span>
+            </div>
+            <div className="flex justify-between border-t pt-2">
+              <span className="font-semibold">Total:</span>
+              <span className="font-semibold">
+                R$ {selectedService?.price || 0}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>Novo Agendamento</span>
+            <Button variant="ghost" size="sm" onClick={handleClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          <StepIndicator />
+
+          {step === "client" && <ClientStep />}
+          {step === "service" && <ServiceStep />}
+          {step === "datetime" && <DateTimeStep />}
+          {step === "payment" && <PaymentStep />}
+
+          <div className="flex justify-between pt-6 border-t">
+            <Button
+              variant="outline"
+              onClick={() => {
+                const steps = ["client", "service", "datetime", "payment"];
+                const currentIndex = steps.indexOf(step);
+                if (currentIndex > 0) {
+                  setStep(steps[currentIndex - 1] as any);
+                }
+              }}
+              disabled={step === "client"}
+            >
+              Voltar
+            </Button>
+
+            <Button
+              onClick={() => {
+                const steps = ["client", "service", "datetime", "payment"];
+                const currentIndex = steps.indexOf(step);
+                if (currentIndex < steps.length - 1) {
+                  setStep(steps[currentIndex + 1] as any);
+                } else {
+                  handleSave();
+                }
+              }}
+              disabled={!canProceed()}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {step === "payment" ? "Agendar" : "Continuar"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
