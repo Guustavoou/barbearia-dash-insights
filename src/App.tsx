@@ -45,7 +45,7 @@ const UnclicAppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
   const rightSidebar = useRightSidebar({
-    defaultOpen: isDesktop,
+    defaultOpen: true, // Forçar sempre aberta inicialmente
     persistKey: "unclicRightSidebar",
     isMobile,
   });
@@ -56,6 +56,7 @@ const UnclicAppContent: React.FC = () => {
     isDesktop,
     isMobile,
     isTablet,
+    rightSidebarToggle: rightSidebar.toggle,
   });
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
