@@ -15,7 +15,7 @@ import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
 import { Clients } from "@/pages/Clients";
 import { Appointments } from "@/pages/Appointments";
-import { EnhancedAppointments } from "@/pages/EnhancedAppointments";
+import { StandardizedAppointments } from "@/pages/StandardizedAppointments";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
 import { Professionals } from "@/pages/Professionals";
@@ -140,7 +140,12 @@ const UnclicAppContent: React.FC = () => {
       case "clients":
         return <Clients darkMode={darkMode} />;
       case "appointments":
-        return <EnhancedAppointments darkMode={darkMode} />;
+        return (
+          <StandardizedAppointments
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
       case "stock":
         return <Stock darkMode={darkMode} />;
       case "services":
