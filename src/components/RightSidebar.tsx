@@ -235,11 +235,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     onToggle();
   };
 
+  // Force hide with multiple CSS properties
   const sidebarStyle = {
     transform: isOpen ? "translateX(0)" : "translateX(100%)",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     visibility: isOpen ? "visible" : "hidden",
     opacity: isOpen ? 1 : 0,
+    display: isOpen ? "flex" : "none", // Force display none when closed
+    right: isOpen ? "0px" : "-100%", // Double ensure it's off screen
   };
 
   return (
