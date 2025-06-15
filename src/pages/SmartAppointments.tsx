@@ -260,7 +260,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
   }, []);
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString("pt-BR", {
       weekday: "long",
       month: "long",
       day: "numeric",
@@ -379,7 +379,13 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
               }
               className="text-xs"
             >
-              {appointment.status}
+              {appointment.status === "confirmed"
+                ? "Confirmado"
+                : appointment.status === "pending"
+                  ? "Pendente"
+                  : appointment.status === "completed"
+                    ? "Concluído"
+                    : "Cancelado"}
             </Badge>
             <span className="text-xs font-medium text-gray-900">
               R$ {appointment.price}
@@ -403,7 +409,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
-              Order details
+              Detalhes do Agendamento
             </h2>
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="sm">
@@ -424,7 +430,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
             {/* Appointments Section */}
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-3">
-                APPOINTMENTS
+                AGENDAMENTOS
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -444,7 +450,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                         {selectedAppointment.clientName}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {selectedAppointment.service} at{" "}
+                        {selectedAppointment.service} às{" "}
                         {selectedAppointment.startTime}
                       </div>
                     </div>
@@ -464,7 +470,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                   className="w-full"
                   onClick={() => setShowNewAppointment(true)}
                 >
-                  Add another appointment
+                  Adicionar outro agendamento
                 </Button>
               </div>
             </div>
@@ -472,7 +478,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
             {/* Products Section */}
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-3">
-                PRODUCTS
+                PRODUTOS
               </h3>
               <div className="space-y-3">
                 {selectedAppointment.products?.map((product) => (
@@ -489,7 +495,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                           {product.name}
                         </div>
                         <div className="text-sm text-gray-500">
-                          By {professional?.name}
+                          Por {professional?.name}
                         </div>
                       </div>
                     </div>
@@ -512,7 +518,9 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                   </div>
                 )) || (
                   <div className="text-center py-8">
-                    <div className="text-gray-400 mb-2">No products added</div>
+                    <div className="text-gray-400 mb-2">
+                      Nenhum produto adicionado
+                    </div>
                   </div>
                 )}
 
@@ -521,7 +529,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                   className="w-full"
                   onClick={() => setShowProductModal(true)}
                 >
-                  Add products
+                  Adicionar produtos
                 </Button>
               </div>
             </div>
@@ -533,7 +541,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                 onClick={() => handleCall(selectedAppointment.clientPhone)}
               >
                 <Phone className="w-4 h-4 mr-2" />
-                Call
+                Ligar
               </Button>
               <Button
                 variant="outline"
@@ -546,7 +554,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
                 }
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
-                Message
+                Mensagem
               </Button>
             </div>
           </div>
@@ -554,7 +562,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
           {/* Footer */}
           <div className="p-4 border-t border-gray-200">
             <Button className="w-full bg-black hover:bg-gray-800 text-white">
-              Charge R$ {calculateTotal().toFixed(2)}
+              Cobrar R$ {calculateTotal().toFixed(2)}
             </Button>
           </div>
         </div>
@@ -566,7 +574,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
     <Dialog open={showProductModal} onOpenChange={setShowProductModal}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Add products</DialogTitle>
+          <DialogTitle>Adicionar produtos</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           {/* Search and Filter */}
@@ -575,15 +583,15 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
               <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               <input
                 type="text"
-                placeholder="Filter service name, price or duration"
+                placeholder="Filtrar por nome, preço ou duração"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option>All categories</option>
-              <option>Hair Care</option>
-              <option>Beard Care</option>
-              <option>Tools</option>
+              <option>Todas as categorias</option>
+              <option>Cuidados com Cabelo</option>
+              <option>Cuidados com Barba</option>
+              <option>Ferramentas</option>
             </select>
           </div>
 
@@ -609,7 +617,7 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
 
           <div className="flex justify-end">
             <Button className="bg-black hover:bg-gray-800 text-white px-8">
-              Save products
+              Salvar produtos
             </Button>
           </div>
         </div>
@@ -652,12 +660,12 @@ export const SmartAppointments: React.FC<SmartAppointmentsProps> = ({
 
           {/* Actions */}
           <div className="flex items-center space-x-2 md:space-x-3">
-            {!isMobile && <Button variant="outline">Block time</Button>}
+            {!isMobile && <Button variant="outline">Bloquear horário</Button>}
             <Button
               className="bg-black hover:bg-gray-800 text-white text-xs md:text-sm px-2 md:px-4"
               onClick={() => setShowNewAppointment(true)}
             >
-              {isMobile ? <Plus className="w-4 h-4" /> : "New appointment"}
+              {isMobile ? <Plus className="w-4 h-4" /> : "Novo agendamento"}
             </Button>
           </div>
         </div>
