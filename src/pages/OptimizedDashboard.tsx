@@ -613,28 +613,8 @@ export const OptimizedDashboard: React.FC<OptimizedDashboardProps> = ({
     },
   ];
 
+  // Always show dashboard with loading states in individual components
   const isLoading = statsLoading || revenueLoading;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-        <SkeletonCard />
-      </div>
-    );
-  }
-
-  if (!processedStats) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">Nenhum dado disponível</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
