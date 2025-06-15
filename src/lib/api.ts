@@ -288,8 +288,8 @@ class ApiClient {
     return this.get("/dashboard/stats");
   }
 
-  async getRevenueData(period?: string) {
-    return this.get("/dashboard/revenue", { period });
+  async getRevenueData(period?: string, compare?: boolean) {
+    return this.get("/dashboard/revenue", { period, compare });
   }
 
   async getTopServices(limit?: number) {
@@ -306,6 +306,14 @@ class ApiClient {
 
   async getQuickInsights() {
     return this.get("/dashboard/insights");
+  }
+
+  async getFinancialMetrics(period?: string) {
+    return this.get("/dashboard/financial-metrics", { period });
+  }
+
+  async getOperationalMetrics() {
+    return this.get("/dashboard/operational-metrics");
   }
 
   // Clients API
