@@ -230,9 +230,16 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
     }).length;
   };
 
+  const handleToggle = () => {
+    console.log("🔄 RightSidebar toggle clicked - current isOpen:", isOpen);
+    onToggle();
+  };
+
   const sidebarStyle = {
     transform: isOpen ? "translateX(0)" : "translateX(100%)",
-    transition: "all 0.3s ease",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    visibility: isOpen ? "visible" : "hidden",
+    opacity: isOpen ? 1 : 0,
   };
 
   return (
