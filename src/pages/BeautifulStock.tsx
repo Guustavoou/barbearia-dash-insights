@@ -223,6 +223,16 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
     });
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("todas");
+    setStatusFilter("todos");
+    toast({
+      title: "🔄 Filtros Limpos",
+      description: "Todos os filtros foram removidos",
+    });
+  };
+
   // Beautiful KPI Card Component usando paleta oficial
   const BeautifulKPICard: React.FC<KPICardProps> = ({
     title,
