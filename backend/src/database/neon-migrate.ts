@@ -313,6 +313,18 @@ async function createTables() {
     await sql`CREATE INDEX IF NOT EXISTS idx_documents_category ON documents(category)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_documents_parent ON documents(parent_id)`;
 
+    // Indexes for new tables
+    await sql`CREATE INDEX IF NOT EXISTS idx_client_ratings_service ON client_ratings(service_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_client_ratings_professional ON client_ratings(professional_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions(user_id, user_type)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_user_sessions_last_activity ON user_sessions(last_activity)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipient_id, recipient_type)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_notifications_status ON notifications(status)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_commission_payments_professional ON commission_payments(professional_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_commission_payments_period ON commission_payments(period_start, period_end)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_peak_hours_date ON peak_hours_analytics(date)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_peak_hours_hour ON peak_hours_analytics(hour)`;
+
     // Create updated_at trigger function
     await sql`
       CREATE OR REPLACE FUNCTION update_updated_at_column()
