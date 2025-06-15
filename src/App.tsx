@@ -17,6 +17,8 @@ import { SmartNotifications } from "@/components/SmartNotifications";
 import { Clients } from "@/pages/Clients";
 import { Appointments } from "@/pages/Appointments";
 import { BeautifulAppointments } from "@/pages/BeautifulAppointments";
+import { BeautifulClients } from "@/pages/BeautifulClients";
+import { BeautifulFinancial } from "@/pages/BeautifulFinancial";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
 import { Professionals } from "@/pages/Professionals";
@@ -139,7 +141,9 @@ const UnclicAppContent: React.FC = () => {
           />
         );
       case "clients":
-        return <Clients darkMode={darkMode} />;
+        return (
+          <BeautifulClients darkMode={darkMode} onPageChange={setCurrentPage} />
+        );
       case "appointments":
         return (
           <BeautifulAppointments
@@ -154,7 +158,12 @@ const UnclicAppContent: React.FC = () => {
       case "professionals":
         return <Professionals darkMode={darkMode} />;
       case "financial":
-        return <Financial darkMode={darkMode} />;
+        return (
+          <BeautifulFinancial
+            darkMode={darkMode}
+            onPageChange={setCurrentPage}
+          />
+        );
       case "reports":
         return <Reports darkMode={darkMode} />;
       case "settings":
