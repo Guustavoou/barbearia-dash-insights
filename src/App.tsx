@@ -9,6 +9,7 @@ import { ModernHeader } from "@/components/ModernHeader";
 import { RightSidebar } from "@/components/RightSidebar";
 import { RightSidebarDebug } from "@/components/RightSidebarDebug";
 import { OptimizedDashboard } from "@/pages/OptimizedDashboard";
+import { SimpleDashboard } from "@/pages/SimpleDashboard";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
 import { Clients } from "@/pages/Clients";
