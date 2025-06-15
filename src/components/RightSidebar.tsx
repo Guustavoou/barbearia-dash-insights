@@ -259,13 +259,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
       />
 
       {/* Right Sidebar */}
-      <aside
-        className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col shadow-xl transition-all duration-300 ease-in-out"
-        style={{
-          transform: "translateX(0)",
-          animation: isOpen ? "slideInRight 0.3s ease-out" : "slideOutRight 0.3s ease-in",
-        }}
-      >
+      <aside className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-50 flex flex-col shadow-xl transition-all duration-300 ease-in-out">
       >
         {/* Debug Info - Remove in production */}
         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-60">
