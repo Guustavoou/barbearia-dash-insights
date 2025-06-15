@@ -45,18 +45,9 @@ const UnclicAppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
   const rightSidebar = useRightSidebar({
-    defaultOpen: true, // Forçar sempre aberta inicialmente
+    defaultOpen: !isMobile, // Aberta por padrão apenas em desktop
     persistKey: "unclicRightSidebar",
     isMobile,
-  });
-
-  // Debug log para verificar estado
-  console.log("App.tsx - rightSidebar state:", {
-    isOpen: rightSidebar.isOpen,
-    isDesktop,
-    isMobile,
-    isTablet,
-    rightSidebarToggle: rightSidebar.toggle,
   });
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {

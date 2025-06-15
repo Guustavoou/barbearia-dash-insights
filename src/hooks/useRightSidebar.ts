@@ -12,14 +12,8 @@ export const useRightSidebar = ({
   isMobile = false,
 }: UseRightSidebarProps = {}) => {
   const [isOpen, setIsOpen] = useState(() => {
-    console.log("useRightSidebar initializing with:", {
-      defaultOpen,
-      isMobile,
-    });
-
     // Don't show on mobile by default
     if (isMobile) {
-      console.log("useRightSidebar: mobile detected, setting to false");
       return false;
     }
 
@@ -27,13 +21,14 @@ export const useRightSidebar = ({
     if (typeof window !== "undefined" && persistKey) {
       const stored = localStorage.getItem(persistKey);
       if (stored !== null) {
-        const storedValue = JSON.parse(stored);
-        console.log("useRightSidebar: loaded from localStorage:", storedValue);
-        return storedValue;
+        try {
+          return JSON.parse(stored);
+        } catch {
+          return defaultOpen;
+        }
       }
     }
 
-    console.log("useRightSidebar: using defaultOpen:", defaultOpen);
     return defaultOpen;
   });
 
@@ -49,21 +44,17 @@ export const useRightSidebar = ({
     if (isMobile && isOpen) {
       setIsOpen(false);
     }
-  }, [isMobile]);
+  }, [isMobile, isOpen]);
 
   const toggle = () => {
-    console.log("useRightSidebar toggle called, current state:", isOpen);
-    setIsOpen((prev) => {
-      console.log("useRightSidebar state changing from", prev, "to", !prev);
-      return !prev;
-    });
+    setIsOpen((prev) => !prev);
   };
+
   const open = () => {
-    console.log("useRightSidebar open called");
     setIsOpen(true);
   };
+
   const close = () => {
-    console.log("useRightSidebar close called");
     setIsOpen(false);
   };
 
