@@ -137,6 +137,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
         <div className="h-full flex flex-col relative">
           {/* External Toggle Button (when sidebar is open) - CENTRO VERTICAL */}
           <button
+            data-testid="sidebar-toggle"
             onClick={handleToggle}
             className={cn(
               "absolute -left-12 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-600 rounded-l-xl p-3 flex items-center justify-center shadow-xl transition-all duration-300 z-50 group",
