@@ -137,15 +137,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
             collapsed ? "text-center" : "",
           )}
         >
-          {collapsed ? (
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mx-auto">
-              <span className="text-white font-bold text-sm">U</span>
-            </div>
-          ) : (
-            <div className="font-['Pacifico'] text-2xl text-blue-600">
-              Unclic
-            </div>
-          )}
+          <UnclicLogo collapsed={collapsed} />
         </div>
       </div>
 
