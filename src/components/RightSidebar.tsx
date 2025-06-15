@@ -271,8 +271,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={onToggle}
-                  className="rounded-full w-8 h-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={handleToggle}
+                  className="rounded-full w-8 h-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                   title="Ocultar agenda"
                 >
                   <EyeOff className="w-4 h-4" />
