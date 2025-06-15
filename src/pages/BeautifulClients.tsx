@@ -16,6 +16,7 @@ import {
   Star,
   UserPlus,
   TrendingUp,
+  TrendingDown,
   Clock,
   Heart,
   Gift,
@@ -253,7 +254,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
   };
 
-  // Beautiful KPI Card Component
+  // Beautiful KPI Card Component usando paleta oficial
   const BeautifulKPICard: React.FC<KPICardProps> = ({
     title,
     value,
@@ -274,37 +275,37 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       return val.toString();
     };
 
+    // Paleta oficial da marca - apenas tons de azul e cinza
     const variantStyles = {
       primary: {
-        gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-blue-500 to-blue-600",
-        accent: "bg-blue-500",
+        gradient: "from-[#00112F]/10 via-[#00112F]/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-[#00112F] to-blue-800",
+        accent: "bg-[#00112F]",
       },
       success: {
-        gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-emerald-500 to-emerald-600",
-        accent: "bg-emerald-500",
+        gradient: "from-blue-600/10 via-blue-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-blue-600 to-blue-700",
+        accent: "bg-blue-600",
       },
       warning: {
-        gradient: "from-amber-500/10 via-amber-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-amber-500 to-amber-600",
-        accent: "bg-amber-500",
+        gradient: "from-gray-600/10 via-gray-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-gray-600 to-gray-700",
+        accent: "bg-gray-600",
       },
       danger: {
-        gradient: "from-red-500/10 via-red-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-red-500 to-red-600",
-        accent: "bg-red-500",
+        gradient: "from-slate-600/10 via-slate-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-slate-600 to-slate-700",
+        accent: "bg-slate-600",
       },
       info: {
-        gradient: "from-violet-500/10 via-violet-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-violet-500 to-violet-600",
-        accent: "bg-violet-500",
+        gradient: "from-blue-700/10 via-blue-700/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-blue-700 to-blue-800",
+        accent: "bg-blue-700",
       },
       premium: {
-        gradient:
-          "from-gradient-to-br from-purple-500/20 via-pink-500/10 to-transparent",
-        iconBg: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
-        accent: "bg-gradient-to-r from-purple-500 to-pink-500",
+        gradient: "from-[#00112F]/20 via-[#0D1117]/10 to-transparent",
+        iconBg: "bg-gradient-to-br from-[#00112F] via-blue-900 to-[#0D1117]",
+        accent: "bg-gradient-to-r from-[#00112F] to-blue-900",
       },
     };
 
@@ -314,7 +315,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       <Card
         className={cn(
           "group relative overflow-hidden transition-all duration-500 border-0 shadow-lg hover:shadow-xl",
-          "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl",
+          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl",
           isClickable &&
             "cursor-pointer hover:-translate-y-1 hover:scale-[1.02]",
         )}
@@ -332,8 +333,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           )}
         />
 
-        {/* Glow effect on hover */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
+        {/* Glow effect on hover usando cores da marca */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#00112F]/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
 
         <div className="relative p-4">
           <div className="flex items-start justify-between mb-3">
@@ -395,7 +396,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           </div>
 
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-[#00112F] dark:text-white leading-none tracking-tight">
+            <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] leading-none tracking-tight">
               {formatValue(value)}
             </p>
 
@@ -405,8 +406,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                   className={cn(
                     "flex items-center px-2 py-1 rounded-full text-xs font-medium",
                     change >= 0
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
                   )}
                 >
                   {change >= 0 ? (
@@ -447,7 +448,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                   className="h-1.5"
                 />
                 <div
-                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 animate-pulse"
+                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-[#00112F] to-blue-600 rounded-full opacity-20 animate-pulse"
                   style={{
                     width: `${(Number(value.toString().replace(/[^\d]/g, "")) / target) * 100}%`,
                   }}
@@ -471,14 +472,14 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
     const statusStyles = {
       ativo: {
-        bg: "bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-400",
-        border: "border-l-green-400",
-        dot: "bg-green-400",
+        bg: "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 dark:from-blue-900/30 dark:to-blue-800/30 dark:text-blue-400",
+        border: "border-l-blue-500",
+        dot: "bg-blue-500",
       },
       inativo: {
-        bg: "bg-gradient-to-r from-red-100 to-rose-100 text-red-700 dark:from-red-900/30 dark:to-rose-900/30 dark:text-red-400",
-        border: "border-l-red-400",
-        dot: "bg-red-400",
+        bg: "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 dark:from-gray-900/30 dark:to-gray-800/30 dark:text-gray-400",
+        border: "border-l-gray-500",
+        dot: "bg-gray-500",
       },
     };
 
@@ -488,20 +489,20 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       <Card
         className={cn(
           "group relative overflow-hidden transition-all duration-300 border-0 shadow-md hover:shadow-xl cursor-pointer border-l-4",
-          "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-900",
+          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-sm hover:bg-white dark:hover:bg-[#0D1117]",
           "hover:-translate-y-1 hover:scale-[1.02]",
           status.border,
         )}
         onClick={() => setExpandedClientId(isExpanded ? null : client.id)}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         <div className="relative p-4 space-y-3">
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00112F] to-blue-700 flex items-center justify-center text-white font-bold text-lg shadow-lg">
                   {client.name.charAt(0).toUpperCase()}
                 </div>
                 <div
@@ -512,7 +513,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                 />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-[#00112F] dark:text-white">
+                <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB]">
                   {client.name}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
@@ -552,7 +553,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-white">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
                 {client.appointmentHistory?.length || 0}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -560,7 +561,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               </div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-white">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
                 {formatCurrency(client.totalSpent || 0)}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -568,7 +569,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               </div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-white">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
                 {daysSinceLastVisit !== null ? `${daysSinceLastVisit}d` : "N/A"}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -585,21 +586,21 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                 size="sm"
                 className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
               >
-                <Phone className="w-3.5 h-3.5 text-blue-500" />
+                <Phone className="w-3.5 h-3.5 text-blue-600" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/30"
+                className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
               >
-                <MessageCircle className="w-3.5 h-3.5 text-green-500" />
+                <MessageCircle className="w-3.5 h-3.5 text-blue-600" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
               >
-                <Calendar className="w-3.5 h-3.5 text-purple-500" />
+                <Calendar className="w-3.5 h-3.5 text-blue-600" />
               </Button>
             </div>
 
@@ -607,13 +608,13 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={(e) => {
                   e.stopPropagation();
                   setEditingClient(client);
                 }}
               >
-                <Edit2 className="w-3.5 h-3.5 text-amber-500" />
+                <Edit2 className="w-3.5 h-3.5 text-gray-600" />
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -635,7 +636,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                     <UserPlus className="w-4 h-4 mr-2" />
                     Novo agendamento
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem className="text-gray-600">
                     <Trash2 className="w-4 h-4 mr-2" />
                     Remover cliente
                   </DropdownMenuItem>
@@ -649,7 +650,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
             <div className="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="font-medium text-[#00112F] dark:text-white mb-1">
+                  <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
                     Informações de Contato
                   </div>
                   {client.address && (
@@ -666,7 +667,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                   )}
                 </div>
                 <div>
-                  <div className="font-medium text-[#00112F] dark:text-white mb-1">
+                  <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
                     Histórico
                   </div>
                   <p className="text-gray-600 dark:text-gray-400">
@@ -682,7 +683,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
               {client.notes && (
                 <div>
-                  <div className="font-medium text-[#00112F] dark:text-white mb-1">
+                  <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
                     Observações
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
@@ -694,80 +695,71 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           )}
         </div>
 
-        {/* Subtle hover glow */}
-        <div className="absolute inset-0 border border-purple-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Subtle hover glow usando cores da marca */}
+        <div className="absolute inset-0 border border-[#00112F]/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Card>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
-      {/* Beautiful animated background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse" />
-        <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-purple-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000" />
-        <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-pink-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000" />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
+      <div className="space-y-6 p-6">
+        {/* Beautiful Header - cores da marca */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 p-8 text-white shadow-2xl">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)]" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
 
-      <div className="relative z-10 p-6 space-y-6">
-        {/* Beautiful Header */}
-        <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_70%)]" />
-
-          <div className="relative p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-3xl font-bold flex items-center">
-                  <Users className="w-8 h-8 mr-3 text-yellow-300" />
+          <div className="relative flex items-center justify-between">
+            <div>
+              <div className="flex items-center space-x-3 mb-2">
+                <Users className="w-8 h-8 text-blue-200 animate-pulse" />
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
                   Clientes Premium
                 </h1>
-                <p className="text-white/90 mt-2">
-                  Gerencie sua base de clientes • {filteredClients.length}{" "}
-                  clientes encontrados
-                </p>
               </div>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="ghost"
-                  onClick={handleRefreshData}
-                  disabled={isLoading}
-                  className="text-white hover:bg-white/20"
-                >
-                  <RefreshCw
-                    className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
-                  />
-                  {isLoading ? "Atualizando..." : "Atualizar"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={handleExportData}
-                  className="text-white hover:bg-white/20"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar
-                </Button>
-                <Button
-                  onClick={() => setShowNewClientModal(true)}
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Novo Cliente
-                </Button>
-              </div>
+              <p className="text-blue-200 text-lg">
+                Gerencie sua base de clientes • {filteredClients.length}{" "}
+                clientes encontrados
+              </p>
             </div>
-
-            {/* Floating sparkles animation */}
-            <div className="absolute top-4 right-20 w-2 h-2 bg-yellow-300 rounded-full animate-ping" />
-            <div className="absolute top-8 right-32 w-1 h-1 bg-white rounded-full animate-pulse delay-500" />
-            <div className="absolute bottom-8 left-20 w-1.5 h-1.5 bg-pink-300 rounded-full animate-bounce delay-1000" />
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleRefreshData}
+                disabled={isLoading}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              >
+                <RefreshCw
+                  className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
+                />
+                {isLoading ? "Atualizando..." : "Atualizar"}
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleExportData}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Exportar
+              </Button>
+              <Button
+                onClick={() => setShowNewClientModal(true)}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Novo Cliente
+              </Button>
+            </div>
           </div>
-        </Card>
+        </div>
 
         {/* Beautiful KPI Cards */}
         <section>
-          <h2 className="text-xl font-bold text-[#00112F] dark:text-white mb-4 flex items-center">
-            <Activity className="w-5 h-5 mr-2 text-blue-500" />
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+            <Activity className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Métricas de Clientes
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -828,17 +820,17 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
         </section>
 
         {/* Beautiful Filters */}
-        <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
+        <Card className="p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-purple-400" />
+                <Search className="w-4 h-4 absolute left-3 top-3 text-[#00112F] dark:text-blue-400" />
                 <input
                   type="text"
                   placeholder="Buscar por nome, email ou telefone..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/20 dark:to-blue-900/20 text-[#00112F] dark:text-white placeholder-gray-500"
+                  className="pl-10 pr-4 py-2 w-full border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB] placeholder-gray-500"
                 />
               </div>
 
@@ -847,7 +839,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                 onChange={(e) =>
                   setSelectedStatus(e.target.value as StatusFilter)
                 }
-                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/20 dark:to-blue-900/20 text-[#00112F] dark:text-white"
+                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB]"
               >
                 <option value="todos">Todos os Status</option>
                 <option value="ativo">Ativos</option>
@@ -857,7 +849,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortField)}
-                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/20 dark:to-blue-900/20 text-[#00112F] dark:text-white"
+                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB]"
               >
                 <option value="name">Ordenar por Nome</option>
                 <option value="email">Ordenar por Email</option>
@@ -871,7 +863,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                 onClick={() =>
                   setSortOrder(sortOrder === "asc" ? "desc" : "asc")
                 }
-                className="px-3 hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                className="px-3 hover:bg-blue-100 dark:hover:bg-blue-900/20"
               >
                 {sortOrder === "asc" ? (
                   <ChevronUp className="w-4 h-4" />
@@ -885,8 +877,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
         {/* Beautiful Client List */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-[#00112F] dark:text-white flex items-center">
-            <Users className="w-6 h-6 mr-2 text-blue-500" />
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
+            <Users className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Lista de Clientes
           </h2>
 
@@ -895,7 +887,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               {[...Array(6)].map((_, i) => (
                 <Card
                   key={i}
-                  className="p-4 animate-pulse bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0"
+                  className="p-4 animate-pulse bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0"
                 >
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-xl" />
@@ -924,11 +916,11 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           )}
 
           {!loading && filteredClients.length === 0 && (
-            <Card className="p-12 text-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
+            <Card className="p-12 text-center bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
               <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center">
                 <Users className="w-12 h-12 text-gray-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-xl font-bold text-[#00112F] dark:text-white mb-2">
+              <h3 className="text-xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
                 Nenhum cliente encontrado
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -940,7 +932,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                   setSearchTerm("");
                   setSelectedStatus("todos");
                 }}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0"
+                className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-800 hover:to-blue-900 text-white border-0"
               >
                 Limpar Filtros
               </Button>
