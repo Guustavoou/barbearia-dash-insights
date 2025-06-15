@@ -295,3 +295,12 @@ export function useFinancialAnalysis(period?: string) {
 export function useInventoryReport() {
   return useApi(() => api.getInventoryReport());
 }
+
+// New advanced dashboard hooks
+export function useFinancialMetrics(period?: string) {
+  return useApi(() => api.getFinancialMetrics(period), [period]);
+}
+
+export function useOperationalMetrics() {
+  return useApi(() => api.getOperationalMetrics());
+}
