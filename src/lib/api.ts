@@ -269,6 +269,178 @@ class ApiClient {
       };
     }
 
+    if (endpoint.includes("/dashboard/financial-metrics")) {
+      return {
+        success: true,
+        data: {
+          revenue_breakdown: [
+            {
+              category: "Serviços",
+              total: 35840.5,
+              count: 245,
+              average_transaction: 146.29,
+            },
+            {
+              category: "Produtos",
+              total: 8950.25,
+              count: 89,
+              average_transaction: 100.56,
+            },
+            {
+              category: "Outros",
+              total: 1200.0,
+              count: 12,
+              average_transaction: 100.0,
+            },
+          ],
+          expense_breakdown: [
+            {
+              category: "Pessoal",
+              total: 12500.0,
+              count: 6,
+              average_transaction: 2083.33,
+            },
+            {
+              category: "Fornecedores",
+              total: 3200.5,
+              count: 15,
+              average_transaction: 213.37,
+            },
+            {
+              category: "Operacional",
+              total: 1890.75,
+              count: 25,
+              average_transaction: 75.63,
+            },
+          ],
+          payment_methods: [
+            {
+              payment_method: "PIX",
+              transactions: 145,
+              total_amount: 18560.75,
+              average_amount: 128.01,
+              usage_percentage: 45.2,
+            },
+            {
+              payment_method: "Cartão de Crédito",
+              transactions: 98,
+              total_amount: 14250.3,
+              average_amount: 145.41,
+              usage_percentage: 30.5,
+            },
+            {
+              payment_method: "Cartão de Débito",
+              transactions: 52,
+              total_amount: 8920.45,
+              average_amount: 171.55,
+              usage_percentage: 16.2,
+            },
+            {
+              payment_method: "Dinheiro",
+              transactions: 26,
+              total_amount: 3259.0,
+              average_amount: 125.35,
+              usage_percentage: 8.1,
+            },
+          ],
+        } as T,
+      };
+    }
+
+    if (endpoint.includes("/dashboard/operational-metrics")) {
+      return {
+        success: true,
+        data: {
+          services: [
+            {
+              id: 1,
+              name: "Corte Feminino",
+              category: "Cabelo",
+              price: 80.0,
+              bookings_30_days: 45,
+              revenue_30_days: 3600.0,
+              avg_rating: 4.8,
+              rating_count: 38,
+              avg_transaction_value: 80.0,
+            },
+            {
+              id: 2,
+              name: "Design de Sobrancelha",
+              category: "Sobrancelha",
+              price: 60.0,
+              bookings_30_days: 38,
+              revenue_30_days: 2280.0,
+              avg_rating: 4.9,
+              rating_count: 32,
+              avg_transaction_value: 60.0,
+            },
+            {
+              id: 3,
+              name: "Manicure Simples",
+              category: "Unhas",
+              price: 35.0,
+              bookings_30_days: 52,
+              revenue_30_days: 1820.0,
+              avg_rating: 4.7,
+              rating_count: 45,
+              avg_transaction_value: 35.0,
+            },
+            {
+              id: 4,
+              name: "Coloração Completa",
+              category: "Cabelo",
+              price: 180.0,
+              bookings_30_days: 12,
+              revenue_30_days: 2160.0,
+              avg_rating: 4.6,
+              rating_count: 10,
+              avg_transaction_value: 180.0,
+            },
+          ],
+          clients: {
+            total_active_clients: 214,
+            avg_lifetime_value: 456.75,
+            avg_visits_per_client: 8.2,
+            active_last_30_days: 145,
+            new_clients_30_days: 18,
+            activity_rate: 67.8,
+          },
+          professionals: [
+            {
+              id: 1,
+              name: "Isabella Martins",
+              commission: 40.0,
+              appointments_30_days: 28,
+              revenue_30_days: 4250.0,
+              avg_rating: 4.8,
+              rating_count: 25,
+              commission_earned: 1700.0,
+            },
+            {
+              id: 2,
+              name: "Sofia Rodrigues",
+              commission: 35.0,
+              appointments_30_days: 24,
+              revenue_30_days: 2880.0,
+              avg_rating: 4.7,
+              rating_count: 20,
+              commission_earned: 1008.0,
+            },
+            {
+              id: 3,
+              name: "Valentina Costa",
+              commission: 38.0,
+              appointments_30_days: 22,
+              revenue_30_days: 3190.0,
+              avg_rating: 4.9,
+              rating_count: 18,
+              commission_earned: 1212.2,
+            },
+          ],
+        } as T,
+      };
+    }
+
     // Clients endpoints
     if (endpoint.includes("/clients")) {
       return {
