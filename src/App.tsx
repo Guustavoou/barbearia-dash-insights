@@ -88,12 +88,10 @@ const UnclicAppContent: React.FC = () => {
       rightSidebar.close();
     } else {
       setSidebarCollapsed(false);
-      // On desktop, restore previous state or open by default
-      if (!rightSidebar.isOpen) {
-        rightSidebar.open();
-      }
+      // On desktop, only open if user hasn't explicitly closed it
+      // This runs only when screen size changes, not when rightSidebar state changes
     }
-  }, [isMobile, isTablet, isDesktop, rightSidebar]);
+  }, [isMobile, isTablet, isDesktop]); // Removed rightSidebar from dependencies
 
   // Handle authentication state changes
   useEffect(() => {
