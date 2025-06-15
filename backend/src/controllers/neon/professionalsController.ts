@@ -58,29 +58,28 @@ export const getProfessionals = async (req: Request, res: Response) => {
     const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
     // Get total count
-    const countQuery = `SELECT COUNT(*) as total FROM professionals ${whereClause}`;
-    const countResult = await sql.unsafe(countQuery);
+    const countResult =
+      await sql`SELECT COUNT(*) as total FROM professionals ${sql.unsafe(whereClause)}`;
     const total = parseInt(countResult[0].total);
 
     // Get professionals with pagination
-    const professionalsQuery = `
+    const professionals = await sql`
       SELECT
-        id, name, email, phone, specialty, status, hire_date, 
+        id, name, email, phone, specialty, status, hire_date,
         commission_rate, rating, total_services, avatar_url,
         created_at, updated_at
       FROM professionals
-      ${whereClause}
-      ORDER BY ${sortField} ${sortOrder}
+      ${sql.unsafe(whereClause)}
+      ORDER BY ${sql.unsafe(sortField)} ${sql.unsafe(sortOrder)}
       LIMIT ${limitNum} OFFSET ${offset}
     `;
-    const professionals = await sql.unsafe(professionalsQuery);
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limitNum);
 
     res.json({
       success: true,
-      data: professionals.rows,
+      data: professionals,
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -166,7 +165,7 @@ export const createProfessional = async (req: Request, res: Response) => {
         name, email, phone, specialty, hire_date, commission_rate, avatar_url
       )
       VALUES (
-        ${name}, ${email}, ${phone}, ${specialty}, 
+        ${name}, ${email}, ${phone}, ${specialty},
         ${hire_date || null}, ${commission_rate || 50}, ${avatar_url || null}
       )
       RETURNING *
@@ -323,7 +322,7 @@ export const getProfessionalStats = async (req: Request, res: Response) => {
 
     // Get top performing professionals
     const topProfessionals = await sql`
-      SELECT 
+      SELECT
         p.id,
         p.name,
         p.specialty,
@@ -331,7 +330,7 @@ export const getProfessionalStats = async (req: Request, res: Response) => {
         COALESCE(COUNT(a.id), 0) as total_appointments_month,
         COALESCE(SUM(a.price), 0) as total_revenue_month
       FROM professionals p
-      LEFT JOIN appointments a ON p.id = a.professional_id 
+      LEFT JOIN appointments a ON p.id = a.professional_id
         AND a.date >= DATE_TRUNC('month', CURRENT_DATE)
         AND a.status = 'concluido'
       WHERE p.status = 'ativo'
@@ -375,7 +374,7 @@ export const getProfessionalPerformance = async (
     }
 
     const performance = await sql`
-      SELECT 
+      SELECT
         p.name,
         p.specialty,
         p.rating,
@@ -431,7 +430,7 @@ export const getProfessionalSchedule = async (req: Request, res: Response) => {
     }
 
     const schedule = await sql`
-      SELECT 
+      SELECT
         a.id,
         a.date,
         a.time,
@@ -464,7 +463,7 @@ export const getProfessionalSchedule = async (req: Request, res: Response) => {
 export const getSpecialties = async (req: Request, res: Response) => {
   try {
     const specialties = await sql`
-      SELECT 
+      SELECT
         specialty,
         COUNT(*) as professional_count,
         ROUND(AVG(rating), 2) as average_rating
