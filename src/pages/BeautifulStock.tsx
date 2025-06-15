@@ -27,6 +27,7 @@ import {
   DollarSign,
   Calendar,
   Tag,
+  X,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
