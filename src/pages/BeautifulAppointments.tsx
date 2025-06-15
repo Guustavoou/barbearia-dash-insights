@@ -614,7 +614,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
       <Card
         className={cn(
           "group relative overflow-hidden transition-all duration-300 border-0 shadow-md hover:shadow-xl cursor-pointer border-l-4",
-          "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-900",
+          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-sm hover:bg-white dark:hover:bg-[#0D1117]",
           "hover:-translate-y-1 hover:scale-[1.02]",
           priorityStyles[appointment.priority],
         )}
@@ -630,7 +630,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <h4 className="font-semibold text-[#00112F] dark:text-white truncate">
+                <h4 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] truncate">
                   {appointment.clientName}
                 </h4>
                 {appointment.priority === "high" && (
@@ -638,7 +638,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                 )}
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 truncate flex items-center">
-                <Sparkles className="w-3 h-3 mr-1 text-purple-400" />
+                <Sparkles className="w-3 h-3 mr-1 text-[#00112F] dark:text-blue-400" />
                 {appointment.service}
               </p>
             </div>
@@ -647,12 +647,12 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
               className={cn(
                 "text-xs border-0 px-2.5 py-1 shadow-sm",
                 appointment.status === "confirmado"
-                  ? "bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-400"
+                  ? "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 dark:from-blue-900/30 dark:to-blue-800/30 dark:text-blue-400"
                   : appointment.status === "pendente"
-                    ? "bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-700 dark:from-yellow-900/30 dark:to-amber-900/30 dark:text-yellow-400"
+                    ? "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 dark:from-gray-900/30 dark:to-gray-800/30 dark:text-gray-400"
                     : appointment.status === "concluido"
-                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 dark:from-blue-900/30 dark:to-cyan-900/30 dark:text-blue-400"
-                      : "bg-gradient-to-r from-red-100 to-rose-100 text-red-700 dark:from-red-900/30 dark:to-rose-900/30 dark:text-red-400",
+                      ? "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 dark:from-blue-900/30 dark:to-blue-800/30 dark:text-blue-400"
+                      : "bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 dark:from-slate-900/30 dark:to-slate-800/30 dark:text-slate-400",
               )}
             >
               {appointment.status === "confirmado"
@@ -700,7 +700,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
               </div>
             </div>
             <div className="text-right">
-              <span className="font-bold text-[#00112F] dark:text-white text-sm">
+              <span className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-sm">
                 {formatCurrency(appointment.price)}
               </span>
               <div className="text-xs text-gray-500">
@@ -711,7 +711,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
         </div>
 
         {/* Subtle hover glow */}
-        <div className="absolute inset-0 border border-purple-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 border border-[#00112F]/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Card>
     );
   };
@@ -873,8 +873,8 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
 
         {/* Beautiful KPI Cards */}
         <section>
-          <h2 className="text-2xl font-bold text-[#00112F] dark:text-white mb-6 flex items-center">
-            <BarChart3 className="w-6 h-6 mr-2 text-purple-500" />
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+            <BarChart3 className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Indicadores Premium
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -938,7 +938,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
         </section>
 
         {/* Beautiful Controls */}
-        <Card className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-lg">
+        <Card className="p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             {/* Date Navigation */}
             <div className="flex items-center space-x-4">
@@ -947,12 +947,12 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={() => navigateDate("prev")}
-                  className="hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                  className="hover:bg-blue-100 dark:hover:bg-blue-900/20"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <div className="min-w-0 px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-lg">
-                  <h2 className="font-bold text-[#00112F] dark:text-white">
+                <div className="min-w-0 px-4 py-2 bg-gradient-to-r from-[#F9FAFB] to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg">
+                  <h2 className="font-bold text-[#00112F] dark:text-[#F9FAFB]">
                     {viewType === "mes"
                       ? currentDate.toLocaleDateString("pt-BR", {
                           month: "long",
@@ -976,7 +976,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                 value={viewType}
                 onValueChange={(value) => setViewType(value as ViewType)}
               >
-                <TabsList className="bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
+                <TabsList className="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30">
                   <TabsTrigger value="dia">Dia</TabsTrigger>
                   <TabsTrigger value="semana">Semana</TabsTrigger>
                   <TabsTrigger value="mes">Mês</TabsTrigger>
@@ -987,13 +987,13 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
             {/* Beautiful Filters */}
             <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-purple-400" />
+                <Search className="w-4 h-4 absolute left-3 top-3 text-[#00112F] dark:text-blue-400" />
                 <input
                   type="text"
                   placeholder="Buscar cliente ou serviço..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/20 dark:to-blue-900/20 text-[#00112F] dark:text-white placeholder-gray-500"
+                  className="pl-10 pr-4 py-2 w-full border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB] placeholder-gray-500"
                 />
               </div>
 
@@ -1004,7 +1004,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                     e.target.value === "todos" ? null : e.target.value,
                   )
                 }
-                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/20 dark:to-blue-900/20 text-[#00112F] dark:text-white"
+                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB]"
               >
                 <option value="todos">Todos os Profissionais</option>
                 {professionals.map((prof) => (
@@ -1031,8 +1031,8 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
 
         {/* Beautiful Main Content */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-[#00112F] dark:text-white flex items-center">
-            <Users className="w-6 h-6 mr-2 text-blue-500" />
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
+            <Users className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Visão do Dia
           </h2>
 
