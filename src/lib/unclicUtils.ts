@@ -50,8 +50,12 @@ export const getInitials = (name: string): string => {
     .toUpperCase();
 };
 
-export const formatTime = (date: Date): string => {
-  return date.toLocaleTimeString("pt-BR", {
+export const formatTime = (date: Date | string): string => {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(dateObj.getTime())) {
+    return "Hora inválida";
+  }
+  return dateObj.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
   });
