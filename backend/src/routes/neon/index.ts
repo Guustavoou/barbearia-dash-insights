@@ -2,6 +2,11 @@ import { Router } from "express";
 import { sql } from "../../database/neon-config";
 import neonClientsRoutes from "./clients";
 import neonDashboardRoutes from "./dashboard";
+import neonProfessionalsRoutes from "./professionals";
+import neonServicesRoutes from "./services";
+import neonAppointmentsRoutes from "./appointments";
+import neonProductsRoutes from "./products";
+import neonFinancialRoutes from "./financial";
 
 const router = Router();
 
@@ -34,49 +39,13 @@ router.get("/health", async (req, res) => {
   }
 });
 
-// API routes
+// API routes - Fully implemented with Neon PostgreSQL
 router.use("/clients", neonClientsRoutes);
 router.use("/dashboard", neonDashboardRoutes);
-
-// Placeholder routes for other modules (to be implemented)
-router.get("/appointments", (req, res) => {
-  res.json({
-    success: true,
-    message: "Appointments API - Coming soon with Neon PostgreSQL",
-    data: [],
-  });
-});
-
-router.get("/services", (req, res) => {
-  res.json({
-    success: true,
-    message: "Services API - Coming soon with Neon PostgreSQL",
-    data: [],
-  });
-});
-
-router.get("/professionals", (req, res) => {
-  res.json({
-    success: true,
-    message: "Professionals API - Coming soon with Neon PostgreSQL",
-    data: [],
-  });
-});
-
-router.get("/products", (req, res) => {
-  res.json({
-    success: true,
-    message: "Products API - Coming soon with Neon PostgreSQL",
-    data: [],
-  });
-});
-
-router.get("/financial", (req, res) => {
-  res.json({
-    success: true,
-    message: "Financial API - Coming soon with Neon PostgreSQL",
-    data: [],
-  });
-});
+router.use("/professionals", neonProfessionalsRoutes);
+router.use("/services", neonServicesRoutes);
+router.use("/appointments", neonAppointmentsRoutes);
+router.use("/products", neonProductsRoutes);
+router.use("/financial", neonFinancialRoutes);
 
 export default router;
