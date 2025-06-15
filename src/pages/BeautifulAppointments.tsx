@@ -366,37 +366,37 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
       return val.toString();
     };
 
+    // Paleta oficial da marca - apenas tons de azul e cinza
     const variantStyles = {
       primary: {
-        gradient: "from-blue-500/10 via-blue-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-blue-500 to-blue-600",
-        accent: "bg-blue-500",
+        gradient: "from-[#00112F]/10 via-[#00112F]/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-[#00112F] to-blue-800",
+        accent: "bg-[#00112F]",
       },
       success: {
-        gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-emerald-500 to-emerald-600",
-        accent: "bg-emerald-500",
+        gradient: "from-blue-600/10 via-blue-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-blue-600 to-blue-700",
+        accent: "bg-blue-600",
       },
       warning: {
-        gradient: "from-amber-500/10 via-amber-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-amber-500 to-amber-600",
-        accent: "bg-amber-500",
+        gradient: "from-gray-600/10 via-gray-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-gray-600 to-gray-700",
+        accent: "bg-gray-600",
       },
       danger: {
-        gradient: "from-red-500/10 via-red-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-red-500 to-red-600",
-        accent: "bg-red-500",
+        gradient: "from-slate-600/10 via-slate-600/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-slate-600 to-slate-700",
+        accent: "bg-slate-600",
       },
       info: {
-        gradient: "from-violet-500/10 via-violet-500/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-violet-500 to-violet-600",
-        accent: "bg-violet-500",
+        gradient: "from-blue-700/10 via-blue-700/5 to-transparent",
+        iconBg: "bg-gradient-to-br from-blue-700 to-blue-800",
+        accent: "bg-blue-700",
       },
       premium: {
-        gradient:
-          "from-gradient-to-br from-purple-500/20 via-pink-500/10 to-transparent",
-        iconBg: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400",
-        accent: "bg-gradient-to-r from-purple-500 to-pink-500",
+        gradient: "from-[#00112F]/20 via-[#0D1117]/10 to-transparent",
+        iconBg: "bg-gradient-to-br from-[#00112F] via-blue-900 to-[#0D1117]",
+        accent: "bg-gradient-to-r from-[#00112F] to-blue-900",
       },
     };
 
@@ -406,7 +406,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
       <Card
         className={cn(
           "group relative overflow-hidden transition-all duration-500 border-0 shadow-lg hover:shadow-xl",
-          "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl",
+          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl",
           isClickable &&
             "cursor-pointer hover:-translate-y-1 hover:scale-[1.02]",
         )}
@@ -421,8 +421,8 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
           )}
         />
 
-        {/* Glow effect on hover */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
+        {/* Glow effect on hover usando cores da marca */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#00112F]/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
 
         <div className="relative p-4">
           <div className="flex items-start justify-between mb-3">
@@ -484,7 +484,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
           </div>
 
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-[#00112F] dark:text-white leading-none tracking-tight">
+            <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] leading-none tracking-tight">
               {formatValue(value)}
             </p>
 
@@ -494,8 +494,8 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                   className={cn(
                     "flex items-center px-2 py-1 rounded-full text-xs font-medium",
                     change >= 0
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
                   )}
                 >
                   {change >= 0 ? (
@@ -536,7 +536,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
                   className="h-1.5"
                 />
                 <div
-                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 animate-pulse"
+                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-[#00112F] to-blue-600 rounded-full opacity-20 animate-pulse"
                   style={{
                     width: `${(Number(value.toString().replace(/[^\d]/g, "")) / target) * 100}%`,
                   }}
@@ -807,10 +807,10 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
       <div className="space-y-6 p-6">
         {/* Beautiful Header */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-purple-900 p-8 text-white shadow-2xl">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 p-8 text-white shadow-2xl">
           {/* Animated background elements */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)]" />
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
@@ -818,7 +818,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
           <div className="relative flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <Sparkles className="w-8 h-8 text-yellow-400 animate-pulse" />
+                <Sparkles className="w-8 h-8 text-blue-200 animate-pulse" />
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
                   Agenda Inteligente
                 </h1>
@@ -855,14 +855,14 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
               <Button
                 size="sm"
                 onClick={handleExportData}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Exportar
               </Button>
               <Button
                 onClick={() => setShowNewAppointment(true)}
-                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Agendamento
