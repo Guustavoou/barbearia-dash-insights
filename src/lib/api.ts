@@ -41,14 +41,130 @@ class ApiClient {
       return {
         success: true,
         data: {
-          activeClients: 1247,
-          todayAppointments: 23,
-          monthlyRevenue: 45890.5,
-          netProfit: 12340.75,
-          clientGrowth: 15.3,
-          appointmentGrowth: 8.7,
-          revenueGrowth: 22.1,
-          profitGrowth: 18.9,
+          // Basic metrics (matching backend structure)
+          total_clients: 214,
+          total_professionals: 6,
+          total_services: 12,
+          upcoming_appointments: 28,
+          today_appointments: 23,
+          month_revenue: 45890.5,
+          month_expenses: 15250.0,
+          net_income: 30640.5,
+          profit_margin: 66.8,
+
+          // Advanced metrics
+          pending_receivables: 8450.0,
+          commission_paid: 12250.0,
+          cancellation_rate: 4.2,
+          inactive_clients: 45,
+          new_client_conversion: 73.5,
+          average_rating: 4.7,
+          total_ratings: 156,
+
+          // Peak hours
+          peak_hours: [
+            { hour: 9, appointment_count: 8, revenue: 640 },
+            { hour: 10, appointment_count: 12, revenue: 960 },
+            { hour: 14, appointment_count: 15, revenue: 1200 },
+            { hour: 15, appointment_count: 18, revenue: 1440 },
+            { hour: 16, appointment_count: 14, revenue: 1120 },
+            { hour: 17, appointment_count: 10, revenue: 800 },
+          ],
+
+          // Payment methods
+          payment_methods: [
+            {
+              payment_method: "PIX",
+              count: 45,
+              total_amount: 15680.0,
+              percentage: 45.2,
+            },
+            {
+              payment_method: "Cartão de Crédito",
+              count: 32,
+              total_amount: 12450.0,
+              percentage: 30.8,
+            },
+            {
+              payment_method: "Cartão de Débito",
+              count: 18,
+              total_amount: 8920.0,
+              percentage: 15.1,
+            },
+            {
+              payment_method: "Dinheiro",
+              count: 12,
+              total_amount: 4560.0,
+              percentage: 8.9,
+            },
+          ],
+
+          // Professional occupancy
+          professional_occupancy: [
+            {
+              id: 1,
+              name: "Isabella Martins",
+              worked_hours: 34,
+              weekly_available_hours: 40,
+              occupancy_rate: 85,
+            },
+            {
+              id: 2,
+              name: "Sofia Rodrigues",
+              worked_hours: 29,
+              weekly_available_hours: 40,
+              occupancy_rate: 72.5,
+            },
+            {
+              id: 3,
+              name: "Valentina Costa",
+              worked_hours: 27,
+              weekly_available_hours: 40,
+              occupancy_rate: 67.5,
+            },
+            {
+              id: 4,
+              name: "Helena Santos",
+              worked_hours: 32,
+              weekly_available_hours: 40,
+              occupancy_rate: 80,
+            },
+            {
+              id: 5,
+              name: "Aurora Lima",
+              worked_hours: 25,
+              weekly_available_hours: 40,
+              occupancy_rate: 62.5,
+            },
+          ],
+
+          // Messages sent
+          messages_sent: {
+            total_messages: 156,
+            sent_messages: 148,
+            delivered_messages: 142,
+            whatsapp_messages: 89,
+            sms_messages: 34,
+            email_messages: 67,
+          },
+
+          // Campaign performance
+          campaign_performance: {
+            total_campaigns: 3,
+            total_reach: 2450,
+            total_clicks: 342,
+            total_conversions: 28,
+            click_rate: 14.0,
+            conversion_rate: 8.2,
+          },
+
+          // Online users
+          online_users: {
+            total_online: 12,
+            clients_online: 8,
+            professionals_online: 3,
+            admins_online: 1,
+          },
         } as T,
       };
     }
