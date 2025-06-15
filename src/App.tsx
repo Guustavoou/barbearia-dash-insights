@@ -7,6 +7,7 @@ import { cn } from "@/lib/unclicUtils";
 import { ModernSidebar } from "@/components/ModernSidebar";
 import { ModernHeader } from "@/components/ModernHeader";
 import { RightSidebar } from "@/components/RightSidebar";
+import { RightSidebarDebug } from "@/components/RightSidebarDebug";
 import { OptimizedDashboard } from "@/pages/OptimizedDashboard";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
@@ -268,6 +269,12 @@ const UnclicAppContent: React.FC = () => {
 
           {/* Quick Actions Hub */}
           <QuickActionsHub onPageChange={setCurrentPage} />
+
+          {/* Debug Component - REMOVER EM PRODUÇÃO */}
+          <RightSidebarDebug
+            isOpen={rightSidebar.isOpen}
+            onToggle={rightSidebar.toggle}
+          />
         </div>
       );
 
