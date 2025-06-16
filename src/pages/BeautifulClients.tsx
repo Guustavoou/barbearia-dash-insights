@@ -892,7 +892,17 @@ const ClientCard: React.FC<{
 
 const NewClientModal: React.FC<{
   onClose: () => void;
-  onSuccess: (client: Client) => void;
+  onSuccess: (
+    client: Omit<
+      Client,
+      | "id"
+      | "createdAt"
+      | "totalSpent"
+      | "visitCount"
+      | "avgInterval"
+      | "visits"
+    >,
+  ) => void;
 }> = ({ onClose, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<NewClientForm>({
