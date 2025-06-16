@@ -189,7 +189,7 @@ const initialClients: Client[] = [
     address: "Av. Principal, 456",
     birthDate: "1990-07-22",
     createdAt: "2023-02-10T11:00:00Z",
-    lastVisit: "2023-10-15T10:00:00Z",
+    lastVisit: "2023-05-15T10:00:00Z",
     status: "inativo",
     totalSpent: 780,
     visitCount: 5,
@@ -197,7 +197,7 @@ const initialClients: Client[] = [
     visits: [
       {
         id: "v3",
-        date: "2023-10-15T10:00:00Z",
+        date: "2023-05-15T10:00:00Z",
         service: "Escova + Corte",
         amount: 120,
         professional: "Ana",
