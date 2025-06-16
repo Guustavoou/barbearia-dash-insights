@@ -1069,6 +1069,15 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     return initialClients;
   });
 
+  // Track component mounting/unmounting
+  useEffect(() => {
+    console.log("🚀 BeautifulClients component mounted");
+
+    return () => {
+      console.log("💥 BeautifulClients component unmounted");
+    };
+  }, []);
+
   // Persist clients to localStorage whenever the state changes
   useEffect(() => {
     try {
@@ -1287,7 +1296,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   const handleResetData = useCallback(() => {
     setClients(initialClients);
     toast({
-      title: "🔄 Dados Resetados",
+      title: "�� Dados Resetados",
       description: "Base de clientes restaurada para o estado inicial",
     });
   }, [toast]);
