@@ -950,27 +950,19 @@ const NewClientModal: React.FC<{
     setIsLoading(true);
 
     try {
-      // Simular chamada API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Criar novo cliente
-      const newClient: Client = {
-        id: `client-${Date.now()}`,
+      // Create client object for API
+      const newClient = {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         address: formData.address || undefined,
         birthDate: formData.birthDate || undefined,
         notes: formData.notes || undefined,
-        createdAt: new Date().toISOString(),
         status: formData.status,
-        totalSpent: 0,
-        visitCount: 0,
-        avgInterval: 0,
-        visits: [],
       };
 
-      onSuccess(newClient);
+      // Call the handler which will save to Neon database
+      await onSuccess(newClient);
       onClose();
 
       toast({
@@ -980,7 +972,7 @@ const NewClientModal: React.FC<{
     } catch (error) {
       toast({
         title: "❌ Erro ao Cadastrar",
-        description: "Erro interno do servidor",
+        description: "Erro ao salvar cliente",
         variant: "destructive",
       });
     } finally {
