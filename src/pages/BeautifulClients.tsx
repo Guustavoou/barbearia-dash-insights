@@ -286,15 +286,31 @@ const KPICard: React.FC<KPICardProps> = ({
   );
 };
 
-const ClientCard: React.FC<{
+// Enhanced Client Detail Modal Component
+const ClientDetailModal: React.FC<{
   client: Client;
+  onClose: () => void;
   onUpdate: (client: Client) => void;
   onDelete: (clientId: string) => void;
-}> = ({ client, onUpdate, onDelete }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+}> = ({ client, onClose, onUpdate, onDelete }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
+
+  const daysSinceLastVisit = client.lastVisit
+    ? Math.floor(
+        (new Date().getTime() - new Date(client.lastVisit).getTime()) /
+          (1000 * 60 * 60 * 24),
+      )
+    : null;
+
+  const monthsAsClient = Math.floor(
+    (new Date().getTime() - new Date(client.createdAt).getTime()) /
+      (1000 * 60 * 60 * 24 * 30),
+  );
+
+  const avgSpentPerVisit =
+    client.visitCount > 0 ? client.totalSpent / client.visitCount : 0;
 
   const handlePhoneCall = useCallback(() => {
     const cleanPhone = client.phone.replace(/\D/g, "");
@@ -326,269 +342,383 @@ const ClientCard: React.FC<{
   const handleDelete = useCallback(() => {
     onDelete(client.id);
     setShowDeleteDialog(false);
+    onClose();
     toast({
       title: "🗑️ Cliente Removido",
       description: `${client.name} foi removido com sucesso`,
     });
-  }, [client.id, client.name, onDelete, toast]);
+  }, [client.id, client.name, onDelete, onClose, toast]);
 
-  const daysSinceLastVisit = client.lastVisit
-    ? Math.floor(
-        (new Date().getTime() - new Date(client.lastVisit).getTime()) /
-          (1000 * 60 * 60 * 24),
-      )
-    : null;
-
-  const getStatusColor = (status: string) => {
-    return status === "ativo"
-      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-      : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+  const getClientTier = () => {
+    if (client.totalSpent >= 2000)
+      return {
+        tier: "VIP",
+        color: "text-yellow-600",
+        bg: "bg-yellow-50 dark:bg-yellow-900/20",
+      };
+    if (client.totalSpent >= 1000)
+      return {
+        tier: "Gold",
+        color: "text-orange-600",
+        bg: "bg-orange-50 dark:bg-orange-900/20",
+      };
+    if (client.totalSpent >= 500)
+      return {
+        tier: "Silver",
+        color: "text-gray-600",
+        bg: "bg-gray-50 dark:bg-gray-900/20",
+      };
+    return {
+      tier: "Bronze",
+      color: "text-blue-600",
+      bg: "bg-blue-50 dark:bg-blue-900/20",
+    };
   };
+
+  const clientTier = getClientTier();
 
   return (
     <>
-      <Card className="group bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 overflow-hidden">
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">
-                  {client.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
-                </span>
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg mb-1">
-                  {client.name}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                  {client.email}
-                </p>
-                <Badge className={getStatusColor(client.status)}>
-                  {client.status === "ativo" ? "Ativo" : "Inativo"}
-                </Badge>
-              </div>
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setShowEditModal(true)}>
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handlePhoneCall}>
-                  <Phone className="w-4 h-4 mr-2" />
-                  Ligar
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleEmail}>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleWhatsApp}>
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  WhatsApp
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="text-red-600 dark:text-red-400"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Excluir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Quick Action Buttons */}
-          <div className="flex gap-2 mb-4">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handlePhoneCall}
-              className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/20"
-            >
-              <Phone className="w-3 h-3 mr-1" />
-              Ligar
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleWhatsApp}
-              className="flex-1 border-green-200 text-green-600 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/20"
-            >
-              <MessageCircle className="w-3 h-3 mr-1" />
-              WhatsApp
-            </Button>
-          </div>
-
-          {/* Métricas do Cliente */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {client.visitCount}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Visitas
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {formatCurrency(client.totalSpent)}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Gasto Total
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {daysSinceLastVisit !== null ? `${daysSinceLastVisit}d` : "N/A"}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Última Visita
-              </div>
-            </div>
-          </div>
-
-          {/* Informações Básicas */}
-          <div className="space-y-2">
+      <Dialog open={true} onOpenChange={onClose}>
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
             <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-gray-600 dark:text-gray-400 flex items-center">
-                  <Phone className="w-3 h-3 mr-1" />
-                  {client.phone}
-                </p>
-                {client.address && (
-                  <p className="text-gray-600 dark:text-gray-400 flex items-center">
-                    <MapPin className="w-3 h-3 mr-1 mt-0.5" />
-                    {client.address}
-                  </p>
-                )}
-                {client.birthDate && (
-                  <p className="text-gray-600 dark:text-gray-400 flex items-center">
-                    <Gift className="w-3 h-3 mr-1" />
-                    {formatDate(client.birthDate)}
-                  </p>
-                )}
-              </div>
-              <div>
-                <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                  Histórico
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-2xl">
+                    {client.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase()}
+                  </span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Cliente desde{" "}
-                  {client.createdAt
-                    ? formatDate(client.createdAt)
-                    : "Data não informada"}
-                </p>
-                {client.lastVisit && (
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Última visita: {formatDate(client.lastVisit)}
-                  </p>
-                )}
+                <div>
+                  <DialogTitle className="text-2xl text-[#00112F] dark:text-[#F9FAFB]">
+                    {client.name}
+                  </DialogTitle>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Badge
+                      className={cn("text-xs", clientTier.bg, clientTier.color)}
+                    >
+                      {clientTier.tier}
+                    </Badge>
+                    <Badge
+                      className={
+                        client.status === "ativo"
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                          : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+                      }
+                    >
+                      {client.status === "ativo" ? "Ativo" : "Inativo"}
+                    </Badge>
+                  </div>
+                </div>
               </div>
+              <Button variant="ghost" size="sm" onClick={onClose}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            {/* Informações Pessoais */}
+            <div className="lg:col-span-1 space-y-6">
+              <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                  <Users className="w-4 h-4 mr-2" />
+                  Informações Pessoais
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">
+                      Email:
+                    </span>
+                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
+                      {client.email}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">
+                      Telefone:
+                    </span>
+                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
+                      {client.phone}
+                    </span>
+                  </div>
+                  {client.address && (
+                    <div className="flex items-start justify-between">
+                      <span className="text-gray-600 dark:text-gray-400 text-sm">
+                        Endereço:
+                      </span>
+                      <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium text-right">
+                        {client.address}
+                      </span>
+                    </div>
+                  )}
+                  {client.birthDate && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 dark:text-gray-400 text-sm">
+                        Nascimento:
+                      </span>
+                      <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
+                        {formatDate(client.birthDate)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">
+                      Cliente desde:
+                    </span>
+                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
+                      {formatDate(client.createdAt)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">
+                      Tempo conosco:
+                    </span>
+                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
+                      {monthsAsClient} meses
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Ações Rápidas */}
+              <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                  <Activity className="w-4 h-4 mr-2" />
+                  Ações Rápidas
+                </h3>
+                <div className="space-y-2">
+                  <Button
+                    onClick={handlePhoneCall}
+                    className="w-full justify-start bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800"
+                    variant="outline"
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    Ligar para Cliente
+                  </Button>
+                  <Button
+                    onClick={handleWhatsApp}
+                    className="w-full justify-start bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                    variant="outline"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    WhatsApp
+                  </Button>
+                  <Button
+                    onClick={handleEmail}
+                    className="w-full justify-start bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:hover:bg-gray-900/30 dark:text-gray-400 dark:border-gray-800"
+                    variant="outline"
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Enviar Email
+                  </Button>
+                  <Button
+                    onClick={() => setShowEditModal(true)}
+                    className="w-full justify-start bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800"
+                    variant="outline"
+                  >
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Editar Dados
+                  </Button>
+                  <Button
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="w-full justify-start bg-red-50 hover:bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+                    variant="outline"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir Cliente
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Insights */}
+              <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                  <Target className="w-4 h-4 mr-2" />
+                  Insights
+                </h3>
+                <div className="space-y-3">
+                  {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
+                    <div className="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                      <div className="flex items-center">
+                        <AlertCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" />
+                        <p className="text-orange-700 dark:text-orange-400 text-sm font-medium">
+                          Cliente inativo há {daysSinceLastVisit} dias
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {client.visitCount >= 5 && (
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
+                        <p className="text-green-700 dark:text-green-400 text-sm font-medium">
+                          Cliente fiel com {client.visitCount} visitas
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {client.totalSpent >= 1000 && (
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="flex items-center">
+                        <Star className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
+                        <p className="text-blue-700 dark:text-blue-400 text-sm font-medium">
+                          Cliente VIP com alto valor
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Card>
             </div>
 
-            {/* Botão Expandir/Recolher */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full mt-4 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-            >
-              {isExpanded ? (
-                <>
-                  <ChevronUp className="w-4 h-4 mr-1" />
-                  Menos detalhes
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="w-4 h-4 mr-1" />
-                  Ver histórico
-                </>
-              )}
-            </Button>
+            {/* Métricas e Histórico */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Métricas Principais */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
+                        Visitas
+                      </p>
+                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                        {client.visitCount}
+                      </p>
+                    </div>
+                    <Calendar className="w-8 h-8 text-blue-500 dark:text-blue-400" />
+                  </div>
+                </Card>
 
-            {/* Seção Expandida */}
-            {isExpanded && (
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                <h4 className="font-semibold text-[#00112F] dark:text-[#F9FAFB]">
-                  Histórico de Visitas
-                </h4>
+                <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-green-600 dark:text-green-400 text-sm font-medium">
+                        Total Gasto
+                      </p>
+                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                        {formatCurrency(client.totalSpent)}
+                      </p>
+                    </div>
+                    <DollarSign className="w-8 h-8 text-green-500 dark:text-green-400" />
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-purple-600 dark:text-purple-400 text-sm font-medium">
+                        Ticket Médio
+                      </p>
+                      <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+                        {formatCurrency(avgSpentPerVisit)}
+                      </p>
+                    </div>
+                    <TrendingUp className="w-8 h-8 text-purple-500 dark:text-purple-400" />
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-800">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">
+                        Intervalo Médio
+                      </p>
+                      <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                        {client.avgInterval}d
+                      </p>
+                    </div>
+                    <Clock className="w-8 h-8 text-orange-500 dark:text-orange-400" />
+                  </div>
+                </Card>
+              </div>
+
+              {/* Histórico de Visitas */}
+              <Card className="p-6 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-4 flex items-center">
+                  <Clock className="w-4 h-4 mr-2" />
+                  Histórico de Visitas ({client.visits?.length || 0})
+                </h3>
                 {client.visits && client.visits.length > 0 ? (
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {client.visits.slice(0, 5).map((visit) => (
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
+                    {client.visits.map((visit) => (
                       <div
                         key={visit.id}
-                        className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors"
                       >
-                        <div>
-                          <p className="font-medium text-sm text-[#00112F] dark:text-[#F9FAFB]">
-                            {visit.service}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {formatDate(visit.date)} • {visit.professional}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-[#00112F] dark:text-[#F9FAFB]">
-                            {formatCurrency(visit.amount)}
-                          </p>
-                          {visit.rating && (
-                            <div className="flex items-center">
-                              <Star className="w-3 h-3 text-yellow-500 mr-1" />
-                              <span className="text-xs text-gray-500">
-                                {visit.rating}
-                              </span>
-                            </div>
-                          )}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
+                              {visit.service}
+                            </h4>
+                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                              {formatCurrency(visit.amount)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                            <span className="flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              {formatDate(visit.date)}
+                            </span>
+                            <span className="flex items-center">
+                              <UserCheck className="w-3 h-3 mr-1" />
+                              {visit.professional}
+                            </span>
+                            {visit.rating && (
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={cn(
+                                      "w-3 h-3",
+                                      i < visit.rating
+                                        ? "text-yellow-400 fill-current"
+                                        : "text-gray-300 dark:text-gray-600",
+                                    )}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Nenhuma visita registrada
-                  </p>
-                )}
-
-                {/* Insights do Cliente */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                  <h5 className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                    📊 Insights
-                  </h5>
-                  <div className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
-                    <p>Frequência média: a cada {client.avgInterval} dias</p>
-                    <p>
-                      Ticket médio:{" "}
-                      {formatCurrency(
-                        client.totalSpent / (client.visitCount || 1),
-                      )}
+                  <div className="text-center py-8">
+                    <Calendar className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Nenhuma visita registrada
                     </p>
-                    {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
-                      <p className="text-orange-600 dark:text-orange-400 flex items-center">
-                        <AlertCircle className="w-3 h-3 mr-1" />
-                        Cliente inativo (90+ dias sem visita)
-                      </p>
-                    )}
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                      O histórico de visitas aparecerá aqui quando o cliente
+                      realizar agendamentos
+                    </p>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
+              </Card>
+
+              {/* Notas do Cliente */}
+              {client.notes && (
+                <Card className="p-6 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+                  <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Notas do Cliente
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {client.notes}
+                  </p>
+                </Card>
+              )}
+            </div>
           </div>
-        </div>
-      </Card>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de Edição */}
       {showEditModal && (
@@ -600,6 +730,357 @@ const ClientCard: React.FC<{
       )}
 
       {/* Dialog de Confirmação de Exclusão */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o cliente{" "}
+              <strong>{client.name}</strong>? Esta ação não pode ser desfeita e
+              todos os dados do cliente serão permanentemente removidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Excluir Permanentemente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};
+
+// Enhanced Client Card Component
+const ClientCard: React.FC<{
+  client: Client;
+  onUpdate: (client: Client) => void;
+  onDelete: (clientId: string) => void;
+}> = ({ client, onUpdate, onDelete }) => {
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { toast } = useToast();
+
+  const daysSinceLastVisit = client.lastVisit
+    ? Math.floor(
+        (new Date().getTime() - new Date(client.lastVisit).getTime()) /
+          (1000 * 60 * 60 * 24),
+      )
+    : null;
+
+  const handlePhoneCall = useCallback(() => {
+    const cleanPhone = client.phone.replace(/\D/g, "");
+    window.open(`tel:+55${cleanPhone}`, "_self");
+    toast({
+      title: "📞 Ligação Iniciada",
+      description: `Ligando para ${client.name}`,
+    });
+  }, [client.phone, client.name, toast]);
+
+  const handleWhatsApp = useCallback(() => {
+    const cleanPhone = client.phone.replace(/\D/g, "");
+    const whatsappUrl = `https://wa.me/55${cleanPhone}?text=Olá ${client.name}, aqui é da Unclic! Como posso ajudá-lo hoje?`;
+    window.open(whatsappUrl, "_blank");
+    toast({
+      title: "💬 WhatsApp Aberto",
+      description: `Conversando com ${client.name}`,
+    });
+  }, [client.phone, client.name, toast]);
+
+  const handleDelete = useCallback(() => {
+    onDelete(client.id);
+    setShowDeleteDialog(false);
+    toast({
+      title: "🗑️ Cliente Removido",
+      description: `${client.name} foi removido com sucesso`,
+    });
+  }, [client.id, client.name, onDelete, toast]);
+
+  const getClientTier = () => {
+    if (client.totalSpent >= 2000)
+      return {
+        tier: "VIP",
+        color: "text-yellow-600",
+        bg: "bg-yellow-50 dark:bg-yellow-900/20",
+        border: "border-yellow-200 dark:border-yellow-800",
+      };
+    if (client.totalSpent >= 1000)
+      return {
+        tier: "Gold",
+        color: "text-orange-600",
+        bg: "bg-orange-50 dark:bg-orange-900/20",
+        border: "border-orange-200 dark:border-orange-800",
+      };
+    if (client.totalSpent >= 500)
+      return {
+        tier: "Silver",
+        color: "text-gray-600",
+        bg: "bg-gray-50 dark:bg-gray-900/20",
+        border: "border-gray-200 dark:border-gray-800",
+      };
+    return {
+      tier: "Bronze",
+      color: "text-blue-600",
+      bg: "bg-blue-50 dark:bg-blue-900/20",
+      border: "border-blue-200 dark:border-blue-800",
+    };
+  };
+
+  const clientTier = getClientTier();
+
+  return (
+    <>
+      <Card
+        className="group relative bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden cursor-pointer"
+        onClick={() => setShowDetailModal(true)}
+      >
+        {/* Premium Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        {/* Tier Indicator */}
+        <div
+          className={cn(
+            "absolute top-0 right-0 px-3 py-1 rounded-bl-lg text-xs font-bold",
+            clientTier.bg,
+            clientTier.color,
+          )}
+        >
+          {clientTier.tier}
+        </div>
+
+        <div className="relative p-6">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="relative w-14 h-14 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <span className="text-white font-bold text-lg">
+                  {client.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </span>
+                {/* Status Indicator */}
+                <div
+                  className={cn(
+                    "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800",
+                    client.status === "ativo" ? "bg-green-500" : "bg-gray-400",
+                  )}
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {client.name}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2 truncate">
+                  {client.email}
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Badge
+                    className={
+                      client.status === "ativo"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                        : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+                    }
+                  >
+                    {client.status === "ativo" ? "Ativo" : "Inativo"}
+                  </Badge>
+                  {daysSinceLastVisit !== null && daysSinceLastVisit <= 7 && (
+                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-xs">
+                      Recente
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="opacity-0 group-hover:opacity-100 transition-all duration-300 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDetailModal(true);
+                  }}
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Ver Detalhes
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowEditModal(true);
+                  }}
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePhoneCall();
+                  }}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Ligar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWhatsApp();
+                  }}
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteDialog(true);
+                  }}
+                  className="text-red-600 dark:text-red-400"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Métricas Principais */}
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                {client.visitCount}
+              </div>
+              <div className="text-xs text-blue-500 dark:text-blue-400 font-medium">
+                Visitas
+              </div>
+            </div>
+            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                {formatCurrency(client.totalSpent)}
+              </div>
+              <div className="text-xs text-green-500 dark:text-green-400 font-medium">
+                Total
+              </div>
+            </div>
+            <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+              <div className="text-xl font-bold text-orange-600 dark:text-orange-400">
+                {daysSinceLastVisit !== null ? `${daysSinceLastVisit}d` : "N/A"}
+              </div>
+              <div className="text-xs text-orange-500 dark:text-orange-400 font-medium">
+                Última
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Contact Buttons */}
+          <div className="flex gap-2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePhoneCall();
+              }}
+              className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/20 h-8"
+            >
+              <Phone className="w-3 h-3 mr-1" />
+              Ligar
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleWhatsApp();
+              }}
+              className="flex-1 border-green-200 text-green-600 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/20 h-8"
+            >
+              <MessageCircle className="w-3 h-3 mr-1" />
+              WhatsApp
+            </Button>
+          </div>
+
+          {/* Client Info Preview */}
+          <div className="space-y-2">
+            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+              <Phone className="w-3 h-3 mr-2 text-gray-400" />
+              <span className="truncate">{client.phone}</span>
+            </div>
+            {client.address && (
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <MapPin className="w-3 h-3 mr-2 text-gray-400 flex-shrink-0" />
+                <span className="truncate">{client.address}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500 dark:text-gray-400">
+                Cliente desde:
+              </span>
+              <span className="text-[#00112F] dark:text-[#F9FAFB] font-medium">
+                {formatDate(client.createdAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* Status Indicators */}
+          {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
+            <div className="mt-4 p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+              <div className="flex items-center">
+                <AlertCircle className="w-3 h-3 text-orange-600 dark:text-orange-400 mr-2" />
+                <p className="text-orange-700 dark:text-orange-400 text-xs font-medium">
+                  Cliente inativo há {daysSinceLastVisit} dias
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Click to View Details Hint */}
+          <div className="mt-4 text-center">
+            <p className="text-xs text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              Clique para ver detalhes completos
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Client Detail Modal */}
+      {showDetailModal && (
+        <ClientDetailModal
+          client={client}
+          onClose={() => setShowDetailModal(false)}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <EditClientModal
+          client={client}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={onUpdate}
+        />
+      )}
+
+      {/* Delete Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -792,7 +1273,7 @@ const NewClientModal: React.FC<{
           </div>
 
           <div>
-            <Label htmlFor="notes">Observações</Label>
+            <Label htmlFor="notes">Notas</Label>
             <Textarea
               id="notes"
               value={formData.notes}
@@ -913,7 +1394,7 @@ const EditClientModal: React.FC<{
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Editar Cliente: {client.name}</span>
+            <span>Editar Cliente</span>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>
@@ -923,17 +1404,19 @@ const EditClientModal: React.FC<{
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="edit-name">Nome Completo</Label>
+              <Label htmlFor="edit-name">Nome Completo *</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
+                placeholder="Ex: João Silva"
+                required
               />
             </div>
             <div>
-              <Label htmlFor="edit-email">Email</Label>
+              <Label htmlFor="edit-email">Email *</Label>
               <Input
                 id="edit-email"
                 type="email"
@@ -941,49 +1424,23 @@ const EditClientModal: React.FC<{
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
+                placeholder="Ex: joao@email.com"
+                required
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="edit-phone">Telefone</Label>
+              <Label htmlFor="edit-phone">Telefone *</Label>
               <Input
                 id="edit-phone"
                 value={formData.phone}
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-status">Status</Label>
-              <select
-                id="edit-status"
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    status: e.target.value as "ativo" | "inativo",
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-              >
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="edit-address">Endereço</Label>
-              <Input
-                id="edit-address"
-                value={formData.address}
-                onChange={(e) =>
-                  setFormData({ ...formData, address: e.target.value })
-                }
+                placeholder="Ex: (11) 99999-9999"
+                required
               />
             </div>
             <div>
@@ -1000,15 +1457,46 @@ const EditClientModal: React.FC<{
           </div>
 
           <div>
-            <Label htmlFor="edit-notes">Observações</Label>
+            <Label htmlFor="edit-address">Endereço</Label>
+            <Input
+              id="edit-address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+              placeholder="Ex: Rua das Flores, 123"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="edit-notes">Notas</Label>
             <Textarea
               id="edit-notes"
               value={formData.notes}
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
+              placeholder="Notas internas sobre o cliente..."
               rows={3}
             />
+          </div>
+
+          <div>
+            <Label htmlFor="edit-status">Status</Label>
+            <select
+              id="edit-status"
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  status: e.target.value as "ativo" | "inativo",
+                })
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+            </select>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
@@ -1023,7 +1511,7 @@ const EditClientModal: React.FC<{
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-gradient-to-r from-[#00112F] to-blue-700"
+              className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-700 hover:to-[#00112F]"
             >
               {isLoading ? (
                 <>
@@ -1048,7 +1536,6 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   darkMode,
   onPageChange,
 }) => {
-  const { toast } = useToast();
   // Initialize clients from localStorage or use initialClients as fallback
   const [clients, setClients] = useState<Client[]>(() => {
     try {
@@ -1219,6 +1706,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
     return filtered;
   }, [clients, searchTerm, statusFilter, sortField, sortDirection]);
+
+  const { toast } = useToast();
 
   const handleRefreshData = useCallback(() => {
     setIsLoading(true);
@@ -1433,33 +1922,26 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                         isExporting && "animate-spin",
                       )}
                     />
-                    {isExporting ? "Exportando..." : "Exportar"}
+                    Exportar
                   </Button>
                   <Button
                     onClick={() => setShowNewClientModal(true)}
-                    className="bg-white hover:bg-blue-50 text-[#00112F] shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="bg-white hover:bg-blue-50 text-[#00112F] border-0 shadow-lg transition-all duration-300 hover:scale-105"
                   >
                     <UserPlus className="w-4 h-4 mr-2" />
                     Novo Cliente
                   </Button>
                 </div>
               </div>
-              <div className="text-sm text-blue-100">
-                Última atualização: {formatDate(lastUpdate)} às{" "}
-                {lastUpdate.toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
             </div>
           </div>
         </div>
 
-        {/* KPI Cards */}
-        <section>
+        {/* KPIs */}
+        <section className="mb-8">
           <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
-            <Activity className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
-            Métricas de Clientes
+            <Activity className="w-6 h-6 mr-3" />
+            Indicadores Principais
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
             <KPICard
@@ -1567,14 +2049,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           </div>
         </Card>
 
-        {/* Client List */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
-            <Users className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
-            Lista de Clientes
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Clients Grid */}
+        <section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredClients.map((client) => (
               <ClientCard
                 key={client.id}
@@ -1586,33 +2063,29 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           </div>
 
           {filteredClients.length === 0 && (
-            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-              <div className="p-12 text-center">
-                <Users className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                  Nenhum cliente encontrado
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  {searchTerm || statusFilter !== "todos"
-                    ? "Ajuste os filtros ou cadastre um novo cliente"
-                    : "Cadastre seu primeiro cliente para começar"}
-                </p>
-                <Button
-                  onClick={() => setShowNewClientModal(true)}
-                  className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-700 hover:to-[#00112F] text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  {clients.length === 0
-                    ? "Cadastrar Primeiro Cliente"
-                    : "Novo Cliente"}
-                </Button>
-              </div>
-            </Card>
+            <div className="text-center py-12">
+              <Users className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                Nenhum cliente encontrado
+              </h3>
+              <p className="text-gray-500 dark:text-gray-500 mb-6">
+                {searchTerm || statusFilter !== "todos"
+                  ? "Tente ajustar os filtros de busca"
+                  : "Comece adicionando seus primeiros clientes"}
+              </p>
+              <Button
+                onClick={() => setShowNewClientModal(true)}
+                className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-700 hover:to-[#00112F]"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Adicionar Primeiro Cliente
+              </Button>
+            </div>
           )}
-        </div>
+        </section>
       </div>
 
-      {/* Modal de Novo Cliente */}
+      {/* New Client Modal */}
       {showNewClientModal && (
         <NewClientModal
           onClose={() => setShowNewClientModal(false)}
