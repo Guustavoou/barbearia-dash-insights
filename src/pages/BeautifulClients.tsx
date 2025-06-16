@@ -1580,6 +1580,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   }, [toast]);
 
   const handleResetData = useCallback(() => {
+    // Clear localStorage and reset data
+    localStorage.removeItem("unclic-clients");
     setClients(initialClients);
     toast({
       title: "🔄 Dados Resetados",
