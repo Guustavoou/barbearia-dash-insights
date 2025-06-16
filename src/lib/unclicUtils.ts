@@ -53,7 +53,10 @@ export const getInitials = (name: string): string => {
     .toUpperCase();
 };
 
-export const formatTime = (date: Date | string): string => {
+export const formatTime = (date: Date | string | null | undefined): string => {
+  if (!date) {
+    return "Hora não informada";
+  }
   const dateObj = typeof date === "string" ? new Date(date) : date;
   if (isNaN(dateObj.getTime())) {
     return "Hora inválida";
