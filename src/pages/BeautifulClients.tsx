@@ -478,9 +478,10 @@ const ClientDetailModal: React.FC<{
             <div className="bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm rounded-lg p-4">
               <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center text-sm">
                 <Calendar className="w-4 h-4 mr-2" />
-                Histórico de Visitas ({client.visits?.length || 0})
+                Histórico de Visitas (
+                {Array.isArray(client.visits) ? client.visits.length : 0})
               </h3>
-              {client.visits && client.visits.length > 0 ? (
+              {Array.isArray(client.visits) && client.visits.length > 0 ? (
                 <div className="space-y-2">
                   {client.visits.map((visit) => (
                     <div
@@ -692,7 +693,7 @@ const ClientCard: React.FC<{
 
   const handleWhatsApp = useCallback(() => {
     const cleanPhone = client.phone.replace(/\D/g, "");
-    const whatsappUrl = `https://wa.me/55${cleanPhone}?text=Olá ${client.name}, aqui é da Unclic! Como posso ajudá-lo hoje?`;
+    const whatsappUrl = `https://wa.me/55${cleanPhone}?text=Olá ${client.name}, aqui �� da Unclic! Como posso ajudá-lo hoje?`;
     window.open(whatsappUrl, "_blank");
     toast({
       title: "💬 WhatsApp Aberto",
