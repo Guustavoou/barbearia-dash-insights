@@ -1091,6 +1091,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
 
   // Callbacks for CRUD operations
   const handleAddClient = useCallback((newClient: Client) => {
