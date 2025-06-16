@@ -1,6 +1,81 @@
 import { Request, Response } from "express";
 import { sql } from "../../database/neon-config";
 
+// Mock data for fallback when database is unavailable
+const mockClients = [
+  {
+    id: 1,
+    name: "Ana Oliveira",
+    email: "ana.oliveira@email.com",
+    phone: "(11) 66666-6666",
+    city: "Rua do Sol, 789",
+    cpf: null,
+    profession: null,
+    status: "ativo",
+    birthday: "1988-12-03",
+    total_spent: 950,
+    visits: 6,
+    last_visit: "2024-12-10T13:00:00Z",
+    join_date: "2020-04-20",
+    created_at: "2020-04-20T15:00:00Z",
+    updated_at: "2024-12-10T13:00:00Z",
+    notes: "Cliente preferencial",
+  },
+  {
+    id: 2,
+    name: "João Silva",
+    email: "joao.silva@email.com",
+    phone: "(11) 99999-9999",
+    city: "Rua das Flores, 123",
+    cpf: null,
+    profession: null,
+    status: "ativo",
+    birthday: "1985-03-15",
+    total_spent: 1250,
+    visits: 8,
+    last_visit: "2024-12-10T14:30:00Z",
+    join_date: "2023-01-15",
+    created_at: "2023-01-15T10:00:00Z",
+    updated_at: "2024-12-10T14:30:00Z",
+    notes: "Cliente frequente",
+  },
+  {
+    id: 3,
+    name: "Maria Costa",
+    email: "maria.costa@email.com",
+    phone: "(11) 88888-8888",
+    city: "Av. Principal, 456",
+    cpf: null,
+    profession: null,
+    status: "inativo",
+    birthday: "1990-07-22",
+    total_spent: 780,
+    visits: 5,
+    last_visit: "2023-05-15T10:00:00Z",
+    join_date: "2023-02-10",
+    created_at: "2023-02-10T11:00:00Z",
+    updated_at: "2023-05-15T10:00:00Z",
+    notes: null,
+  },
+];
+
+// Helper function to handle database errors with fallback
+async function executeWithFallback<T>(
+  operation: () => Promise<T>,
+  fallbackData: T,
+  operationName: string = "operation",
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    console.log(
+      `⚠️  Database ${operationName} failed, using fallback data:`,
+      error.message,
+    );
+    return fallbackData;
+  }
+}
+
 // Get all clients with pagination and filters
 export const getClients = async (req: Request, res: Response) => {
   try {
@@ -57,19 +132,19 @@ export const getClients = async (req: Request, res: Response) => {
 
     // Get total count
     const countResult = await sql`
-      SELECT COUNT(*) as total 
-      FROM clients 
+      SELECT COUNT(*) as total
+      FROM clients
       ${whereClause ? sql.unsafe(whereClause) : sql``}
     `;
     const total = parseInt(countResult[0].total);
 
     // Get clients with pagination
     const clients = await sql`
-      SELECT 
-        id, name, email, phone, city, cpf, profession, status, 
-        birthday, total_spent, visits, last_visit, join_date, 
+      SELECT
+        id, name, email, phone, city, cpf, profession, status,
+        birthday, total_spent, visits, last_visit, join_date,
         created_at, updated_at
-      FROM clients 
+      FROM clients
       ${whereClause ? sql.unsafe(whereClause) : sql``}
       ORDER BY ${sql.unsafe(sortField)} ${sql.unsafe(sortOrder)}
       LIMIT ${limitNum} OFFSET ${offset}
@@ -161,7 +236,7 @@ export const createClient = async (req: Request, res: Response) => {
         name, email, phone, city, cpf, profession, birthday, notes
       )
       VALUES (
-        ${name}, ${email || null}, ${phone}, ${city || null}, 
+        ${name}, ${email || null}, ${phone}, ${city || null},
         ${cpf || null}, ${profession || null}, ${birthday || null}, ${notes || null}
       )
       RETURNING *
@@ -232,8 +307,8 @@ export const updateClient = async (req: Request, res: Response) => {
     }
 
     const updatedClients = await sql`
-      UPDATE clients 
-      SET 
+      UPDATE clients
+      SET
         name = COALESCE(${name}, name),
         email = COALESCE(${email}, email),
         phone = COALESCE(${phone}, phone),
@@ -320,7 +395,7 @@ export const deleteClient = async (req: Request, res: Response) => {
 export const getClientStats = async (req: Request, res: Response) => {
   try {
     const stats = await sql`
-      SELECT 
+      SELECT
         COUNT(*) as total_clients,
         COUNT(*) FILTER (WHERE status = 'ativo') as active_clients,
         COUNT(*) FILTER (WHERE status = 'inativo') as inactive_clients,
@@ -347,15 +422,15 @@ export const getClientStats = async (req: Request, res: Response) => {
 export const getClientBirthdays = async (req: Request, res: Response) => {
   try {
     const birthdays = await sql`
-      SELECT 
+      SELECT
         id, name, email, phone, birthday,
         EXTRACT(DAY FROM birthday) as birthday_day,
-        CASE 
+        CASE
           WHEN EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE) THEN true
           ELSE false
         END as is_today
-      FROM clients 
-      WHERE 
+      FROM clients
+      WHERE
         EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE)
         AND status = 'ativo'
         AND birthday IS NOT NULL
