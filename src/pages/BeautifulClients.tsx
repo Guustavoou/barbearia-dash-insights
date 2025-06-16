@@ -673,7 +673,10 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                     Histórico
                   </div>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Cliente desde {formatDate(client.createdAt)}
+                    Cliente desde{" "}
+                    {client.createdAt
+                      ? formatDate(client.createdAt)
+                      : "Data não informada"}
                   </p>
                   {client.lastVisit && (
                     <p className="text-gray-600 dark:text-gray-400">
