@@ -431,7 +431,10 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
                   {transaction.description}
                 </h4>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {formatDate(transaction.date)} • {transaction.method}
+                  {transaction.date
+                    ? formatDate(transaction.date)
+                    : "Data não informada"}{" "}
+                  • {transaction.method}
                 </p>
               </div>
             </div>
