@@ -35,11 +35,13 @@ import {
   Mail,
   MessageCircle,
   Share2,
-  TrendingDown as MarketingDown,
   Percent,
   Zap,
   Award,
   Shield,
+  Plus,
+  Minus,
+  TrendingDown as MarketingDown,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
@@ -56,181 +58,136 @@ interface BeautifulReportsProps {
   onPageChange?: (page: PageType) => void;
 }
 
-interface KPICardProps {
+interface StatCardProps {
   title: string;
   value: string | number;
   change?: number;
-  target?: number;
-  period: string;
+  trend?: "up" | "down" | "neutral";
   icon: React.ElementType;
-  variant?: "primary" | "success" | "warning" | "danger" | "premium" | "info";
-  onClick?: () => void;
+  color?: string;
 }
 
-interface ReportSection {
-  id: string;
+interface ChartSectionProps {
   title: string;
-  description: string;
-  icon: React.ElementType;
-  color: string;
-  metrics: KPICardProps[];
+  subtitle?: string;
+  children: React.ReactNode;
 }
 
-const KPICard: React.FC<KPICardProps> = ({
+const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
   change,
-  target,
-  period,
+  trend = "neutral",
   icon: Icon,
-  variant = "primary",
-  onClick,
+  color = "from-blue-600 to-blue-800",
 }) => {
-  const getVariantColors = () => {
-    switch (variant) {
-      case "success":
-        return "from-green-600 to-green-800";
-      case "warning":
-        return "from-yellow-600 to-orange-700";
-      case "danger":
-        return "from-red-600 to-red-800";
-      case "premium":
-        return "from-purple-600 to-purple-800";
-      case "info":
-        return "from-blue-600 to-blue-800";
+  const getTrendColor = () => {
+    switch (trend) {
+      case "up":
+        return "text-green-600 dark:text-green-400";
+      case "down":
+        return "text-red-600 dark:text-red-400";
       default:
-        return "from-[#00112F] to-blue-700";
+        return "text-gray-600 dark:text-gray-400";
+    }
+  };
+
+  const getTrendIcon = () => {
+    switch (trend) {
+      case "up":
+        return <ArrowUpRight className="w-4 h-4" />;
+      case "down":
+        return <ArrowDownRight className="w-4 h-4" />;
+      default:
+        return null;
     }
   };
 
   return (
-    <Card
-      className={cn(
-        "group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1",
-        onClick && "cursor-pointer",
-      )}
-      onClick={onClick}
-    >
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${getVariantColors()} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
-      />
-      <div className="relative p-6">
+    <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
+      <div className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div
-            className={`p-3 rounded-xl bg-gradient-to-br ${getVariantColors()} shadow-lg`}
+            className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-lg`}
           >
             <Icon className="w-6 h-6 text-white" />
           </div>
           {change !== undefined && (
-            <div className="flex items-center space-x-1">
-              {change >= 0 ? (
-                <ArrowUpRight className="w-4 h-4 text-green-600 dark:text-green-400" />
-              ) : (
-                <ArrowDownRight className="w-4 h-4 text-red-600 dark:text-red-400" />
-              )}
-              <Badge
-                variant={change >= 0 ? "default" : "destructive"}
-                className={cn(
-                  "text-xs font-medium px-2 py-1",
-                  change >= 0
-                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-                )}
-              >
-                {change >= 0 ? "+" : ""}
+            <div className={cn("flex items-center space-x-1", getTrendColor())}>
+              {getTrendIcon()}
+              <span className="text-sm font-medium">
+                {change > 0 ? "+" : ""}
                 {change}%
-              </Badge>
+              </span>
             </div>
           )}
         </div>
-        <div className="space-y-2">
-          <h3 className="font-bold text-2xl text-[#00112F] dark:text-[#F9FAFB] group-hover:scale-105 transition-transform duration-300">
+        <div className="space-y-1">
+          <h3 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] group-hover:scale-105 transition-transform duration-300">
             {value}
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
             {title}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-500">{period}</p>
-          {target && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                <span>Meta: {target}%</span>
-                <span>{Math.round((Number(value) / target) * 100)}%</span>
-              </div>
-              <Progress
-                value={(Number(value) / target) * 100}
-                className="h-2 bg-gray-200 dark:bg-gray-700"
-              />
-            </div>
-          )}
         </div>
       </div>
     </Card>
   );
 };
 
-const SectionCard: React.FC<{
-  section: ReportSection;
-  onSectionClick: (id: string) => void;
-}> = ({ section, onSectionClick }) => {
+const ChartSection: React.FC<ChartSectionProps> = ({
+  title,
+  subtitle,
+  children,
+}) => {
   return (
-    <Card className="group bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden">
-      <div className={`h-2 bg-gradient-to-r ${section.color}`} />
+    <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
       <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div
-              className={`p-3 rounded-xl bg-gradient-to-br ${section.color} shadow-lg`}
-            >
-              <section.icon className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {section.title}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {section.description}
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onSectionClick(section.id)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {subtitle}
+            </p>
+          )}
         </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {section.metrics.slice(0, 4).map((metric, index) => (
-            <div
-              key={index}
-              className="text-center p-3 rounded-lg bg-gray-50/50 dark:bg-gray-800/30"
-            >
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {metric.value}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {metric.title}
-              </div>
-              {metric.change !== undefined && (
-                <div
-                  className={cn(
-                    "text-xs font-medium mt-1",
-                    metric.change >= 0 ? "text-green-600" : "text-red-600",
-                  )}
-                >
-                  {metric.change >= 0 ? "+" : ""}
-                  {metric.change}%
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        {children}
       </div>
     </Card>
+  );
+};
+
+const ChartPlaceholder: React.FC<{
+  type: "area" | "line" | "donut" | "bar";
+  title: string;
+}> = ({ type, title }) => {
+  const getIcon = () => {
+    switch (type) {
+      case "area":
+        return <BarChart3 className="w-12 h-12 text-blue-400" />;
+      case "line":
+        return <LineChart className="w-12 h-12 text-green-400" />;
+      case "donut":
+        return <PieChart className="w-12 h-12 text-purple-400" />;
+      case "bar":
+        return <BarChart3 className="w-12 h-12 text-orange-400" />;
+      default:
+        return <BarChart3 className="w-12 h-12 text-gray-400" />;
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-64 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+      {getIcon()}
+      <p className="text-[#00112F] dark:text-[#F9FAFB] font-medium mt-3">
+        {title}
+      </p>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        Gráfico em desenvolvimento
+      </p>
+    </div>
   );
 };
 
@@ -241,16 +198,14 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const { toast } = useToast();
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("month");
-  const [selectedSection, setSelectedSection] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("30d");
   const [reportData, setReportData] = useState<any>({});
 
   // Load data from APIs
   const loadReportData = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log("🔄 Loading comprehensive report data...");
+      console.log("🔄 Loading report data...");
 
       const [
         businessResponse,
@@ -271,25 +226,25 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
       ]);
 
       setReportData({
-        business: businessResponse.success ? businessResponse.data : null,
-        sales: salesResponse.success ? salesResponse.data : null,
+        business: businessResponse.success ? businessResponse.data : {},
+        sales: salesResponse.success ? salesResponse.data : [],
         professionals: professionalsResponse.success
           ? professionalsResponse.data
-          : null,
-        clients: clientsResponse.success ? clientsResponse.data : null,
+          : [],
+        clients: clientsResponse.success ? clientsResponse.data : {},
         appointments: appointmentsResponse.success
           ? appointmentsResponse.data
-          : null,
-        financial: financialResponse.success ? financialResponse.data : null,
-        inventory: inventoryResponse.success ? inventoryResponse.data : null,
+          : {},
+        financial: financialResponse.success ? financialResponse.data : {},
+        inventory: inventoryResponse.success ? inventoryResponse.data : {},
       });
 
       console.log("✅ Report data loaded successfully");
     } catch (error) {
       console.error("❌ Error loading report data:", error);
       toast({
-        title: "⚠️ Erro ao Carregar",
-        description: "Usando dados simulados para demonstração",
+        title: "⚠️ Aviso",
+        description: "Usando dados de demonstração",
         variant: "destructive",
       });
     } finally {
@@ -302,358 +257,11 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   }, [loadReportData]);
 
   const periodOptions = [
-    { value: "week", label: "Últimos 7 dias" },
-    { value: "month", label: "Últimos 30 dias" },
-    { value: "year", label: "Último ano" },
+    { value: "7d", label: "Últimos 7 dias" },
+    { value: "30d", label: "Últimos 30 dias" },
+    { value: "90d", label: "Últimos 3 meses" },
+    { value: "1y", label: "Último ano" },
   ];
-
-  // Create sections with real or fallback data
-  const reportSections: ReportSection[] = useMemo(() => {
-    const businessData = reportData.business?.overview || {};
-    const salesData = reportData.sales || [];
-    const professionalsData = reportData.professionals || [];
-    const clientsData = reportData.clients?.overview || {};
-    const appointmentsData = reportData.appointments?.trends || [];
-    const financialData = reportData.financial || {};
-    const inventoryData = reportData.inventory?.overview || {};
-
-    return [
-      {
-        id: "agendamentos",
-        title: "Agendamentos",
-        description: "Performance e tendências de agendamentos",
-        icon: Calendar,
-        color: "from-blue-600 to-blue-800",
-        metrics: [
-          {
-            title: "Total de Agendamentos",
-            value: businessData.current_appointments || 248,
-            change: businessData.appointment_growth || 15.3,
-            period: "Este período",
-            icon: Calendar,
-            variant: "info",
-          },
-          {
-            title: "Taxa de Conclusão",
-            value: "94%",
-            change: 2.1,
-            period: "Este período",
-            icon: CheckCircle,
-            variant: "success",
-            target: 95,
-          },
-          {
-            title: "Taxa de No-Show",
-            value: "3%",
-            change: -1.2,
-            period: "Este período",
-            icon: AlertCircle,
-            variant: "warning",
-          },
-          {
-            title: "Tempo Médio",
-            value: "45min",
-            change: -2.5,
-            period: "Por atendimento",
-            icon: Clock,
-            variant: "info",
-          },
-        ],
-      },
-      {
-        id: "clientes",
-        title: "Clientes",
-        description: "Análise e comportamento da base de clientes",
-        icon: Users,
-        color: "from-green-600 to-green-800",
-        metrics: [
-          {
-            title: "Total de Clientes",
-            value: clientsData.total_clients || 1250,
-            change: 12.8,
-            period: "Base total",
-            icon: Users,
-            variant: "success",
-          },
-          {
-            title: "Clientes Ativos",
-            value: clientsData.active_clients || 890,
-            change: 8.7,
-            period: "Este período",
-            icon: UserCheck,
-            variant: "success",
-          },
-          {
-            title: "Novos Clientes",
-            value: "85",
-            change: 22.1,
-            period: "Este mês",
-            icon: Star,
-            variant: "premium",
-          },
-          {
-            title: "Taxa de Retenção",
-            value: "78.5%",
-            change: 5.4,
-            period: "Este trimestre",
-            icon: Heart,
-            variant: "success",
-            target: 80,
-          },
-        ],
-      },
-      {
-        id: "servicos",
-        title: "Serviços",
-        description: "Performance e popularidade dos serviços",
-        icon: Activity,
-        color: "from-purple-600 to-purple-800",
-        metrics: [
-          {
-            title: "Serviços Ativos",
-            value: salesData.length || 24,
-            change: 0,
-            period: "Catálogo atual",
-            icon: Activity,
-            variant: "premium",
-          },
-          {
-            title: "Mais Popular",
-            value: "Corte + Barba",
-            period: "Este período",
-            icon: TrendingUp,
-            variant: "premium",
-          },
-          {
-            title: "Satisfação Média",
-            value: "4.8",
-            change: 4.2,
-            period: "Avaliação geral",
-            icon: Star,
-            variant: "premium",
-            target: 5,
-          },
-          {
-            title: "Receita por Serviço",
-            value: formatCurrency(850),
-            change: 18.7,
-            period: "Média mensal",
-            icon: DollarSign,
-            variant: "premium",
-          },
-        ],
-      },
-      {
-        id: "profissionais",
-        title: "Profissionais",
-        description: "Produtividade e performance da equipe",
-        icon: Target,
-        color: "from-orange-600 to-red-700",
-        metrics: [
-          {
-            title: "Total da Equipe",
-            value: professionalsData.length || 8,
-            change: 12.5,
-            period: "Profissionais ativos",
-            icon: Target,
-            variant: "warning",
-          },
-          {
-            title: "Avaliação Média",
-            value: "4.7",
-            change: 2.1,
-            period: "Satisfação geral",
-            icon: Star,
-            variant: "warning",
-            target: 5,
-          },
-          {
-            title: "Taxa de Ocupação",
-            value: "85.2%",
-            change: 8.3,
-            period: "Utilização média",
-            icon: Activity,
-            variant: "warning",
-            target: 90,
-          },
-          {
-            title: "Mais Solicitado",
-            value: "João Silva",
-            period: "Este período",
-            icon: Award,
-            variant: "warning",
-          },
-        ],
-      },
-      {
-        id: "estoque",
-        title: "Estoque",
-        description: "Controle e gestão de produtos",
-        icon: Package,
-        color: "from-teal-600 to-cyan-700",
-        metrics: [
-          {
-            title: "Produtos Ativos",
-            value: inventoryData.active_products || 156,
-            change: 5.2,
-            period: "Catálogo atual",
-            icon: Package,
-            variant: "info",
-          },
-          {
-            title: "Valor do Estoque",
-            value: formatCurrency(inventoryData.total_inventory_value || 45680),
-            change: 12.3,
-            period: "Valor total",
-            icon: DollarSign,
-            variant: "info",
-          },
-          {
-            title: "Produtos em Falta",
-            value: inventoryData.out_of_stock_count || 3,
-            change: -25.0,
-            period: "Sem estoque",
-            icon: AlertCircle,
-            variant: "danger",
-          },
-          {
-            title: "Estoque Baixo",
-            value: inventoryData.low_stock_count || 12,
-            change: -15.8,
-            period: "Alerta de reposição",
-            icon: TrendingDown,
-            variant: "warning",
-          },
-        ],
-      },
-      {
-        id: "financeiro",
-        title: "Financeiro",
-        description: "Receitas, despesas e lucratividade",
-        icon: DollarSign,
-        color: "from-emerald-600 to-green-700",
-        metrics: [
-          {
-            title: "Receita Total",
-            value: formatCurrency(businessData.current_revenue || 45680),
-            change: businessData.revenue_growth || 12.5,
-            period: "Este período",
-            icon: DollarSign,
-            variant: "success",
-          },
-          {
-            title: "Despesas",
-            value: formatCurrency(18230),
-            change: -5.2,
-            period: "Este período",
-            icon: CreditCard,
-            variant: "warning",
-          },
-          {
-            title: "Lucro Líquido",
-            value: formatCurrency(27450),
-            change: 18.7,
-            period: "Este período",
-            icon: TrendingUp,
-            variant: "success",
-          },
-          {
-            title: "Margem de Lucro",
-            value: "60%",
-            change: 3.1,
-            period: "Este período",
-            icon: Percent,
-            variant: "success",
-            target: 65,
-          },
-        ],
-      },
-      {
-        id: "pagamentos",
-        title: "Pagamentos",
-        description: "Métodos e eficiência de pagamentos",
-        icon: CreditCard,
-        color: "from-indigo-600 to-blue-700",
-        metrics: [
-          {
-            title: "Taxa de Sucesso",
-            value: "98.5%",
-            change: 1.2,
-            period: "Este período",
-            icon: CheckCircle,
-            variant: "info",
-            target: 99,
-          },
-          {
-            title: "Pagamentos PIX",
-            value: "65%",
-            change: 15.3,
-            period: "Participação",
-            icon: Zap,
-            variant: "info",
-          },
-          {
-            title: "Cartão de Crédito",
-            value: "25%",
-            change: -5.1,
-            period: "Participação",
-            icon: CreditCard,
-            variant: "info",
-          },
-          {
-            title: "Valor Médio",
-            value: formatCurrency(185),
-            change: 8.7,
-            period: "Por transação",
-            icon: DollarSign,
-            variant: "info",
-          },
-        ],
-      },
-      {
-        id: "marketing",
-        title: "Marketing",
-        description: "Campanhas e conversão de clientes",
-        icon: MessageCircle,
-        color: "from-pink-600 to-rose-700",
-        metrics: [
-          {
-            title: "Taxa de Conversão",
-            value: "3.2%",
-            change: 12.8,
-            period: "Este período",
-            icon: Target,
-            variant: "premium",
-            target: 5,
-          },
-          {
-            title: "Campanhas Ativas",
-            value: "6",
-            change: 50.0,
-            period: "Em andamento",
-            icon: Share2,
-            variant: "premium",
-          },
-          {
-            title: "ROI Médio",
-            value: "350%",
-            change: 25.4,
-            period: "Retorno investimento",
-            icon: TrendingUp,
-            variant: "premium",
-          },
-          {
-            title: "Leads Gerados",
-            value: "124",
-            change: 18.9,
-            period: "Este mês",
-            icon: Users,
-            variant: "premium",
-          },
-        ],
-      },
-    ];
-  }, [reportData]);
 
   const handleRefreshData = () => {
     setLastUpdate(new Date());
@@ -667,27 +275,17 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const handleExportReport = () => {
     toast({
       title: "📊 Exportando Relatório",
-      description: "Preparando relatório completo...",
+      description: "Preparando arquivo para download...",
     });
   };
 
-  const handleSectionClick = (sectionId: string) => {
-    setSelectedSection(selectedSection === sectionId ? null : sectionId);
-  };
-
-  const handleClearFilters = () => {
-    setSelectedPeriod("month");
-    setSelectedSection(null);
-    setShowFilters(false);
-    toast({
-      title: "🔄 Filtros Limpos",
-      description: "Filtros resetados para padrão",
-    });
-  };
-
-  const selectedSectionData = selectedSection
-    ? reportSections.find((s) => s.id === selectedSection)
-    : null;
+  // Extract data with fallbacks
+  const businessData = reportData.business?.overview || {};
+  const clientsData = reportData.clients?.overview || {};
+  const professionalsData = reportData.professionals || [];
+  const salesData = reportData.sales || [];
+  const financialData = reportData.financial || {};
+  const inventoryData = reportData.inventory?.overview || {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-blue-50/30 to-slate-100/50 dark:from-[#0D1117] dark:via-[#00112F]/20 dark:to-slate-900/50 relative overflow-hidden">
@@ -698,7 +296,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
         <div className="absolute bottom-10 left-1/3 w-40 h-40 bg-gradient-to-br from-[#00112F]/5 to-blue-700/5 rounded-full blur-2xl animate-pulse delay-2000" />
 
         {/* Sparkle Elements */}
-        {[...Array(8)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <Sparkles
             key={i}
             className={cn(
@@ -709,8 +307,6 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
               i === 3 && "bottom-1/4 left-1/2 delay-3000",
               i === 4 && "top-1/3 right-1/3 delay-4000",
               i === 5 && "bottom-1/3 left-1/5 delay-5000",
-              i === 6 && "top-1/5 right-1/2 delay-6000",
-              i === 7 && "bottom-1/2 right-1/5 delay-7000",
             )}
           />
         ))}
@@ -729,14 +325,29 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold text-white mb-2">
-                      Relatórios Executivos
+                      Análise de Dados
                     </h1>
                     <p className="text-blue-100">
-                      Visão completa das 8 áreas chave do seu negócio
+                      Relatórios detalhados do seu negócio
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
+                  <select
+                    value={selectedPeriod}
+                    onChange={(e) => setSelectedPeriod(e.target.value)}
+                    className="px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 text-white focus:outline-none focus:border-white/40"
+                  >
+                    {periodOptions.map((period) => (
+                      <option
+                        key={period.value}
+                        value={period.value}
+                        className="text-gray-800"
+                      >
+                        {period.label}
+                      </option>
+                    ))}
+                  </select>
                   <Button
                     onClick={handleRefreshData}
                     disabled={isLoading}
@@ -770,220 +381,620 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
           </div>
         </div>
 
-        {/* Filters */}
-        <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl mb-8">
-          <div className="p-6">
-            <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex flex-wrap gap-3 flex-1">
-                <select
-                  value={selectedPeriod}
-                  onChange={(e) => setSelectedPeriod(e.target.value)}
-                  className="px-4 py-2 rounded-lg bg-white/50 dark:bg-[#0D1117]/50 border border-gray-200 dark:border-gray-700 text-[#00112F] dark:text-[#F9FAFB] focus:outline-none focus:border-[#00112F] dark:focus:border-blue-400"
+        {/* Main Content with Tabs */}
+        <Tabs defaultValue="financeiro" className="space-y-8">
+          <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+            <div className="p-2">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 bg-transparent">
+                <TabsTrigger
+                  value="financeiro"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
                 >
-                  {periodOptions.map((period) => (
-                    <option key={period.value} value={period.value}>
-                      {period.label}
-                    </option>
-                  ))}
-                </select>
-                {selectedSection && (
-                  <Badge variant="outline" className="px-3 py-1">
-                    Seção:{" "}
-                    {
-                      reportSections.find((s) => s.id === selectedSection)
-                        ?.title
-                    }
-                  </Badge>
-                )}
-                {(selectedPeriod !== "month" || selectedSection) && (
-                  <Button
-                    variant="outline"
-                    onClick={handleClearFilters}
-                    className="px-4 py-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <X className="w-4 h-4 mr-1" />
-                    Limpar
-                  </Button>
-                )}
-              </div>
+                  Financeiro
+                </TabsTrigger>
+                <TabsTrigger
+                  value="clientes"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Clientes
+                </TabsTrigger>
+                <TabsTrigger
+                  value="servicos"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Serviços
+                </TabsTrigger>
+                <TabsTrigger
+                  value="profissionais"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Profissionais
+                </TabsTrigger>
+                <TabsTrigger
+                  value="agendamentos"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Agendamentos
+                </TabsTrigger>
+                <TabsTrigger
+                  value="estoque"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Estoque
+                </TabsTrigger>
+                <TabsTrigger
+                  value="pagamentos"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Pagamentos
+                </TabsTrigger>
+                <TabsTrigger
+                  value="marketing"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                >
+                  Marketing
+                </TabsTrigger>
+              </TabsList>
             </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Report Sections Overview */}
-        {!selectedSection && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {reportSections.map((section) => (
-              <SectionCard
-                key={section.id}
-                section={section}
-                onSectionClick={handleSectionClick}
-              />
-            ))}
-          </div>
-        )}
+          {/* Financeiro Tab */}
+          <TabsContent value="financeiro" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas Financeiras
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Dados consolidados da sua base de receitas
+              </p>
 
-        {/* Detailed Section View */}
-        {selectedSection && selectedSectionData && (
-          <div className="space-y-8">
-            {/* Section Header */}
-            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-              <div
-                className={`h-2 bg-gradient-to-r ${selectedSectionData.color}`}
-              />
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className={`p-4 rounded-xl bg-gradient-to-br ${selectedSectionData.color} shadow-lg`}
-                    >
-                      <selectedSectionData.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                        {selectedSectionData.title}
-                      </h2>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        {selectedSectionData.description}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => setSelectedSection(null)}
-                    className="px-4 py-2"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Voltar
-                  </Button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Detailed Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {selectedSectionData.metrics.map((metric, index) => (
-                <KPICard
-                  key={index}
-                  title={metric.title}
-                  value={metric.value}
-                  change={metric.change}
-                  target={metric.target}
-                  period={metric.period}
-                  icon={metric.icon}
-                  variant={metric.variant}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Receita Total"
+                  value={formatCurrency(businessData.current_revenue || 45680)}
+                  change={businessData.revenue_growth || 12.5}
+                  trend="up"
+                  icon={DollarSign}
+                  color="from-green-600 to-green-800"
                 />
-              ))}
+                <StatCard
+                  title="Despesas"
+                  value={formatCurrency(18230)}
+                  change={-5.2}
+                  trend="down"
+                  icon={CreditCard}
+                  color="from-red-600 to-red-800"
+                />
+                <StatCard
+                  title="Lucro Líquido"
+                  value={formatCurrency(27450)}
+                  change={18.7}
+                  trend="up"
+                  icon={TrendingUp}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Margem de Lucro"
+                  value="60%"
+                  change={3.1}
+                  trend="up"
+                  icon={Percent}
+                  color="from-purple-600 to-purple-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Evolução da Receita"
+                  subtitle="Receita mensal dos últimos 6 meses"
+                >
+                  <ChartPlaceholder type="area" title="Gráfico de Receita" />
+                </ChartSection>
+
+                <ChartSection
+                  title="Distribuição de Despesas"
+                  subtitle="Principais categorias de gastos"
+                >
+                  <ChartPlaceholder
+                    type="donut"
+                    title="Gráfico de Despesas por Categoria"
+                  />
+                </ChartSection>
+              </div>
             </div>
+          </TabsContent>
 
-            {/* Additional Section Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
-                    <LineChart className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
-                    Tendências Temporais
-                  </h3>
-                  <div className="text-center p-8 rounded-lg bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20">
-                    <TrendingUp className="w-12 h-12 mx-auto mb-4 text-[#00112F] dark:text-blue-400" />
-                    <p className="text-[#00112F] dark:text-[#F9FAFB] font-medium">
-                      Gráfico de tendências em desenvolvimento
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                      Visualização detalhada dos dados históricos de{" "}
-                      {selectedSectionData.title.toLowerCase()}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+          {/* Clientes Tab */}
+          <TabsContent value="clientes" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Clientes
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Dados consolidados da sua base de clientes
+              </p>
 
-              <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
-                    <Target className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
-                    Insights & Recomendações
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                      <div className="flex items-center mb-2">
-                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
-                        <span className="font-medium text-green-800 dark:text-green-400">
-                          Ponto Forte
-                        </span>
-                      </div>
-                      <p className="text-sm text-green-700 dark:text-green-300">
-                        Performance acima da média no período analisado
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-                      <div className="flex items-center mb-2">
-                        <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mr-2" />
-                        <span className="font-medium text-yellow-800 dark:text-yellow-400">
-                          Oportunidade
-                        </span>
-                      </div>
-                      <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                        Potencial de melhoria identificado nas métricas de{" "}
-                        {selectedSectionData.title.toLowerCase()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Total de Clientes"
+                  value={clientsData.total_clients || 1250}
+                  change={12.8}
+                  trend="up"
+                  icon={Users}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Novos Clientes (30d)"
+                  value={85}
+                  change={22.1}
+                  trend="up"
+                  icon={UserCheck}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Taxa de Retenção"
+                  value="78.5%"
+                  change={5.4}
+                  trend="up"
+                  icon={Heart}
+                  color="from-purple-600 to-purple-800"
+                />
+                <StatCard
+                  title="Frequência Média"
+                  value="18 dias"
+                  change={-2.1}
+                  trend="down"
+                  icon={Clock}
+                  color="from-orange-600 to-orange-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <ChartSection
+                  title="Aquisição de Clientes"
+                  subtitle="Novos clientes por mês"
+                >
+                  <ChartPlaceholder
+                    type="area"
+                    title="Gráfico de Aquisição de Clientes"
+                  />
+                </ChartSection>
+
+                <ChartSection
+                  title="Retenção de Clientes"
+                  subtitle="Taxa de retorno dos clientes"
+                >
+                  <ChartPlaceholder
+                    type="line"
+                    title="Gráfico de Retenção de Clientes"
+                  />
+                </ChartSection>
+              </div>
+
+              <ChartSection
+                title="Categorias de Clientes"
+                subtitle="Segmentação do perfil de consumo"
+              >
+                <ChartPlaceholder
+                  type="donut"
+                  title="Gráfico de Categorias de Clientes"
+                />
+              </ChartSection>
             </div>
-          </div>
-        )}
+          </TabsContent>
 
-        {/* Summary Statistics (only show in overview) */}
-        {!selectedSection && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-              <div className="p-6 text-center">
-                <div className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                  {formatCurrency(
-                    reportData.business?.overview?.current_revenue || 45680,
+          {/* Serviços Tab */}
+          <TabsContent value="servicos" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Serviços
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Performance e popularidade dos serviços oferecidos
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Serviços Ativos"
+                  value={24}
+                  change={0}
+                  trend="neutral"
+                  icon={Activity}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Serviço Mais Popular"
+                  value="Corte + Barba"
+                  icon={Star}
+                  color="from-yellow-600 to-yellow-800"
+                />
+                <StatCard
+                  title="Satisfação Média"
+                  value="4.8"
+                  change={4.2}
+                  trend="up"
+                  icon={Star}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Receita Média/Serviço"
+                  value={formatCurrency(850)}
+                  change={18.7}
+                  trend="up"
+                  icon={DollarSign}
+                  color="from-purple-600 to-purple-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Performance por Serviço"
+                  subtitle="Receita gerada por cada serviço"
+                >
+                  <ChartPlaceholder
+                    type="bar"
+                    title="Gráfico de Performance por Serviço"
+                  />
+                </ChartSection>
+
+                <ChartSection
+                  title="Popularidade dos Serviços"
+                  subtitle="Distribuição de agendamentos por serviço"
+                >
+                  <ChartPlaceholder
+                    type="donut"
+                    title="Gráfico de Popularidade dos Serviços"
+                  />
+                </ChartSection>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Profissionais Tab */}
+          <TabsContent value="profissionais" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Profissionais
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Produtividade e performance da equipe
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Total da Equipe"
+                  value={8}
+                  change={12.5}
+                  trend="up"
+                  icon={Target}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Avaliação Média"
+                  value="4.7"
+                  change={2.1}
+                  trend="up"
+                  icon={Star}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Taxa de Ocupação"
+                  value="85.2%"
+                  change={8.3}
+                  trend="up"
+                  icon={Activity}
+                  color="from-purple-600 to-purple-800"
+                />
+                <StatCard
+                  title="Mais Solicitado"
+                  value="João Silva"
+                  icon={Award}
+                  color="from-orange-600 to-orange-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Produtividade por Profissional"
+                  subtitle="Atendimentos realizados por mês"
+                >
+                  <ChartPlaceholder
+                    type="bar"
+                    title="Gráfico de Produtividade"
+                  />
+                </ChartSection>
+
+                <ChartSection
+                  title="Distribuição de Agendamentos"
+                  subtitle="Porcentagem de agendamentos por profissional"
+                >
+                  <ChartPlaceholder
+                    type="donut"
+                    title="Gráfico de Distribuição de Agendamentos"
+                  />
+                </ChartSection>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Agendamentos Tab */}
+          <TabsContent value="agendamentos" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Agendamentos
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Performance e tendências de agendamentos
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Total de Agendamentos"
+                  value={businessData.current_appointments || 248}
+                  change={businessData.appointment_growth || 15.3}
+                  trend="up"
+                  icon={Calendar}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Taxa de Conclusão"
+                  value="94%"
+                  change={2.1}
+                  trend="up"
+                  icon={CheckCircle}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Taxa de No-Show"
+                  value="3%"
+                  change={-1.2}
+                  trend="down"
+                  icon={AlertCircle}
+                  color="from-red-600 to-red-800"
+                />
+                <StatCard
+                  title="Tempo Médio"
+                  value="45min"
+                  change={-2.5}
+                  trend="down"
+                  icon={Clock}
+                  color="from-purple-600 to-purple-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Agendamentos por Dia"
+                  subtitle="Volume de agendamentos nos últimos 30 dias"
+                >
+                  <ChartPlaceholder
+                    type="line"
+                    title="Gráfico de Agendamentos Diários"
+                  />
+                </ChartSection>
+
+                <ChartSection
+                  title="Distribuição por Horário"
+                  subtitle="Horários mais procurados"
+                >
+                  <ChartPlaceholder
+                    type="bar"
+                    title="Gráfico de Distribuição por Horário"
+                  />
+                </ChartSection>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Estoque Tab */}
+          <TabsContent value="estoque" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Estoque
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Controle e gestão de produtos em estoque
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Produtos Ativos"
+                  value={inventoryData.active_products || 156}
+                  change={5.2}
+                  trend="up"
+                  icon={Package}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Valor do Estoque"
+                  value={formatCurrency(
+                    inventoryData.total_inventory_value || 45680,
                   )}
-                </div>
-                <div className="text-gray-600 dark:text-gray-400 font-medium">
-                  Receita Total
-                </div>
-                <div className="text-sm text-green-600 dark:text-green-400 mt-1">
-                  +{reportData.business?.overview?.revenue_growth || 12.5}% vs
-                  período anterior
-                </div>
+                  change={12.3}
+                  trend="up"
+                  icon={DollarSign}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Produtos em Falta"
+                  value={inventoryData.out_of_stock_count || 3}
+                  change={-25.0}
+                  trend="down"
+                  icon={AlertCircle}
+                  color="from-red-600 to-red-800"
+                />
+                <StatCard
+                  title="Estoque Baixo"
+                  value={inventoryData.low_stock_count || 12}
+                  change={-15.8}
+                  trend="down"
+                  icon={TrendingDown}
+                  color="from-orange-600 to-orange-800"
+                />
               </div>
-            </Card>
 
-            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-              <div className="p-6 text-center">
-                <div className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                  {reportData.business?.overview?.current_appointments || 248}
-                </div>
-                <div className="text-gray-600 dark:text-gray-400 font-medium">
-                  Total de Agendamentos
-                </div>
-                <div className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                  +{reportData.business?.overview?.appointment_growth || 15.3}%
-                  vs período anterior
-                </div>
-              </div>
-            </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Valor por Categoria"
+                  subtitle="Distribuição do valor do estoque por categoria"
+                >
+                  <ChartPlaceholder
+                    type="donut"
+                    title="Gráfico de Valor por Categoria"
+                  />
+                </ChartSection>
 
-            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-              <div className="p-6 text-center">
-                <div className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                  {reportData.clients?.overview?.active_clients || 890}
-                </div>
-                <div className="text-gray-600 dark:text-gray-400 font-medium">
-                  Clientes Ativos
-                </div>
-                <div className="text-sm text-green-600 dark:text-green-400 mt-1">
-                  +8.7% vs período anterior
-                </div>
+                <ChartSection
+                  title="Produtos Mais Utilizados"
+                  subtitle="Produtos com maior saída"
+                >
+                  <ChartPlaceholder
+                    type="bar"
+                    title="Gráfico de Produtos Mais Utilizados"
+                  />
+                </ChartSection>
               </div>
-            </Card>
-          </div>
-        )}
+            </div>
+          </TabsContent>
+
+          {/* Pagamentos Tab */}
+          <TabsContent value="pagamentos" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Pagamentos
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Métodos e eficiência de pagamentos
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Taxa de Sucesso"
+                  value="98.5%"
+                  change={1.2}
+                  trend="up"
+                  icon={CheckCircle}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Pagamentos PIX"
+                  value="65%"
+                  change={15.3}
+                  trend="up"
+                  icon={Zap}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="Cartão de Crédito"
+                  value="25%"
+                  change={-5.1}
+                  trend="down"
+                  icon={CreditCard}
+                  color="from-purple-600 to-purple-800"
+                />
+                <StatCard
+                  title="Valor Médio"
+                  value={formatCurrency(185)}
+                  change={8.7}
+                  trend="up"
+                  icon={DollarSign}
+                  color="from-orange-600 to-orange-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Métodos de Pagamento"
+                  subtitle="Distribuição dos métodos de pagamento"
+                >
+                  <ChartPlaceholder
+                    type="donut"
+                    title="Gráfico de Métodos de Pagamento"
+                  />
+                </ChartSection>
+
+                <ChartSection
+                  title="Volume de Transações"
+                  subtitle="Quantidade de transações por dia"
+                >
+                  <ChartPlaceholder
+                    type="line"
+                    title="Gráfico de Volume de Transações"
+                  />
+                </ChartSection>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Marketing Tab */}
+          <TabsContent value="marketing" className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                Estatísticas de Marketing
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Campanhas e conversão de clientes
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatCard
+                  title="Taxa de Conversão"
+                  value="3.2%"
+                  change={12.8}
+                  trend="up"
+                  icon={Target}
+                  color="from-green-600 to-green-800"
+                />
+                <StatCard
+                  title="Campanhas Ativas"
+                  value="6"
+                  change={50.0}
+                  trend="up"
+                  icon={Share2}
+                  color="from-blue-600 to-blue-800"
+                />
+                <StatCard
+                  title="ROI Médio"
+                  value="350%"
+                  change={25.4}
+                  trend="up"
+                  icon={TrendingUp}
+                  color="from-purple-600 to-purple-800"
+                />
+                <StatCard
+                  title="Leads Gerados"
+                  value="124"
+                  change={18.9}
+                  trend="up"
+                  icon={Users}
+                  color="from-orange-600 to-orange-800"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartSection
+                  title="Conversão por Canal"
+                  subtitle="Taxa de conversão por canal de marketing"
+                >
+                  <ChartPlaceholder
+                    type="bar"
+                    title="Gráfico de Conversão por Canal"
+                  />
+                </ChartSection>
+
+                <ChartSection
+                  title="ROI por Campanha"
+                  subtitle="Retorno sobre investimento das campanhas"
+                >
+                  <ChartPlaceholder
+                    type="line"
+                    title="Gráfico de ROI por Campanha"
+                  />
+                </ChartSection>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
