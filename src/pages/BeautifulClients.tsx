@@ -132,7 +132,7 @@ const initialClients: Client[] = [
     address: "Rua do Sol, 789",
     birthDate: "1988-12-03",
     createdAt: "2020-04-20T15:00:00Z",
-    lastVisit: "2024-01-08T13:00:00Z",
+    lastVisit: "2024-12-10T13:00:00Z",
     status: "ativo",
     totalSpent: 950,
     visitCount: 6,
@@ -140,7 +140,7 @@ const initialClients: Client[] = [
     visits: [
       {
         id: "v4",
-        date: "2024-01-08T13:00:00Z",
+        date: "2024-12-10T13:00:00Z",
         service: "Manicure + Pedicure",
         amount: 80,
         professional: "Lucia",
@@ -1013,7 +1013,7 @@ const NewClientModal: React.FC<{
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="Ex: Jo��o Silva"
+                placeholder="Ex: João Silva"
                 required
               />
             </div>
