@@ -41,7 +41,7 @@ import {
   Shield,
   Plus,
   Minus,
-  TrendingDown as MarketingDown,
+  Search,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import { api } from "@/lib/api";
@@ -65,6 +66,7 @@ interface StatCardProps {
   trend?: "up" | "down" | "neutral";
   icon: React.ElementType;
   color?: string;
+  description?: string;
 }
 
 interface ChartSectionProps {
@@ -79,7 +81,8 @@ const StatCard: React.FC<StatCardProps> = ({
   change,
   trend = "neutral",
   icon: Icon,
-  color = "from-blue-600 to-blue-800",
+  color = "from-[#00112F] to-blue-700",
+  description,
 }) => {
   const getTrendColor = () => {
     switch (trend) {
@@ -95,17 +98,20 @@ const StatCard: React.FC<StatCardProps> = ({
   const getTrendIcon = () => {
     switch (trend) {
       case "up":
-        return <ArrowUpRight className="w-4 h-4" />;
+        return <TrendingUp className="w-4 h-4" />;
       case "down":
-        return <ArrowDownRight className="w-4 h-4" />;
+        return <TrendingDown className="w-4 h-4" />;
       default:
         return null;
     }
   };
 
   return (
-    <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-      <div className="p-6">
+    <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${color} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
+      />
+      <div className="relative p-6">
         <div className="flex items-center justify-between mb-4">
           <div
             className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-lg`}
@@ -115,20 +121,33 @@ const StatCard: React.FC<StatCardProps> = ({
           {change !== undefined && (
             <div className={cn("flex items-center space-x-1", getTrendColor())}>
               {getTrendIcon()}
-              <span className="text-sm font-medium">
+              <Badge
+                variant={change >= 0 ? "default" : "destructive"}
+                className={cn(
+                  "text-xs font-medium px-2 py-1",
+                  change >= 0
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                )}
+              >
                 {change > 0 ? "+" : ""}
                 {change}%
-              </span>
+              </Badge>
             </div>
           )}
         </div>
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] group-hover:scale-105 transition-transform duration-300">
             {value}
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+          <p className="text-gray-600 dark:text-gray-400 font-medium">
             {title}
           </p>
+          {description && (
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              {description}
+            </p>
+          )}
         </div>
       </div>
     </Card>
@@ -141,10 +160,11 @@ const ChartSection: React.FC<ChartSectionProps> = ({
   children,
 }) => {
   return (
-    <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
+    <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
       <div className="p-6">
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+          <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
             {title}
           </h3>
           {subtitle && (
@@ -162,24 +182,40 @@ const ChartSection: React.FC<ChartSectionProps> = ({
 const ChartPlaceholder: React.FC<{
   type: "area" | "line" | "donut" | "bar";
   title: string;
-}> = ({ type, title }) => {
+  height?: string;
+}> = ({ type, title, height = "h-64" }) => {
   const getIcon = () => {
     switch (type) {
       case "area":
-        return <BarChart3 className="w-12 h-12 text-blue-400" />;
+        return (
+          <BarChart3 className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
+        );
       case "line":
-        return <LineChart className="w-12 h-12 text-green-400" />;
+        return (
+          <LineChart className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
+        );
       case "donut":
-        return <PieChart className="w-12 h-12 text-purple-400" />;
+        return (
+          <PieChart className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
+        );
       case "bar":
-        return <BarChart3 className="w-12 h-12 text-orange-400" />;
+        return (
+          <BarChart3 className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
+        );
       default:
-        return <BarChart3 className="w-12 h-12 text-gray-400" />;
+        return (
+          <BarChart3 className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
+        );
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-64 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center bg-gradient-to-br from-[#F9FAFB]/80 via-blue-50/40 to-slate-100/30 dark:from-[#0D1117]/50 dark:via-[#00112F]/30 dark:to-slate-900/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600",
+        height,
+      )}
+    >
       {getIcon()}
       <p className="text-[#00112F] dark:text-[#F9FAFB] font-medium mt-3">
         {title}
@@ -200,12 +236,13 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<string>("30d");
   const [reportData, setReportData] = useState<any>({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Load data from APIs
   const loadReportData = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log("🔄 Loading report data...");
+      console.log("🔄 Carregando dados dos relatórios...");
 
       const [
         businessResponse,
@@ -239,13 +276,12 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
         inventory: inventoryResponse.success ? inventoryResponse.data : {},
       });
 
-      console.log("✅ Report data loaded successfully");
+      console.log("✅ Dados dos relatórios carregados com sucesso");
     } catch (error) {
-      console.error("❌ Error loading report data:", error);
+      console.error("❌ Erro ao carregar dados dos relatórios:", error);
       toast({
-        title: "⚠️ Aviso",
-        description: "Usando dados de demonstração",
-        variant: "destructive",
+        title: "⚠️ Dados de Demonstração",
+        description: "Usando dados simulados para visualização",
       });
     } finally {
       setIsLoading(false);
@@ -328,26 +364,12 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                       Análise de Dados
                     </h1>
                     <p className="text-blue-100">
-                      Relatórios detalhados do seu negócio
+                      Relatórios detalhados do seu negócio •{" "}
+                      {lastUpdate.toLocaleDateString("pt-BR")}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <select
-                    value={selectedPeriod}
-                    onChange={(e) => setSelectedPeriod(e.target.value)}
-                    className="px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 text-white focus:outline-none focus:border-white/40"
-                  >
-                    {periodOptions.map((period) => (
-                      <option
-                        key={period.value}
-                        value={period.value}
-                        className="text-gray-800"
-                      >
-                        {period.label}
-                      </option>
-                    ))}
-                  </select>
                   <Button
                     onClick={handleRefreshData}
                     disabled={isLoading}
@@ -381,56 +403,90 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
           </div>
         </div>
 
+        {/* Controls Bar */}
+        <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl mb-8">
+          <div className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex flex-wrap gap-3 flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder="Buscar relatórios..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-white/50 dark:bg-[#0D1117]/50 border-gray-200 dark:border-gray-700"
+                  />
+                </div>
+                <select
+                  value={selectedPeriod}
+                  onChange={(e) => setSelectedPeriod(e.target.value)}
+                  className="px-4 py-2 rounded-lg bg-white/50 dark:bg-[#0D1117]/50 border border-gray-200 dark:border-gray-700 text-[#00112F] dark:text-[#F9FAFB] focus:outline-none focus:border-[#00112F] dark:focus:border-blue-400"
+                >
+                  {periodOptions.map((period) => (
+                    <option key={period.value} value={period.value}>
+                      {period.label}
+                    </option>
+                  ))}
+                </select>
+                <Button variant="outline" className="gap-2">
+                  <Filter className="w-4 h-4" />
+                  Filtros
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* Main Content with Tabs */}
         <Tabs defaultValue="financeiro" className="space-y-8">
           <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
             <div className="p-2">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 bg-transparent">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 bg-gray-100 dark:bg-gray-800">
                 <TabsTrigger
                   value="financeiro"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Financeiro
                 </TabsTrigger>
                 <TabsTrigger
                   value="clientes"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Clientes
                 </TabsTrigger>
                 <TabsTrigger
                   value="servicos"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Serviços
                 </TabsTrigger>
                 <TabsTrigger
                   value="profissionais"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Profissionais
                 </TabsTrigger>
                 <TabsTrigger
                   value="agendamentos"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Agendamentos
                 </TabsTrigger>
                 <TabsTrigger
                   value="estoque"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Estoque
                 </TabsTrigger>
                 <TabsTrigger
                   value="pagamentos"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Pagamentos
                 </TabsTrigger>
                 <TabsTrigger
                   value="marketing"
-                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
                   Marketing
                 </TabsTrigger>
@@ -456,6 +512,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={DollarSign}
                   color="from-green-600 to-green-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Despesas"
@@ -464,6 +521,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={CreditCard}
                   color="from-red-600 to-red-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Lucro Líquido"
@@ -472,6 +530,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={TrendingUp}
                   color="from-blue-600 to-blue-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Margem de Lucro"
@@ -480,6 +539,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Percent}
                   color="from-purple-600 to-purple-800"
+                  description="Este período"
                 />
               </div>
 
@@ -522,6 +582,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Users}
                   color="from-blue-600 to-blue-800"
+                  description="Base total"
                 />
                 <StatCard
                   title="Novos Clientes (30d)"
@@ -530,6 +591,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={UserCheck}
                   color="from-green-600 to-green-800"
+                  description="Este mês"
                 />
                 <StatCard
                   title="Taxa de Retenção"
@@ -538,6 +600,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Heart}
                   color="from-purple-600 to-purple-800"
+                  description="Este trimestre"
                 />
                 <StatCard
                   title="Frequência Média"
@@ -546,6 +609,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={Clock}
                   color="from-orange-600 to-orange-800"
+                  description="Intervalo entre visitas"
                 />
               </div>
 
@@ -601,12 +665,14 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="neutral"
                   icon={Activity}
                   color="from-blue-600 to-blue-800"
+                  description="Catálogo atual"
                 />
                 <StatCard
                   title="Serviço Mais Popular"
                   value="Corte + Barba"
                   icon={Star}
                   color="from-yellow-600 to-yellow-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Satisfação Média"
@@ -615,6 +681,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Star}
                   color="from-green-600 to-green-800"
+                  description="Avaliação geral"
                 />
                 <StatCard
                   title="Receita Média/Serviço"
@@ -623,6 +690,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={DollarSign}
                   color="from-purple-600 to-purple-800"
+                  description="Média mensal"
                 />
               </div>
 
@@ -668,6 +736,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Target}
                   color="from-blue-600 to-blue-800"
+                  description="Profissionais ativos"
                 />
                 <StatCard
                   title="Avaliação Média"
@@ -676,6 +745,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Star}
                   color="from-green-600 to-green-800"
+                  description="Satisfação geral"
                 />
                 <StatCard
                   title="Taxa de Ocupação"
@@ -684,12 +754,14 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Activity}
                   color="from-purple-600 to-purple-800"
+                  description="Utilização média"
                 />
                 <StatCard
                   title="Mais Solicitado"
                   value="João Silva"
                   icon={Award}
                   color="from-orange-600 to-orange-800"
+                  description="Este período"
                 />
               </div>
 
@@ -735,6 +807,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Calendar}
                   color="from-blue-600 to-blue-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Taxa de Conclusão"
@@ -743,6 +816,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={CheckCircle}
                   color="from-green-600 to-green-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Taxa de No-Show"
@@ -751,6 +825,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={AlertCircle}
                   color="from-red-600 to-red-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Tempo Médio"
@@ -759,6 +834,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={Clock}
                   color="from-purple-600 to-purple-800"
+                  description="Por atendimento"
                 />
               </div>
 
@@ -804,6 +880,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Package}
                   color="from-blue-600 to-blue-800"
+                  description="Catálogo atual"
                 />
                 <StatCard
                   title="Valor do Estoque"
@@ -814,6 +891,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={DollarSign}
                   color="from-green-600 to-green-800"
+                  description="Valor total"
                 />
                 <StatCard
                   title="Produtos em Falta"
@@ -822,6 +900,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={AlertCircle}
                   color="from-red-600 to-red-800"
+                  description="Sem estoque"
                 />
                 <StatCard
                   title="Estoque Baixo"
@@ -830,6 +909,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={TrendingDown}
                   color="from-orange-600 to-orange-800"
+                  description="Alerta de reposição"
                 />
               </div>
 
@@ -875,6 +955,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={CheckCircle}
                   color="from-green-600 to-green-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Pagamentos PIX"
@@ -883,6 +964,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Zap}
                   color="from-blue-600 to-blue-800"
+                  description="Participação"
                 />
                 <StatCard
                   title="Cartão de Crédito"
@@ -891,6 +973,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="down"
                   icon={CreditCard}
                   color="from-purple-600 to-purple-800"
+                  description="Participação"
                 />
                 <StatCard
                   title="Valor Médio"
@@ -899,6 +982,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={DollarSign}
                   color="from-orange-600 to-orange-800"
+                  description="Por transação"
                 />
               </div>
 
@@ -944,6 +1028,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Target}
                   color="from-green-600 to-green-800"
+                  description="Este período"
                 />
                 <StatCard
                   title="Campanhas Ativas"
@@ -952,6 +1037,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Share2}
                   color="from-blue-600 to-blue-800"
+                  description="Em andamento"
                 />
                 <StatCard
                   title="ROI Médio"
@@ -960,6 +1046,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={TrendingUp}
                   color="from-purple-600 to-purple-800"
+                  description="Retorno investimento"
                 />
                 <StatCard
                   title="Leads Gerados"
@@ -968,6 +1055,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   trend="up"
                   icon={Users}
                   color="from-orange-600 to-orange-800"
+                  description="Este mês"
                 />
               </div>
 
