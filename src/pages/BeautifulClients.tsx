@@ -824,7 +824,7 @@ const ClientCard: React.FC<{
             </div>
           </div>
 
-          {/* Inactivity Warning - Only show for inactive clients */}
+          {/* Status-based warnings */}
           {client.status === "inativo" &&
             daysSinceLastVisit !== null &&
             daysSinceLastVisit > 0 && (
@@ -838,7 +838,6 @@ const ClientCard: React.FC<{
               </div>
             )}
 
-          {/* Long time without visit warning - for active clients */}
           {client.status === "ativo" &&
             daysSinceLastVisit !== null &&
             daysSinceLastVisit > 90 && (
@@ -851,7 +850,6 @@ const ClientCard: React.FC<{
                 </div>
               </div>
             )}
-
           {/* Click hint */}
           <div className="text-center">
             <p className="text-xs text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -1015,7 +1013,7 @@ const NewClientModal: React.FC<{
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="Ex: João Silva"
+                placeholder="Ex: Jo��o Silva"
                 required
               />
             </div>
