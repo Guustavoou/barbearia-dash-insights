@@ -1094,10 +1094,16 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   // Callbacks for CRUD operations
   const handleAddClient = useCallback((newClient: Client) => {
-    setClients((prev) => [newClient, ...prev]);
+    console.log("➕ Adding new client:", newClient.name, newClient.id);
+    setClients((prev) => {
+      const updated = [newClient, ...prev];
+      console.log("📊 Updated clients list:", updated.length, "clients");
+      return updated;
+    });
   }, []);
 
   const handleUpdateClient = useCallback((updatedClient: Client) => {
+    console.log("✏️ Updating client:", updatedClient.name, updatedClient.id);
     setClients((prev) =>
       prev.map((client) =>
         client.id === updatedClient.id ? updatedClient : client,
@@ -1106,6 +1112,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   }, []);
 
   const handleDeleteClient = useCallback((clientId: string) => {
+    console.log("🗑️ Deleting client:", clientId);
     setClients((prev) => prev.filter((client) => client.id !== clientId));
   }, []);
 
