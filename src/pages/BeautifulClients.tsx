@@ -1339,6 +1339,14 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                     Atualizar
                   </Button>
                   <Button
+                    onClick={handleResetData}
+                    className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm transition-all duration-300"
+                    title="Resetar dados para o estado inicial"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Reset
+                  </Button>
+                  <Button
                     onClick={handleExportData}
                     disabled={isExporting}
                     className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-300"
