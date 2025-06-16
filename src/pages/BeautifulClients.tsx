@@ -1049,7 +1049,18 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   onPageChange,
 }) => {
   const { toast } = useToast();
-  const [clients, setClients] = useState<Client[]>(initialClients);
+  // Initialize clients from localStorage or use initialClients as fallback
+  const [clients, setClients] = useState<Client[]>(() => {
+    try {
+      const savedClients = localStorage.getItem("unclic-clients");
+      if (savedClients) {
+        return JSON.parse(savedClients);
+      }
+    } catch (error) {
+      console.error("Error loading clients from localStorage:", error);
+    }
+    return initialClients;
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [sortField, setSortField] = useState<SortField>("name");
