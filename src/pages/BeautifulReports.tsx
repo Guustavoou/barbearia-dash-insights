@@ -217,12 +217,12 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
         inventoryResponse,
       ] = await Promise.all([
         api.getBusinessReports(selectedPeriod),
-        api.getSalesReports(selectedPeriod, 10),
+        api.getSalesPerformance(selectedPeriod, 10),
         api.getProfessionalReports(selectedPeriod),
-        api.getClientReports(selectedPeriod),
-        api.getAppointmentReports(selectedPeriod),
-        api.getFinancialReports(selectedPeriod),
-        api.getInventoryReports(),
+        api.getClientAnalysis(selectedPeriod),
+        api.getAppointmentTrends(selectedPeriod),
+        api.getFinancialAnalysis(selectedPeriod),
+        api.getInventoryReport(),
       ]);
 
       setReportData({
