@@ -421,8 +421,10 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
                           {payment.service} • {payment.method}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-500">
-                          {formatDate(payment.date)} • ID:{" "}
-                          {payment.transaction_id}
+                          {payment.date
+                            ? formatDate(payment.date)
+                            : "Data não informada"}{" "}
+                          • ID: {payment.transaction_id}
                         </p>
                       </div>
                     </div>
