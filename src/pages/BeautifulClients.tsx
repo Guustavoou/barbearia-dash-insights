@@ -1362,7 +1362,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               // Try to sync localStorage data to Neon in background
               clientsApi.syncLocalStorageToNeon(parsedClients);
             } else {
-              console.log("ℹ️ Using initial clients");
+              console.log("��️ Using initial clients");
               setClients(initialClients);
             }
           } catch (error) {
@@ -1741,21 +1741,17 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
   }, [toast]);
 
-  const handleAddTestClient = useCallback(() => {
-    const testClient: Client = {
-      id: `test-${Date.now()}`,
+  const handleAddTestClient = useCallback(async () => {
+    const testClient = {
       name: `Cliente Teste ${new Date().toLocaleTimeString()}`,
       email: `teste${Date.now()}@email.com`,
       phone: "(11) 99999-0000",
       address: "Rua de Teste, 123",
-      createdAt: new Date().toISOString(),
-      status: "ativo",
-      totalSpent: 100,
-      visitCount: 1,
-      avgInterval: 30,
-      visits: [],
+      status: "ativo" as const,
+      notes: "Cliente criado para teste",
     };
-    handleAddClient(testClient);
+
+    await handleAddClient(testClient);
     toast({
       title: "🧪 Cliente de Teste Adicionado",
       description: `${testClient.name} foi criado para teste`,
@@ -1961,7 +1957,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                 >
                   <option value="name">Ordenar por Nome</option>
                   <option value="email">Ordenar por Email</option>
-                  <option value="createdAt">Ordenar por Data de Criação</option>
+                  <option value="createdAt">
+                    Ordenar por Data de Cria��ão
+                  </option>
                   <option value="lastVisit">Ordenar por Última Visita</option>
                   <option value="totalSpent">Ordenar por Gasto Total</option>
                 </select>
