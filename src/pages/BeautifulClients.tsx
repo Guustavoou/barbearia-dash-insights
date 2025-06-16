@@ -1583,7 +1583,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const clientsWithMultipleVisits = clients.filter((c) => {
-      const recentVisits = (c.visits || []).filter(
+      // Ensure visits is an array, handle both array and number cases
+      const visitsArray = Array.isArray(c.visits) ? c.visits : [];
+      const recentVisits = visitsArray.filter(
         (visit) => new Date(visit.date) >= sixMonthsAgo,
       );
       return recentVisits.length >= 2;
@@ -1755,7 +1757,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
     await handleAddClient(testClient);
     toast({
-      title: "��� Cliente de Teste Adicionado",
+      title: "🧪 Cliente de Teste Adicionado",
       description: `${testClient.name} foi criado para teste`,
     });
   }, [handleAddClient, toast]);
@@ -1807,7 +1809,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                       Clientes&nbsp;
                     </h1>
                     <p className="text-blue-100">
-                      Gerencie sua base de clientes �� {filteredClients.length}{" "}
+                      Gerencie sua base de clientes • {filteredClients.length}{" "}
                       clientes encontrados
                     </p>
                   </div>
