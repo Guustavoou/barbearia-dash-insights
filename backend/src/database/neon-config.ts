@@ -24,10 +24,17 @@ export const pool = new Pool({
   ssl: true,
 });
 
-// Test connection function
+// Test connection function with fallback
 export async function testConnection() {
   try {
-    const result = await sql`SELECT NOW() as timestamp`;
+    // Try to connect with a timeout
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Connection timeout")), 5000);
+    });
+
+    const connectionPromise = sql`SELECT NOW() as timestamp`;
+
+    const result = await Promise.race([connectionPromise, timeoutPromise]);
     console.log(
       "✅ Neon database connected successfully:",
       result[0].timestamp,
@@ -35,7 +42,8 @@ export async function testConnection() {
     return true;
   } catch (error) {
     console.error("❌ Failed to connect to Neon database:", error);
-    return false;
+    console.log("⚠️  Continuing with mock data fallback...");
+    return false; // Return false but don't exit - continue with mock data
   }
 }
 
