@@ -651,7 +651,11 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                         {report.type} • {report.size}
                       </span>
                       <div className="flex items-center space-x-2">
-                        <span>{formatDate(report.createdAt)}</span>
+                        <span>
+                          {report.createdAt
+                            ? formatDate(report.createdAt)
+                            : "Data não informada"}
+                        </span>
                         {report.status === "concluido" && (
                           <Button
                             variant="ghost"
