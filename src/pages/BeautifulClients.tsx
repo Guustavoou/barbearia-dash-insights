@@ -75,22 +75,8 @@ interface BeautifulClientsProps {
   onPageChange?: (page: PageType) => void;
 }
 
-interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address?: string;
-  birthDate?: string;
-  createdAt: string;
-  lastVisit?: string;
-  status: "ativo" | "inativo";
-  totalSpent: number;
-  visitCount: number;
-  avgInterval: number;
-  notes?: string;
-  visits: Visit[];
-}
+// Use NeonClient type from API
+type Client = NeonClient;
 
 interface Visit {
   id: string;
