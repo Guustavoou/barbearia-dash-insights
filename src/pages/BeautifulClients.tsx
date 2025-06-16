@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Users,
   UserPlus,
@@ -56,14 +56,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
-import {
-  useClients,
-  useCreateClient,
-  useUpdateClient,
-  useDeleteClient,
-} from "@/hooks/useApi";
 
 interface BeautifulClientsProps {
   darkMode: boolean;
@@ -114,10 +118,107 @@ interface KPICardProps {
   icon: React.ElementType;
   variant?: "primary" | "success" | "warning" | "danger";
   onCardClick?: () => void;
-  navigateTo?: PageType;
 }
 
 type SortField = "name" | "email" | "createdAt" | "lastVisit" | "totalSpent";
+
+// Initial mock data
+const initialClients: Client[] = [
+  {
+    id: "1",
+    name: "João Silva",
+    email: "joao.silva@email.com",
+    phone: "(11) 99999-9999",
+    address: "Rua das Flores, 123",
+    birthDate: "1985-03-15",
+    createdAt: "2023-01-15T10:00:00Z",
+    lastVisit: "2024-01-10T14:30:00Z",
+    status: "ativo",
+    totalSpent: 1250,
+    visitCount: 8,
+    avgInterval: 15,
+    notes: "Cliente preferencial",
+    visits: [
+      {
+        id: "v1",
+        date: "2024-01-10T14:30:00Z",
+        service: "Corte + Barba",
+        amount: 85,
+        professional: "Carlos",
+        rating: 5,
+      },
+      {
+        id: "v2",
+        date: "2023-12-20T16:00:00Z",
+        service: "Corte",
+        amount: 60,
+        professional: "Ana",
+        rating: 4,
+      },
+    ],
+  },
+  {
+    id: "2",
+    name: "Maria Costa",
+    email: "maria.costa@email.com",
+    phone: "(11) 88888-8888",
+    address: "Av. Principal, 456",
+    birthDate: "1990-07-22",
+    createdAt: "2023-02-10T11:00:00Z",
+    lastVisit: "2023-10-15T10:00:00Z",
+    status: "inativo",
+    totalSpent: 780,
+    visitCount: 5,
+    avgInterval: 30,
+    visits: [
+      {
+        id: "v3",
+        date: "2023-10-15T10:00:00Z",
+        service: "Escova + Corte",
+        amount: 120,
+        professional: "Ana",
+        rating: 5,
+      },
+    ],
+  },
+  {
+    id: "3",
+    name: "Pedro Santos",
+    email: "pedro.santos@email.com",
+    phone: "(11) 77777-7777",
+    createdAt: "2023-03-05T09:00:00Z",
+    lastVisit: "2024-01-05T11:30:00Z",
+    status: "ativo",
+    totalSpent: 420,
+    visitCount: 3,
+    avgInterval: 45,
+    visits: [],
+  },
+  {
+    id: "4",
+    name: "Ana Oliveira",
+    email: "ana.oliveira@email.com",
+    phone: "(11) 66666-6666",
+    address: "Rua do Sol, 789",
+    birthDate: "1988-12-03",
+    createdAt: "2023-04-20T15:00:00Z",
+    lastVisit: "2024-01-08T13:00:00Z",
+    status: "ativo",
+    totalSpent: 950,
+    visitCount: 6,
+    avgInterval: 20,
+    visits: [
+      {
+        id: "v4",
+        date: "2024-01-08T13:00:00Z",
+        service: "Manicure + Pedicure",
+        amount: 80,
+        professional: "Lucia",
+        rating: 4,
+      },
+    ],
+  },
+];
 
 const KPICard: React.FC<KPICardProps> = ({
   title,
@@ -185,38 +286,51 @@ const KPICard: React.FC<KPICardProps> = ({
   );
 };
 
-const ClientCard: React.FC<{ client: Client; onUpdate: () => void }> = ({
-  client,
-  onUpdate,
-}) => {
+const ClientCard: React.FC<{
+  client: Client;
+  onUpdate: (client: Client) => void;
+  onDelete: (clientId: string) => void;
+}> = ({ client, onUpdate, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
 
-  const handlePhoneCall = () => {
-    window.open(`tel:${client.phone}`, "_self");
+  const handlePhoneCall = useCallback(() => {
+    const cleanPhone = client.phone.replace(/\D/g, "");
+    window.open(`tel:+55${cleanPhone}`, "_self");
     toast({
       title: "📞 Ligação Iniciada",
       description: `Ligando para ${client.name}`,
     });
-  };
+  }, [client.phone, client.name, toast]);
 
-  const handleEmail = () => {
+  const handleEmail = useCallback(() => {
     window.open(`mailto:${client.email}`, "_self");
     toast({
       title: "📧 Email Aberto",
       description: `Enviando email para ${client.name}`,
     });
-  };
+  }, [client.email, client.name, toast]);
 
-  const handleWhatsApp = () => {
-    const phone = client.phone.replace(/\D/g, "");
-    window.open(`https://wa.me/55${phone}`, "_blank");
+  const handleWhatsApp = useCallback(() => {
+    const cleanPhone = client.phone.replace(/\D/g, "");
+    const whatsappUrl = `https://wa.me/55${cleanPhone}?text=Olá ${client.name}, aqui é da Unclic! Como posso ajudá-lo hoje?`;
+    window.open(whatsappUrl, "_blank");
     toast({
       title: "💬 WhatsApp Aberto",
       description: `Conversando com ${client.name}`,
     });
-  };
+  }, [client.phone, client.name, toast]);
+
+  const handleDelete = useCallback(() => {
+    onDelete(client.id);
+    setShowDeleteDialog(false);
+    toast({
+      title: "🗑️ Cliente Removido",
+      description: `${client.name} foi removido com sucesso`,
+    });
+  }, [client.id, client.name, onDelete, toast]);
 
   const daysSinceLastVisit = client.lastVisit
     ? Math.floor(
@@ -286,8 +400,37 @@ const ClientCard: React.FC<{ client: Client; onUpdate: () => void }> = ({
                   <MessageCircle className="w-4 h-4 mr-2" />
                   WhatsApp
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="text-red-600 dark:text-red-400"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Excluir
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          </div>
+
+          {/* Quick Action Buttons */}
+          <div className="flex gap-2 mb-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handlePhoneCall}
+              className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/20"
+            >
+              <Phone className="w-3 h-3 mr-1" />
+              Ligar
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleWhatsApp}
+              className="flex-1 border-green-200 text-green-600 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/20"
+            >
+              <MessageCircle className="w-3 h-3 mr-1" />
+              WhatsApp
+            </Button>
           </div>
 
           {/* Métricas do Cliente */}
@@ -343,14 +486,14 @@ const ClientCard: React.FC<{ client: Client; onUpdate: () => void }> = ({
                 <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
                   Histórico
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                   Cliente desde{" "}
                   {client.createdAt
                     ? formatDate(client.createdAt)
                     : "Data não informada"}
                 </p>
                 {client.lastVisit && (
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Última visita: {formatDate(client.lastVisit)}
                   </p>
                 )}
@@ -455,13 +598,35 @@ const ClientCard: React.FC<{ client: Client; onUpdate: () => void }> = ({
           onUpdate={onUpdate}
         />
       )}
+
+      {/* Dialog de Confirmação de Exclusão */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o cliente{" "}
+              <strong>{client.name}</strong>? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
 
 const NewClientModal: React.FC<{
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (client: Client) => void;
 }> = ({ onClose, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<NewClientForm>({
@@ -512,23 +677,30 @@ const NewClientModal: React.FC<{
       // Simular chamada API
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Aqui seria a chamada real para API
-      // const response = await fetch('/api/clients', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     ...formData,
-      //     createdAt: new Date().toISOString(),
-      //   })
-      // });
+      // Criar novo cliente
+      const newClient: Client = {
+        id: `client-${Date.now()}`,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address || undefined,
+        birthDate: formData.birthDate || undefined,
+        notes: formData.notes || undefined,
+        createdAt: new Date().toISOString(),
+        status: formData.status,
+        totalSpent: 0,
+        visitCount: 0,
+        avgInterval: 0,
+        visits: [],
+      };
+
+      onSuccess(newClient);
+      onClose();
 
       toast({
         title: "✅ Cliente Cadastrado",
         description: `${formData.name} foi adicionado com sucesso`,
       });
-
-      onSuccess();
-      onClose();
     } catch (error) {
       toast({
         title: "❌ Erro ao Cadastrar",
@@ -643,7 +815,7 @@ const NewClientModal: React.FC<{
                   status: e.target.value as "ativo" | "inativo",
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
             >
               <option value="ativo">Ativo</option>
               <option value="inativo">Inativo</option>
@@ -686,7 +858,7 @@ const NewClientModal: React.FC<{
 const EditClientModal: React.FC<{
   client: Client;
   onClose: () => void;
-  onUpdate: () => void;
+  onUpdate: (client: Client) => void;
 }> = ({ client, onClose, onUpdate }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -707,13 +879,24 @@ const EditClientModal: React.FC<{
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      const updatedClient: Client = {
+        ...client,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address || undefined,
+        birthDate: formData.birthDate || undefined,
+        notes: formData.notes || undefined,
+        status: formData.status,
+      };
+
+      onUpdate(updatedClient);
+      onClose();
+
       toast({
         title: "✅ Cliente Atualizado",
         description: `${formData.name} foi atualizado com sucesso`,
       });
-
-      onUpdate();
-      onClose();
     } catch (error) {
       toast({
         title: "❌ Erro ao Atualizar",
@@ -784,12 +967,48 @@ const EditClientModal: React.FC<{
                     status: e.target.value as "ativo" | "inativo",
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               >
                 <option value="ativo">Ativo</option>
                 <option value="inativo">Inativo</option>
               </select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-address">Endereço</Label>
+              <Input
+                id="edit-address"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-birthDate">Data de Nascimento</Label>
+              <Input
+                id="edit-birthDate"
+                type="date"
+                value={formData.birthDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, birthDate: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="edit-notes">Observações</Label>
+            <Textarea
+              id="edit-notes"
+              value={formData.notes}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
+              rows={3}
+            />
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
@@ -830,6 +1049,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   onPageChange,
 }) => {
   const { toast } = useToast();
+  const [clients, setClients] = useState<Client[]>(initialClients);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [sortField, setSortField] = useState<SortField>("name");
@@ -839,166 +1059,42 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Mock data com dados mais realistas
-  const mockClients: Client[] = [
-    {
-      id: "1",
-      name: "João Silva",
-      email: "joao.silva@email.com",
-      phone: "(11) 99999-9999",
-      address: "Rua das Flores, 123",
-      birthDate: "1985-03-15",
-      createdAt: "2023-01-15T10:00:00Z",
-      lastVisit: "2024-01-10T14:30:00Z",
-      status: "ativo",
-      totalSpent: 1250,
-      visitCount: 8,
-      avgInterval: 15,
-      notes: "Cliente preferencial",
-      visits: [
-        {
-          id: "v1",
-          date: "2024-01-10T14:30:00Z",
-          service: "Corte + Barba",
-          amount: 85,
-          professional: "Carlos",
-          rating: 5,
-        },
-        {
-          id: "v2",
-          date: "2023-12-20T16:00:00Z",
-          service: "Corte",
-          amount: 60,
-          professional: "Ana",
-          rating: 4,
-        },
-      ],
-    },
-    {
-      id: "2",
-      name: "Maria Costa",
-      email: "maria.costa@email.com",
-      phone: "(11) 88888-8888",
-      address: "Av. Principal, 456",
-      birthDate: "1990-07-22",
-      createdAt: "2023-02-10T11:00:00Z",
-      lastVisit: "2023-10-15T10:00:00Z", // Cliente inativo
-      status: "inativo",
-      totalSpent: 780,
-      visitCount: 5,
-      avgInterval: 30,
-      visits: [
-        {
-          id: "v3",
-          date: "2023-10-15T10:00:00Z",
-          service: "Escova + Corte",
-          amount: 120,
-          professional: "Ana",
-          rating: 5,
-        },
-      ],
-    },
-    {
-      id: "3",
-      name: "Pedro Santos",
-      email: "pedro.santos@email.com",
-      phone: "(11) 77777-7777",
-      createdAt: "2023-03-05T09:00:00Z",
-      lastVisit: "2024-01-05T11:30:00Z",
-      status: "ativo",
-      totalSpent: 420,
-      visitCount: 3,
-      avgInterval: 45,
-      visits: [],
-    },
-    {
-      id: "4",
-      name: "Ana Oliveira",
-      email: "ana.oliveira@email.com",
-      phone: "(11) 66666-6666",
-      address: "Rua do Sol, 789",
-      birthDate: "1988-12-03",
-      createdAt: "2023-04-20T15:00:00Z",
-      lastVisit: "2024-01-08T13:00:00Z",
-      status: "ativo",
-      totalSpent: 950,
-      visitCount: 6,
-      avgInterval: 20,
-      visits: [
-        {
-          id: "v4",
-          date: "2024-01-08T13:00:00Z",
-          service: "Manicure + Pedicure",
-          amount: 80,
-          professional: "Lucia",
-          rating: 4,
-        },
-      ],
-    },
-    {
-      id: "5",
-      name: "Carlos Pereira",
-      email: "carlos.pereira@email.com",
-      phone: "(11) 55555-5555",
-      createdAt: "2023-05-10T12:00:00Z",
-      lastVisit: "2024-01-12T15:45:00Z",
-      status: "ativo",
-      totalSpent: 680,
-      visitCount: 4,
-      avgInterval: 25,
-      visits: [],
-    },
-    {
-      id: "6",
-      name: "Fernanda Lima",
-      email: "fernanda.lima@email.com",
-      phone: "(11) 44444-4444",
-      address: "Praça Central, 321",
-      birthDate: "1992-09-18",
-      createdAt: "2023-06-15T14:00:00Z",
-      lastVisit: "2024-01-09T12:15:00Z",
-      status: "ativo",
-      totalSpent: 1100,
-      visitCount: 7,
-      avgInterval: 18,
-      notes: "Sempre agenda pelo WhatsApp",
-      visits: [
-        {
-          id: "v5",
-          date: "2024-01-09T12:15:00Z",
-          service: "Coloração + Corte",
-          amount: 180,
-          professional: "Ana",
-          rating: 5,
-        },
-      ],
-    },
-  ];
+  // Callbacks for CRUD operations
+  const handleAddClient = useCallback((newClient: Client) => {
+    setClients((prev) => [newClient, ...prev]);
+  }, []);
 
-  const clients = mockClients; // Em produção, viria do hook useClients()
+  const handleUpdateClient = useCallback((updatedClient: Client) => {
+    setClients((prev) =>
+      prev.map((client) =>
+        client.id === updatedClient.id ? updatedClient : client,
+      ),
+    );
+  }, []);
 
-  // Cálculo de métricas com lógica de retenção real
+  const handleDeleteClient = useCallback((clientId: string) => {
+    setClients((prev) => prev.filter((client) => client.id !== clientId));
+  }, []);
+
+  // Calculate metrics with lógica de retenção real
   const metrics = useMemo(() => {
-    const safeClients = clients || [];
-    const totalClients = safeClients.length;
-    const activeClients = safeClients.filter(
-      (c: any) => c.status === "ativo",
-    ).length;
+    const totalClients = clients.length;
+    const activeClients = clients.filter((c) => c.status === "ativo").length;
 
     // Clientes novos nos últimos 30 dias
-    const newThisMonth = safeClients.filter((c: any) => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const newThisMonth = clients.filter((c) => {
       const created = new Date(c.createdAt);
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       return created >= thirtyDaysAgo;
     }).length;
 
     // Taxa de retenção real: clientes com 2+ visitas nos últimos 6 meses
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    const clientsWithMultipleVisits = safeClients.filter((c: any) => {
+    const clientsWithMultipleVisits = clients.filter((c) => {
       const recentVisits = (c.visits || []).filter(
-        (visit: any) => new Date(visit.date) >= sixMonthsAgo,
+        (visit) => new Date(visit.date) >= sixMonthsAgo,
       );
       return recentVisits.length >= 2;
     }).length;
@@ -1008,8 +1104,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
         ? Math.round((clientsWithMultipleVisits / activeClients) * 100)
         : 0;
 
-    const totalRevenue = safeClients.reduce(
-      (sum: number, c: any) => sum + (c.totalSpent || 0),
+    const totalRevenue = clients.reduce(
+      (sum, c) => sum + (c.totalSpent || 0),
       0,
     );
     const avgTicket = totalClients > 0 ? totalRevenue / totalClients : 0;
@@ -1026,8 +1122,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   // Filter and sort clients
   const filteredClients = useMemo(() => {
-    const safeClients = clients || [];
-    let filtered = safeClients.filter((client: Client) => {
+    let filtered = clients.filter((client) => {
       const matchesSearch =
         client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1040,7 +1135,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
 
     // Sort clients
-    filtered.sort((a: Client, b: Client) => {
+    filtered.sort((a, b) => {
       let aValue: any, bValue: any;
 
       switch (sortField) {
@@ -1076,7 +1171,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     return filtered;
   }, [clients, searchTerm, statusFilter, sortField, sortDirection]);
 
-  const handleRefreshData = () => {
+  const handleRefreshData = useCallback(() => {
     setIsLoading(true);
     setTimeout(() => {
       setLastUpdate(new Date());
@@ -1086,9 +1181,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
         description: "Lista de clientes atualizada com sucesso",
       });
     }, 1000);
-  };
+  }, [toast]);
 
-  const handleExportData = async () => {
+  const handleExportData = useCallback(async () => {
     setIsExporting(true);
     toast({
       title: "📊 Preparando Exportação",
@@ -1096,10 +1191,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
 
     try {
-      // Simular tempo de processamento
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Criar dados CSV
       const csvData = [
         ["Nome", "Email", "Telefone", "Status", "Total Gasto", "Última Visita"],
         ...filteredClients.map((client) => [
@@ -1137,9 +1230,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     } finally {
       setIsExporting(false);
     }
-  };
+  }, [filteredClients, toast]);
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setSearchTerm("");
     setStatusFilter("todos");
     setSortField("name");
@@ -1148,7 +1241,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       title: "🔄 Filtros Limpos",
       description: "Todos os filtros foram removidos",
     });
-  };
+  }, [toast]);
 
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
@@ -1369,11 +1462,12 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClients.map((client: Client) => (
+            {filteredClients.map((client) => (
               <ClientCard
                 key={client.id}
                 client={client}
-                onUpdate={handleRefreshData}
+                onUpdate={handleUpdateClient}
+                onDelete={handleDeleteClient}
               />
             ))}
           </div>
@@ -1386,14 +1480,18 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                   Nenhum cliente encontrado
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Ajuste os filtros ou cadastre um novo cliente
+                  {searchTerm || statusFilter !== "todos"
+                    ? "Ajuste os filtros ou cadastre um novo cliente"
+                    : "Cadastre seu primeiro cliente para começar"}
                 </p>
                 <Button
                   onClick={() => setShowNewClientModal(true)}
                   className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-700 hover:to-[#00112F] text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <UserPlus className="w-4 h-4 mr-2" />
-                  Cadastrar Primeiro Cliente
+                  {clients.length === 0
+                    ? "Cadastrar Primeiro Cliente"
+                    : "Novo Cliente"}
                 </Button>
               </div>
             </Card>
@@ -1405,7 +1503,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       {showNewClientModal && (
         <NewClientModal
           onClose={() => setShowNewClientModal(false)}
-          onSuccess={handleRefreshData}
+          onSuccess={handleAddClient}
         />
       )}
     </div>
