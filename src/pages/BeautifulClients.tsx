@@ -126,6 +126,30 @@ type SortField = "name" | "email" | "createdAt" | "lastVisit" | "totalSpent";
 const initialClients: Client[] = [
   {
     id: "1",
+    name: "Ana Oliveira",
+    email: "ana.oliveira@email.com",
+    phone: "(11) 66666-6666",
+    address: "Rua do Sol, 789",
+    birthDate: "1988-12-03",
+    createdAt: "2020-04-20T15:00:00Z",
+    lastVisit: "2024-01-08T13:00:00Z",
+    status: "ativo",
+    totalSpent: 950,
+    visitCount: 6,
+    avgInterval: 20,
+    visits: [
+      {
+        id: "v4",
+        date: "2024-01-08T13:00:00Z",
+        service: "Manicure + Pedicure",
+        amount: 80,
+        professional: "Lucia",
+        rating: 4,
+      },
+    ],
+  },
+  {
+    id: "2",
     name: "João Silva",
     email: "joao.silva@email.com",
     phone: "(11) 99999-9999",
@@ -158,7 +182,7 @@ const initialClients: Client[] = [
     ],
   },
   {
-    id: "2",
+    id: "3",
     name: "Maria Costa",
     email: "maria.costa@email.com",
     phone: "(11) 88888-8888",
@@ -182,7 +206,7 @@ const initialClients: Client[] = [
     ],
   },
   {
-    id: "3",
+    id: "4",
     name: "Pedro Santos",
     email: "pedro.santos@email.com",
     phone: "(11) 77777-7777",
@@ -193,30 +217,6 @@ const initialClients: Client[] = [
     visitCount: 3,
     avgInterval: 45,
     visits: [],
-  },
-  {
-    id: "4",
-    name: "Ana Oliveira",
-    email: "ana.oliveira@email.com",
-    phone: "(11) 66666-6666",
-    address: "Rua do Sol, 789",
-    birthDate: "1988-12-03",
-    createdAt: "2023-04-20T15:00:00Z",
-    lastVisit: "2024-01-08T13:00:00Z",
-    status: "ativo",
-    totalSpent: 950,
-    visitCount: 6,
-    avgInterval: 20,
-    visits: [
-      {
-        id: "v4",
-        date: "2024-01-08T13:00:00Z",
-        service: "Manicure + Pedicure",
-        amount: 80,
-        professional: "Lucia",
-        rating: 4,
-      },
-    ],
   },
 ];
 
@@ -286,7 +286,7 @@ const KPICard: React.FC<KPICardProps> = ({
   );
 };
 
-// Enhanced Client Detail Modal Component
+// Enhanced Client Detail Modal Component (Fixed layout to match image)
 const ClientDetailModal: React.FC<{
   client: Client;
   onClose: () => void;
@@ -349,43 +349,15 @@ const ClientDetailModal: React.FC<{
     });
   }, [client.id, client.name, onDelete, onClose, toast]);
 
-  const getClientTier = () => {
-    if (client.totalSpent >= 2000)
-      return {
-        tier: "VIP",
-        color: "text-yellow-600",
-        bg: "bg-yellow-50 dark:bg-yellow-900/20",
-      };
-    if (client.totalSpent >= 1000)
-      return {
-        tier: "Gold",
-        color: "text-orange-600",
-        bg: "bg-orange-50 dark:bg-orange-900/20",
-      };
-    if (client.totalSpent >= 500)
-      return {
-        tier: "Silver",
-        color: "text-gray-600",
-        bg: "bg-gray-50 dark:bg-gray-900/20",
-      };
-    return {
-      tier: "Bronze",
-      color: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-900/20",
-    };
-  };
-
-  const clientTier = getClientTier();
-
   return (
     <>
       <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-lg">
                     {client.name
                       .split(" ")
                       .map((n) => n[0])
@@ -395,25 +367,18 @@ const ClientDetailModal: React.FC<{
                   </span>
                 </div>
                 <div>
-                  <DialogTitle className="text-2xl text-[#00112F] dark:text-[#F9FAFB]">
+                  <DialogTitle className="text-xl text-[#00112F] dark:text-[#F9FAFB] mb-1">
                     {client.name}
                   </DialogTitle>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Badge
-                      className={cn("text-xs", clientTier.bg, clientTier.color)}
-                    >
-                      {clientTier.tier}
-                    </Badge>
-                    <Badge
-                      className={
-                        client.status === "ativo"
-                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                          : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
-                      }
-                    >
-                      {client.status === "ativo" ? "Ativo" : "Inativo"}
-                    </Badge>
-                  </div>
+                  <Badge
+                    className={
+                      client.status === "ativo"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                        : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+                    }
+                  >
+                    {client.status === "ativo" ? "Ativo" : "Inativo"}
+                  </Badge>
                 </div>
               </div>
               <Button variant="ghost" size="sm" onClick={onClose}>
@@ -422,300 +387,232 @@ const ClientDetailModal: React.FC<{
             </div>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            {/* Informações Pessoais */}
-            <div className="lg:col-span-1 space-y-6">
-              <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
-                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  Informações Pessoais
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-sm">
-                      Email:
-                    </span>
-                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
-                      {client.email}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-sm">
-                      Telefone:
-                    </span>
-                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
-                      {client.phone}
-                    </span>
-                  </div>
-                  {client.address && (
-                    <div className="flex items-start justify-between">
-                      <span className="text-gray-600 dark:text-gray-400 text-sm">
-                        Endereço:
-                      </span>
-                      <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium text-right">
-                        {client.address}
-                      </span>
-                    </div>
-                  )}
-                  {client.birthDate && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-400 text-sm">
-                        Nascimento:
-                      </span>
-                      <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
-                        {formatDate(client.birthDate)}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-sm">
-                      Cliente desde:
-                    </span>
-                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
-                      {formatDate(client.createdAt)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400 text-sm">
-                      Tempo conosco:
-                    </span>
-                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm font-medium">
-                      {monthsAsClient} meses
-                    </span>
-                  </div>
+          <div className="space-y-6">
+            {/* Métricas no topo */}
+            <div className="grid grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                  {client.visitCount}
                 </div>
-              </Card>
-
-              {/* Ações Rápidas */}
-              <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
-                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
-                  <Activity className="w-4 h-4 mr-2" />
-                  Ações Rápidas
-                </h3>
-                <div className="space-y-2">
-                  <Button
-                    onClick={handlePhoneCall}
-                    className="w-full justify-start bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800"
-                    variant="outline"
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Ligar para Cliente
-                  </Button>
-                  <Button
-                    onClick={handleWhatsApp}
-                    className="w-full justify-start bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                    variant="outline"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    WhatsApp
-                  </Button>
-                  <Button
-                    onClick={handleEmail}
-                    className="w-full justify-start bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:hover:bg-gray-900/30 dark:text-gray-400 dark:border-gray-800"
-                    variant="outline"
-                  >
-                    <Mail className="w-4 h-4 mr-2" />
-                    Enviar Email
-                  </Button>
-                  <Button
-                    onClick={() => setShowEditModal(true)}
-                    className="w-full justify-start bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800"
-                    variant="outline"
-                  >
-                    <Edit3 className="w-4 h-4 mr-2" />
-                    Editar Dados
-                  </Button>
-                  <Button
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="w-full justify-start bg-red-50 hover:bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 dark:border-red-800"
-                    variant="outline"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Excluir Cliente
-                  </Button>
+                <div className="text-xs text-blue-500 dark:text-blue-400 font-medium">
+                  Visitas
                 </div>
-              </Card>
-
-              {/* Insights */}
-              <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
-                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
-                  <Target className="w-4 h-4 mr-2" />
-                  Insights
-                </h3>
-                <div className="space-y-3">
-                  {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
-                    <div className="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                      <div className="flex items-center">
-                        <AlertCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" />
-                        <p className="text-orange-700 dark:text-orange-400 text-sm font-medium">
-                          Cliente inativo há {daysSinceLastVisit} dias
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {client.visitCount >= 5 && (
-                    <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
-                        <p className="text-green-700 dark:text-green-400 text-sm font-medium">
-                          Cliente fiel com {client.visitCount} visitas
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {client.totalSpent >= 1000 && (
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                        <p className="text-blue-700 dark:text-blue-400 text-sm font-medium">
-                          Cliente VIP com alto valor
-                        </p>
-                      </div>
-                    </div>
-                  )}
+              </div>
+              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+                  {formatCurrency(client.totalSpent)}
                 </div>
-              </Card>
+                <div className="text-xs text-green-500 dark:text-green-400 font-medium">
+                  Total Gasto
+                </div>
+              </div>
+              <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                  {formatCurrency(avgSpentPerVisit)}
+                </div>
+                <div className="text-xs text-purple-500 dark:text-purple-400 font-medium">
+                  Ticket Médio
+                </div>
+              </div>
+              <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+                  {client.avgInterval}d
+                </div>
+                <div className="text-xs text-orange-500 dark:text-orange-400 font-medium">
+                  Intervalo Médio
+                </div>
+              </div>
             </div>
 
-            {/* Métricas e Histórico */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Métricas Principais */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
-                        Visitas
-                      </p>
-                      <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                        {client.visitCount}
-                      </p>
-                    </div>
-                    <Calendar className="w-8 h-8 text-blue-500 dark:text-blue-400" />
+            {/* Informações Pessoais */}
+            <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+              <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                <Users className="w-4 h-4 mr-2" />
+                Informações Pessoais
+              </h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">
+                    Email:
+                  </span>
+                  <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm">
+                    {client.email}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">
+                    Telefone:
+                  </span>
+                  <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm">
+                    {client.phone}
+                  </span>
+                </div>
+                {client.address && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">
+                      Endereço:
+                    </span>
+                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm text-right">
+                      {client.address}
+                    </span>
                   </div>
-                </Card>
-
-                <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200 dark:border-green-800">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-green-600 dark:text-green-400 text-sm font-medium">
-                        Total Gasto
-                      </p>
-                      <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                        {formatCurrency(client.totalSpent)}
-                      </p>
-                    </div>
-                    <DollarSign className="w-8 h-8 text-green-500 dark:text-green-400" />
+                )}
+                {client.birthDate && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">
+                      Nascimento:
+                    </span>
+                    <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm">
+                      {formatDate(client.birthDate)}
+                    </span>
                   </div>
-                </Card>
-
-                <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-purple-600 dark:text-purple-400 text-sm font-medium">
-                        Ticket Médio
-                      </p>
-                      <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                        {formatCurrency(avgSpentPerVisit)}
-                      </p>
-                    </div>
-                    <TrendingUp className="w-8 h-8 text-purple-500 dark:text-purple-400" />
-                  </div>
-                </Card>
-
-                <Card className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">
-                        Intervalo Médio
-                      </p>
-                      <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                        {client.avgInterval}d
-                      </p>
-                    </div>
-                    <Clock className="w-8 h-8 text-orange-500 dark:text-orange-400" />
-                  </div>
-                </Card>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">
+                    Cliente desde:
+                  </span>
+                  <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm">
+                    {formatDate(client.createdAt)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400 text-sm">
+                    Tempo conosco:
+                  </span>
+                  <span className="text-[#00112F] dark:text-[#F9FAFB] text-sm">
+                    {monthsAsClient} meses
+                  </span>
+                </div>
               </div>
+            </Card>
 
-              {/* Histórico de Visitas */}
-              <Card className="p-6 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
-                <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-4 flex items-center">
-                  <Clock className="w-4 h-4 mr-2" />
-                  Histórico de Visitas ({client.visits?.length || 0})
-                </h3>
-                {client.visits && client.visits.length > 0 ? (
-                  <div className="space-y-3 max-h-80 overflow-y-auto">
-                    {client.visits.map((visit) => (
-                      <div
-                        key={visit.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB]">
-                              {visit.service}
-                            </h4>
-                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                              {formatCurrency(visit.amount)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                            <span className="flex items-center">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              {formatDate(visit.date)}
-                            </span>
-                            <span className="flex items-center">
-                              <UserCheck className="w-3 h-3 mr-1" />
-                              {visit.professional}
-                            </span>
-                            {visit.rating && (
-                              <div className="flex items-center">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={cn(
-                                      "w-3 h-3",
-                                      i < visit.rating
-                                        ? "text-yellow-400 fill-current"
-                                        : "text-gray-300 dark:text-gray-600",
-                                    )}
-                                  />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+            {/* Histórico de Visitas */}
+            <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+              <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                <Calendar className="w-4 h-4 mr-2" />
+                Histórico de Visitas ({client.visits?.length || 0})
+              </h3>
+              {client.visits && client.visits.length > 0 ? (
+                <div className="space-y-3">
+                  {client.visits.map((visit) => (
+                    <div
+                      key={visit.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB] text-sm">
+                            {visit.service}
+                          </h4>
+                          <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                            {formatCurrency(visit.amount)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                          <span>{formatDate(visit.date)}</span>
+                          <span>{visit.professional}</span>
+                          {visit.rating && (
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={cn(
+                                    "w-3 h-3",
+                                    i < visit.rating
+                                      ? "text-yellow-400 fill-current"
+                                      : "text-gray-300 dark:text-gray-600",
+                                  )}
+                                />
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Calendar className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Nenhuma visita registrada
-                    </p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                      O histórico de visitas aparecerá aqui quando o cliente
-                      realizar agendamentos
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">
+                  Nenhuma visita registrada
+                </p>
+              )}
+            </Card>
+
+            {/* Ações Rápidas */}
+            <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+              <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                <Activity className="w-4 h-4 mr-2" />
+                Ações Rápidas
+              </h3>
+              <div className="space-y-2">
+                <Button
+                  onClick={handlePhoneCall}
+                  className="w-full justify-start bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800"
+                  variant="outline"
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Ligar para Cliente
+                </Button>
+                <Button
+                  onClick={handleWhatsApp}
+                  className="w-full justify-start bg-green-50 hover:bg-green-100 text-green-700 border-green-200 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                  variant="outline"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </Button>
+                <Button
+                  onClick={handleEmail}
+                  className="w-full justify-start bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:hover:bg-gray-900/30 dark:text-gray-400 dark:border-gray-800"
+                  variant="outline"
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Enviar Email
+                </Button>
+                <Button
+                  onClick={() => setShowEditModal(true)}
+                  className="w-full justify-start bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800"
+                  variant="outline"
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Editar Dados
+                </Button>
+                <Button
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="w-full justify-start bg-red-50 hover:bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+                  variant="outline"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Excluir Cliente
+                </Button>
+              </div>
+            </Card>
+
+            {/* Insights */}
+            <Card className="p-4 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
+              <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
+                <Target className="w-4 h-4 mr-2" />
+                Insights
+              </h3>
+              <div className="space-y-2">
+                {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
+                  <div className="flex items-center p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" />
+                    <p className="text-orange-700 dark:text-orange-400 text-sm">
+                      Cliente inativo há {daysSinceLastVisit} dias
                     </p>
                   </div>
                 )}
-              </Card>
-
-              {/* Notas do Cliente */}
-              {client.notes && (
-                <Card className="p-6 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-sm">
-                  <h3 className="font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-3 flex items-center">
-                    <Edit3 className="w-4 h-4 mr-2" />
-                    Notas do Cliente
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {client.notes}
-                  </p>
-                </Card>
-              )}
-            </div>
+                {client.visitCount >= 5 && (
+                  <div className="flex items-center p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
+                    <p className="text-green-700 dark:text-green-400 text-sm">
+                      Cliente fiel com {client.visitCount} visitas
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
           </div>
         </DialogContent>
       </Dialog>
@@ -736,8 +633,7 @@ const ClientDetailModal: React.FC<{
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja excluir o cliente{" "}
-              <strong>{client.name}</strong>? Esta ação não pode ser desfeita e
-              todos os dados do cliente serão permanentemente removidos.
+              <strong>{client.name}</strong>? Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -746,7 +642,7 @@ const ClientDetailModal: React.FC<{
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700"
             >
-              Excluir Permanentemente
+              Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -755,7 +651,7 @@ const ClientDetailModal: React.FC<{
   );
 };
 
-// Enhanced Client Card Component
+// Enhanced Client Card Component (Fixed to match image layout)
 const ClientCard: React.FC<{
   client: Client;
   onUpdate: (client: Client) => void;
@@ -772,6 +668,9 @@ const ClientCard: React.FC<{
           (1000 * 60 * 60 * 24),
       )
     : null;
+
+  const avgSpentPerVisit =
+    client.visitCount > 0 ? client.totalSpent / client.visitCount : 0;
 
   const handlePhoneCall = useCallback(() => {
     const cleanPhone = client.phone.replace(/\D/g, "");
@@ -801,225 +700,89 @@ const ClientCard: React.FC<{
     });
   }, [client.id, client.name, onDelete, toast]);
 
-  const getClientTier = () => {
-    if (client.totalSpent >= 2000)
+  const getStatusColor = () => {
+    if (client.status === "ativo") {
       return {
-        tier: "VIP",
-        color: "text-yellow-600",
-        bg: "bg-yellow-50 dark:bg-yellow-900/20",
-        border: "border-yellow-200 dark:border-yellow-800",
+        bg: "bg-green-50 dark:bg-green-900/20",
+        text: "text-green-700 dark:text-green-400",
+        border: "border-green-200 dark:border-green-800",
       };
-    if (client.totalSpent >= 1000)
-      return {
-        tier: "Gold",
-        color: "text-orange-600",
-        bg: "bg-orange-50 dark:bg-orange-900/20",
-        border: "border-orange-200 dark:border-orange-800",
-      };
-    if (client.totalSpent >= 500)
-      return {
-        tier: "Silver",
-        color: "text-gray-600",
-        bg: "bg-gray-50 dark:bg-gray-900/20",
-        border: "border-gray-200 dark:border-gray-800",
-      };
+    }
     return {
-      tier: "Bronze",
-      color: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-900/20",
-      border: "border-blue-200 dark:border-blue-800",
+      bg: "bg-gray-50 dark:bg-gray-900/20",
+      text: "text-gray-700 dark:text-gray-400",
+      border: "border-gray-200 dark:border-gray-800",
     };
   };
 
-  const clientTier = getClientTier();
+  const statusColors = getStatusColor();
 
   return (
     <>
       <Card
-        className="group relative bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden cursor-pointer"
+        className="group bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
         onClick={() => setShowDetailModal(true)}
       >
-        {/* Premium Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        {/* Tier Indicator */}
-        <div
-          className={cn(
-            "absolute top-0 right-0 px-3 py-1 rounded-bl-lg text-xs font-bold",
-            clientTier.bg,
-            clientTier.color,
-          )}
-        >
-          {clientTier.tier}
-        </div>
-
-        <div className="relative p-6">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              <div className="relative w-14 h-14 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <span className="text-white font-bold text-lg">
-                  {client.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
-                </span>
-                {/* Status Indicator */}
-                <div
-                  className={cn(
-                    "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800",
-                    client.status === "ativo" ? "bg-green-500" : "bg-gray-400",
-                  )}
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  {client.name}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2 truncate">
-                  {client.email}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <Badge
-                    className={
-                      client.status === "ativo"
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
-                    }
-                  >
-                    {client.status === "ativo" ? "Ativo" : "Inativo"}
-                  </Badge>
-                  {daysSinceLastVisit !== null && daysSinceLastVisit <= 7 && (
-                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-xs">
-                      Recente
-                    </Badge>
-                  )}
-                </div>
-              </div>
+        <div className="p-6">
+          {/* Header with Avatar and Status */}
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">
+                {client.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </span>
             </div>
-
-            {/* Quick Actions Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="opacity-0 group-hover:opacity-100 transition-all duration-300 h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDetailModal(true);
-                  }}
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  Ver Detalhes
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowEditModal(true);
-                  }}
-                >
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePhoneCall();
-                  }}
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Ligar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWhatsApp();
-                  }}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  WhatsApp
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDeleteDialog(true);
-                  }}
-                  className="text-red-600 dark:text-red-400"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Excluir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg mb-1 truncate">
+                {client.name}
+              </h3>
+              <Badge
+                className={cn(
+                  "text-xs",
+                  statusColors.bg,
+                  statusColors.text,
+                  statusColors.border,
+                )}
+              >
+                {client.status === "ativo" ? "Ativo" : "Inativo"}
+              </Badge>
+            </div>
           </div>
 
-          {/* Métricas Principais */}
+          {/* Métricas em Grid */}
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
                 {client.visitCount}
               </div>
-              <div className="text-xs text-blue-500 dark:text-blue-400 font-medium">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 Visitas
               </div>
             </div>
-            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <div className="text-xl font-bold text-green-600 dark:text-green-400">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-600 dark:text-green-400">
                 {formatCurrency(client.totalSpent)}
               </div>
-              <div className="text-xs text-green-500 dark:text-green-400 font-medium">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 Total
               </div>
             </div>
-            <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-              <div className="text-xl font-bold text-orange-600 dark:text-orange-400">
+            <div className="text-center">
+              <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
                 {daysSinceLastVisit !== null ? `${daysSinceLastVisit}d` : "N/A"}
               </div>
-              <div className="text-xs text-orange-500 dark:text-orange-400 font-medium">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 Última
               </div>
             </div>
           </div>
 
-          {/* Quick Contact Buttons */}
-          <div className="flex gap-2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePhoneCall();
-              }}
-              className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/20 h-8"
-            >
-              <Phone className="w-3 h-3 mr-1" />
-              Ligar
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleWhatsApp();
-              }}
-              className="flex-1 border-green-200 text-green-600 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/20 h-8"
-            >
-              <MessageCircle className="w-3 h-3 mr-1" />
-              WhatsApp
-            </Button>
-          </div>
-
-          {/* Client Info Preview */}
-          <div className="space-y-2">
+          {/* Contact Info */}
+          <div className="space-y-2 mb-4">
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
               <Phone className="w-3 h-3 mr-2 text-gray-400" />
               <span className="truncate">{client.phone}</span>
@@ -1040,22 +803,22 @@ const ClientCard: React.FC<{
             </div>
           </div>
 
-          {/* Status Indicators */}
+          {/* Inactivity Warning */}
           {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
-            <div className="mt-4 p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
               <div className="flex items-center">
                 <AlertCircle className="w-3 h-3 text-orange-600 dark:text-orange-400 mr-2" />
-                <p className="text-orange-700 dark:text-orange-400 text-xs font-medium">
+                <p className="text-orange-700 dark:text-orange-400 text-xs">
                   Cliente inativo há {daysSinceLastVisit} dias
                 </p>
               </div>
             </div>
           )}
 
-          {/* Click to View Details Hint */}
-          <div className="mt-4 text-center">
+          {/* Click hint */}
+          <div className="text-center">
             <p className="text-xs text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Clique para ver detalhes completos
+              Clique para ver detalhes
             </p>
           </div>
         </div>
@@ -1809,25 +1572,6 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       description: `${testClient.name} foi criado para teste`,
     });
   }, [handleAddClient, toast]);
-
-  const handleDebugLocalStorage = useCallback(() => {
-    try {
-      const savedClients = localStorage.getItem("unclic-clients");
-      console.log("🔍 LocalStorage Debug:");
-      console.log("- Raw data:", savedClients);
-      if (savedClients) {
-        const parsed = JSON.parse(savedClients);
-        console.log("- Parsed clients:", parsed);
-        console.log("- Count:", parsed.length);
-      } else {
-        console.log("- No data found in localStorage");
-      }
-      console.log("- Current clients state:", clients);
-      console.log("- Current clients count:", clients.length);
-    } catch (error) {
-      console.error("❌ Debug error:", error);
-    }
-  }, [clients]);
 
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
