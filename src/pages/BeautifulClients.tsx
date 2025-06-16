@@ -808,17 +808,33 @@ const ClientCard: React.FC<{
             </div>
           </div>
 
-          {/* Inactivity Warning */}
-          {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
-            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
-              <div className="flex items-center">
-                <AlertCircle className="w-3 h-3 text-orange-600 dark:text-orange-400 mr-2" />
-                <p className="text-orange-700 dark:text-orange-400 text-xs">
-                  Cliente inativo há {daysSinceLastVisit} dias
-                </p>
+          {/* Inactivity Warning - Only show for inactive clients */}
+          {client.status === "inativo" &&
+            daysSinceLastVisit !== null &&
+            daysSinceLastVisit > 0 && (
+              <div className="p-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg mb-4">
+                <div className="flex items-center">
+                  <AlertCircle className="w-3 h-3 text-orange-600 dark:text-orange-400 mr-2" />
+                  <p className="text-orange-700 dark:text-orange-400 text-xs">
+                    Cliente inativo há {daysSinceLastVisit} dias
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+          {/* Long time without visit warning - for active clients */}
+          {client.status === "ativo" &&
+            daysSinceLastVisit !== null &&
+            daysSinceLastVisit > 90 && (
+              <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
+                <div className="flex items-center">
+                  <Clock className="w-3 h-3 text-yellow-600 dark:text-yellow-400 mr-2" />
+                  <p className="text-yellow-700 dark:text-yellow-400 text-xs">
+                    Sem visitas há {daysSinceLastVisit} dias
+                  </p>
+                </div>
+              </div>
+            )}
 
           {/* Click hint */}
           <div className="text-center">
