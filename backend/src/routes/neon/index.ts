@@ -48,5 +48,6 @@ router.use("/services", neonServicesRoutes);
 router.use("/appointments", neonAppointmentsRoutes);
 router.use("/products", neonProductsRoutes);
 router.use("/financial", neonFinancialRoutes);
+router.use("/reports", neonReportsRoutes);
 
 export default router;
