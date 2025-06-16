@@ -1066,8 +1066,13 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   useEffect(() => {
     try {
       localStorage.setItem("unclic-clients", JSON.stringify(clients));
+      console.log(
+        "✅ Clients saved to localStorage:",
+        clients.length,
+        "clients",
+      );
     } catch (error) {
-      console.error("Error saving clients to localStorage:", error);
+      console.error("❌ Error saving clients to localStorage:", error);
     }
   }, [clients]);
 
