@@ -9,16 +9,13 @@ import {
   RefreshCw,
   Calendar,
   Filter,
-  FileText,
+  Search,
   Users,
   DollarSign,
   Clock,
   Activity,
   Target,
   Sparkles,
-  ExternalLink,
-  Eye,
-  CreditCard,
   UserCheck,
   Package,
   Star,
@@ -27,21 +24,22 @@ import {
   AlertCircle,
   CheckCircle,
   X,
-  ShoppingCart,
-  Briefcase,
+  CreditCard,
   Heart,
-  MapPin,
   Phone,
-  Mail,
   MessageCircle,
   Share2,
   Percent,
   Zap,
   Award,
   Shield,
-  Plus,
-  Minus,
-  Search,
+  Eye,
+  UserPlus,
+  MoreHorizontal,
+  ExternalLink,
+  Briefcase,
+  ShoppingCart,
+  FileText,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
@@ -59,68 +57,61 @@ interface BeautifulReportsProps {
   onPageChange?: (page: PageType) => void;
 }
 
-interface StatCardProps {
+interface KPICardProps {
   title: string;
   value: string | number;
   change?: number;
-  trend?: "up" | "down" | "neutral";
-  icon: React.ElementType;
-  color?: string;
+  target?: number;
   description?: string;
+  icon: React.ElementType;
+  variant?: "primary" | "success" | "warning" | "danger" | "info" | "premium";
 }
 
-interface ChartSectionProps {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}
-
-const StatCard: React.FC<StatCardProps> = ({
+const KPICard: React.FC<KPICardProps> = ({
   title,
   value,
   change,
-  trend = "neutral",
-  icon: Icon,
-  color = "from-[#00112F] to-blue-700",
+  target,
   description,
+  icon: Icon,
+  variant = "primary",
 }) => {
-  const getTrendColor = () => {
-    switch (trend) {
-      case "up":
-        return "text-green-600 dark:text-green-400";
-      case "down":
-        return "text-red-600 dark:text-red-400";
+  const getVariantColors = () => {
+    switch (variant) {
+      case "success":
+        return "from-green-600 to-green-800";
+      case "warning":
+        return "from-yellow-600 to-orange-700";
+      case "danger":
+        return "from-red-600 to-red-800";
+      case "premium":
+        return "from-purple-600 to-purple-800";
+      case "info":
+        return "from-blue-600 to-blue-800";
       default:
-        return "text-gray-600 dark:text-gray-400";
-    }
-  };
-
-  const getTrendIcon = () => {
-    switch (trend) {
-      case "up":
-        return <TrendingUp className="w-4 h-4" />;
-      case "down":
-        return <TrendingDown className="w-4 h-4" />;
-      default:
-        return null;
+        return "from-[#00112F] to-blue-700";
     }
   };
 
   return (
     <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${color} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
+        className={`absolute inset-0 bg-gradient-to-br ${getVariantColors()} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
       />
       <div className="relative p-6">
         <div className="flex items-center justify-between mb-4">
           <div
-            className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-lg`}
+            className={`p-3 rounded-xl bg-gradient-to-br ${getVariantColors()} shadow-lg`}
           >
             <Icon className="w-6 h-6 text-white" />
           </div>
           {change !== undefined && (
-            <div className={cn("flex items-center space-x-1", getTrendColor())}>
-              {getTrendIcon()}
+            <div className="flex items-center space-x-1">
+              {change >= 0 ? (
+                <ArrowUpRight className="w-4 h-4 text-green-600 dark:text-green-400" />
+              ) : (
+                <ArrowDownRight className="w-4 h-4 text-red-600 dark:text-red-400" />
+              )}
               <Badge
                 variant={change >= 0 ? "default" : "destructive"}
                 className={cn(
@@ -130,14 +121,14 @@ const StatCard: React.FC<StatCardProps> = ({
                     : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
                 )}
               >
-                {change > 0 ? "+" : ""}
+                {change >= 0 ? "+" : ""}
                 {change}%
               </Badge>
             </div>
           )}
         </div>
         <div className="space-y-2">
-          <h3 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] group-hover:scale-105 transition-transform duration-300">
+          <h3 className="font-bold text-2xl text-[#00112F] dark:text-[#F9FAFB] group-hover:scale-105 transition-transform duration-300">
             {value}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 font-medium">
@@ -148,82 +139,21 @@ const StatCard: React.FC<StatCardProps> = ({
               {description}
             </p>
           )}
-        </div>
-      </div>
-    </Card>
-  );
-};
-
-const ChartSection: React.FC<ChartSectionProps> = ({
-  title,
-  subtitle,
-  children,
-}) => {
-  return (
-    <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-      <div className="p-6">
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
-            <BarChart3 className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
-            {title}
-          </h3>
-          {subtitle && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {subtitle}
-            </p>
+          {target && (
+            <div className="mt-3">
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+                <span>Meta: {target}%</span>
+                <span>{Math.round((Number(value) / target) * 100)}%</span>
+              </div>
+              <Progress
+                value={(Number(value) / target) * 100}
+                className="h-2 bg-gray-200 dark:bg-gray-700"
+              />
+            </div>
           )}
         </div>
-        {children}
       </div>
     </Card>
-  );
-};
-
-const ChartPlaceholder: React.FC<{
-  type: "area" | "line" | "donut" | "bar";
-  title: string;
-  height?: string;
-}> = ({ type, title, height = "h-64" }) => {
-  const getIcon = () => {
-    switch (type) {
-      case "area":
-        return (
-          <BarChart3 className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
-        );
-      case "line":
-        return (
-          <LineChart className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
-        );
-      case "donut":
-        return (
-          <PieChart className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
-        );
-      case "bar":
-        return (
-          <BarChart3 className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
-        );
-      default:
-        return (
-          <BarChart3 className="w-12 h-12 text-[#00112F] dark:text-blue-400" />
-        );
-    }
-  };
-
-  return (
-    <div
-      className={cn(
-        "flex flex-col items-center justify-center bg-gradient-to-br from-[#F9FAFB]/80 via-blue-50/40 to-slate-100/30 dark:from-[#0D1117]/50 dark:via-[#00112F]/30 dark:to-slate-900/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600",
-        height,
-      )}
-    >
-      {getIcon()}
-      <p className="text-[#00112F] dark:text-[#F9FAFB] font-medium mt-3">
-        {title}
-      </p>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-        Gráfico em desenvolvimento
-      </p>
-    </div>
   );
 };
 
@@ -232,11 +162,11 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   onPageChange,
 }) => {
   const { toast } = useToast();
-  const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(new Date());
   const [selectedPeriod, setSelectedPeriod] = useState<string>("30d");
-  const [reportData, setReportData] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [reportData, setReportData] = useState<any>({});
 
   // Load data from APIs
   const loadReportData = useCallback(async () => {
@@ -323,6 +253,704 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const financialData = reportData.financial || {};
   const inventoryData = reportData.inventory?.overview || {};
 
+  // Financial KPIs
+  const financialKPIs = [
+    {
+      title: "Receita Total",
+      value: formatCurrency(businessData.current_revenue || 45680),
+      change: businessData.revenue_growth || 12.5,
+      description: "Período selecionado",
+      icon: DollarSign,
+      variant: "success" as const,
+    },
+    {
+      title: "Despesas Totais",
+      value: formatCurrency(18230),
+      change: -5.2,
+      description: "Período selecionado",
+      icon: CreditCard,
+      variant: "danger" as const,
+    },
+    {
+      title: "Lucro Líquido",
+      value: formatCurrency(27450),
+      change: 18.7,
+      description: "Receita - Despesas",
+      icon: TrendingUp,
+      variant: "success" as const,
+    },
+    {
+      title: "Ticket Médio",
+      value: formatCurrency(185),
+      change: 8.3,
+      description: "Por venda",
+      icon: Target,
+      variant: "info" as const,
+    },
+    {
+      title: "Receita WhatsApp",
+      value: formatCurrency(28500),
+      change: 22.1,
+      description: "65% do total",
+      icon: MessageCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "Receita Recorrente",
+      value: formatCurrency(12800),
+      change: 15.4,
+      description: "Assinaturas/Pacotes",
+      icon: Zap,
+      variant: "premium" as const,
+    },
+    {
+      title: "LTV Médio",
+      value: formatCurrency(1250),
+      change: 9.8,
+      description: "Lifetime Value",
+      icon: Heart,
+      variant: "premium" as const,
+    },
+    {
+      title: "Margem de Lucro",
+      value: "60%",
+      change: 3.1,
+      description: "% sobre receita",
+      icon: Percent,
+      variant: "success" as const,
+    },
+    {
+      title: "ROI por Colaborador",
+      value: formatCurrency(5680),
+      change: 12.7,
+      description: "Retorno mensal",
+      icon: Award,
+      variant: "info" as const,
+    },
+    {
+      title: "Taxa de Inadimplência",
+      value: "2.1%",
+      change: -0.8,
+      description: "Pagamentos em atraso",
+      icon: AlertCircle,
+      variant: "warning" as const,
+    },
+    {
+      title: "Projeção Mensal",
+      value: formatCurrency(52000),
+      change: 14.2,
+      description: "Baseada em tendência",
+      icon: TrendingUp,
+      variant: "info" as const,
+    },
+    {
+      title: "Crescimento Mensal",
+      value: "12.5%",
+      change: 2.3,
+      description: "vs mês anterior",
+      icon: ArrowUpRight,
+      variant: "success" as const,
+    },
+  ];
+
+  // Client KPIs
+  const clientKPIs = [
+    {
+      title: "Total de Clientes",
+      value: clientsData.total_clients || 1250,
+      change: 12.8,
+      description: "Base total",
+      icon: Users,
+      variant: "primary" as const,
+    },
+    {
+      title: "Clientes Ativos",
+      value: clientsData.active_clients || 890,
+      change: 8.7,
+      description: "Últimos 30 dias",
+      icon: UserCheck,
+      variant: "success" as const,
+    },
+    {
+      title: "Novos Clientes",
+      value: 85,
+      change: 22.1,
+      description: "Este período",
+      icon: UserPlus,
+      variant: "success" as const,
+    },
+    {
+      title: "Taxa de Retenção",
+      value: "78.5%",
+      change: 5.4,
+      description: "Clientes que retornam",
+      icon: Heart,
+      variant: "success" as const,
+    },
+    {
+      title: "Tempo Entre Visitas",
+      value: "18 dias",
+      change: -2.1,
+      description: "Média geral",
+      icon: Clock,
+      variant: "info" as const,
+    },
+    {
+      title: "Churn Rate",
+      value: "5.2%",
+      change: -1.8,
+      description: "Clientes perdidos",
+      icon: TrendingDown,
+      variant: "warning" as const,
+    },
+    {
+      title: "Visitas por Cliente",
+      value: "3.2",
+      change: 4.7,
+      description: "Média mensal",
+      icon: Activity,
+      variant: "info" as const,
+    },
+    {
+      title: "Clientes VIP",
+      value: 45,
+      change: 18.9,
+      description: "Alto valor",
+      icon: Star,
+      variant: "premium" as const,
+    },
+    {
+      title: "Sem Retorno 90d+",
+      value: 156,
+      change: -12.3,
+      description: "Podem estar inativos",
+      icon: AlertCircle,
+      variant: "warning" as const,
+    },
+    {
+      title: "Engajamento WhatsApp",
+      value: "85%",
+      change: 6.2,
+      description: "Respondem mensagens",
+      icon: MessageCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "NPS Score",
+      value: "8.7",
+      change: 1.2,
+      description: "Satisfação geral",
+      icon: Star,
+      variant: "success" as const,
+    },
+    {
+      title: "Tempo até Inativação",
+      value: "45 dias",
+      change: 3.8,
+      description: "Média para ficar inativo",
+      icon: Clock,
+      variant: "info" as const,
+    },
+  ];
+
+  // Service KPIs
+  const serviceKPIs = [
+    {
+      title: "Serviços Mais Vendidos",
+      value: "Corte + Barba",
+      description: "35% dos agendamentos",
+      icon: Star,
+      variant: "success" as const,
+    },
+    {
+      title: "Receita por Serviço",
+      value: formatCurrency(850),
+      change: 18.7,
+      description: "Média mensal",
+      icon: DollarSign,
+      variant: "success" as const,
+    },
+    {
+      title: "Ticket Médio Serviço",
+      value: formatCurrency(185),
+      change: 8.3,
+      description: "Por atendimento",
+      icon: Target,
+      variant: "info" as const,
+    },
+    {
+      title: "Tempo Médio",
+      value: "45min",
+      change: -2.5,
+      description: "Por serviço",
+      icon: Clock,
+      variant: "info" as const,
+    },
+    {
+      title: "Maior Margem",
+      value: "Massagem",
+      description: "78% de margem",
+      icon: TrendingUp,
+      variant: "success" as const,
+    },
+    {
+      title: "Baixa Demanda",
+      value: "3 serviços",
+      change: -25.0,
+      description: "Menos de 5 vendas/mês",
+      icon: TrendingDown,
+      variant: "warning" as const,
+    },
+    {
+      title: "Novos Serviços",
+      value: 2,
+      description: "Últimos 30 dias",
+      icon: UserPlus,
+      variant: "info" as const,
+    },
+    {
+      title: "Taxa de Retrabalho",
+      value: "1.2%",
+      change: -0.8,
+      description: "Serviços refeitos",
+      icon: AlertCircle,
+      variant: "warning" as const,
+    },
+    {
+      title: "Combos Populares",
+      value: "Corte + Barba",
+      description: "42% dos combos",
+      icon: Package,
+      variant: "success" as const,
+    },
+    {
+      title: "Receita/Profissional",
+      value: formatCurrency(5680),
+      change: 12.4,
+      description: "Média por serviço",
+      icon: Award,
+      variant: "premium" as const,
+    },
+  ];
+
+  // Professional KPIs
+  const professionalKPIs = [
+    {
+      title: "Profissionais Ativos",
+      value: 8,
+      change: 12.5,
+      description: "Equipe atual",
+      icon: Users,
+      variant: "primary" as const,
+    },
+    {
+      title: "Atendimento/Profissional",
+      value: "32",
+      change: 8.7,
+      description: "Média mensal",
+      icon: Activity,
+      variant: "info" as const,
+    },
+    {
+      title: "Receita/Profissional",
+      value: formatCurrency(5680),
+      change: 15.3,
+      description: "Média mensal",
+      icon: DollarSign,
+      variant: "success" as const,
+    },
+    {
+      title: "Taxa de Cancelamento",
+      value: "3.2%",
+      change: -1.5,
+      description: "Por profissional",
+      icon: X,
+      variant: "warning" as const,
+    },
+    {
+      title: "Faturamento/Hora",
+      value: formatCurrency(185),
+      change: 12.8,
+      description: "Produtividade",
+      icon: Clock,
+      variant: "success" as const,
+    },
+    {
+      title: "Taxa de Ocupação",
+      value: "85.2%",
+      change: 8.3,
+      description: "Tempo ocupado",
+      icon: Target,
+      variant: "success" as const,
+    },
+    {
+      title: "Absenteísmo",
+      value: "2.1%",
+      change: -0.8,
+      description: "Faltas/atrasos",
+      icon: AlertCircle,
+      variant: "warning" as const,
+    },
+    {
+      title: "Comissão Paga",
+      value: formatCurrency(8500),
+      change: 18.7,
+      description: "Total do período",
+      icon: Award,
+      variant: "info" as const,
+    },
+    {
+      title: "Avaliação Média",
+      value: "4.7",
+      change: 2.1,
+      description: "Satisfação clientes",
+      icon: Star,
+      variant: "success" as const,
+    },
+    {
+      title: "Mais Solicitado",
+      value: "João Silva",
+      description: "28% dos agendamentos",
+      icon: Crown,
+      variant: "premium" as const,
+    },
+  ];
+
+  // Appointment KPIs
+  const appointmentKPIs = [
+    {
+      title: "Total Agendamentos",
+      value: businessData.current_appointments || 248,
+      change: businessData.appointment_growth || 15.3,
+      description: "Este período",
+      icon: Calendar,
+      variant: "primary" as const,
+    },
+    {
+      title: "Taxa de Presença",
+      value: "94%",
+      change: 2.1,
+      description: "Comparecimento",
+      icon: CheckCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "Cancelamentos",
+      value: "4.5%",
+      change: -1.2,
+      description: "Taxa de cancelamento",
+      icon: X,
+      variant: "warning" as const,
+    },
+    {
+      title: "Horário de Pico",
+      value: "14h-16h",
+      description: "Maior demanda",
+      icon: Clock,
+      variant: "info" as const,
+    },
+    {
+      title: "Tempo Médio",
+      value: "45min",
+      change: -2.5,
+      description: "Por agendamento",
+      icon: Activity,
+      variant: "info" as const,
+    },
+    {
+      title: "Via WhatsApp",
+      value: "65%",
+      change: 22.1,
+      description: "Canal preferido",
+      icon: MessageCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "Taxa de Confirmação",
+      value: "92%",
+      change: 3.8,
+      description: "Agendamentos confirmados",
+      icon: CheckCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "Conversão em Venda",
+      value: "96%",
+      change: 1.2,
+      description: "Agendamento → Venda",
+      icon: TrendingUp,
+      variant: "success" as const,
+    },
+    {
+      title: "Turno Mais Produtivo",
+      value: "Tarde",
+      description: "14h-18h",
+      icon: Target,
+      variant: "info" as const,
+    },
+    {
+      title: "Não Confirmados",
+      value: "8%",
+      change: -2.1,
+      description: "Aguardando confirmação",
+      icon: AlertCircle,
+      variant: "warning" as const,
+    },
+  ];
+
+  // Inventory KPIs
+  const inventoryKPIs = [
+    {
+      title: "Estoque Crítico",
+      value: inventoryData.low_stock_count || 12,
+      change: -15.8,
+      description: "Produtos em falta",
+      icon: AlertCircle,
+      variant: "danger" as const,
+    },
+    {
+      title: "Mais Consumidos",
+      value: "Shampoo Premium",
+      description: "35% do consumo",
+      icon: TrendingUp,
+      variant: "info" as const,
+    },
+    {
+      title: "Valor Total Estoque",
+      value: formatCurrency(inventoryData.total_inventory_value || 45680),
+      change: 12.3,
+      description: "Valor atual",
+      icon: DollarSign,
+      variant: "success" as const,
+    },
+    {
+      title: "Tempo de Reposição",
+      value: "7 dias",
+      description: "Média geral",
+      icon: Clock,
+      variant: "info" as const,
+    },
+    {
+      title: "Produtos Vencendo",
+      value: 3,
+      description: "Próximos 30 dias",
+      icon: AlertCircle,
+      variant: "warning" as const,
+    },
+    {
+      title: "Custo/Cliente",
+      value: formatCurrency(28),
+      change: 5.4,
+      description: "Produtos por atendimento",
+      icon: Users,
+      variant: "info" as const,
+    },
+    {
+      title: "Maior Custo/Baixa Saída",
+      value: "Máscara Capilar",
+      description: "Alto investimento",
+      icon: TrendingDown,
+      variant: "warning" as const,
+    },
+    {
+      title: "Dias sem Estoque",
+      value: "2.5",
+      change: -8.2,
+      description: "Ruptura média",
+      icon: X,
+      variant: "warning" as const,
+    },
+    {
+      title: "Desperdício",
+      value: "1.2%",
+      change: -2.1,
+      description: "Perda por validade",
+      icon: Trash2,
+      variant: "warning" as const,
+    },
+    {
+      title: "Produtos Ativos",
+      value: inventoryData.active_products || 156,
+      change: 5.2,
+      description: "Catálogo atual",
+      icon: Package,
+      variant: "primary" as const,
+    },
+  ];
+
+  // Payment KPIs
+  const paymentKPIs = [
+    {
+      title: "Total Recebido",
+      value: formatCurrency(42350),
+      change: 18.7,
+      description: "Este período",
+      icon: DollarSign,
+      variant: "success" as const,
+    },
+    {
+      title: "PIX",
+      value: "65%",
+      change: 15.3,
+      description: "Método preferido",
+      icon: Zap,
+      variant: "success" as const,
+    },
+    {
+      title: "Cartão de Crédito",
+      value: "25%",
+      change: -5.1,
+      description: "Participação",
+      icon: CreditCard,
+      variant: "info" as const,
+    },
+    {
+      title: "Dinheiro",
+      value: "10%",
+      change: -8.2,
+      description: "Pagamentos em espécie",
+      icon: DollarSign,
+      variant: "info" as const,
+    },
+    {
+      title: "Pagamentos Pendentes",
+      value: formatCurrency(2850),
+      change: -12.3,
+      description: "A receber",
+      icon: Clock,
+      variant: "warning" as const,
+    },
+    {
+      title: "Taxa de Sucesso",
+      value: "98.5%",
+      change: 1.2,
+      description: "Pagamentos aprovados",
+      icon: CheckCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "Receita Líquida",
+      value: formatCurrency(40500),
+      change: 17.8,
+      description: "Após taxas",
+      icon: TrendingUp,
+      variant: "success" as const,
+    },
+    {
+      title: "Tempo Agendamento→Pgto",
+      value: "2h",
+      description: "Média de pagamento",
+      icon: Clock,
+      variant: "info" as const,
+    },
+    {
+      title: "Conversão Agendamento",
+      value: "96%",
+      change: 1.2,
+      description: "Agendamento → Pagamento",
+      icon: Target,
+      variant: "success" as const,
+    },
+    {
+      title: "Ticket Médio PIX",
+      value: formatCurrency(195),
+      change: 8.7,
+      description: "Maior que outros métodos",
+      icon: Zap,
+      variant: "success" as const,
+    },
+  ];
+
+  // Marketing KPIs
+  const marketingKPIs = [
+    {
+      title: "Clientes via Campanhas",
+      value: 42,
+      change: 28.5,
+      description: "Este período",
+      icon: Users,
+      variant: "success" as const,
+    },
+    {
+      title: "Códigos de Indicação",
+      value: 18,
+      change: 35.2,
+      description: "Usados este mês",
+      icon: Share2,
+      variant: "success" as const,
+    },
+    {
+      title: "Clientes que Indicaram",
+      value: 67,
+      change: 22.1,
+      description: "Programa de indicação",
+      icon: Heart,
+      variant: "success" as const,
+    },
+    {
+      title: "ROI Campanhas",
+      value: "350%",
+      change: 25.4,
+      description: "Retorno médio",
+      icon: TrendingUp,
+      variant: "success" as const,
+    },
+    {
+      title: "Conversão Cupons",
+      value: "12%",
+      change: 8.7,
+      description: "Taxa de uso",
+      icon: Percent,
+      variant: "info" as const,
+    },
+    {
+      title: "Taxa Abertura WhatsApp",
+      value: "85%",
+      change: 6.2,
+      description: "Mensagens visualizadas",
+      icon: MessageCircle,
+      variant: "success" as const,
+    },
+    {
+      title: "Melhor Campanha",
+      value: "Black Friday",
+      description: "450% ROI",
+      icon: Award,
+      variant: "premium" as const,
+    },
+    {
+      title: "Custo por Aquisição",
+      value: formatCurrency(45),
+      change: -12.8,
+      description: "Por novo cliente",
+      icon: Target,
+      variant: "success" as const,
+    },
+    {
+      title: "Viral Loop",
+      value: "2.3",
+      change: 18.9,
+      description: "Clientes por indicação",
+      icon: Share2,
+      variant: "success" as const,
+    },
+    {
+      title: "Tempo 1ª Visita→Indicação",
+      value: "45 dias",
+      change: -5.2,
+      description: "Fidelização para indicar",
+      icon: Clock,
+      variant: "info" as const,
+    },
+  ];
+
+  const filteredData = (data: any[]) => {
+    if (!searchTerm) return data;
+    return data.filter((item) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-blue-50/30 to-slate-100/50 dark:from-[#0D1117] dark:via-[#00112F]/20 dark:to-slate-900/50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -361,11 +989,12 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold text-white mb-2">
-                      Análise de Dados
+                      Relatórios
                     </h1>
                     <p className="text-blue-100">
-                      Relatórios detalhados do seu negócio •{" "}
-                      {lastUpdate.toLocaleDateString("pt-BR")}
+                      Análise completa do seu negócio •{" "}
+                      {filteredData(financialKPIs).length} indicadores
+                      encontrados
                     </p>
                   </div>
                 </div>
@@ -411,7 +1040,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder="Buscar relatórios..."
+                    placeholder="Buscar indicadores..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 bg-white/50 dark:bg-[#0D1117]/50 border-gray-200 dark:border-gray-700"
@@ -432,6 +1061,16 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   <Filter className="w-4 h-4" />
                   Filtros
                 </Button>
+                {searchTerm && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setSearchTerm("")}
+                    className="gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    Limpar
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -446,49 +1085,49 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   value="financeiro"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Financeiro
+                  💰 Financeiro
                 </TabsTrigger>
                 <TabsTrigger
                   value="clientes"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Clientes
+                  👥 Clientes
                 </TabsTrigger>
                 <TabsTrigger
                   value="servicos"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Serviços
+                  🧴 Serviços
                 </TabsTrigger>
                 <TabsTrigger
                   value="profissionais"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Profissionais
+                  👨‍🔧 Profissionais
                 </TabsTrigger>
                 <TabsTrigger
                   value="agendamentos"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Agendamentos
+                  📅 Agendamentos
                 </TabsTrigger>
                 <TabsTrigger
                   value="estoque"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Estoque
+                  📦 Estoque
                 </TabsTrigger>
                 <TabsTrigger
                   value="pagamentos"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Pagamentos
+                  💳 Pagamentos
                 </TabsTrigger>
                 <TabsTrigger
                   value="marketing"
                   className="data-[state=active]:bg-[#00112F] data-[state=active]:text-white transition-all duration-300"
                 >
-                  Marketing
+                  📣 Marketing
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -496,590 +1135,145 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
 
           {/* Financeiro Tab */}
           <TabsContent value="financeiro" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas Financeiras
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Dados consolidados da sua base de receitas
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Receita Total"
-                  value={formatCurrency(businessData.current_revenue || 45680)}
-                  change={businessData.revenue_growth || 12.5}
-                  trend="up"
-                  icon={DollarSign}
-                  color="from-green-600 to-green-800"
-                  description="Este período"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(financialKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Despesas"
-                  value={formatCurrency(18230)}
-                  change={-5.2}
-                  trend="down"
-                  icon={CreditCard}
-                  color="from-red-600 to-red-800"
-                  description="Este período"
-                />
-                <StatCard
-                  title="Lucro Líquido"
-                  value={formatCurrency(27450)}
-                  change={18.7}
-                  trend="up"
-                  icon={TrendingUp}
-                  color="from-blue-600 to-blue-800"
-                  description="Este período"
-                />
-                <StatCard
-                  title="Margem de Lucro"
-                  value="60%"
-                  change={3.1}
-                  trend="up"
-                  icon={Percent}
-                  color="from-purple-600 to-purple-800"
-                  description="Este período"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Evolução da Receita"
-                  subtitle="Receita mensal dos últimos 6 meses"
-                >
-                  <ChartPlaceholder type="area" title="Gráfico de Receita" />
-                </ChartSection>
-
-                <ChartSection
-                  title="Distribuição de Despesas"
-                  subtitle="Principais categorias de gastos"
-                >
-                  <ChartPlaceholder
-                    type="donut"
-                    title="Gráfico de Despesas por Categoria"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
 
           {/* Clientes Tab */}
           <TabsContent value="clientes" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Clientes
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Dados consolidados da sua base de clientes
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Total de Clientes"
-                  value={clientsData.total_clients || 1250}
-                  change={12.8}
-                  trend="up"
-                  icon={Users}
-                  color="from-blue-600 to-blue-800"
-                  description="Base total"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(clientKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Novos Clientes (30d)"
-                  value={85}
-                  change={22.1}
-                  trend="up"
-                  icon={UserCheck}
-                  color="from-green-600 to-green-800"
-                  description="Este mês"
-                />
-                <StatCard
-                  title="Taxa de Retenção"
-                  value="78.5%"
-                  change={5.4}
-                  trend="up"
-                  icon={Heart}
-                  color="from-purple-600 to-purple-800"
-                  description="Este trimestre"
-                />
-                <StatCard
-                  title="Frequência Média"
-                  value="18 dias"
-                  change={-2.1}
-                  trend="down"
-                  icon={Clock}
-                  color="from-orange-600 to-orange-800"
-                  description="Intervalo entre visitas"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <ChartSection
-                  title="Aquisição de Clientes"
-                  subtitle="Novos clientes por mês"
-                >
-                  <ChartPlaceholder
-                    type="area"
-                    title="Gráfico de Aquisição de Clientes"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="Retenção de Clientes"
-                  subtitle="Taxa de retorno dos clientes"
-                >
-                  <ChartPlaceholder
-                    type="line"
-                    title="Gráfico de Retenção de Clientes"
-                  />
-                </ChartSection>
-              </div>
-
-              <ChartSection
-                title="Categorias de Clientes"
-                subtitle="Segmentação do perfil de consumo"
-              >
-                <ChartPlaceholder
-                  type="donut"
-                  title="Gráfico de Categorias de Clientes"
-                />
-              </ChartSection>
+              ))}
             </div>
           </TabsContent>
 
           {/* Serviços Tab */}
           <TabsContent value="servicos" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Serviços
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Performance e popularidade dos serviços oferecidos
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Serviços Ativos"
-                  value={24}
-                  change={0}
-                  trend="neutral"
-                  icon={Activity}
-                  color="from-blue-600 to-blue-800"
-                  description="Catálogo atual"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(serviceKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Serviço Mais Popular"
-                  value="Corte + Barba"
-                  icon={Star}
-                  color="from-yellow-600 to-yellow-800"
-                  description="Este período"
-                />
-                <StatCard
-                  title="Satisfação Média"
-                  value="4.8"
-                  change={4.2}
-                  trend="up"
-                  icon={Star}
-                  color="from-green-600 to-green-800"
-                  description="Avaliação geral"
-                />
-                <StatCard
-                  title="Receita Média/Serviço"
-                  value={formatCurrency(850)}
-                  change={18.7}
-                  trend="up"
-                  icon={DollarSign}
-                  color="from-purple-600 to-purple-800"
-                  description="Média mensal"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Performance por Serviço"
-                  subtitle="Receita gerada por cada serviço"
-                >
-                  <ChartPlaceholder
-                    type="bar"
-                    title="Gráfico de Performance por Serviço"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="Popularidade dos Serviços"
-                  subtitle="Distribuição de agendamentos por serviço"
-                >
-                  <ChartPlaceholder
-                    type="donut"
-                    title="Gráfico de Popularidade dos Serviços"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
 
           {/* Profissionais Tab */}
           <TabsContent value="profissionais" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Profissionais
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Produtividade e performance da equipe
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Total da Equipe"
-                  value={8}
-                  change={12.5}
-                  trend="up"
-                  icon={Target}
-                  color="from-blue-600 to-blue-800"
-                  description="Profissionais ativos"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(professionalKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Avaliação Média"
-                  value="4.7"
-                  change={2.1}
-                  trend="up"
-                  icon={Star}
-                  color="from-green-600 to-green-800"
-                  description="Satisfação geral"
-                />
-                <StatCard
-                  title="Taxa de Ocupação"
-                  value="85.2%"
-                  change={8.3}
-                  trend="up"
-                  icon={Activity}
-                  color="from-purple-600 to-purple-800"
-                  description="Utilização média"
-                />
-                <StatCard
-                  title="Mais Solicitado"
-                  value="João Silva"
-                  icon={Award}
-                  color="from-orange-600 to-orange-800"
-                  description="Este período"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Produtividade por Profissional"
-                  subtitle="Atendimentos realizados por mês"
-                >
-                  <ChartPlaceholder
-                    type="bar"
-                    title="Gráfico de Produtividade"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="Distribuição de Agendamentos"
-                  subtitle="Porcentagem de agendamentos por profissional"
-                >
-                  <ChartPlaceholder
-                    type="donut"
-                    title="Gráfico de Distribuição de Agendamentos"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
 
           {/* Agendamentos Tab */}
           <TabsContent value="agendamentos" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Agendamentos
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Performance e tendências de agendamentos
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Total de Agendamentos"
-                  value={businessData.current_appointments || 248}
-                  change={businessData.appointment_growth || 15.3}
-                  trend="up"
-                  icon={Calendar}
-                  color="from-blue-600 to-blue-800"
-                  description="Este período"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(appointmentKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Taxa de Conclusão"
-                  value="94%"
-                  change={2.1}
-                  trend="up"
-                  icon={CheckCircle}
-                  color="from-green-600 to-green-800"
-                  description="Este período"
-                />
-                <StatCard
-                  title="Taxa de No-Show"
-                  value="3%"
-                  change={-1.2}
-                  trend="down"
-                  icon={AlertCircle}
-                  color="from-red-600 to-red-800"
-                  description="Este período"
-                />
-                <StatCard
-                  title="Tempo Médio"
-                  value="45min"
-                  change={-2.5}
-                  trend="down"
-                  icon={Clock}
-                  color="from-purple-600 to-purple-800"
-                  description="Por atendimento"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Agendamentos por Dia"
-                  subtitle="Volume de agendamentos nos últimos 30 dias"
-                >
-                  <ChartPlaceholder
-                    type="line"
-                    title="Gráfico de Agendamentos Diários"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="Distribuição por Horário"
-                  subtitle="Horários mais procurados"
-                >
-                  <ChartPlaceholder
-                    type="bar"
-                    title="Gráfico de Distribuição por Horário"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
 
           {/* Estoque Tab */}
           <TabsContent value="estoque" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Estoque
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Controle e gestão de produtos em estoque
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Produtos Ativos"
-                  value={inventoryData.active_products || 156}
-                  change={5.2}
-                  trend="up"
-                  icon={Package}
-                  color="from-blue-600 to-blue-800"
-                  description="Catálogo atual"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(inventoryKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Valor do Estoque"
-                  value={formatCurrency(
-                    inventoryData.total_inventory_value || 45680,
-                  )}
-                  change={12.3}
-                  trend="up"
-                  icon={DollarSign}
-                  color="from-green-600 to-green-800"
-                  description="Valor total"
-                />
-                <StatCard
-                  title="Produtos em Falta"
-                  value={inventoryData.out_of_stock_count || 3}
-                  change={-25.0}
-                  trend="down"
-                  icon={AlertCircle}
-                  color="from-red-600 to-red-800"
-                  description="Sem estoque"
-                />
-                <StatCard
-                  title="Estoque Baixo"
-                  value={inventoryData.low_stock_count || 12}
-                  change={-15.8}
-                  trend="down"
-                  icon={TrendingDown}
-                  color="from-orange-600 to-orange-800"
-                  description="Alerta de reposição"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Valor por Categoria"
-                  subtitle="Distribuição do valor do estoque por categoria"
-                >
-                  <ChartPlaceholder
-                    type="donut"
-                    title="Gráfico de Valor por Categoria"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="Produtos Mais Utilizados"
-                  subtitle="Produtos com maior saída"
-                >
-                  <ChartPlaceholder
-                    type="bar"
-                    title="Gráfico de Produtos Mais Utilizados"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
 
           {/* Pagamentos Tab */}
           <TabsContent value="pagamentos" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Pagamentos
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Métodos e eficiência de pagamentos
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Taxa de Sucesso"
-                  value="98.5%"
-                  change={1.2}
-                  trend="up"
-                  icon={CheckCircle}
-                  color="from-green-600 to-green-800"
-                  description="Este período"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(paymentKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Pagamentos PIX"
-                  value="65%"
-                  change={15.3}
-                  trend="up"
-                  icon={Zap}
-                  color="from-blue-600 to-blue-800"
-                  description="Participação"
-                />
-                <StatCard
-                  title="Cartão de Crédito"
-                  value="25%"
-                  change={-5.1}
-                  trend="down"
-                  icon={CreditCard}
-                  color="from-purple-600 to-purple-800"
-                  description="Participação"
-                />
-                <StatCard
-                  title="Valor Médio"
-                  value={formatCurrency(185)}
-                  change={8.7}
-                  trend="up"
-                  icon={DollarSign}
-                  color="from-orange-600 to-orange-800"
-                  description="Por transação"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Métodos de Pagamento"
-                  subtitle="Distribuição dos métodos de pagamento"
-                >
-                  <ChartPlaceholder
-                    type="donut"
-                    title="Gráfico de Métodos de Pagamento"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="Volume de Transações"
-                  subtitle="Quantidade de transações por dia"
-                >
-                  <ChartPlaceholder
-                    type="line"
-                    title="Gráfico de Volume de Transações"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
 
           {/* Marketing Tab */}
           <TabsContent value="marketing" className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Estatísticas de Marketing
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Campanhas e conversão de clientes
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                  title="Taxa de Conversão"
-                  value="3.2%"
-                  change={12.8}
-                  trend="up"
-                  icon={Target}
-                  color="from-green-600 to-green-800"
-                  description="Este período"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredData(marketingKPIs).map((kpi, index) => (
+                <KPICard
+                  key={index}
+                  title={kpi.title}
+                  value={kpi.value}
+                  change={kpi.change}
+                  target={kpi.target}
+                  description={kpi.description}
+                  icon={kpi.icon}
+                  variant={kpi.variant}
                 />
-                <StatCard
-                  title="Campanhas Ativas"
-                  value="6"
-                  change={50.0}
-                  trend="up"
-                  icon={Share2}
-                  color="from-blue-600 to-blue-800"
-                  description="Em andamento"
-                />
-                <StatCard
-                  title="ROI Médio"
-                  value="350%"
-                  change={25.4}
-                  trend="up"
-                  icon={TrendingUp}
-                  color="from-purple-600 to-purple-800"
-                  description="Retorno investimento"
-                />
-                <StatCard
-                  title="Leads Gerados"
-                  value="124"
-                  change={18.9}
-                  trend="up"
-                  icon={Users}
-                  color="from-orange-600 to-orange-800"
-                  description="Este mês"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartSection
-                  title="Conversão por Canal"
-                  subtitle="Taxa de conversão por canal de marketing"
-                >
-                  <ChartPlaceholder
-                    type="bar"
-                    title="Gráfico de Conversão por Canal"
-                  />
-                </ChartSection>
-
-                <ChartSection
-                  title="ROI por Campanha"
-                  subtitle="Retorno sobre investimento das campanhas"
-                >
-                  <ChartPlaceholder
-                    type="line"
-                    title="Gráfico de ROI por Campanha"
-                  />
-                </ChartSection>
-              </div>
+              ))}
             </div>
           </TabsContent>
         </Tabs>
