@@ -68,6 +68,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import { clientsApi, type NeonClient } from "@/lib/clientsApi";
 
 interface BeautifulClientsProps {
   darkMode: boolean;
