@@ -175,8 +175,10 @@ async function startServer() {
     const dbConnected = await testConnection();
 
     if (!dbConnected) {
-      console.error("❌ Failed to connect to Neon PostgreSQL");
-      process.exit(1);
+      console.log(
+        "⚠️  Neon PostgreSQL unavailable - continuing with mock data fallback",
+      );
+      console.log("📊 API will return mock data when database is unavailable");
     }
 
     const server = app.listen(PORT, () => {
