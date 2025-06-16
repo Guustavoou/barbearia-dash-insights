@@ -536,7 +536,9 @@ export const BeautifulDocuments: React.FC<BeautifulDocumentsProps> = ({
                       </div>
                       <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                         <Calendar className="w-3 h-3 mr-1" />
-                        {formatDate(document.created_at)}
+                        {document.created_at
+                          ? formatDate(document.created_at)
+                          : "Data não informada"}
                       </div>
                     </div>
 
