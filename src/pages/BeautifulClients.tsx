@@ -717,7 +717,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               <div className="flex items-center space-x-3 mb-2">
                 <Users className="w-8 h-8 text-blue-200 animate-pulse" />
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                  Clientes Premium
+                  Clientes&nbsp;
                 </h1>
               </div>
               <p className="text-blue-200 text-lg">
