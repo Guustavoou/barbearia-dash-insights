@@ -7,6 +7,7 @@ import neonServicesRoutes from "./services";
 import neonAppointmentsRoutes from "./appointments";
 import neonProductsRoutes from "./products";
 import neonFinancialRoutes from "./financial";
+import neonReportsRoutes from "./reports";
 
 const router = Router();
 
