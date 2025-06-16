@@ -1379,6 +1379,14 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                     Atualizar
                   </Button>
                   <Button
+                    onClick={handleAddTestClient}
+                    className="bg-green-500/20 hover:bg-green-500/30 text-white border-green-400/20 backdrop-blur-sm transition-all duration-300"
+                    title="Adicionar cliente de teste"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Teste
+                  </Button>
+                  <Button
                     onClick={handleResetData}
                     className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm transition-all duration-300"
                     title="Resetar dados para o estado inicial"
