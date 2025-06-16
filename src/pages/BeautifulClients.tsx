@@ -1661,8 +1661,6 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     return filtered;
   }, [clients, searchTerm, statusFilter, sortField, sortDirection]);
 
-  const { toast } = useToast();
-
   const handleRefreshData = useCallback(() => {
     setIsLoading(true);
     setTimeout(() => {
@@ -1757,7 +1755,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
     await handleAddClient(testClient);
     toast({
-      title: "🧪 Cliente de Teste Adicionado",
+      title: "��� Cliente de Teste Adicionado",
       description: `${testClient.name} foi criado para teste`,
     });
   }, [handleAddClient, toast]);
@@ -1809,7 +1807,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                       Clientes&nbsp;
                     </h1>
                     <p className="text-blue-100">
-                      Gerencie sua base de clientes • {filteredClients.length}{" "}
+                      Gerencie sua base de clientes �� {filteredClients.length}{" "}
                       clientes encontrados
                     </p>
                   </div>
