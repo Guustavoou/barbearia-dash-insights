@@ -1054,11 +1054,18 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     try {
       const savedClients = localStorage.getItem("unclic-clients");
       if (savedClients) {
-        return JSON.parse(savedClients);
+        const parsedClients = JSON.parse(savedClients);
+        console.log(
+          "✅ Loaded clients from localStorage:",
+          parsedClients.length,
+          "clients",
+        );
+        return parsedClients;
       }
     } catch (error) {
-      console.error("Error loading clients from localStorage:", error);
+      console.error("❌ Error loading clients from localStorage:", error);
     }
+    console.log("ℹ️ Using initial clients:", initialClients.length, "clients");
     return initialClients;
   });
 
