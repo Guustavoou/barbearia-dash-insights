@@ -1362,7 +1362,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               // Try to sync localStorage data to Neon in background
               clientsApi.syncLocalStorageToNeon(parsedClients);
             } else {
-              console.log("��️ Using initial clients");
+              console.log("ℹ️ Using initial clients");
               setClients(initialClients);
             }
           } catch (error) {
@@ -1957,9 +1957,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
                 >
                   <option value="name">Ordenar por Nome</option>
                   <option value="email">Ordenar por Email</option>
-                  <option value="createdAt">
-                    Ordenar por Data de Cria��ão
-                  </option>
+                  <option value="createdAt">Ordenar por Data de Criação</option>
                   <option value="lastVisit">Ordenar por Última Visita</option>
                   <option value="totalSpent">Ordenar por Gasto Total</option>
                 </select>
