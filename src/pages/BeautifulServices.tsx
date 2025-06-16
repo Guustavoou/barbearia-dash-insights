@@ -563,7 +563,7 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
               <div className="flex items-center space-x-3 mb-2">
                 <Scissors className="w-8 h-8 text-blue-200 animate-pulse" />
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                  Serviços Premium
+                  Serviços&nbsp;
                 </h1>
               </div>
               <p className="text-blue-200 text-lg">
