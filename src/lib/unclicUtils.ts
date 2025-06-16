@@ -18,7 +18,10 @@ export const getClientStatusColor = (status: "ativo" | "inativo"): string => {
     : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
 };
 
-export const formatDate = (date: Date | string): string => {
+export const formatDate = (date: Date | string | null | undefined): string => {
+  if (!date) {
+    return "Data não informada";
+  }
   const dateObj = typeof date === "string" ? new Date(date) : date;
   if (isNaN(dateObj.getTime())) {
     return "Data inválida";
