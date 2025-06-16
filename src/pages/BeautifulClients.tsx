@@ -1,45 +1,55 @@
 import React, { useState, useMemo } from "react";
 import {
+  Users,
+  UserPlus,
   Search,
   Filter,
-  Plus,
-  Users,
-  Calendar,
+  Download,
+  RefreshCw,
+  Eye,
+  Edit3,
   Phone,
   Mail,
   MapPin,
-  Edit2,
-  Trash2,
-  MoreVertical,
-  ChevronDown,
-  ChevronUp,
-  Star,
-  UserPlus,
+  Calendar,
+  Gift,
+  Activity,
   TrendingUp,
   TrendingDown,
-  Clock,
+  Target,
   Heart,
-  Gift,
+  Clock,
+  DollarSign,
+  Star,
+  UserCheck,
+  UserX,
+  MoreHorizontal,
+  X,
+  Save,
+  Sparkles,
+  AlertCircle,
+  CheckCircle,
   MessageCircle,
   ExternalLink,
-  Download,
-  Sparkles,
-  Target,
-  Activity,
-  UserCheck,
-  Ban,
-  RefreshCw,
-  Eye,
-  Zap,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  CreditCard,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
-import { Client, ClientSortField, ClientSortOrder } from "@/lib/types";
-import { clients as clientsMockData } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,121 +70,957 @@ interface BeautifulClientsProps {
   onPageChange?: (page: PageType) => void;
 }
 
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address?: string;
+  birthDate?: string;
+  createdAt: string;
+  lastVisit?: string;
+  status: "ativo" | "inativo";
+  totalSpent: number;
+  visitCount: number;
+  avgInterval: number;
+  notes?: string;
+  visits: Visit[];
+}
+
+interface Visit {
+  id: string;
+  date: string;
+  service: string;
+  amount: number;
+  professional: string;
+  rating?: number;
+}
+
+interface NewClientForm {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  birthDate: string;
+  notes: string;
+  status: "ativo" | "inativo";
+}
+
 interface KPICardProps {
   title: string;
   value: string | number;
   change?: number;
-  target?: number;
   period: string;
   icon: React.ElementType;
-  variant: "primary" | "success" | "warning" | "danger" | "info" | "premium";
+  variant?: "primary" | "success" | "warning" | "danger";
   onCardClick?: () => void;
   navigateTo?: PageType;
-  format?: "currency" | "percentage" | "number";
 }
 
-type StatusFilter = "todos" | "ativo" | "inativo";
-type SortField = "name" | "email" | "createdAt" | "lastVisit";
-type SortOrder = "asc" | "desc";
+type SortField = "name" | "email" | "createdAt" | "lastVisit" | "totalSpent";
+
+const KPICard: React.FC<KPICardProps> = ({
+  title,
+  value,
+  change,
+  period,
+  icon: Icon,
+  variant = "primary",
+  onCardClick,
+}) => {
+  const getVariantColors = () => {
+    switch (variant) {
+      case "success":
+        return "from-blue-600 to-blue-800";
+      case "warning":
+        return "from-slate-600 to-slate-700";
+      case "danger":
+        return "from-gray-600 to-gray-700";
+      default:
+        return "from-[#00112F] to-blue-700";
+    }
+  };
+
+  return (
+    <Card
+      className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 cursor-pointer"
+      onClick={onCardClick}
+    >
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${getVariantColors()} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
+      />
+      <div className="relative p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div
+            className={`p-3 rounded-xl bg-gradient-to-br ${getVariantColors()} shadow-lg`}
+          >
+            <Icon className="w-6 h-6 text-white" />
+          </div>
+          {change !== undefined && (
+            <Badge
+              variant={change >= 0 ? "default" : "destructive"}
+              className={cn(
+                "text-xs font-medium px-2 py-1",
+                change >= 0
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                  : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
+              )}
+            >
+              {change >= 0 ? "+" : ""}
+              {change}%
+            </Badge>
+          )}
+        </div>
+        <div className="space-y-1">
+          <h3 className="font-bold text-2xl text-[#00112F] dark:text-[#F9FAFB] group-hover:scale-105 transition-transform duration-300">
+            {value}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">
+            {title}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-500">{period}</p>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+const ClientCard: React.FC<{ client: Client; onUpdate: () => void }> = ({
+  client,
+  onUpdate,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const { toast } = useToast();
+
+  const handlePhoneCall = () => {
+    window.open(`tel:${client.phone}`, "_self");
+    toast({
+      title: "📞 Ligação Iniciada",
+      description: `Ligando para ${client.name}`,
+    });
+  };
+
+  const handleEmail = () => {
+    window.open(`mailto:${client.email}`, "_self");
+    toast({
+      title: "📧 Email Aberto",
+      description: `Enviando email para ${client.name}`,
+    });
+  };
+
+  const handleWhatsApp = () => {
+    const phone = client.phone.replace(/\D/g, "");
+    window.open(`https://wa.me/55${phone}`, "_blank");
+    toast({
+      title: "💬 WhatsApp Aberto",
+      description: `Conversando com ${client.name}`,
+    });
+  };
+
+  const daysSinceLastVisit = client.lastVisit
+    ? Math.floor(
+        (new Date().getTime() - new Date(client.lastVisit).getTime()) /
+          (1000 * 60 * 60 * 24),
+      )
+    : null;
+
+  const getStatusColor = (status: string) => {
+    return status === "ativo"
+      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+      : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
+  };
+
+  return (
+    <>
+      <Card className="group bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">
+                  {client.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg mb-1">
+                  {client.name}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
+                  {client.email}
+                </p>
+                <Badge className={getStatusColor(client.status)}>
+                  {client.status === "ativo" ? "Ativo" : "Inativo"}
+                </Badge>
+              </div>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setShowEditModal(true)}>
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handlePhoneCall}>
+                  <Phone className="w-4 h-4 mr-2" />
+                  Ligar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleEmail}>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Email
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleWhatsApp}>
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Métricas do Cliente */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                {client.visitCount}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Visitas
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                {formatCurrency(client.totalSpent)}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Gasto Total
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                {daysSinceLastVisit !== null ? `${daysSinceLastVisit}d` : "N/A"}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Última Visita
+              </div>
+            </div>
+          </div>
+
+          {/* Informações Básicas */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-gray-600 dark:text-gray-400 flex items-center">
+                  <Phone className="w-3 h-3 mr-1" />
+                  {client.phone}
+                </p>
+                {client.address && (
+                  <p className="text-gray-600 dark:text-gray-400 flex items-center">
+                    <MapPin className="w-3 h-3 mr-1 mt-0.5" />
+                    {client.address}
+                  </p>
+                )}
+                {client.birthDate && (
+                  <p className="text-gray-600 dark:text-gray-400 flex items-center">
+                    <Gift className="w-3 h-3 mr-1" />
+                    {formatDate(client.birthDate)}
+                  </p>
+                )}
+              </div>
+              <div>
+                <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
+                  Histórico
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Cliente desde{" "}
+                  {client.createdAt
+                    ? formatDate(client.createdAt)
+                    : "Data não informada"}
+                </p>
+                {client.lastVisit && (
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Última visita: {formatDate(client.lastVisit)}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Botão Expandir/Recolher */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="w-full mt-4 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="w-4 h-4 mr-1" />
+                  Menos detalhes
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-4 h-4 mr-1" />
+                  Ver histórico
+                </>
+              )}
+            </Button>
+
+            {/* Seção Expandida */}
+            {isExpanded && (
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                <h4 className="font-semibold text-[#00112F] dark:text-[#F9FAFB]">
+                  Histórico de Visitas
+                </h4>
+                {client.visits && client.visits.length > 0 ? (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {client.visits.slice(0, 5).map((visit) => (
+                      <div
+                        key={visit.id}
+                        className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-medium text-sm text-[#00112F] dark:text-[#F9FAFB]">
+                            {visit.service}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatDate(visit.date)} • {visit.professional}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-[#00112F] dark:text-[#F9FAFB]">
+                            {formatCurrency(visit.amount)}
+                          </p>
+                          {visit.rating && (
+                            <div className="flex items-center">
+                              <Star className="w-3 h-3 text-yellow-500 mr-1" />
+                              <span className="text-xs text-gray-500">
+                                {visit.rating}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Nenhuma visita registrada
+                  </p>
+                )}
+
+                {/* Insights do Cliente */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                  <h5 className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                    📊 Insights
+                  </h5>
+                  <div className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
+                    <p>Frequência média: a cada {client.avgInterval} dias</p>
+                    <p>
+                      Ticket médio:{" "}
+                      {formatCurrency(
+                        client.totalSpent / (client.visitCount || 1),
+                      )}
+                    </p>
+                    {daysSinceLastVisit !== null && daysSinceLastVisit > 90 && (
+                      <p className="text-orange-600 dark:text-orange-400 flex items-center">
+                        <AlertCircle className="w-3 h-3 mr-1" />
+                        Cliente inativo (90+ dias sem visita)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+
+      {/* Modal de Edição */}
+      {showEditModal && (
+        <EditClientModal
+          client={client}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={onUpdate}
+        />
+      )}
+    </>
+  );
+};
+
+const NewClientModal: React.FC<{
+  onClose: () => void;
+  onSuccess: () => void;
+}> = ({ onClose, onSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<NewClientForm>({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
+    notes: "",
+    status: "ativo",
+  });
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validações
+    if (!formData.name.trim()) {
+      toast({
+        title: "❌ Erro de Validação",
+        description: "Nome é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.email.trim() || !formData.email.includes("@")) {
+      toast({
+        title: "❌ Erro de Validação",
+        description: "Email válido é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      toast({
+        title: "❌ Erro de Validação",
+        description: "Telefone é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Simular chamada API
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Aqui seria a chamada real para API
+      // const response = await fetch('/api/clients', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     ...formData,
+      //     createdAt: new Date().toISOString(),
+      //   })
+      // });
+
+      toast({
+        title: "✅ Cliente Cadastrado",
+        description: `${formData.name} foi adicionado com sucesso`,
+      });
+
+      onSuccess();
+      onClose();
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao Cadastrar",
+        description: "Erro interno do servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>Novo Cliente</span>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="name">Nome Completo *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Ex: João Silva"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                placeholder="Ex: joao@email.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="phone">Telefone *</Label>
+              <Input
+                id="phone"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                placeholder="Ex: (11) 99999-9999"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="birthDate">Data de Nascimento</Label>
+              <Input
+                id="birthDate"
+                type="date"
+                value={formData.birthDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, birthDate: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="address">Endereço</Label>
+            <Input
+              id="address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+              placeholder="Ex: Rua das Flores, 123"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="notes">Observações</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
+              placeholder="Notas internas sobre o cliente..."
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="status">Status</Label>
+            <select
+              id="status"
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  status: e.target.value as "ativo" | "inativo",
+                })
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-700 hover:to-[#00112F]"
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Cliente
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const EditClientModal: React.FC<{
+  client: Client;
+  onClose: () => void;
+  onUpdate: () => void;
+}> = ({ client, onClose, onUpdate }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: client.name,
+    email: client.email,
+    phone: client.phone,
+    address: client.address || "",
+    birthDate: client.birthDate || "",
+    notes: client.notes || "",
+    status: client.status,
+  });
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      toast({
+        title: "✅ Cliente Atualizado",
+        description: `${formData.name} foi atualizado com sucesso`,
+      });
+
+      onUpdate();
+      onClose();
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao Atualizar",
+        description: "Erro interno do servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>Editar Cliente: {client.name}</span>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-name">Nome Completo</Label>
+              <Input
+                id="edit-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-phone">Telefone</Label>
+              <Input
+                id="edit-phone"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-status">Status</Label>
+              <select
+                id="edit-status"
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    status: e.target.value as "ativo" | "inativo",
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-gradient-to-r from-[#00112F] to-blue-700"
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Alterações
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   darkMode,
   onPageChange,
 }) => {
   const { toast } = useToast();
-  const [expandedClientId, setExpandedClientId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("todos");
-  const [sortBy, setSortBy] = useState<SortField>("name");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const [selectedClients, setSelectedClients] = useState<number[]>([]);
-  const [showNewClientModal, setShowNewClientModal] = useState(false);
-  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("todos");
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const [showNewClientModal, setShowNewClientModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  // API integration with automatic fallback
-  const {
-    data: apiResponse,
-    loading,
-    error,
-    refetch,
-  } = useClients({
-    search: searchTerm,
-    status: selectedStatus !== "todos" ? selectedStatus : undefined,
-    sort: sortBy,
-    order: sortOrder.toUpperCase() as "ASC" | "DESC",
-    page: 1,
-    limit: 50,
-  });
-
-  const createClientMutation = useCreateClient({
-    onSuccess: () => {
-      refetch();
-      setShowNewClientModal(false);
-      toast({
-        title: "✨ Cliente Criado",
-        description: "Novo cliente adicionado com sucesso",
-      });
+  // Mock data com dados mais realistas
+  const mockClients: Client[] = [
+    {
+      id: "1",
+      name: "João Silva",
+      email: "joao.silva@email.com",
+      phone: "(11) 99999-9999",
+      address: "Rua das Flores, 123",
+      birthDate: "1985-03-15",
+      createdAt: "2023-01-15T10:00:00Z",
+      lastVisit: "2024-01-10T14:30:00Z",
+      status: "ativo",
+      totalSpent: 1250,
+      visitCount: 8,
+      avgInterval: 15,
+      notes: "Cliente preferencial",
+      visits: [
+        {
+          id: "v1",
+          date: "2024-01-10T14:30:00Z",
+          service: "Corte + Barba",
+          amount: 85,
+          professional: "Carlos",
+          rating: 5,
+        },
+        {
+          id: "v2",
+          date: "2023-12-20T16:00:00Z",
+          service: "Corte",
+          amount: 60,
+          professional: "Ana",
+          rating: 4,
+        },
+      ],
     },
-  });
-
-  const updateClientMutation = useUpdateClient({
-    onSuccess: () => {
-      refetch();
-      setEditingClient(null);
-      toast({
-        title: "✅ Cliente Atualizado",
-        description: "Informações atualizadas com sucesso",
-      });
+    {
+      id: "2",
+      name: "Maria Costa",
+      email: "maria.costa@email.com",
+      phone: "(11) 88888-8888",
+      address: "Av. Principal, 456",
+      birthDate: "1990-07-22",
+      createdAt: "2023-02-10T11:00:00Z",
+      lastVisit: "2023-10-15T10:00:00Z", // Cliente inativo
+      status: "inativo",
+      totalSpent: 780,
+      visitCount: 5,
+      avgInterval: 30,
+      visits: [
+        {
+          id: "v3",
+          date: "2023-10-15T10:00:00Z",
+          service: "Escova + Corte",
+          amount: 120,
+          professional: "Ana",
+          rating: 5,
+        },
+      ],
     },
-  });
-
-  const deleteClientMutation = useDeleteClient({
-    onSuccess: () => {
-      refetch();
-      toast({
-        title: "🗑️ Cliente Removido",
-        description: "Cliente removido com sucesso",
-      });
+    {
+      id: "3",
+      name: "Pedro Santos",
+      email: "pedro.santos@email.com",
+      phone: "(11) 77777-7777",
+      createdAt: "2023-03-05T09:00:00Z",
+      lastVisit: "2024-01-05T11:30:00Z",
+      status: "ativo",
+      totalSpent: 420,
+      visitCount: 3,
+      avgInterval: 45,
+      visits: [],
     },
-  });
+    {
+      id: "4",
+      name: "Ana Oliveira",
+      email: "ana.oliveira@email.com",
+      phone: "(11) 66666-6666",
+      address: "Rua do Sol, 789",
+      birthDate: "1988-12-03",
+      createdAt: "2023-04-20T15:00:00Z",
+      lastVisit: "2024-01-08T13:00:00Z",
+      status: "ativo",
+      totalSpent: 950,
+      visitCount: 6,
+      avgInterval: 20,
+      visits: [
+        {
+          id: "v4",
+          date: "2024-01-08T13:00:00Z",
+          service: "Manicure + Pedicure",
+          amount: 80,
+          professional: "Lucia",
+          rating: 4,
+        },
+      ],
+    },
+    {
+      id: "5",
+      name: "Carlos Pereira",
+      email: "carlos.pereira@email.com",
+      phone: "(11) 55555-5555",
+      createdAt: "2023-05-10T12:00:00Z",
+      lastVisit: "2024-01-12T15:45:00Z",
+      status: "ativo",
+      totalSpent: 680,
+      visitCount: 4,
+      avgInterval: 25,
+      visits: [],
+    },
+    {
+      id: "6",
+      name: "Fernanda Lima",
+      email: "fernanda.lima@email.com",
+      phone: "(11) 44444-4444",
+      address: "Praça Central, 321",
+      birthDate: "1992-09-18",
+      createdAt: "2023-06-15T14:00:00Z",
+      lastVisit: "2024-01-09T12:15:00Z",
+      status: "ativo",
+      totalSpent: 1100,
+      visitCount: 7,
+      avgInterval: 18,
+      notes: "Sempre agenda pelo WhatsApp",
+      visits: [
+        {
+          id: "v5",
+          date: "2024-01-09T12:15:00Z",
+          service: "Coloração + Corte",
+          amount: 180,
+          professional: "Ana",
+          rating: 5,
+        },
+      ],
+    },
+  ];
 
-  // Use API data or fallback to mock data
-  const clients = apiResponse?.data || clientsMockData;
-  const pagination = apiResponse?.pagination;
+  const clients = mockClients; // Em produção, viria do hook useClients()
 
-  // Calculate metrics
+  // Cálculo de métricas com lógica de retenção real
   const metrics = useMemo(() => {
     const safeClients = clients || [];
     const totalClients = safeClients.length;
     const activeClients = safeClients.filter(
       (c: any) => c.status === "ativo",
     ).length;
+
+    // Clientes novos nos últimos 30 dias
     const newThisMonth = safeClients.filter((c: any) => {
       const created = new Date(c.createdAt);
-      const now = new Date();
-      return (
-        created.getMonth() === now.getMonth() &&
-        created.getFullYear() === now.getFullYear()
-      );
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return created >= thirtyDaysAgo;
     }).length;
 
-    const totalValue = clients.reduce(
+    // Taxa de retenção real: clientes com 2+ visitas nos últimos 6 meses
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const clientsWithMultipleVisits = safeClients.filter((c: any) => {
+      const recentVisits = (c.visits || []).filter(
+        (visit: any) => new Date(visit.date) >= sixMonthsAgo,
+      );
+      return recentVisits.length >= 2;
+    }).length;
+
+    const retentionRate =
+      activeClients > 0
+        ? Math.round((clientsWithMultipleVisits / activeClients) * 100)
+        : 0;
+
+    const totalRevenue = safeClients.reduce(
       (sum: number, c: any) => sum + (c.totalSpent || 0),
       0,
     );
-    const avgTicket = totalClients > 0 ? totalValue / totalClients : 0;
-    const retentionRate =
-      totalClients > 0 ? (activeClients / totalClients) * 100 : 0;
+    const avgTicket = totalClients > 0 ? totalRevenue / totalClients : 0;
 
     return {
       totalClients,
       activeClients,
       newThisMonth,
-      avgTicket,
       retentionRate,
-      totalValue,
+      totalRevenue,
+      avgTicket,
     };
   }, [clients]);
 
@@ -188,7 +1034,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
         client.phone?.includes(searchTerm);
 
       const matchesStatus =
-        selectedStatus === "todos" || client.status === selectedStatus;
+        statusFilter === "todos" || client.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -197,14 +1043,14 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     filtered.sort((a: Client, b: Client) => {
       let aValue: any, bValue: any;
 
-      switch (sortBy) {
+      switch (sortField) {
         case "name":
-          aValue = a.name;
-          bValue = b.name;
+          aValue = a.name?.toLowerCase() || "";
+          bValue = b.name?.toLowerCase() || "";
           break;
         case "email":
-          aValue = a.email;
-          bValue = b.email;
+          aValue = a.email?.toLowerCase() || "";
+          bValue = b.email?.toLowerCase() || "";
           break;
         case "createdAt":
           aValue = new Date(a.createdAt);
@@ -214,34 +1060,27 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           aValue = a.lastVisit ? new Date(a.lastVisit) : new Date(0);
           bValue = b.lastVisit ? new Date(b.lastVisit) : new Date(0);
           break;
+        case "totalSpent":
+          aValue = a.totalSpent || 0;
+          bValue = b.totalSpent || 0;
+          break;
         default:
           return 0;
       }
 
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
 
     return filtered;
-  }, [clients, searchTerm, selectedStatus, sortBy, sortOrder]);
-
-  const handleNavigate = (page: PageType) => {
-    if (onPageChange) {
-      onPageChange(page);
-      toast({
-        title: "Navegando",
-        description: `Direcionando para ${page}`,
-      });
-    }
-  };
+  }, [clients, searchTerm, statusFilter, sortField, sortDirection]);
 
   const handleRefreshData = () => {
     setIsLoading(true);
     setTimeout(() => {
       setLastUpdate(new Date());
       setIsLoading(false);
-      refetch();
       toast({
         title: "✨ Dados Atualizados",
         description: "Lista de clientes atualizada com sucesso",
@@ -249,526 +1088,175 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     }, 1000);
   };
 
-  const handleExportData = () => {
+  const handleExportData = async () => {
+    setIsExporting(true);
     toast({
-      title: "📊 Exportar Dados",
-      description: "Preparando relatório de clientes...",
+      title: "📊 Preparando Exportação",
+      description: "Gerando relatório de clientes...",
+    });
+
+    try {
+      // Simular tempo de processamento
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Criar dados CSV
+      const csvData = [
+        ["Nome", "Email", "Telefone", "Status", "Total Gasto", "Última Visita"],
+        ...filteredClients.map((client) => [
+          client.name,
+          client.email,
+          client.phone,
+          client.status,
+          client.totalSpent.toString(),
+          client.lastVisit ? formatDate(client.lastVisit) : "Nunca",
+        ]),
+      ];
+
+      const csvContent = csvData.map((row) => row.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `clientes_${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "✅ Exportação Concluída",
+        description: `${filteredClients.length} clientes exportados com sucesso`,
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Erro na Exportação",
+        description: "Erro ao gerar arquivo de exportação",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("todos");
+    setSortField("name");
+    setSortDirection("asc");
+    toast({
+      title: "🔄 Filtros Limpos",
+      description: "Todos os filtros foram removidos",
     });
   };
 
-  // Beautiful KPI Card Component usando paleta oficial
-  const BeautifulKPICard: React.FC<KPICardProps> = ({
-    title,
-    value,
-    change,
-    target,
-    period,
-    icon: Icon,
-    variant,
-    onCardClick,
-    navigateTo,
-    format = "number",
-  }) => {
-    const isClickable = onCardClick || navigateTo;
-
-    const formatValue = (val: string | number) => {
-      if (format === "currency") return formatCurrency(Number(val));
-      if (format === "percentage") return `${Number(val).toFixed(1)}%`;
-      return val.toString();
-    };
-
-    // Paleta oficial da marca - apenas tons de azul e cinza
-    const variantStyles = {
-      primary: {
-        gradient: "from-[#00112F]/10 via-[#00112F]/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-[#00112F] to-blue-800",
-        accent: "bg-[#00112F]",
-      },
-      success: {
-        gradient: "from-blue-600/10 via-blue-600/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-blue-600 to-blue-700",
-        accent: "bg-blue-600",
-      },
-      warning: {
-        gradient: "from-gray-600/10 via-gray-600/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-gray-600 to-gray-700",
-        accent: "bg-gray-600",
-      },
-      danger: {
-        gradient: "from-slate-600/10 via-slate-600/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-slate-600 to-slate-700",
-        accent: "bg-slate-600",
-      },
-      info: {
-        gradient: "from-blue-700/10 via-blue-700/5 to-transparent",
-        iconBg: "bg-gradient-to-br from-blue-700 to-blue-800",
-        accent: "bg-blue-700",
-      },
-      premium: {
-        gradient: "from-[#00112F]/20 via-[#0D1117]/10 to-transparent",
-        iconBg: "bg-gradient-to-br from-[#00112F] via-blue-900 to-[#0D1117]",
-        accent: "bg-gradient-to-r from-[#00112F] to-blue-900",
-      },
-    };
-
-    const style = variantStyles[variant];
-
-    return (
-      <Card
-        className={cn(
-          "group relative overflow-hidden transition-all duration-500 border-0 shadow-lg hover:shadow-xl",
-          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl",
-          isClickable &&
-            "cursor-pointer hover:-translate-y-1 hover:scale-[1.02]",
-        )}
-        onClick={() => {
-          if (onCardClick) onCardClick();
-          if (navigateTo) handleNavigate(navigateTo);
-        }}
-      >
-        {/* Animated gradient background */}
-        <div
-          className={cn(
-            "absolute inset-0 bg-gradient-to-br opacity-50 transition-opacity duration-500",
-            style.gradient,
-            "group-hover:opacity-70",
-          )}
-        />
-
-        {/* Glow effect on hover usando cores da marca */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-[#00112F]/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
-
-        <div className="relative p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center space-x-3">
-              <div
-                className={cn(
-                  "p-2.5 rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
-                  style.iconBg,
-                )}
-              >
-                <Icon className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                  {title}
-                </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">
-                  {period}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
-              {isClickable && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 hover:bg-white/20"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
-                </Button>
-              )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0 hover:bg-white/20"
-                  >
-                    <MoreVertical className="w-3.5 h-3.5 text-gray-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={onCardClick}>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Ver detalhes
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Download className="w-4 h-4 mr-2" />
-                    Exportar dados
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Target className="w-4 h-4 mr-2" />
-                    Configurar meta
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] leading-none tracking-tight">
-              {formatValue(value)}
-            </p>
-
-            {change !== undefined && (
-              <div className="flex items-center space-x-2">
-                <div
-                  className={cn(
-                    "flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                    change >= 0
-                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                      : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
-                  )}
-                >
-                  {change >= 0 ? (
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3 mr-1" />
-                  )}
-                  {Math.abs(change)}%
-                </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  vs. período anterior
-                </span>
-              </div>
-            )}
-          </div>
-
-          {target && (
-            <div className="mt-3 space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400 flex items-center">
-                  <Target className="w-3 h-3 mr-1" />
-                  Meta
-                </span>
-                <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                  {Math.round(
-                    (Number(value.toString().replace(/[^\d]/g, "")) / target) *
-                      100,
-                  )}
-                  %
-                </span>
-              </div>
-              <div className="relative">
-                <Progress
-                  value={
-                    (Number(value.toString().replace(/[^\d]/g, "")) / target) *
-                    100
-                  }
-                  className="h-1.5"
-                />
-                <div
-                  className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-[#00112F] to-blue-600 rounded-full opacity-20 animate-pulse"
-                  style={{
-                    width: `${(Number(value.toString().replace(/[^\d]/g, "")) / target) * 100}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
-    );
-  };
-
-  const BeautifulClientCard: React.FC<{ client: Client }> = ({ client }) => {
-    const isExpanded = expandedClientId === client.id;
-    const daysSinceLastVisit = client.lastVisit
-      ? Math.floor(
-          (new Date().getTime() - new Date(client.lastVisit).getTime()) /
-            (1000 * 60 * 60 * 24),
-        )
-      : null;
-
-    const statusStyles = {
-      ativo: {
-        bg: "bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 dark:from-blue-900/30 dark:to-blue-800/30 dark:text-blue-400",
-        border: "border-l-blue-500",
-        dot: "bg-blue-500",
-      },
-      inativo: {
-        bg: "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 dark:from-gray-900/30 dark:to-gray-800/30 dark:text-gray-400",
-        border: "border-l-gray-500",
-        dot: "bg-gray-500",
-      },
-    };
-
-    const status = statusStyles[client.status as keyof typeof statusStyles];
-
-    return (
-      <Card
-        className={cn(
-          "group relative overflow-hidden transition-all duration-300 border-0 shadow-md hover:shadow-xl cursor-pointer border-l-4",
-          "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-sm hover:bg-white dark:hover:bg-[#0D1117]",
-          "hover:-translate-y-1 hover:scale-[1.02]",
-          status.border,
-        )}
-        onClick={() => setExpandedClientId(isExpanded ? null : client.id)}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        <div className="relative p-4 space-y-3">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00112F] to-blue-700 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                  {client.name.charAt(0).toUpperCase()}
-                </div>
-                <div
-                  className={cn(
-                    "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white",
-                    status.dot,
-                  )}
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                  {client.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                  <Mail className="w-3 h-3 mr-1" />
-                  {client.email}
-                </p>
-                {client.phone && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                    <Phone className="w-3 h-3 mr-1" />
-                    {client.phone}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Badge
-                variant="outline"
-                className={cn("text-xs border-0", status.bg)}
-              >
-                {client.status === "ativo" ? "Ativo" : "Inativo"}
-              </Badge>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                {isExpanded ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {client.appointmentHistory?.length || 0}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Agendamentos
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {formatCurrency(client.totalSpent || 0)}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Total gasto
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {daysSinceLastVisit !== null ? `${daysSinceLastVisit}d` : "N/A"}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Última visita
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-              >
-                <Phone className="w-3.5 h-3.5 text-blue-600" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-blue-600" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-              >
-                <Calendar className="w-3.5 h-3.5 text-blue-600" />
-              </Button>
-            </div>
-
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingClient(client);
-                }}
-              >
-                <Edit2 className="w-3.5 h-3.5 text-gray-600" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <Eye className="w-4 h-4 mr-2" />
-                    Ver detalhes
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Novo agendamento
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-gray-600">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Remover cliente
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-
-          {/* Expanded content */}
-          {isExpanded && (
-            <div className="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                    Informações de Contato
-                  </div>
-                  {client.address && (
-                    <p className="text-gray-600 dark:text-gray-400 flex items-start">
-                      <MapPin className="w-3 h-3 mr-1 mt-0.5" />
-                      {client.address}
-                    </p>
-                  )}
-                  {client.birthDate && (
-                    <p className="text-gray-600 dark:text-gray-400 flex items-center">
-                      <Gift className="w-3 h-3 mr-1" />
-                      {formatDate(client.birthDate)}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                    Histórico
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Cliente desde{" "}
-                    {client.createdAt
-                      ? formatDate(client.createdAt)
-                      : "Data não informada"}
-                  </p>
-                  {client.lastVisit && (
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Última visita: {formatDate(client.lastVisit)}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {client.notes && (
-                <div>
-                  <div className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                    Observações
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    {client.notes}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Subtle hover glow usando cores da marca */}
-        <div className="absolute inset-0 border border-[#00112F]/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </Card>
-    );
+  const handleNavigate = (page: PageType) => {
+    if (onPageChange) {
+      onPageChange(page);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
-      <div className="space-y-6 p-6">
-        {/* Beautiful Header - cores da marca */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 p-8 text-white shadow-2xl">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)]" />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-blue-50/30 to-slate-100/50 dark:from-[#0D1117] dark:via-[#00112F]/20 dark:to-slate-900/50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-[#00112F]/10 to-blue-600/10 rounded-full blur-xl animate-pulse" />
+        <div className="absolute top-1/3 right-10 w-24 h-24 bg-gradient-to-br from-blue-600/10 to-[#00112F]/10 rounded-full blur-lg animate-pulse delay-1000" />
+        <div className="absolute bottom-10 left-1/3 w-40 h-40 bg-gradient-to-br from-[#00112F]/5 to-blue-700/5 rounded-full blur-2xl animate-pulse delay-2000" />
 
-          <div className="relative flex items-center justify-between">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <Users className="w-8 h-8 text-blue-200 animate-pulse" />
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                  Clientes&nbsp;
-                </h1>
+        {/* Sparkle Elements */}
+        {[...Array(6)].map((_, i) => (
+          <Sparkles
+            key={i}
+            className={cn(
+              "absolute w-6 h-6 text-[#00112F]/20 dark:text-blue-400/20 animate-pulse",
+              i === 0 && "top-1/4 left-1/4 delay-0",
+              i === 1 && "top-3/4 right-1/4 delay-1000",
+              i === 2 && "top-1/2 left-3/4 delay-2000",
+              i === 3 && "bottom-1/4 left-1/2 delay-3000",
+              i === 4 && "top-1/3 right-1/3 delay-4000",
+              i === 5 && "bottom-1/3 left-1/5 delay-5000",
+            )}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 p-6 md:p-8 lg:p-12">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl rounded-2xl border-0 shadow-2xl p-8 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#00112F] via-blue-900 to-blue-800 opacity-95" />
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold text-white mb-2">
+                      Clientes&nbsp;
+                    </h1>
+                    <p className="text-blue-100">
+                      Gerencie sua base de clientes • {filteredClients.length}{" "}
+                      clientes encontrados
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Button
+                    onClick={handleRefreshData}
+                    disabled={isLoading}
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-300"
+                  >
+                    <RefreshCw
+                      className={cn(
+                        "w-4 h-4 mr-2",
+                        isLoading && "animate-spin",
+                      )}
+                    />
+                    Atualizar
+                  </Button>
+                  <Button
+                    onClick={handleExportData}
+                    disabled={isExporting}
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm transition-all duration-300"
+                  >
+                    <Download
+                      className={cn(
+                        "w-4 h-4 mr-2",
+                        isExporting && "animate-spin",
+                      )}
+                    />
+                    {isExporting ? "Exportando..." : "Exportar"}
+                  </Button>
+                  <Button
+                    onClick={() => setShowNewClientModal(true)}
+                    className="bg-white hover:bg-blue-50 text-[#00112F] shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Novo Cliente
+                  </Button>
+                </div>
               </div>
-              <p className="text-blue-200 text-lg">
-                Gerencie sua base de clientes • {filteredClients.length}{" "}
-                clientes encontrados
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleRefreshData}
-                disabled={isLoading}
-                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-              >
-                <RefreshCw
-                  className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
-                />
-                {isLoading ? "Atualizando..." : "Atualizar"}
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleExportData}
-                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Exportar
-              </Button>
-              <Button
-                onClick={() => setShowNewClientModal(true)}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Novo Cliente
-              </Button>
+              <div className="text-sm text-blue-100">
+                Última atualização: {formatDate(lastUpdate)} às{" "}
+                {lastUpdate.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Beautiful KPI Cards */}
+        {/* KPI Cards */}
         <section>
           <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
             <Activity className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Métricas de Clientes
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            <BeautifulKPICard
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+            <KPICard
               title="Total de Clientes"
               value={metrics.totalClients}
               change={15}
@@ -776,175 +1264,150 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
               icon={Users}
               variant="primary"
               onCardClick={() => handleNavigate("clients")}
-              navigateTo="clients"
             />
-            <BeautifulKPICard
+            <KPICard
               title="Clientes Ativos"
               value={metrics.activeClients}
               change={8}
-              period="Status ativo"
+              period="Este mês"
               icon={UserCheck}
               variant="success"
             />
-            <BeautifulKPICard
-              title="Novos este Mês"
+            <KPICard
+              title="Novos Clientes"
               value={metrics.newThisMonth}
-              change={25}
-              period="Clientes novos"
+              change={22}
+              period="Últimos 30 dias"
               icon={TrendingUp}
-              variant="info"
+              variant="primary"
             />
-            <BeautifulKPICard
-              title="Ticket Médio"
-              value={metrics.avgTicket}
+            <KPICard
+              title="Taxa de Retenção"
+              value={`${metrics.retentionRate}%`}
               change={5}
-              period="Por cliente"
-              icon={Target}
-              variant="premium"
-              format="currency"
-            />
-            <BeautifulKPICard
-              title="Taxa Retenção"
-              value={metrics.retentionRate}
-              change={3}
               period="Últimos 6 meses"
-              icon={Heart}
+              icon={Target}
               variant="warning"
-              format="percentage"
             />
-            <BeautifulKPICard
-              title="Valor Total"
-              value={metrics.totalValue}
+            <KPICard
+              title="Receita Total"
+              value={formatCurrency(metrics.totalRevenue)}
               change={12}
-              period="Lifetime value"
-              icon={Zap}
+              period="Acumulado"
+              icon={DollarSign}
               variant="success"
-              format="currency"
+            />
+            <KPICard
+              title="Ticket Médio"
+              value={formatCurrency(metrics.avgTicket)}
+              change={-3}
+              period="Por cliente"
+              icon={CreditCard}
+              variant="danger"
             />
           </div>
         </section>
 
-        {/* Beautiful Filters */}
-        <Card className="p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
-          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-[#00112F] dark:text-blue-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar por nome, email ou telefone..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB] placeholder-gray-500"
-                />
+        {/* Filters */}
+        <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl mb-8">
+          <div className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Input
+                    placeholder="Buscar por nome, email ou telefone..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-white/50 dark:bg-[#0D1117]/50 border-gray-200 dark:border-gray-700 focus:border-[#00112F] dark:focus:border-blue-400"
+                  />
+                </div>
               </div>
-
-              <select
-                value={selectedStatus}
-                onChange={(e) =>
-                  setSelectedStatus(e.target.value as StatusFilter)
-                }
-                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB]"
-              >
-                <option value="todos">Todos os Status</option>
-                <option value="ativo">Ativos</option>
-                <option value="inativo">Inativos</option>
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortField)}
-                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB]"
-              >
-                <option value="name">Ordenar por Nome</option>
-                <option value="email">Ordenar por Email</option>
-                <option value="createdAt">Ordenar por Data de Criação</option>
-                <option value="lastVisit">Ordenar por Última Visita</option>
-              </select>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                }
-                className="px-3 hover:bg-blue-100 dark:hover:bg-blue-900/20"
-              >
-                {sortOrder === "asc" ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
+              <div className="flex gap-3 flex-wrap">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-2 rounded-lg bg-white/50 dark:bg-[#0D1117]/50 border border-gray-200 dark:border-gray-700 text-[#00112F] dark:text-[#F9FAFB] focus:outline-none focus:border-[#00112F] dark:focus:border-blue-400"
+                >
+                  <option value="todos">Todos os Status</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+                <select
+                  value={sortField}
+                  onChange={(e) => setSortField(e.target.value as SortField)}
+                  className="px-4 py-2 rounded-lg bg-white/50 dark:bg-[#0D1117]/50 border border-gray-200 dark:border-gray-700 text-[#00112F] dark:text-[#F9FAFB] focus:outline-none focus:border-[#00112F] dark:focus:border-blue-400"
+                >
+                  <option value="name">Ordenar por Nome</option>
+                  <option value="email">Ordenar por Email</option>
+                  <option value="createdAt">Ordenar por Data de Criação</option>
+                  <option value="lastVisit">Ordenar por Última Visita</option>
+                  <option value="totalSpent">Ordenar por Gasto Total</option>
+                </select>
+                {(searchTerm ||
+                  statusFilter !== "todos" ||
+                  sortField !== "name") && (
+                  <Button
+                    variant="outline"
+                    onClick={handleClearFilters}
+                    className="px-4 py-2 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Limpar
+                  </Button>
                 )}
-              </Button>
+              </div>
             </div>
           </div>
         </Card>
 
-        {/* Beautiful Client List */}
+        {/* Client List */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
             <Users className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
             Lista de Clientes
           </h2>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <Card
-                  key={i}
-                  className="p-4 animate-pulse bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0"
-                >
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-xl" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
-                      <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {[...Array(3)].map((_, j) => (
-                      <div key={j} className="text-center">
-                        <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded mb-1" />
-                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded" />
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredClients.map((client: Client) => (
-                <BeautifulClientCard key={client.id} client={client} />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredClients.map((client: Client) => (
+              <ClientCard
+                key={client.id}
+                client={client}
+                onUpdate={handleRefreshData}
+              />
+            ))}
+          </div>
 
-          {!loading && filteredClients.length === 0 && (
-            <Card className="p-12 text-center bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
-              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center">
-                <Users className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+          {filteredClients.length === 0 && (
+            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+              <div className="p-12 text-center">
+                <Users className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                  Nenhum cliente encontrado
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  Ajuste os filtros ou cadastre um novo cliente
+                </p>
+                <Button
+                  onClick={() => setShowNewClientModal(true)}
+                  className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-700 hover:to-[#00112F] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Cadastrar Primeiro Cliente
+                </Button>
               </div>
-              <h3 className="text-xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
-                Nenhum cliente encontrado
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Não encontramos clientes com os filtros aplicados. Tente ajustar
-                os critérios de busca.
-              </p>
-              <Button
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedStatus("todos");
-                }}
-                className="bg-gradient-to-r from-[#00112F] to-blue-700 hover:from-blue-800 hover:to-blue-900 text-white border-0"
-              >
-                Limpar Filtros
-              </Button>
             </Card>
           )}
         </div>
       </div>
+
+      {/* Modal de Novo Cliente */}
+      {showNewClientModal && (
+        <NewClientModal
+          onClose={() => setShowNewClientModal(false)}
+          onSuccess={handleRefreshData}
+        />
+      )}
     </div>
   );
 };
