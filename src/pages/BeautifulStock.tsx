@@ -583,7 +583,9 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
             </div>
             <div className="text-center">
               <div className="text-sm font-bold text-[#00112F] dark:text-[#F9FAFB]">
-                {formatDate(product.last_updated).split(" ")[0]}
+                {product.last_updated
+                  ? formatDate(product.last_updated).split(" ")[0]
+                  : "N/A"}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 Atualizado
