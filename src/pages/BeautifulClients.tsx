@@ -1061,6 +1061,16 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     }
     return initialClients;
   });
+
+  // Persist clients to localStorage whenever the state changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("unclic-clients", JSON.stringify(clients));
+    } catch (error) {
+      console.error("Error saving clients to localStorage:", error);
+    }
+  }, [clients]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [sortField, setSortField] = useState<SortField>("name");
