@@ -1291,6 +1291,27 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
   }, [toast]);
 
+  const handleAddTestClient = useCallback(() => {
+    const testClient: Client = {
+      id: `test-${Date.now()}`,
+      name: `Cliente Teste ${new Date().toLocaleTimeString()}`,
+      email: `teste${Date.now()}@email.com`,
+      phone: "(11) 99999-0000",
+      address: "Rua de Teste, 123",
+      createdAt: new Date().toISOString(),
+      status: "ativo",
+      totalSpent: 100,
+      visitCount: 1,
+      avgInterval: 30,
+      visits: [],
+    };
+    handleAddClient(testClient);
+    toast({
+      title: "🧪 Cliente de Teste Adicionado",
+      description: `${testClient.name} foi criado para teste`,
+    });
+  }, [handleAddClient, toast]);
+
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
       onPageChange(page);
