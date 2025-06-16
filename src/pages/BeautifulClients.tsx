@@ -1264,6 +1264,14 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
   }, [toast]);
 
+  const handleResetData = useCallback(() => {
+    setClients(initialClients);
+    toast({
+      title: "🔄 Dados Resetados",
+      description: "Base de clientes restaurada para o estado inicial",
+    });
+  }, [toast]);
+
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
       onPageChange(page);
