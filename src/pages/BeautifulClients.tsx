@@ -109,7 +109,7 @@ interface KPICardProps {
 
 type SortField = "name" | "email" | "createdAt" | "lastVisit" | "totalSpent";
 
-// Initial mock data
+// Initial mock data (compatible with NeonClient)
 const initialClients: Client[] = [
   {
     id: "1",
@@ -124,6 +124,7 @@ const initialClients: Client[] = [
     totalSpent: 950,
     visitCount: 6,
     avgInterval: 20,
+    notes: "Cliente preferencial",
     visits: [
       {
         id: "v4",
