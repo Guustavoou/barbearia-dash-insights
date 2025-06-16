@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   BarChart3,
   PieChart,
@@ -27,6 +27,19 @@ import {
   AlertCircle,
   CheckCircle,
   X,
+  ShoppingCart,
+  Briefcase,
+  Heart,
+  MapPin,
+  Phone,
+  Mail,
+  MessageCircle,
+  Share2,
+  TrendingDown as MarketingDown,
+  Percent,
+  Zap,
+  Award,
+  Shield,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
@@ -36,6 +49,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import { api } from "@/lib/api";
 
 interface BeautifulReportsProps {
   darkMode: boolean;
@@ -49,34 +63,17 @@ interface KPICardProps {
   target?: number;
   period: string;
   icon: React.ElementType;
-  variant?: "primary" | "success" | "warning" | "danger" | "premium";
+  variant?: "primary" | "success" | "warning" | "danger" | "premium" | "info";
+  onClick?: () => void;
 }
 
-interface ReportData {
-  financial: {
-    revenue: number;
-    expenses: number;
-    profit: number;
-    growth: number;
-  };
-  clients: {
-    total: number;
-    active: number;
-    new: number;
-    retention: number;
-  };
-  services: {
-    total: number;
-    popular: string;
-    avgDuration: number;
-    satisfaction: number;
-  };
-  professionals: {
-    total: number;
-    avgRating: number;
-    busiest: string;
-    utilization: number;
-  };
+interface ReportSection {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  metrics: KPICardProps[];
 }
 
 const KPICard: React.FC<KPICardProps> = ({
@@ -87,24 +84,33 @@ const KPICard: React.FC<KPICardProps> = ({
   period,
   icon: Icon,
   variant = "primary",
+  onClick,
 }) => {
   const getVariantColors = () => {
     switch (variant) {
       case "success":
-        return "from-blue-600 to-blue-800";
+        return "from-green-600 to-green-800";
       case "warning":
-        return "from-slate-600 to-slate-700";
+        return "from-yellow-600 to-orange-700";
       case "danger":
-        return "from-gray-600 to-gray-700";
+        return "from-red-600 to-red-800";
       case "premium":
-        return "from-[#00112F] to-blue-900";
+        return "from-purple-600 to-purple-800";
+      case "info":
+        return "from-blue-600 to-blue-800";
       default:
         return "from-[#00112F] to-blue-700";
     }
   };
 
   return (
-    <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+    <Card
+      className={cn(
+        "group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1",
+        onClick && "cursor-pointer",
+      )}
+      onClick={onClick}
+    >
       <div
         className={`absolute inset-0 bg-gradient-to-br ${getVariantColors()} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}
       />
@@ -118,17 +124,17 @@ const KPICard: React.FC<KPICardProps> = ({
           {change !== undefined && (
             <div className="flex items-center space-x-1">
               {change >= 0 ? (
-                <ArrowUpRight className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <ArrowUpRight className="w-4 h-4 text-green-600 dark:text-green-400" />
               ) : (
-                <ArrowDownRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <ArrowDownRight className="w-4 h-4 text-red-600 dark:text-red-400" />
               )}
               <Badge
                 variant={change >= 0 ? "default" : "destructive"}
                 className={cn(
                   "text-xs font-medium px-2 py-1",
                   change >= 0
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                    : "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
                 )}
               >
                 {change >= 0 ? "+" : ""}
@@ -163,6 +169,71 @@ const KPICard: React.FC<KPICardProps> = ({
   );
 };
 
+const SectionCard: React.FC<{
+  section: ReportSection;
+  onSectionClick: (id: string) => void;
+}> = ({ section, onSectionClick }) => {
+  return (
+    <Card className="group bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden">
+      <div className={`h-2 bg-gradient-to-r ${section.color}`} />
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div
+              className={`p-3 rounded-xl bg-gradient-to-br ${section.color} shadow-lg`}
+            >
+              <section.icon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                {section.title}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {section.description}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onSectionClick(section.id)}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {section.metrics.slice(0, 4).map((metric, index) => (
+            <div
+              key={index}
+              className="text-center p-3 rounded-lg bg-gray-50/50 dark:bg-gray-800/30"
+            >
+              <div className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                {metric.value}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {metric.title}
+              </div>
+              {metric.change !== undefined && (
+                <div
+                  className={cn(
+                    "text-xs font-medium mt-1",
+                    metric.change >= 0 ? "text-green-600" : "text-red-600",
+                  )}
+                >
+                  {metric.change >= 0 ? "+" : ""}
+                  {metric.change}%
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+};
+
 export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   darkMode,
   onPageChange,
@@ -170,262 +241,443 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const { toast } = useToast();
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("30d");
-  const [selectedReport, setSelectedReport] = useState<string>("financeiro");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("month");
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [reportData, setReportData] = useState<any>({});
 
-  // Mock data for reports
-  const reportData: ReportData = {
-    financial: {
-      revenue: 45680,
-      expenses: 18230,
-      profit: 27450,
-      growth: 12.5,
-    },
-    clients: {
-      total: 1250,
-      active: 890,
-      new: 85,
-      retention: 78.5,
-    },
-    services: {
-      total: 24,
-      popular: "Corte + Barba",
-      avgDuration: 45,
-      satisfaction: 4.8,
-    },
-    professionals: {
-      total: 8,
-      avgRating: 4.7,
-      busiest: "João Silva",
-      utilization: 85.2,
-    },
-  };
+  // Load data from APIs
+  const loadReportData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      console.log("🔄 Loading comprehensive report data...");
+
+      const [
+        businessResponse,
+        salesResponse,
+        professionalsResponse,
+        clientsResponse,
+        appointmentsResponse,
+        financialResponse,
+        inventoryResponse,
+      ] = await Promise.all([
+        api.getBusinessReports(selectedPeriod),
+        api.getSalesReports(selectedPeriod, 10),
+        api.getProfessionalReports(selectedPeriod),
+        api.getClientReports(selectedPeriod),
+        api.getAppointmentReports(selectedPeriod),
+        api.getFinancialReports(selectedPeriod),
+        api.getInventoryReports(),
+      ]);
+
+      setReportData({
+        business: businessResponse.success ? businessResponse.data : null,
+        sales: salesResponse.success ? salesResponse.data : null,
+        professionals: professionalsResponse.success
+          ? professionalsResponse.data
+          : null,
+        clients: clientsResponse.success ? clientsResponse.data : null,
+        appointments: appointmentsResponse.success
+          ? appointmentsResponse.data
+          : null,
+        financial: financialResponse.success ? financialResponse.data : null,
+        inventory: inventoryResponse.success ? inventoryResponse.data : null,
+      });
+
+      console.log("✅ Report data loaded successfully");
+    } catch (error) {
+      console.error("❌ Error loading report data:", error);
+      toast({
+        title: "⚠️ Erro ao Carregar",
+        description: "Usando dados simulados para demonstração",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedPeriod, toast]);
+
+  useEffect(() => {
+    loadReportData();
+  }, [loadReportData]);
 
   const periodOptions = [
-    { value: "7d", label: "Últimos 7 dias" },
-    { value: "30d", label: "Últimos 30 dias" },
-    { value: "90d", label: "Últimos 3 meses" },
-    { value: "1y", label: "Último ano" },
+    { value: "week", label: "Últimos 7 dias" },
+    { value: "month", label: "Últimos 30 dias" },
+    { value: "year", label: "Último ano" },
   ];
 
-  const reportTypes = [
-    { value: "financeiro", label: "Relatório Financeiro", icon: DollarSign },
-    { value: "clientes", label: "Relatório de Clientes", icon: Users },
-    { value: "servicos", label: "Relatório de Serviços", icon: Activity },
-    {
-      value: "profissionais",
-      label: "Relatório de Profissionais",
-      icon: Target,
-    },
-  ];
+  // Create sections with real or fallback data
+  const reportSections: ReportSection[] = useMemo(() => {
+    const businessData = reportData.business?.overview || {};
+    const salesData = reportData.sales || [];
+    const professionalsData = reportData.professionals || [];
+    const clientsData = reportData.clients?.overview || {};
+    const appointmentsData = reportData.appointments?.trends || [];
+    const financialData = reportData.financial || {};
+    const inventoryData = reportData.inventory?.overview || {};
 
-  const recentReports = [
-    {
-      id: "1",
-      name: "Relatório Financeiro - Janeiro 2024",
-      type: "Financeiro",
-      createdAt: "2024-02-01T10:00:00Z",
-      size: "2.3 MB",
-      status: "concluido" as const,
-    },
-    {
-      id: "2",
-      name: "Análise de Clientes - Q4 2023",
-      type: "Clientes",
-      createdAt: "2024-01-15T14:30:00Z",
-      size: "1.8 MB",
-      status: "concluido" as const,
-    },
-    {
-      id: "3",
-      name: "Performance de Serviços - Dezembro",
-      type: "Serviços",
-      createdAt: "2024-01-01T09:00:00Z",
-      size: "1.2 MB",
-      status: "processando" as const,
-    },
-  ];
-
-  const metrics = useMemo(() => {
-    switch (selectedReport) {
-      case "financeiro":
-        return [
+    return [
+      {
+        id: "agendamentos",
+        title: "Agendamentos",
+        description: "Performance e tendências de agendamentos",
+        icon: Calendar,
+        color: "from-blue-600 to-blue-800",
+        metrics: [
           {
-            title: "Receita Total",
-            value: formatCurrency(reportData.financial.revenue),
-            change: reportData.financial.growth,
-            period: "Este mês",
-            icon: DollarSign,
-            variant: "primary" as const,
+            title: "Total de Agendamentos",
+            value: businessData.current_appointments || 248,
+            change: businessData.appointment_growth || 15.3,
+            period: "Este período",
+            icon: Calendar,
+            variant: "info",
           },
           {
-            title: "Despesas",
-            value: formatCurrency(reportData.financial.expenses),
-            change: -5.2,
-            period: "Este mês",
-            icon: CreditCard,
-            variant: "warning" as const,
+            title: "Taxa de Conclusão",
+            value: "94%",
+            change: 2.1,
+            period: "Este período",
+            icon: CheckCircle,
+            variant: "success",
+            target: 95,
           },
           {
-            title: "Lucro Líquido",
-            value: formatCurrency(reportData.financial.profit),
-            change: 18.7,
-            period: "Este mês",
-            icon: TrendingUp,
-            variant: "success" as const,
+            title: "Taxa de No-Show",
+            value: "3%",
+            change: -1.2,
+            period: "Este período",
+            icon: AlertCircle,
+            variant: "warning",
           },
           {
-            title: "Margem de Lucro",
-            value: `${Math.round((reportData.financial.profit / reportData.financial.revenue) * 100)}%`,
-            change: 3.1,
-            period: "Este mês",
-            icon: Target,
-            variant: "premium" as const,
-            target: 65,
+            title: "Tempo Médio",
+            value: "45min",
+            change: -2.5,
+            period: "Por atendimento",
+            icon: Clock,
+            variant: "info",
           },
-        ];
-      case "clientes":
-        return [
+        ],
+      },
+      {
+        id: "clientes",
+        title: "Clientes",
+        description: "Análise e comportamento da base de clientes",
+        icon: Users,
+        color: "from-green-600 to-green-800",
+        metrics: [
           {
             title: "Total de Clientes",
-            value: reportData.clients.total,
-            change: 15.3,
-            period: "Base ativa",
+            value: clientsData.total_clients || 1250,
+            change: 12.8,
+            period: "Base total",
             icon: Users,
-            variant: "primary" as const,
+            variant: "success",
           },
           {
             title: "Clientes Ativos",
-            value: reportData.clients.active,
+            value: clientsData.active_clients || 890,
             change: 8.7,
-            period: "Este mês",
+            period: "Este período",
             icon: UserCheck,
-            variant: "success" as const,
+            variant: "success",
           },
           {
             title: "Novos Clientes",
-            value: reportData.clients.new,
+            value: "85",
             change: 22.1,
             period: "Este mês",
             icon: Star,
-            variant: "premium" as const,
+            variant: "premium",
           },
           {
             title: "Taxa de Retenção",
-            value: `${reportData.clients.retention}%`,
+            value: "78.5%",
             change: 5.4,
             period: "Este trimestre",
-            icon: Target,
-            variant: "warning" as const,
+            icon: Heart,
+            variant: "success",
             target: 80,
           },
-        ];
-      case "servicos":
-        return [
+        ],
+      },
+      {
+        id: "servicos",
+        title: "Serviços",
+        description: "Performance e popularidade dos serviços",
+        icon: Activity,
+        color: "from-purple-600 to-purple-800",
+        metrics: [
           {
-            title: "Total de Serviços",
-            value: reportData.services.total,
+            title: "Serviços Ativos",
+            value: salesData.length || 24,
             change: 0,
-            period: "Catálogo ativo",
+            period: "Catálogo atual",
             icon: Activity,
-            variant: "primary" as const,
-          },
-          {
-            title: "Duração Média",
-            value: `${reportData.services.avgDuration}min`,
-            change: -2.1,
-            period: "Por atendimento",
-            icon: Clock,
-            variant: "success" as const,
-          },
-          {
-            title: "Satisfação",
-            value: reportData.services.satisfaction.toFixed(1),
-            change: 4.2,
-            period: "Avaliação média",
-            icon: Star,
-            variant: "premium" as const,
-            target: 5,
+            variant: "premium",
           },
           {
             title: "Mais Popular",
-            value: reportData.services.popular,
-            period: "Este mês",
+            value: "Corte + Barba",
+            period: "Este período",
             icon: TrendingUp,
-            variant: "warning" as const,
-          },
-        ];
-      case "profissionais":
-        return [
-          {
-            title: "Total de Profissionais",
-            value: reportData.professionals.total,
-            change: 12.5,
-            period: "Equipe ativa",
-            icon: Target,
-            variant: "primary" as const,
+            variant: "premium",
           },
           {
-            title: "Avaliação Média",
-            value: reportData.professionals.avgRating.toFixed(1),
-            change: 2.1,
-            period: "Satisfação geral",
+            title: "Satisfação Média",
+            value: "4.8",
+            change: 4.2,
+            period: "Avaliação geral",
             icon: Star,
-            variant: "success" as const,
+            variant: "premium",
             target: 5,
           },
           {
-            title: "Taxa de Utilização",
-            value: `${reportData.professionals.utilization}%`,
+            title: "Receita por Serviço",
+            value: formatCurrency(850),
+            change: 18.7,
+            period: "Média mensal",
+            icon: DollarSign,
+            variant: "premium",
+          },
+        ],
+      },
+      {
+        id: "profissionais",
+        title: "Profissionais",
+        description: "Produtividade e performance da equipe",
+        icon: Target,
+        color: "from-orange-600 to-red-700",
+        metrics: [
+          {
+            title: "Total da Equipe",
+            value: professionalsData.length || 8,
+            change: 12.5,
+            period: "Profissionais ativos",
+            icon: Target,
+            variant: "warning",
+          },
+          {
+            title: "Avaliação Média",
+            value: "4.7",
+            change: 2.1,
+            period: "Satisfação geral",
+            icon: Star,
+            variant: "warning",
+            target: 5,
+          },
+          {
+            title: "Taxa de Ocupação",
+            value: "85.2%",
             change: 8.3,
-            period: "Ocupação média",
+            period: "Utilização média",
             icon: Activity,
-            variant: "premium" as const,
+            variant: "warning",
             target: 90,
           },
           {
             title: "Mais Solicitado",
-            value: reportData.professionals.busiest,
-            period: "Este mês",
-            icon: UserCheck,
-            variant: "warning" as const,
+            value: "João Silva",
+            period: "Este período",
+            icon: Award,
+            variant: "warning",
           },
-        ];
-      default:
-        return [];
-    }
-  }, [selectedReport, reportData]);
+        ],
+      },
+      {
+        id: "estoque",
+        title: "Estoque",
+        description: "Controle e gestão de produtos",
+        icon: Package,
+        color: "from-teal-600 to-cyan-700",
+        metrics: [
+          {
+            title: "Produtos Ativos",
+            value: inventoryData.active_products || 156,
+            change: 5.2,
+            period: "Catálogo atual",
+            icon: Package,
+            variant: "info",
+          },
+          {
+            title: "Valor do Estoque",
+            value: formatCurrency(inventoryData.total_inventory_value || 45680),
+            change: 12.3,
+            period: "Valor total",
+            icon: DollarSign,
+            variant: "info",
+          },
+          {
+            title: "Produtos em Falta",
+            value: inventoryData.out_of_stock_count || 3,
+            change: -25.0,
+            period: "Sem estoque",
+            icon: AlertCircle,
+            variant: "danger",
+          },
+          {
+            title: "Estoque Baixo",
+            value: inventoryData.low_stock_count || 12,
+            change: -15.8,
+            period: "Alerta de reposição",
+            icon: TrendingDown,
+            variant: "warning",
+          },
+        ],
+      },
+      {
+        id: "financeiro",
+        title: "Financeiro",
+        description: "Receitas, despesas e lucratividade",
+        icon: DollarSign,
+        color: "from-emerald-600 to-green-700",
+        metrics: [
+          {
+            title: "Receita Total",
+            value: formatCurrency(businessData.current_revenue || 45680),
+            change: businessData.revenue_growth || 12.5,
+            period: "Este período",
+            icon: DollarSign,
+            variant: "success",
+          },
+          {
+            title: "Despesas",
+            value: formatCurrency(18230),
+            change: -5.2,
+            period: "Este período",
+            icon: CreditCard,
+            variant: "warning",
+          },
+          {
+            title: "Lucro Líquido",
+            value: formatCurrency(27450),
+            change: 18.7,
+            period: "Este período",
+            icon: TrendingUp,
+            variant: "success",
+          },
+          {
+            title: "Margem de Lucro",
+            value: "60%",
+            change: 3.1,
+            period: "Este período",
+            icon: Percent,
+            variant: "success",
+            target: 65,
+          },
+        ],
+      },
+      {
+        id: "pagamentos",
+        title: "Pagamentos",
+        description: "Métodos e eficiência de pagamentos",
+        icon: CreditCard,
+        color: "from-indigo-600 to-blue-700",
+        metrics: [
+          {
+            title: "Taxa de Sucesso",
+            value: "98.5%",
+            change: 1.2,
+            period: "Este período",
+            icon: CheckCircle,
+            variant: "info",
+            target: 99,
+          },
+          {
+            title: "Pagamentos PIX",
+            value: "65%",
+            change: 15.3,
+            period: "Participação",
+            icon: Zap,
+            variant: "info",
+          },
+          {
+            title: "Cartão de Crédito",
+            value: "25%",
+            change: -5.1,
+            period: "Participação",
+            icon: CreditCard,
+            variant: "info",
+          },
+          {
+            title: "Valor Médio",
+            value: formatCurrency(185),
+            change: 8.7,
+            period: "Por transação",
+            icon: DollarSign,
+            variant: "info",
+          },
+        ],
+      },
+      {
+        id: "marketing",
+        title: "Marketing",
+        description: "Campanhas e conversão de clientes",
+        icon: MessageCircle,
+        color: "from-pink-600 to-rose-700",
+        metrics: [
+          {
+            title: "Taxa de Conversão",
+            value: "3.2%",
+            change: 12.8,
+            period: "Este período",
+            icon: Target,
+            variant: "premium",
+            target: 5,
+          },
+          {
+            title: "Campanhas Ativas",
+            value: "6",
+            change: 50.0,
+            period: "Em andamento",
+            icon: Share2,
+            variant: "premium",
+          },
+          {
+            title: "ROI Médio",
+            value: "350%",
+            change: 25.4,
+            period: "Retorno investimento",
+            icon: TrendingUp,
+            variant: "premium",
+          },
+          {
+            title: "Leads Gerados",
+            value: "124",
+            change: 18.9,
+            period: "Este mês",
+            icon: Users,
+            variant: "premium",
+          },
+        ],
+      },
+    ];
+  }, [reportData]);
 
   const handleRefreshData = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setLastUpdate(new Date());
-      setIsLoading(false);
-      toast({
-        title: "✨ Dados Atualizados",
-        description: "Relatórios atualizados com sucesso",
-      });
-    }, 1000);
+    setLastUpdate(new Date());
+    loadReportData();
+    toast({
+      title: "✨ Dados Atualizados",
+      description: "Relatórios atualizados com sucesso",
+    });
   };
 
   const handleExportReport = () => {
     toast({
       title: "📊 Exportando Relatório",
-      description: `Preparando ${reportTypes.find((r) => r.value === selectedReport)?.label}...`,
+      description: "Preparando relatório completo...",
     });
   };
 
-  const handleDownloadReport = (reportName: string) => {
-    toast({
-      title: "⬇️ Download Iniciado",
-      description: `Baixando ${reportName}...`,
-    });
+  const handleSectionClick = (sectionId: string) => {
+    setSelectedSection(selectedSection === sectionId ? null : sectionId);
   };
 
   const handleClearFilters = () => {
-    setSelectedPeriod("30d");
-    setSelectedReport("financeiro");
+    setSelectedPeriod("month");
+    setSelectedSection(null);
     setShowFilters(false);
     toast({
       title: "🔄 Filtros Limpos",
@@ -433,16 +685,9 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
     });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "concluido":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
-      case "processando":
-        return "bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400";
-      default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400";
-    }
-  };
+  const selectedSectionData = selectedSection
+    ? reportSections.find((s) => s.id === selectedSection)
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-blue-50/30 to-slate-100/50 dark:from-[#0D1117] dark:via-[#00112F]/20 dark:to-slate-900/50 relative overflow-hidden">
@@ -453,7 +698,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
         <div className="absolute bottom-10 left-1/3 w-40 h-40 bg-gradient-to-br from-[#00112F]/5 to-blue-700/5 rounded-full blur-2xl animate-pulse delay-2000" />
 
         {/* Sparkle Elements */}
-        {[...Array(6)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <Sparkles
             key={i}
             className={cn(
@@ -464,6 +709,8 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
               i === 3 && "bottom-1/4 left-1/2 delay-3000",
               i === 4 && "top-1/3 right-1/3 delay-4000",
               i === 5 && "bottom-1/3 left-1/5 delay-5000",
+              i === 6 && "top-1/5 right-1/2 delay-6000",
+              i === 7 && "bottom-1/2 right-1/5 delay-7000",
             )}
           />
         ))}
@@ -482,10 +729,10 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold text-white mb-2">
-                      Relatórios & Análises
+                      Relatórios Executivos
                     </h1>
                     <p className="text-blue-100">
-                      Insights completos do seu negócio
+                      Visão completa das 8 áreas chave do seu negócio
                     </p>
                   </div>
                 </div>
@@ -529,17 +776,6 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex flex-wrap gap-3 flex-1">
                 <select
-                  value={selectedReport}
-                  onChange={(e) => setSelectedReport(e.target.value)}
-                  className="px-4 py-2 rounded-lg bg-white/50 dark:bg-[#0D1117]/50 border border-gray-200 dark:border-gray-700 text-[#00112F] dark:text-[#F9FAFB] focus:outline-none focus:border-[#00112F] dark:focus:border-blue-400"
-                >
-                  {reportTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-                <select
                   value={selectedPeriod}
                   onChange={(e) => setSelectedPeriod(e.target.value)}
                   className="px-4 py-2 rounded-lg bg-white/50 dark:bg-[#0D1117]/50 border border-gray-200 dark:border-gray-700 text-[#00112F] dark:text-[#F9FAFB] focus:outline-none focus:border-[#00112F] dark:focus:border-blue-400"
@@ -550,8 +786,16 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
                     </option>
                   ))}
                 </select>
-                {(selectedPeriod !== "30d" ||
-                  selectedReport !== "financeiro") && (
+                {selectedSection && (
+                  <Badge variant="outline" className="px-3 py-1">
+                    Seção:{" "}
+                    {
+                      reportSections.find((s) => s.id === selectedSection)
+                        ?.title
+                    }
+                  </Badge>
+                )}
+                {(selectedPeriod !== "month" || selectedSection) && (
                   <Button
                     variant="outline"
                     onClick={handleClearFilters}
@@ -566,114 +810,180 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
           </div>
         </Card>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {metrics.map((metric, index) => (
-            <KPICard
-              key={index}
-              title={metric.title}
-              value={metric.value}
-              change={metric.change}
-              target={metric.target}
-              period={metric.period}
-              icon={metric.icon}
-              variant={metric.variant}
-            />
-          ))}
-        </div>
+        {/* Report Sections Overview */}
+        {!selectedSection && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {reportSections.map((section) => (
+              <SectionCard
+                key={section.id}
+                section={section}
+                onSectionClick={handleSectionClick}
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Recent Reports */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Charts Section */}
-          <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
-                <PieChart className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
-                Análises Visuais
-              </h3>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="text-center p-6 rounded-lg bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20">
-                  <LineChart className="w-10 h-10 mx-auto mb-3 text-[#00112F] dark:text-blue-400" />
-                  <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                    Tendências Temporais
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Análise de crescimento e sazonalidade
-                  </p>
-                </div>
-                <div className="text-center p-6 rounded-lg bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20">
-                  <BarChart3 className="w-10 h-10 mx-auto mb-3 text-[#00112F] dark:text-blue-400" />
-                  <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                    Comparações
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Performance vs períodos anteriores
-                  </p>
-                </div>
-                <div className="text-center p-6 rounded-lg bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20">
-                  <Target className="w-10 h-10 mx-auto mb-3 text-[#00112F] dark:text-blue-400" />
-                  <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB] mb-1">
-                    Metas e Objetivos
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Acompanhamento de progresso
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Recent Reports List */}
-          <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
-                <FileText className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
-                Relatórios Recentes
-              </h3>
-              <div className="space-y-4">
-                {recentReports.map((report) => (
-                  <div
-                    key={report.id}
-                    className="group p-4 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-[#00112F] dark:text-[#F9FAFB] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                        {report.name}
-                      </h4>
-                      <Badge className={getStatusColor(report.status)}>
-                        {report.status === "concluido"
-                          ? "Concluído"
-                          : "Processando"}
-                      </Badge>
+        {/* Detailed Section View */}
+        {selectedSection && selectedSectionData && (
+          <div className="space-y-8">
+            {/* Section Header */}
+            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+              <div
+                className={`h-2 bg-gradient-to-r ${selectedSectionData.color}`}
+              />
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`p-4 rounded-xl bg-gradient-to-br ${selectedSectionData.color} shadow-lg`}
+                    >
+                      <selectedSectionData.icon className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                      <span>
-                        {report.type} • {report.size}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <span>
-                          {report.createdAt
-                            ? formatDate(report.createdAt)
-                            : "Data não informada"}
-                        </span>
-                        {report.status === "concluido" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownloadReport(report.name)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Download className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                        {selectedSectionData.title}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {selectedSectionData.description}
+                      </p>
                     </div>
                   </div>
-                ))}
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedSection(null)}
+                    className="px-4 py-2"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Voltar
+                  </Button>
+                </div>
               </div>
+            </Card>
+
+            {/* Detailed Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {selectedSectionData.metrics.map((metric, index) => (
+                <KPICard
+                  key={index}
+                  title={metric.title}
+                  value={metric.value}
+                  change={metric.change}
+                  target={metric.target}
+                  period={metric.period}
+                  icon={metric.icon}
+                  variant={metric.variant}
+                />
+              ))}
             </div>
-          </Card>
-        </div>
+
+            {/* Additional Section Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+                    <LineChart className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
+                    Tendências Temporais
+                  </h3>
+                  <div className="text-center p-8 rounded-lg bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20">
+                    <TrendingUp className="w-12 h-12 mx-auto mb-4 text-[#00112F] dark:text-blue-400" />
+                    <p className="text-[#00112F] dark:text-[#F9FAFB] font-medium">
+                      Gráfico de tendências em desenvolvimento
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                      Visualização detalhada dos dados históricos de{" "}
+                      {selectedSectionData.title.toLowerCase()}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+                    <Target className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
+                    Insights & Recomendações
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                      <div className="flex items-center mb-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
+                        <span className="font-medium text-green-800 dark:text-green-400">
+                          Ponto Forte
+                        </span>
+                      </div>
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        Performance acima da média no período analisado
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+                      <div className="flex items-center mb-2">
+                        <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mr-2" />
+                        <span className="font-medium text-yellow-800 dark:text-yellow-400">
+                          Oportunidade
+                        </span>
+                      </div>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                        Potencial de melhoria identificado nas métricas de{" "}
+                        {selectedSectionData.title.toLowerCase()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Summary Statistics (only show in overview) */}
+        {!selectedSection && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+              <div className="p-6 text-center">
+                <div className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                  {formatCurrency(
+                    reportData.business?.overview?.current_revenue || 45680,
+                  )}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400 font-medium">
+                  Receita Total
+                </div>
+                <div className="text-sm text-green-600 dark:text-green-400 mt-1">
+                  +{reportData.business?.overview?.revenue_growth || 12.5}% vs
+                  período anterior
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+              <div className="p-6 text-center">
+                <div className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                  {reportData.business?.overview?.current_appointments || 248}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400 font-medium">
+                  Total de Agendamentos
+                </div>
+                <div className="text-sm text-blue-600 dark:text-blue-400 mt-1">
+                  +{reportData.business?.overview?.appointment_growth || 15.3}%
+                  vs período anterior
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl">
+              <div className="p-6 text-center">
+                <div className="text-3xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-2">
+                  {reportData.clients?.overview?.active_clients || 890}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400 font-medium">
+                  Clientes Ativos
+                </div>
+                <div className="text-sm text-green-600 dark:text-green-400 mt-1">
+                  +8.7% vs período anterior
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
