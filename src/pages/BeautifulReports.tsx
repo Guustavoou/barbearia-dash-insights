@@ -172,7 +172,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const loadReportData = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log("���� Carregando dados dos relatórios...");
+      console.log("🔄 Carregando dados dos relatórios...");
 
       const [
         businessResponse,
@@ -210,7 +210,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
     } catch (error) {
       console.error("❌ Erro ao carregar dados dos relatórios:", error);
       toast({
-        title: "⚠️ Dados de Demonstraç��o",
+        title: "⚠️ Dados de Demonstração",
         description: "Usando dados simulados para visualização",
       });
     } finally {
@@ -765,7 +765,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
       value: "1.2%",
       change: -2.1,
       description: "Perda por validade",
-      icon: Trash2,
+      icon: AlertCircle,
       variant: "warning" as const,
     },
     {
