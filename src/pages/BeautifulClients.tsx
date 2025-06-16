@@ -1409,6 +1409,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
+  // Initialize toast hook before useCallback hooks that depend on it
+  const { toast } = useToast();
+
   // Callbacks for CRUD operations with Neon database
   const handleAddClient = useCallback(
     async (
