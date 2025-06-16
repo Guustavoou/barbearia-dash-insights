@@ -1312,6 +1312,25 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     });
   }, [handleAddClient, toast]);
 
+  const handleDebugLocalStorage = useCallback(() => {
+    try {
+      const savedClients = localStorage.getItem("unclic-clients");
+      console.log("🔍 LocalStorage Debug:");
+      console.log("- Raw data:", savedClients);
+      if (savedClients) {
+        const parsed = JSON.parse(savedClients);
+        console.log("- Parsed clients:", parsed);
+        console.log("- Count:", parsed.length);
+      } else {
+        console.log("- No data found in localStorage");
+      }
+      console.log("- Current clients state:", clients);
+      console.log("- Current clients count:", clients.length);
+    } catch (error) {
+      console.error("❌ Debug error:", error);
+    }
+  }, [clients]);
+
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
       onPageChange(page);
