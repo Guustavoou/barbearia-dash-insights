@@ -1406,29 +1406,159 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Callbacks for CRUD operations
-  const handleAddClient = useCallback((newClient: Client) => {
-    console.log("➕ Adding new client:", newClient.name, newClient.id);
-    setClients((prev) => {
-      const updated = [newClient, ...prev];
-      console.log("📊 Updated clients list:", updated.length, "clients");
-      return updated;
-    });
-  }, []);
+  // Callbacks for CRUD operations with Neon database
+  const handleAddClient = useCallback(
+    async (
+      newClient: Omit<
+        Client,
+        | "id"
+        | "createdAt"
+        | "totalSpent"
+        | "visitCount"
+        | "avgInterval"
+        | "visits"
+      >,
+    ) => {
+      console.log("➕ Adding new client to Neon database:", newClient.name);
 
-  const handleUpdateClient = useCallback((updatedClient: Client) => {
-    console.log("✏️ Updating client:", updatedClient.name, updatedClient.id);
-    setClients((prev) =>
-      prev.map((client) =>
-        client.id === updatedClient.id ? updatedClient : client,
-      ),
-    );
-  }, []);
+      try {
+        const response = await clientsApi.createClient(newClient);
 
-  const handleDeleteClient = useCallback((clientId: string) => {
-    console.log("🗑️ Deleting client:", clientId);
-    setClients((prev) => prev.filter((client) => client.id !== clientId));
-  }, []);
+        if (response.success && response.data) {
+          // Update local state with the client returned from database
+          setClients((prev) => {
+            const updated = [response.data as Client, ...prev];
+            console.log("📊 Updated clients list:", updated.length, "clients");
+            return updated;
+          });
+
+          toast({
+            title: "✅ Cliente Salvo",
+            description: `${newClient.name} foi salvo no banco de dados`,
+          });
+        } else {
+          // Fallback to local storage if database fails
+          console.log("⚠️ Database failed, saving locally");
+          const localClient: Client = {
+            id: `client-${Date.now()}`,
+            ...newClient,
+            createdAt: new Date().toISOString(),
+            totalSpent: 0,
+            visitCount: 0,
+            avgInterval: 0,
+            visits: [],
+          };
+
+          setClients((prev) => [localClient, ...prev]);
+
+          toast({
+            title: "⚠️ Salvo Localmente",
+            description: `${newClient.name} foi salvo localmente (sem conexão com BD)`,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("❌ Error adding client:", error);
+        toast({
+          title: "❌ Erro ao Salvar",
+          description: "Erro ao salvar cliente no banco de dados",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
+
+  const handleUpdateClient = useCallback(
+    async (updatedClient: Client) => {
+      console.log(
+        "✏️ Updating client in Neon database:",
+        updatedClient.name,
+        updatedClient.id,
+      );
+
+      try {
+        if (updatedClient.id) {
+          const response = await clientsApi.updateClient(
+            updatedClient.id,
+            updatedClient,
+          );
+
+          if (response.success && response.data) {
+            setClients((prev) =>
+              prev.map((client) =>
+                client.id === updatedClient.id
+                  ? (response.data as Client)
+                  : client,
+              ),
+            );
+
+            toast({
+              title: "✅ Cliente Atualizado",
+              description: `${updatedClient.name} foi atualizado no banco de dados`,
+            });
+          } else {
+            // Fallback to local update
+            setClients((prev) =>
+              prev.map((client) =>
+                client.id === updatedClient.id ? updatedClient : client,
+              ),
+            );
+
+            toast({
+              title: "⚠️ Atualizado Localmente",
+              description: `${updatedClient.name} foi atualizado localmente`,
+              variant: "destructive",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error updating client:", error);
+        toast({
+          title: "❌ Erro ao Atualizar",
+          description: "Erro ao atualizar cliente no banco de dados",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
+
+  const handleDeleteClient = useCallback(
+    async (clientId: string) => {
+      console.log("🗑️ Deleting client from Neon database:", clientId);
+
+      try {
+        const response = await clientsApi.deleteClient(clientId);
+
+        if (response.success) {
+          setClients((prev) => prev.filter((client) => client.id !== clientId));
+
+          toast({
+            title: "✅ Cliente Excluído",
+            description: "Cliente foi excluído do banco de dados",
+          });
+        } else {
+          // Fallback to local deletion
+          setClients((prev) => prev.filter((client) => client.id !== clientId));
+
+          toast({
+            title: "⚠️ Excluído Localmente",
+            description: "Cliente foi excluído localmente",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("❌ Error deleting client:", error);
+        toast({
+          title: "❌ Erro ao Excluir",
+          description: "Erro ao excluir cliente do banco de dados",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
 
   // Calculate metrics with lógica de retenção real
   const metrics = useMemo(() => {
