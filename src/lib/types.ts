@@ -81,7 +81,8 @@ export type PageType =
   | "payments"
   | "marketing"
   | "documents"
-  | "testing";
+  | "testing"
+  | "database-emergency";
 
 export type SortField = "name" | "lastVisit" | "totalSpent" | "joinDate";
 export type SortOrder = "asc" | "desc";
