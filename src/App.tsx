@@ -385,6 +385,9 @@ const UnclicAppContent: React.FC = () => {
 
           {/* Auto Database Error Handler */}
           <AutoDatabaseErrorHandler onPageChange={setCurrentPage} />
+
+          {/* Emergency Database Button */}
+          <EmergencyDatabaseButton onPageChange={setCurrentPage} />
         </div>
       );
 
