@@ -51,6 +51,12 @@ import {
   professionalStats,
   workDaysOptions,
 } from "@/lib/professionalsMockData";
+import {
+  useSupabaseProfessionals,
+  useCreateSupabaseProfessional,
+  useUpdateSupabaseProfessional,
+  useDeleteSupabaseProfessional,
+} from "@/hooks/useSupabaseApi";
 import { NewProfessionalModal } from "@/components/NewProfessionalModal";
 import {
   Professional,
