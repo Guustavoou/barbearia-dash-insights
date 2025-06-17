@@ -380,17 +380,31 @@ SELECT 'Database setup completed successfully! All tables created.' as result;`;
                 <div className="flex-1">
                   <h4 className="font-semibold mb-2">Copiar Script SQL</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    Clique para copiar o script que cria todas as tabelas
-                    necessárias.
+                    Escolha uma das opções de correção:
                   </p>
-                  <Button
-                    onClick={copyToClipboard}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    disabled={step > 1}
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    {step > 1 ? "Script Copiado ✓" : "Copiar Script SQL"}
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={copyQuickFix}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      disabled={step > 1}
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      {step > 1 ? "Rápido ✓" : "Correção Rápida"}
+                    </Button>
+                    <Button
+                      onClick={copyToClipboard}
+                      variant="outline"
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                      disabled={step > 1}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      {step > 1 ? "Completo ✓" : "Script Completo"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    💡 Use "Correção Rápida" para resolver apenas o erro da
+                    tabela appointments
+                  </p>
                 </div>
               </div>
 
