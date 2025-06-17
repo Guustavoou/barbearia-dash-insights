@@ -160,11 +160,12 @@ export const ModernDashboard: React.FC<ModernDashboardProps> = ({
 }) => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
 
-  // API data hooks with automatic fallback
-  const { data: stats, loading: statsLoading } = useDashboardStats();
-  const { data: revenueData, loading: revenueLoading } =
-    useRevenueData(selectedPeriod);
-  const { data: topServices, loading: servicesLoading } = useTopServices(5);
+  // INTEGRAÇÃO REAL COM SUPABASE - Apenas dados reais
+  const { data: stats, loading: statsLoading } = useSupabaseDashboardStats();
+  const { data: businessReports, loading: revenueLoading } =
+    useSupabaseBusinessReports(selectedPeriod);
+  const { data: topServices, loading: servicesLoading } =
+    useSupabaseSalesPerformance(selectedPeriod, 5);
 
   const isLoading = statsLoading || revenueLoading || servicesLoading;
 
