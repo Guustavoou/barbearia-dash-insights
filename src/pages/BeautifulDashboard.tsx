@@ -125,17 +125,27 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // API data hooks with automatic fallback
-  const { data: stats, loading: statsLoading } = useDashboardStats();
-  const { data: revenueData, loading: revenueLoading } =
-    useRevenueData(selectedPeriod);
-  const { data: topServices, loading: servicesLoading } = useTopServices(5);
-  const { data: upcomingAppointments, loading: appointmentsLoading } =
-    useUpcomingAppointments(8);
-  const { data: birthdays, loading: birthdaysLoading } = useBirthdays();
+  // Supabase data hooks com fallback automático
+  const { data: stats, loading: statsLoading } = useSupabaseDashboardStats();
+  const { data: businessReports, loading: reportsLoading } =
+    useSupabaseBusinessReports(selectedPeriod);
+  const { data: salesPerformance, loading: salesLoading } =
+    useSupabaseSalesPerformance(selectedPeriod, 5);
+  const { data: clients, loading: clientsLoading } = useSupabaseClients({
+    limit: 10,
+  });
+  const { data: appointments, loading: appointmentsLoading } =
+    useSupabaseAppointments({ limit: 8 });
+
+  // API tradicional como fallback
+  const { data: fallbackStats } = useDashboardStats();
+  const { data: fallbackRevenue } = useRevenueData(selectedPeriod);
+  const { data: fallbackServices } = useTopServices(5);
+  const { data: fallbackAppointments } = useUpcomingAppointments(8);
+  const { data: fallbackBirthdays } = useBirthdays();
 
   const loading =
-    statsLoading || revenueLoading || servicesLoading || appointmentsLoading;
+    statsLoading || reportsLoading || salesLoading || appointmentsLoading;
 
   // Fallback data with complete dashboard metrics
   const defaultStats = {
