@@ -173,16 +173,10 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [reportData, setReportData] = useState<any>({});
 
-  // 🚀 INTEGRAÇÃO SUPABASE - Dados reais do banco
-  const { data: businessReports, loading: reportsLoading } = useSupabaseBusinessReports(selectedPeriod);
-  const { data: dashboardStats, loading: statsLoading } = useSupabaseDashboardStats();
-  const { data: transactions, loading: transactionsLoading } = useSupabaseTransactions({
-    period: selectedPeriod
-  });
-  const { data: clients, loading: clientsLoading } = useSupabaseClients({ limit: 1000 });
-  const { data: appointments, loading: appointmentsLoading } = useSupabaseAppointments({
-    limit: 1000
-  });
+  // Load data from APIs
+  const loadReportData = useCallback(async () => {
+    setIsLoading(true);
+    try {
       console.log("🔄 Carregando dados dos relatórios...");
 
       const [
