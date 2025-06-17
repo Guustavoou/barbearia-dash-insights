@@ -262,9 +262,10 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
     };
   }, [supabaseAppointments]);
 
-  // Filter appointments
+  // Filter appointments usando dados reais do Supabase
   const filteredAppointments = useMemo(() => {
-    return appointments.filter((apt) => {
+    const safeAppointments = supabaseAppointments || [];
+    return safeAppointments.filter((apt) => {
       const matchesProfessional =
         !selectedProfessional || apt.professionalId === selectedProfessional;
       const matchesStatus =
