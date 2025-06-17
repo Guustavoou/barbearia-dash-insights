@@ -42,6 +42,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import {
+  useSupabaseProducts,
+  useSupabaseStock,
+  useCreateSupabaseProduct,
+  useUpdateSupabaseProduct,
+  useDeleteSupabaseProduct,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulStockProps {
   darkMode: boolean;
@@ -87,6 +94,22 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
+
+  // 🚀 INTEGRAÇÃO SUPABASE - Dados reais do banco
+  const {
+    data: supabaseProducts,
+    loading: productsLoading,
+    error: productsError,
+    refetch: refetchProducts,
+  } = useSupabaseProducts({
+    search: searchTerm,
+    category: selectedCategory !== "todas" ? selectedCategory : undefined,
+    is_active: true,
+  });
+
+  const createProductMutation = useCreateSupabaseProduct();
+  const updateProductMutation = useUpdateSupabaseProduct();
+  const deleteProductMutation = useDeleteSupabaseProduct();
 
   // Mock data for products
   const mockProducts: Product[] = [
