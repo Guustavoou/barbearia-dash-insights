@@ -24,12 +24,11 @@ import {
 } from "recharts";
 import { cn, formatCurrency, formatDate, formatTime } from "@/lib/unclicUtils";
 import {
-  useDashboardStats,
-  useRevenueData,
-  useTopServices,
-  useUpcomingAppointments,
-  useBirthdays,
-} from "@/hooks/useApi";
+  useSupabaseDashboardStats,
+  useSupabaseBusinessReports,
+  useSupabaseSalesPerformance,
+  useSupabaseAppointments,
+} from "@/hooks/useSupabaseApi";
 
 interface DashboardProps {
   darkMode: boolean;
