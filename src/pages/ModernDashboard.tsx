@@ -33,12 +33,11 @@ import {
 } from "recharts";
 import { cn, formatCurrency, formatDate } from "@/lib/unclicUtils";
 import {
-  useDashboardStats,
-  useRevenueData,
-  useTopServices,
-  useUpcomingAppointments,
-  useBirthdays,
-} from "@/hooks/useApi";
+  useSupabaseDashboardStats,
+  useSupabaseBusinessReports,
+  useSupabaseSalesPerformance,
+  useSupabaseAppointments,
+} from "@/hooks/useSupabaseApi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
