@@ -254,6 +254,23 @@ SELECT 'Database setup completed successfully! All tables created.' as result;`;
     }
   };
 
+  const copyQuickFix = async () => {
+    try {
+      await navigator.clipboard.writeText(quickFixScript);
+      toast({
+        title: "🚀 Script Rápido Copiado!",
+        description: "Script mínimo para resolver o erro imediatamente",
+      });
+      setStep(2);
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao copiar",
+        description: "Copie manualmente o script rápido",
+        variant: "destructive",
+      });
+    }
+  };
+
   const openSQLEditor = () => {
     window.open(sqlEditorUrl, "_blank");
     setStep(3);
