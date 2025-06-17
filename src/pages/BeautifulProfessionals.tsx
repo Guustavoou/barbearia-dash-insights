@@ -167,11 +167,8 @@ export const BeautifulProfessionals: React.FC<BeautifulProfessionalsProps> = ({
     },
   });
 
-  // Dados dos profissionais vindos do Supabase
-  const safeProfessionalsData =
-    apiResponse?.data ||
-    fallbackData?.professionalsMockData ||
-    professionalsMockData;
+  // APENAS DADOS REAIS DO SUPABASE - Sem mocks ou fallbacks
+  const safeProfessionalsData = professionalsData || [];
 
   // Filter and sort professionals
   const filteredProfessionals = useMemo(() => {
