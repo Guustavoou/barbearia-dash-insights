@@ -170,9 +170,9 @@ export const BeautifulProfessionals: React.FC<BeautifulProfessionalsProps> = ({
   // APENAS DADOS REAIS DO SUPABASE - Sem mocks ou fallbacks
   const safeProfessionalsData = professionalsData || [];
 
-  // Filter and sort professionals
+  // Filter and sort professionals usando dados reais do Supabase
   const filteredProfessionals = useMemo(() => {
-    let filtered = professionalsData.filter((professional: any) => {
+    let filtered = safeProfessionalsData.filter((professional: any) => {
       const matchesSearch =
         professional.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         professional.specialties.some((spec: string) =>
