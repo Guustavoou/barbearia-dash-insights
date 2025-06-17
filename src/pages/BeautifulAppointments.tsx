@@ -537,28 +537,73 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
     setCurrentDate(newDate);
   };
 
+  // CRUD mutations usando Supabase
+  const { mutate: createAppointment } = useCreateSupabaseAppointment({
+    onSuccess: () => {
+      toast({
+        title: "✨ Agendamento Criado",
+        description: "Agendamento criado com sucesso!",
+      });
+      refetchAppointments();
+      setShowNewAppointment(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao criar agendamento",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const { mutate: updateAppointment } = useUpdateSupabaseAppointment({
+    onSuccess: () => {
+      toast({
+        title: "✅ Agendamento atualizado",
+        description: "Agendamento editado com sucesso!",
+      });
+      refetchAppointments();
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao editar agendamento",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const { mutate: deleteAppointment } = useDeleteSupabaseAppointment({
+    onSuccess: () => {
+      toast({
+        title: "✅ Agendamento excluído",
+        description: "Agendamento removido com sucesso!",
+      });
+      refetchAppointments();
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao excluir agendamento",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleNewAppointment = (appointmentData: any) => {
-    const newAppointment: Appointment = {
-      id: (appointments.length + 1).toString(),
-      clientName: appointmentData.client.name,
-      clientPhone: appointmentData.client.phone,
+    const newAppointmentData = {
+      clientId: appointmentData.client.id,
       professionalId: appointmentData.professional.id,
-      service: appointmentData.service.name,
-      startTime: appointmentData.time,
-      endTime: appointmentData.time,
-      duration: appointmentData.service.duration,
-      price: appointmentData.service.price,
-      status: "pendente",
+      serviceId: appointmentData.service.id,
       date: appointmentData.date,
-      priority: "medium",
+      startTime: appointmentData.time,
+      endTime: appointmentData.time, // Will be calculated based on service duration
+      status: "pendente",
+      price: appointmentData.service.price,
+      notes: appointmentData.notes || "",
     };
 
-    setAppointments([...appointments, newAppointment]);
-    setShowNewAppointment(false);
-    toast({
-      title: "✨ Agendamento Criado",
-      description: `Agendamento para ${appointmentData.client.name} criado com sucesso`,
-    });
+    createAppointment(newAppointmentData);
   };
 
   const BeautifulAppointmentCard: React.FC<{ appointment: Appointment }> = ({
