@@ -38,9 +38,14 @@ export class SupabaseApi {
     }
 
     try {
+      const businessId = getCurrentBusinessId();
       logSupabaseDebug("Fetching clients from Supabase...", params);
+      logTenantDebug(`Filtrando clientes para business: ${businessId}`);
 
       let query = supabase.from("clients").select("*");
+
+      // ISOLAMENTO MULTI-TENANT: Aplicar filtro de business_id
+      query = addTenantFilter(query);
 
       // Apply filters
       if (params?.status && params.status !== "all") {
