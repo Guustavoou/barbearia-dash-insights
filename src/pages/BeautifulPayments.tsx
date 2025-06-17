@@ -105,11 +105,11 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
       approvedPayments,
       totalAmount,
       pendingAmount,
-      approvalRate: totalPayments > 0 ? (approvedPayments / totalPayments) * 100 : 0,
+      approvalRate:
+        totalPayments > 0 ? (approvedPayments / totalPayments) * 100 : 0,
       averageTicket: approvedPayments > 0 ? totalAmount / approvedPayments : 0,
     };
   }, [paymentsData]);
-  }, [mockPayments]);
 
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
