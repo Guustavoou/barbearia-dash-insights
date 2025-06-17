@@ -456,12 +456,18 @@ export class SupabaseApi {
     order?: "ASC" | "DESC";
     search?: string;
     category?: string;
-    isActive?: boolean;
+    is_active?: boolean;
   }) {
     try {
       console.log("🔍 Fetching services from Supabase...");
+      logTenantDebug(
+        `Filtrando services para business: ${getCurrentBusinessId()}`,
+      );
 
       let query = supabase.from("services").select("*");
+
+      // ISOLAMENTO MULTI-TENANT: Aplicar filtro de business_id
+      query = addTenantFilter(query);
 
       // Apply filters
       if (params?.category && params.category !== "all") {
