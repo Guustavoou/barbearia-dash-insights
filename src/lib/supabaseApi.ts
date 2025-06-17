@@ -754,7 +754,7 @@ export class SupabaseApi {
 
   async deleteProfessional(id: string) {
     try {
-      console.log(`🗑��� Deleting professional ${id} from Supabase...`);
+      console.log(`🗑️ Deleting professional ${id} from Supabase...`);
 
       const { error } = await supabase
         .from("professionals")
@@ -792,8 +792,14 @@ export class SupabaseApi {
   }) {
     try {
       console.log("🔍 Fetching transactions from Supabase...");
+      logTenantDebug(
+        `Filtrando transactions para business: ${getCurrentBusinessId()}`,
+      );
 
       let query = supabase.from("transactions").select("*");
+
+      // ISOLAMENTO MULTI-TENANT: Aplicar filtro de business_id
+      query = addTenantFilter(query);
 
       // Apply filters
       if (params?.type) {
