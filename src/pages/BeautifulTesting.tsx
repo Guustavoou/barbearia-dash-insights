@@ -6,6 +6,7 @@ import { checkDatabaseQuickly } from "../tests/database-status-checker";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
