@@ -1,13 +1,17 @@
 // Configuração para debug do Supabase
 export const SUPABASE_CONFIG = {
-  // Flag para desabilitar Supabase durante debug (reabilitado com proteções)
-  ENABLE_SUPABASE: true,
+  // Flag para desabilitar Supabase durante debug (DESABILITADO devido a RLS recursion em business_users)
+  ENABLE_SUPABASE: false,
 
   // Flag para usar dados mock como fallback
   USE_MOCK_FALLBACK: true,
 
   // Log level
   DEBUG_MODE: true,
+
+  // Razão da desabilitação
+  DISABLE_REASON:
+    "RLS Policy Recursion em business_users - Execute as instruções SQL para corrigir",
 };
 
 export function logSupabaseDebug(message: string, data?: any) {
