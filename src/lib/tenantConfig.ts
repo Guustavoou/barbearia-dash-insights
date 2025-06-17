@@ -88,6 +88,12 @@ export const logTenantOperation = (
   console.log(`🏢 [Tenant ${businessId}] ${operation} on ${table}`, data);
 };
 
+// Debug logging for tenant filtering (used by supabaseApi)
+export const logTenantDebug = (message: string, data?: any) => {
+  const businessId = getCurrentBusinessId();
+  console.log(`🔍 [Tenant ${businessId}] ${message}`, data || "");
+};
+
 // Verify tenant isolation
 export const verifyTenantIsolation = async (supabaseClient: any) => {
   const businessId = getCurrentBusinessId();
