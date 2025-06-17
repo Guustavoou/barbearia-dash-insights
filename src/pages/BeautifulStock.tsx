@@ -207,8 +207,6 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
       setIsLoading(false);
     }
   };
-
-  // 🚀 OPERAÇÕES CRUD COM SUPABASE
   const handleCreateProduct = async (productData: any) => {
     try {
       await createProductMutation.mutateAsync(productData);
