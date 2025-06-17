@@ -44,7 +44,7 @@ import {
   ServiceSortOrder,
   ServiceCategory,
 } from "@/lib/servicesTypes";
-import { useServices } from "@/hooks/useApi";
+// Removido hook de API tradicional
 import {
   useSupabaseServices,
   useCreateSupabaseService,
