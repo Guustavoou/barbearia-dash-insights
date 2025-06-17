@@ -51,6 +51,13 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import { api } from "@/lib/api";
+import {
+  useSupabaseBusinessReports,
+  useSupabaseDashboardStats,
+  useSupabaseTransactions,
+  useSupabaseClients,
+  useSupabaseAppointments,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulReportsProps {
   darkMode: boolean;
