@@ -217,9 +217,13 @@ export class ProductionValidationRunner {
 
       return report;
     } catch (error) {
-      console.error("❌ Erro durante a validação:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("❌ Erro durante a validação:", errorMessage);
       report.productionReadiness.status = "NOT_READY";
-      report.productionReadiness.blockers.push(`Critical error: ${error}`);
+      report.productionReadiness.blockers.push(
+        `Critical error: ${errorMessage}`,
+      );
       return report;
     }
   }
@@ -551,7 +555,7 @@ ${Object.entries(report.moduleValidation)
 
 ---
 
-## 🔒 INTEGRIDADE DO BANCO
+## �� INTEGRIDADE DO BANCO
 
 **Status:** ${report.integrityReport.overallHealth}
 
