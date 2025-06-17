@@ -48,11 +48,11 @@ import {
 } from "recharts";
 import { cn, formatCurrency } from "@/lib/unclicUtils";
 import {
-  useDashboardStats,
-  useRevenueData,
-  useTopServices,
-  useFinancialMetrics,
-  useOperationalMetrics,
+  useSupabaseDashboardStats,
+  useSupabaseBusinessReports,
+  useSupabaseSalesPerformance,
+  useSupabaseFinancialStats,
+} from "@/hooks/useSupabaseApi";
 } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
