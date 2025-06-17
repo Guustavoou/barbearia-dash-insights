@@ -103,30 +103,76 @@ export const BeautifulProfessionals: React.FC<BeautifulProfessionalsProps> = ({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // API integration
+  // INTEGRAÇÃO REAL COM SUPABASE - Apenas dados reais
   const {
-    data: apiResponse,
+    data: professionalsData,
     loading,
     error,
     refetch,
-  } = useProfessionals({
+  } = useSupabaseProfessionals({
     search: searchTerm,
     status: statusFilter === "all" ? undefined : statusFilter,
+    sort: sortBy,
+    order: sortOrder.toUpperCase() as "ASC" | "DESC",
+    page: 1,
+    limit: 50,
   });
 
-  // Fallback to mock data if API fails
-  const [fallbackData, setFallbackData] = useState<any>(null);
-
-  React.useEffect(() => {
-    if (error) {
-      import("@/lib/professionalsMockData").then((mockData) => {
-        setFallbackData(mockData);
+  // CRUD mutations usando Supabase
+  const { mutate: createProfessional } = useCreateSupabaseProfessional({
+    onSuccess: () => {
+      toast({
+        title: "✅ Profissional criado",
+        description: "Profissional adicionado com sucesso!",
       });
-    }
-  }, [error]);
+      refetch();
+      setShowNewProfessionalModal(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao criar profissional",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
 
-  // Use API data or fallback to mock data
-  const professionalsData =
+  const { mutate: updateProfessional } = useUpdateSupabaseProfessional({
+    onSuccess: () => {
+      toast({
+        title: "✅ Profissional atualizado",
+        description: "Profissional editado com sucesso!",
+      });
+      refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao editar profissional",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const { mutate: deleteProfessional } = useDeleteSupabaseProfessional({
+    onSuccess: () => {
+      toast({
+        title: "✅ Profissional excluído",
+        description: "Profissional removido com sucesso!",
+      });
+      refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao excluir profissional",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Dados dos profissionais vindos do Supabase
+  const safeProfessionalsData =
     apiResponse?.data ||
     fallbackData?.professionalsMockData ||
     professionalsMockData;
