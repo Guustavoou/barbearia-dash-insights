@@ -49,6 +49,9 @@ import { useRightSidebar } from "@/hooks/useRightSidebar";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MultiTenantOnboardingProvider } from "@/contexts/MultiTenantOnboardingContext";
 
+// Supabase provider
+import { SupabaseAuthProvider } from "@/contexts/SupabaseAuthContext";
+
 const queryClient = new QueryClient();
 
 type AppState = "login" | "onboarding" | "main" | "success";
