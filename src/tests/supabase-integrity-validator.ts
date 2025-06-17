@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { getCurrentBusinessId } from "../lib/tenantConfig";
+import { formatErrorMessage, logError } from "./error-utils";
 
 export interface IntegrityCheckResult {
   table: string;
@@ -73,9 +74,8 @@ export class SupabaseIntegrityValidator {
           );
         }
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        console.error(`Erro ao validar tabela ${table}:`, errorMessage);
+        const errorMessage = formatErrorMessage(error);
+        logError(`Erro ao validar tabela ${table}`, error);
         results.push({
           table,
           totalRecords: 0,
