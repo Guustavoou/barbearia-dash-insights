@@ -1,5 +1,11 @@
 import { supabase } from "./supabase";
 import { NeonClient, Visit } from "./clientsApi";
+import {
+  SUPABASE_CONFIG,
+  logSupabaseDebug,
+  logSupabaseError,
+  logSupabaseSuccess,
+} from "./supabaseConfig";
 
 export class SupabaseApi {
   // Clients API
@@ -11,8 +17,22 @@ export class SupabaseApi {
     search?: string;
     status?: string;
   }) {
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug("Supabase desabilitado, retornando dados mock");
+      return {
+        success: true,
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0,
+        },
+      };
+    }
+
     try {
-      console.log("🔍 Fetching clients from Supabase...");
+      logSupabaseDebug("Fetching clients from Supabase...", params);
 
       let query = supabase.from("clients").select("*");
 
