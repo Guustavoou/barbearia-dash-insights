@@ -65,10 +65,6 @@ import {
   useSupabaseTransactions,
   useSupabaseFinancialStats,
   useSupabaseBusinessReports,
-} from "@/hooks/useSupabaseApi";
-import {
-  useSupabaseTransactions,
-  useSupabaseFinancialStats,
   useCreateSupabaseTransaction,
 } from "@/hooks/useSupabaseApi";
 
