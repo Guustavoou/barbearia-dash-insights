@@ -259,8 +259,6 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
       });
     }
   };
-    }, 1000);
-  };
 
   const handleRefreshData = async () => {
     setIsLoading(true);
