@@ -131,9 +131,9 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
           : "disponivel",
   }));
 
-  // Filter products
+  // Filter products usando dados reais do Supabase
   const filteredProducts = useMemo(() => {
-    return mockProducts.filter((product) => {
+    return products.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,18 +147,18 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [mockProducts, searchTerm, selectedCategory, statusFilter]);
+  }, [products, searchTerm, selectedCategory, statusFilter]);
 
-  // Calculate metrics
+  // Calculate metrics usando dados reais
   const metrics = useMemo(() => {
-    const totalProducts = mockProducts.length;
-    const availableProducts = mockProducts.filter(
+    const totalProducts = products.length;
+    const availableProducts = products.filter(
       (p) => p.status === "disponivel",
     ).length;
-    const lowStockProducts = mockProducts.filter(
+    const lowStockProducts = products.filter(
       (p) => p.status === "baixo_estoque",
     ).length;
-    const outOfStockProducts = mockProducts.filter(
+    const outOfStockProducts = products.filter(
       (p) => p.status === "esgotado",
     ).length;
     const totalValue = mockProducts.reduce(
