@@ -381,6 +381,9 @@ const UnclicAppContent: React.FC = () => {
 
           {/* API Status Debug */}
           <ApiStatusDebug />
+
+          {/* Auto Database Error Handler */}
+          <AutoDatabaseErrorHandler onPageChange={setCurrentPage} />
         </div>
       );
 
