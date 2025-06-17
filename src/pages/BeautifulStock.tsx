@@ -111,61 +111,25 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
   const updateProductMutation = useUpdateSupabaseProduct();
   const deleteProductMutation = useDeleteSupabaseProduct();
 
-  // 📊 DADOS REAIS DO SUPABASE - Substituindo dados mock
-  const products: Product[] = supabaseProducts || [];
-    {
-      id: 1,
-      name: "Shampoo Profissional",
-      category: "Cabelo",
-      brand: "L'Oréal",
-      stock_quantity: 25,
-      min_stock: 10,
-      price: 85.9,
-      cost: 45.5,
-      supplier: "Distribuidora Beauty",
-      last_updated: new Date().toISOString(),
-      status: "disponivel",
-    },
-    {
-      id: 2,
-      name: "Cera Modeladora",
-      category: "Cabelo",
-      brand: "Wella",
-      stock_quantity: 5,
-      min_stock: 8,
-      price: 32.5,
-      cost: 18.0,
-      supplier: "Beleza Total",
-      last_updated: new Date().toISOString(),
-      status: "baixo_estoque",
-    },
-    {
-      id: 3,
-      name: "Navalha Descartável",
-      category: "Barbearia",
-      brand: "Gillette",
-      stock_quantity: 0,
-      min_stock: 20,
-      price: 15.9,
-      cost: 8.5,
-      supplier: "Higiene & Cia",
-      last_updated: new Date().toISOString(),
-      status: "esgotado",
-    },
-    {
-      id: 4,
-      name: "Óleo para Barba",
-      category: "Barbearia",
-      brand: "Barba Forte",
-      stock_quantity: 18,
-      min_stock: 5,
-      price: 42.9,
-      cost: 22.5,
-      supplier: "Masculinidade Store",
-      last_updated: new Date().toISOString(),
-      status: "disponivel",
-    },
-  ];
+  // 📊 DADOS REAIS DO SUPABASE - Produtos carregados do banco de dados
+  const products: Product[] = (supabaseProducts || []).map((product: any) => ({
+    id: product.id,
+    name: product.name,
+    category: product.category,
+    brand: product.brand || "Sem marca",
+    stock_quantity: product.stock_quantity || 0,
+    min_stock: product.min_stock || 0,
+    price: product.price || 0,
+    cost: product.cost || 0,
+    supplier: product.supplier || "Não informado",
+    last_updated: product.updated_at || new Date().toISOString(),
+    status:
+      product.stock_quantity <= 0
+        ? "esgotado"
+        : product.stock_quantity <= product.min_stock
+          ? "baixo_estoque"
+          : "disponivel",
+  }));
 
   // Filter products
   const filteredProducts = useMemo(() => {
