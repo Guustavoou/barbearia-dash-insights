@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { TestingDashboard } from "../components/TestingDashboard";
+import { DatabaseDiagnostic } from "../components/DatabaseDiagnostic";
 import { testRunner } from "../tests/test-runner";
+import { checkDatabaseQuickly } from "../tests/database-status-checker";
 import {
   Card,
   CardContent,
@@ -286,6 +288,41 @@ export const BeautifulTesting: React.FC = () => {
                 </span>
               </Button>
             </div>
+
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800 mb-3">
+                <strong>🚨 Experiencing database errors?</strong> Run the
+                database diagnostic above first!
+              </p>
+              <Button
+                onClick={async () => {
+                  console.log("Running quick database check...");
+                  await checkDatabaseQuickly();
+                }}
+                variant="outline"
+                className="border-red-300 text-red-700 hover:bg-red-100"
+              >
+                <AlertCircle className="w-4 h-4 mr-2" />
+                Quick Database Check
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Database Diagnostic - CRITICAL */}
+        <Card className="bg-white/80 backdrop-blur border-2 border-red-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-red-800">
+              <AlertCircle className="w-6 h-6" />
+              🚨 Database Diagnostic & Fix
+            </CardTitle>
+            <CardDescription className="text-red-600">
+              Check this first if you're experiencing errors like "relation does
+              not exist"
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DatabaseDiagnostic />
           </CardContent>
         </Card>
 
