@@ -46,11 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
-import {
-  professionalsMockData,
-  professionalStats,
-  workDaysOptions,
-} from "@/lib/professionalsMockData";
+// Removido: imports de dados mockados - usando apenas dados reais do Supabase
 import {
   useSupabaseProfessionals,
   useCreateSupabaseProfessional,
