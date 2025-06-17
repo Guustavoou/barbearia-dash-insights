@@ -21,15 +21,25 @@ export const createBusiness = async (req: Request, res: Response) => {
       banner,
     } = req.body;
 
+    // Generate slug from business name
+    const baseSlug = generateBusinessSlug(name);
+
+    // Check for existing slugs to ensure uniqueness
+    const existingSlugsResult = await sql`
+      SELECT slug FROM businesses WHERE slug LIKE ${baseSlug + "%"}
+    `;
+    const existingSlugs = existingSlugsResult.map((row: any) => row.slug);
+    const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs);
+
     // Create business record
     const businessResult = await sql`
       INSERT INTO businesses (
-        name, email, phone, cnpj, address, cep,
+        name, slug, email, phone, cnpj, address, cep,
         website, instagram, facebook, logo_url, banner_url,
         created_at, updated_at
       )
       VALUES (
-        ${name}, ${email}, ${phone}, ${cnpj || null}, ${address}, ${cep},
+        ${name}, ${uniqueSlug}, ${email}, ${phone}, ${cnpj || null}, ${address}, ${cep},
         ${website || null}, ${instagram || null}, ${facebook || null},
         ${logo || null}, ${banner || null},
         NOW(), NOW()
