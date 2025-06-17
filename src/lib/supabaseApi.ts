@@ -61,10 +61,20 @@ export class SupabaseApi {
         },
       };
     } catch (error) {
-      console.error("❌ Error fetching clients:", error);
+      const errorMessage = (() => {
+        if (error instanceof Error) {
+          return `${error.name}: ${error.message}`;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      console.error("❌ Error fetching clients:", errorMessage);
       return {
         success: false,
-        error: "Failed to fetch clients from Supabase",
+        error: `Failed to fetch clients from Supabase: ${errorMessage}`,
       };
     }
   }
@@ -282,10 +292,20 @@ export class SupabaseApi {
         },
       };
     } catch (error) {
-      console.error("❌ Error fetching appointments:", error);
+      const errorMessage = (() => {
+        if (error instanceof Error) {
+          return `${error.name}: ${error.message}`;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      console.error("❌ Error fetching appointments:", errorMessage);
       return {
         success: false,
-        error: "Failed to fetch appointments from Supabase",
+        error: `Failed to fetch appointments from Supabase: ${errorMessage}`,
       };
     }
   }
@@ -1131,7 +1151,7 @@ export class SupabaseApi {
 
   async getSalesPerformance(period?: string, limit?: number) {
     try {
-      console.log("📊 Fetching sales performance from Supabase...");
+      console.log("��� Fetching sales performance from Supabase...");
 
       const { data, error } = await supabase
         .from("services")
@@ -1172,10 +1192,20 @@ export class SupabaseApi {
         data: salesData,
       };
     } catch (error) {
-      console.error("❌ Error fetching sales performance:", error);
+      const errorMessage = (() => {
+        if (error instanceof Error) {
+          return `${error.name}: ${error.message}`;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      console.error("❌ Error fetching sales performance:", errorMessage);
       return {
         success: false,
-        error: "Failed to fetch sales performance",
+        error: `Failed to fetch sales performance: ${errorMessage}`,
       };
     }
   }
