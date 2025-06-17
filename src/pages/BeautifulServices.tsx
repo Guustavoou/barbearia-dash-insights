@@ -87,13 +87,13 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // API integration
+  // INTEGRAÇÃO REAL COM SUPABASE - Apenas dados reais
   const {
-    data: apiResponse,
+    data: servicesData,
     loading,
     error,
     refetch,
-  } = useServices({
+  } = useSupabaseServices({
     search: searchTerm,
     category: selectedCategory !== "todas" ? selectedCategory : undefined,
     is_active: showActiveOnly,
@@ -103,10 +103,59 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
     limit: 50,
   });
 
-  // 📊 REMOVIDO: Dados mock eliminados - usando apenas dados reais do Supabase
+  // CRUD mutations usando Supabase
+  const { mutate: createService } = useCreateSupabaseService({
+    onSuccess: () => {
+      toast({
+        title: "✅ Serviço criado",
+        description: "Serviço adicionado com sucesso!",
+      });
+      refetch();
+      setShowNewServiceModal(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao criar serviço",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
 
-  // 📊 DADOS REAIS DO SUPABASE - Apenas dados do banco
-  const servicesData = apiResponse?.data || [];
+  const { mutate: updateService } = useUpdateSupabaseService({
+    onSuccess: () => {
+      toast({
+        title: "✅ Serviço atualizado",
+        description: "Serviço editado com sucesso!",
+      });
+      refetch();
+      setEditingService(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao editar serviço",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const { mutate: deleteService } = useDeleteSupabaseService({
+    onSuccess: () => {
+      toast({
+        title: "✅ Serviço excluído",
+        description: "Serviço removido com sucesso!",
+      });
+      refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "❌ Erro ao excluir serviço",
+        description: error,
+        variant: "destructive",
+      });
+    },
+  });
 
   // Calculate filtered and sorted services
   const filteredServices = useMemo(() => {
