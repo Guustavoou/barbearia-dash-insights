@@ -169,16 +169,27 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   onPageChange,
 }) => {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState("month");
+  const [dateRange, setDateRange] = useState({
+    start: "2024-01-01",
+    end: "2024-12-31",
+  });
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showExportModal, setShowExportModal] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("30d");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [reportData, setReportData] = useState<any>({});
 
-  // Load data from APIs
-  const loadReportData = useCallback(async () => {
-    setIsLoading(true);
-    try {
+  // 🚀 INTEGRAÇÃO SUPABASE - Dados reais do banco
+  const { data: businessReports, loading: reportsLoading } = useSupabaseBusinessReports(selectedPeriod);
+  const { data: dashboardStats, loading: statsLoading } = useSupabaseDashboardStats();
+  const { data: transactions, loading: transactionsLoading } = useSupabaseTransactions({
+    period: selectedPeriod
+  });
+  const { data: clients, loading: clientsLoading } = useSupabaseClients({ limit: 1000 });
+  const { data: appointments, loading: appointmentsLoading } = useSupabaseAppointments({
+    limit: 1000
+  });
       console.log("🔄 Carregando dados dos relatórios...");
 
       const [
