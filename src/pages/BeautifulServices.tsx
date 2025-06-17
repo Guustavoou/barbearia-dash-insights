@@ -147,8 +147,8 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
     },
   ];
 
-  // Use API data or fallback to mock data
-  const servicesData = apiResponse?.data || mockServices;
+  // 📊 DADOS REAIS DO SUPABASE - Apenas dados do banco
+  const servicesData = apiResponse?.data || [];
 
   // Calculate filtered and sorted services
   const filteredServices = useMemo(() => {
