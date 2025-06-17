@@ -45,6 +45,12 @@ import {
   ServiceCategory,
 } from "@/lib/servicesTypes";
 import { useServices } from "@/hooks/useApi";
+import {
+  useSupabaseServices,
+  useCreateSupabaseService,
+  useUpdateSupabaseService,
+  useDeleteSupabaseService,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulServicesProps {
   darkMode: boolean;
