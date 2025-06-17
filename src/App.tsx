@@ -52,6 +52,7 @@ import { MultiTenantOnboardingProvider } from "@/contexts/MultiTenantOnboardingC
 // Supabase provider
 import { SupabaseAuthProvider } from "@/contexts/SupabaseAuthContext";
 import { SupabaseStatus } from "@/components/SupabaseStatus";
+import { RLSUrgentNotification } from "@/components/RLSUrgentNotification";
 
 const queryClient = new QueryClient();
 
@@ -339,6 +340,9 @@ const UnclicAppContent: React.FC = () => {
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
+
+          {/* RLS Urgent Notification */}
+          <RLSUrgentNotification />
 
           {/* Quick Actions Hub */}
           <QuickActionsHub onPageChange={setCurrentPage} />
