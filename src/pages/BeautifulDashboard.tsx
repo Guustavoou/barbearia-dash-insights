@@ -217,35 +217,36 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
       { name: "Escova", count: 32, revenue: 1600, color: "#D1D5DB" },
     ];
 
-  const appointmentsToday = upcomingAppointments?.data || [
-    {
-      id: "1",
-      client_name: "Ana Silva",
-      service: "Corte + Escova",
-      time: "09:00",
-      professional: "Maria",
-      status: "confirmado",
-      value: 120,
-    },
-    {
-      id: "2",
-      client_name: "Carlos Santos",
-      service: "Barba",
-      time: "10:30",
-      professional: "João",
-      status: "pendente",
-      value: 50,
-    },
-    {
-      id: "3",
-      client_name: "Beatriz Costa",
-      service: "Coloração",
-      time: "14:00",
-      professional: "Paula",
-      status: "confirmado",
-      value: 180,
-    },
-  ];
+  const appointmentsToday = appointments ||
+    fallbackAppointments?.data || [
+      {
+        id: "1",
+        client_name: "Ana Silva",
+        service: "Corte + Escova",
+        time: "09:00",
+        professional: "Maria",
+        status: "confirmado",
+        value: 120,
+      },
+      {
+        id: "2",
+        client_name: "Carlos Santos",
+        service: "Barba",
+        time: "10:30",
+        professional: "João",
+        status: "pendente",
+        value: 50,
+      },
+      {
+        id: "3",
+        client_name: "Beatriz Costa",
+        service: "Coloração",
+        time: "14:00",
+        professional: "Paula",
+        status: "confirmado",
+        value: 180,
+      },
+    ];
 
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
