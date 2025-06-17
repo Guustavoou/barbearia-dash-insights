@@ -212,15 +212,25 @@ export const completeOnboarding = async (req: Request, res: Response) => {
     // Start transaction-like approach by creating each component
     let businessResult, servicesResult, professionalsResult, hoursResult;
 
+    // Generate slug for business
+    const baseSlug = generateBusinessSlug(businessInfo.name);
+
+    // Check for existing slugs to ensure uniqueness
+    const existingSlugsResult = await sql`
+      SELECT slug FROM businesses WHERE slug LIKE ${baseSlug + "%"}
+    `;
+    const existingSlugs = existingSlugsResult.map((row: any) => row.slug);
+    const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs);
+
     // Create business
     businessResult = await sql`
       INSERT INTO businesses (
-        name, email, phone, cnpj, address, cep,
+        name, slug, email, phone, cnpj, address, cep,
         website, instagram, facebook, logo_url, banner_url,
         created_at, updated_at
       )
       VALUES (
-        ${businessInfo.name}, ${businessInfo.email}, ${businessInfo.phone},
+        ${businessInfo.name}, ${uniqueSlug}, ${businessInfo.email}, ${businessInfo.phone},
         ${businessInfo.cnpj || null}, ${businessInfo.address}, ${businessInfo.cep},
         ${businessInfo.website || null}, ${businessInfo.instagram || null},
         ${businessInfo.facebook || null}, ${businessInfo.logo || null},
