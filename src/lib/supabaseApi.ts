@@ -865,17 +865,22 @@ export class SupabaseApi {
     try {
       console.log("➕ Creating transaction in Supabase...");
 
+      const baseData = {
+        description: transactionData.description,
+        amount: transactionData.amount,
+        type: transactionData.type,
+        category: transactionData.category,
+        date: transactionData.date,
+        status: transactionData.status || "pendente",
+        payment_method: transactionData.paymentMethod,
+      };
+
+      // ISOLAMENTO MULTI-TENANT: Adicionar business_id
+      const tenantData = addTenantToData(baseData);
+
       const { data, error } = await supabase
         .from("transactions")
-        .insert({
-          description: transactionData.description,
-          amount: transactionData.amount,
-          type: transactionData.type,
-          category: transactionData.category,
-          date: transactionData.date,
-          status: transactionData.status || "pendente",
-          payment_method: transactionData.paymentMethod,
-        })
+        .insert(tenantData)
         .select()
         .single();
 
