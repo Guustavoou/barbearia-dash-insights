@@ -264,15 +264,25 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
     }, 1000);
   };
 
-  const handleExportData = () => {
-    toast({
-      title: "📊 Exportar Dados",
-      description: "Preparando relatório de estoque...",
-    });
+  const handleRefreshData = async () => {
+    setIsLoading(true);
+    try {
+      await refetchProducts();
+      setLastUpdate(new Date());
+      toast({
+        title: "✅ Dados atualizados",
+        description: "Informações de estoque sincronizadas com sucesso.",
+      });
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao atualizar",
+        description: "Não foi possível sincronizar os dados.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const handleClearFilters = () => {
-    setSearchTerm("");
     setSelectedCategory("todas");
     setStatusFilter("todos");
     toast({
