@@ -172,6 +172,7 @@ export const BeautifulReports: React.FC<BeautifulReportsProps> = ({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
   const [reportData, setReportData] = useState<any>({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Load data from APIs
   const loadReportData = useCallback(async () => {
