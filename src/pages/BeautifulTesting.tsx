@@ -254,7 +254,7 @@ export const BeautifulTesting: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="w-6 h-6 text-yellow-500" />
-              Testes Rápidos
+              Testes R��pidos
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -281,7 +281,7 @@ export const BeautifulTesting: React.FC = () => {
                 <Zap className="w-6 h-6 text-green-500" />
                 <span className="font-medium">Teste de Carga</span>
                 <span className="text-xs text-gray-500">
-                  Performance, Concorr��ncia
+                  Performance, Concorrência
                 </span>
               </Button>
 
@@ -333,6 +333,38 @@ export const BeautifulTesting: React.FC = () => {
           </CardHeader>
           <CardContent>
             <DatabaseDiagnostic />
+          </CardContent>
+        </Card>
+
+        {/* Diagnóstico Completo */}
+        <Card className="bg-white/80 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="w-6 h-6 text-blue-500" />
+              Diagnóstico Completo do Banco
+            </CardTitle>
+            <CardDescription>
+              Análise detalhada de todas as configurações e permissões
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DatabaseFullDiagnostic />
+          </CardContent>
+        </Card>
+
+        {/* Auto-Correção */}
+        <Card className="bg-white/80 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="w-6 h-6 text-green-500" />
+              Correção Automática
+            </CardTitle>
+            <CardDescription>
+              Corrige automaticamente problemas de configuração e permissões
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AutoFixDatabase onComplete={() => window.location.reload()} />
           </CardContent>
         </Card>
 
