@@ -6,6 +6,12 @@ import {
   logSupabaseError,
   logSupabaseSuccess,
 } from "./supabaseConfig";
+import {
+  getCurrentBusinessId,
+  addTenantFilter,
+  addTenantToData,
+  logTenantDebug,
+} from "./tenantConfig";
 
 export class SupabaseApi {
   // Clients API
