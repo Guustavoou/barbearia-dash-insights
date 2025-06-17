@@ -13,6 +13,7 @@ import {
   CreditCard,
   TrendingUp,
   Megaphone,
+  TestTube,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { PageType } from "@/lib/types";
@@ -115,6 +116,7 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
     { icon: TrendingUp, label: "Relatórios", pageId: "reports" as PageType },
     { icon: Megaphone, label: "Marketing", pageId: "marketing" as PageType },
     { icon: FileText, label: "Documentos", pageId: "documents" as PageType },
+    { icon: TestTube, label: "Testes", pageId: "testing" as PageType },
     { icon: Settings, label: "Configurações", pageId: "settings" as PageType },
   ];
 
