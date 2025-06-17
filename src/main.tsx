@@ -2,7 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { safeSupabaseApi } from "./lib/safeSupabaseApi";
-import { SUPABASE_CONFIG } from "./lib/supabaseConfig";
+import { SUPABASE_CONFIG, logSupabaseDebug } from "./lib/supabaseConfig";
+import { enableApiCircuitBreaker } from "./lib/api";
 
 // Diagnóstico do Supabase apenas se estiver habilitado
 if (SUPABASE_CONFIG.ENABLE_SUPABASE) {
@@ -46,6 +47,12 @@ if (SUPABASE_CONFIG.ENABLE_SUPABASE) {
   console.log(
     "🔧 [Inicialização] Para reabilitar: mude ENABLE_SUPABASE para true",
   );
+
+  // Habilitar circuit breaker da API tradicional para prevenir erros de fetch
+  if (SUPABASE_CONFIG.DISABLE_TRADITIONAL_API_WHEN_SUPABASE_OFF) {
+    logSupabaseDebug("🛑 Habilitando circuit breaker da API tradicional");
+    enableApiCircuitBreaker();
+  }
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
