@@ -41,7 +41,15 @@ export class SupabaseApi {
 
       const { data, error, count } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error("🚨 Supabase Error Details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+        throw error;
+      }
 
       // Transform to frontend format
       const transformedClients = data?.map(this.transformToFrontend) || [];
@@ -1151,7 +1159,7 @@ export class SupabaseApi {
 
   async getSalesPerformance(period?: string, limit?: number) {
     try {
-      console.log("��� Fetching sales performance from Supabase...");
+      console.log("📊 Fetching sales performance from Supabase...");
 
       const { data, error } = await supabase
         .from("services")
