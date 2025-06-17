@@ -173,9 +173,12 @@ export class SupabaseApi {
         visits: 0,
       };
 
+      // ISOLAMENTO MULTI-TENANT: Adicionar business_id
+      const tenantData = addTenantToData(backendData);
+
       const { data, error } = await supabase
         .from("clients")
-        .insert(backendData)
+        .insert(tenantData)
         .select()
         .single();
 
