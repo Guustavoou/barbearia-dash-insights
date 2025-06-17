@@ -32,6 +32,7 @@ export const SupabaseStatus: React.FC = () => {
   }
 
   const getStatusColor = () => {
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) return "red";
     if (!status) return "gray";
     if (status.connected && status.workingTables.length > 0) return "green";
     if (status.workingTables.length > 0) return "yellow";
@@ -39,6 +40,10 @@ export const SupabaseStatus: React.FC = () => {
   };
 
   const getStatusMessage = () => {
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      return `🚨 Supabase Desabilitado - ${SUPABASE_CONFIG.DISABLE_REASON || "Motivo não especificado"}`;
+    }
+
     if (!status) return "Verificando...";
 
     if (status.connected && status.workingTables.length > 0) {
@@ -71,11 +76,13 @@ export const SupabaseStatus: React.FC = () => {
                     : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
               }`}
             >
-              {statusColor === "green"
-                ? "Conectado"
-                : statusColor === "yellow"
-                  ? "Parcial"
-                  : "Mock"}
+              {!SUPABASE_CONFIG.ENABLE_SUPABASE
+                ? "Desabilitado"
+                : statusColor === "green"
+                  ? "Conectado"
+                  : statusColor === "yellow"
+                    ? "Parcial"
+                    : "Mock"}
             </Badge>
           </div>
           <div className="flex items-center space-x-1">
@@ -135,11 +142,27 @@ export const SupabaseStatus: React.FC = () => {
                 </div>
               )}
 
-              {!status.connected && status.workingTables.length === 0 && (
-                <div className="text-blue-600 text-xs">
-                  📖 Consulte SUPABASE_SETUP_INSTRUCTIONS.md para configuração
+              {!SUPABASE_CONFIG.ENABLE_SUPABASE && (
+                <div className="space-y-1">
+                  <div className="text-red-600 text-xs font-medium">
+                    🚨 URGENTE: Execute URGENT_RLS_FIX.sql no Supabase
+                  </div>
+                  <div className="text-gray-600 text-xs">
+                    Problema: RLS Policy Recursion em business_users
+                  </div>
+                  <div className="text-blue-600 text-xs">
+                    Aplicação funcionando 100% com dados mock
+                  </div>
                 </div>
               )}
+
+              {SUPABASE_CONFIG.ENABLE_SUPABASE &&
+                !status.connected &&
+                status.workingTables.length === 0 && (
+                  <div className="text-blue-600 text-xs">
+                    📖 Consulte SUPABASE_SETUP_INSTRUCTIONS.md para configuração
+                  </div>
+                )}
             </div>
           )}
         </div>
