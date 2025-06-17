@@ -1360,13 +1360,17 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   // Calculate metrics with lógica de retenção real
   const metrics = useMemo(() => {
-    const totalClients = clients.length;
-    const activeClients = clients.filter((c) => c.status === "ativo").length;
+    // Add null safety for clients data
+    const safeClients = clients || [];
+    const totalClients = safeClients.length;
+    const activeClients = safeClients.filter(
+      (c) => c.status === "ativo",
+    ).length;
 
     // Clientes novos nos últimos 30 dias
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const newThisMonth = clients.filter((c) => {
+    const newThisMonth = safeClients.filter((c) => {
       const created = new Date(c.createdAt);
       return created >= thirtyDaysAgo;
     }).length;
@@ -1374,7 +1378,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
     // Taxa de retenção real: clientes com 2+ visitas nos últimos 6 meses
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    const clientsWithMultipleVisits = clients.filter((c) => {
+    const clientsWithMultipleVisits = safeClients.filter((c) => {
       // Ensure visits is an array, handle both array and number cases
       const visitsArray = Array.isArray(c.visits) ? c.visits : [];
       const recentVisits = visitsArray.filter(
