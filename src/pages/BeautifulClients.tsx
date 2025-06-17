@@ -1236,81 +1236,73 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   darkMode,
   onPageChange,
 }) => {
-  // Initialize clients state
-  const [clients, setClients] = useState<Client[]>([]);
-  const [isLoadingClients, setIsLoadingClients] = useState(true);
+  // Supabase hooks para dados em tempo real
+  const {
+    data: clients = [],
+    loading: isLoadingClients,
+    error: clientsError,
+    refetch: refetchClients,
+  } = useSupabaseClients({ limit: 1000 });
 
-  // Load clients from Neon database on component mount
+  // Hooks para mutações CRUD
+  const createClient = useCreateSupabaseClient({
+    onSuccess: () => {
+      console.log("✅ Cliente criado com sucesso");
+      refetchClients();
+      toast({
+        title: "✅ Cliente Criado",
+        description: "Cliente adicionado com sucesso ao Supabase",
+      });
+    },
+    onError: (error) => {
+      console.error("❌ Erro ao criar cliente:", error);
+    },
+  });
+
+  const updateClient = useUpdateSupabaseClient({
+    onSuccess: () => {
+      console.log("✅ Cliente atualizado com sucesso");
+      refetchClients();
+      toast({
+        title: "✅ Cliente Atualizado",
+        description: "Dados do cliente atualizados no Supabase",
+      });
+    },
+    onError: (error) => {
+      console.error("❌ Erro ao atualizar cliente:", error);
+    },
+  });
+
+  const deleteClient = useDeleteSupabaseClient({
+    onSuccess: () => {
+      console.log("✅ Cliente deletado com sucesso");
+      refetchClients();
+      toast({
+        title: "✅ Cliente Deletado",
+        description: "Cliente removido do Supabase",
+      });
+    },
+    onError: (error) => {
+      console.error("❌ Erro ao deletar cliente:", error);
+    },
+  });
+
+  // Real-time subscription para atualizações automáticas
+  useSupabaseRealTimeClients((payload) => {
+    console.log("🔄 Real-time update received:", payload);
+    refetchClients();
+  });
+
+  // Mostrar erro se houver
   useEffect(() => {
-    const loadClientsFromNeon = async () => {
-      console.log("🚀 BeautifulClients component mounted - loading from Neon");
-      setIsLoadingClients(true);
-
-      try {
-        // Try to load from Neon database first
-        const response = await clientsApi.getClients({ limit: 1000 });
-
-        if (response.success && response.data) {
-          const neonClients = Array.isArray(response.data)
-            ? response.data
-            : [response.data];
-          console.log(
-            `✅ Loaded ${neonClients.length} clients from Neon database`,
-          );
-          setClients(neonClients);
-        } else {
-          // Fallback to localStorage if Neon fails
-          console.log(
-            "⚠️ Neon database unavailable, using localStorage fallback",
-          );
-          try {
-            const savedClients = localStorage.getItem("unclic-clients");
-            if (savedClients) {
-              const parsedClients = JSON.parse(savedClients);
-              console.log(
-                `✅ Loaded ${parsedClients.length} clients from localStorage`,
-              );
-              setClients(parsedClients);
-
-              // Try to sync localStorage data to Neon in background
-              clientsApi.syncLocalStorageToNeon(parsedClients);
-            } else {
-              console.log("ℹ️ Using initial clients");
-              setClients(initialClients);
-            }
-          } catch (error) {
-            console.error("❌ Error loading from localStorage:", error);
-            setClients(initialClients);
-          }
-        }
-      } catch (error) {
-        console.error("❌ Error loading clients:", error);
-        setClients(initialClients);
-      } finally {
-        setIsLoadingClients(false);
-      }
-    };
-
-    loadClientsFromNeon();
-
-    return () => {
-      console.log("💥 BeautifulClients component unmounted");
-    };
-  }, []);
-
-  // Persist clients to localStorage as backup whenever state changes
-  useEffect(() => {
-    if (clients.length > 0) {
-      try {
-        localStorage.setItem("unclic-clients", JSON.stringify(clients));
-        console.log(
-          `💾 Backup saved to localStorage: ${clients.length} clients`,
-        );
-      } catch (error) {
-        console.error("❌ Error saving backup to localStorage:", error);
-      }
+    if (clientsError) {
+      toast({
+        title: "❌ Erro ao Carregar Dados",
+        description: "Não foi possível conectar ao Supabase",
+        variant: "destructive",
+      });
     }
-  }, [clients]);
+  }, [clientsError, toast]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
