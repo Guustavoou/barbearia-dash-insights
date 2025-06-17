@@ -211,11 +211,14 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Calculate metrics
+  // Calculate metrics usando dados reais do Supabase
   const metrics = useMemo(() => {
     const today = new Date();
-    const todayAppointments = appointments.filter(
-      (apt) => apt.date.toDateString() === today.toDateString(),
+    const safeAppointments = supabaseAppointments || [];
+
+    const todayAppointments = safeAppointments.filter(
+      (apt) =>
+        apt.date && new Date(apt.date).toDateString() === today.toDateString(),
     );
 
     const confirmedToday = todayAppointments.filter(
@@ -226,14 +229,14 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
         ? (confirmedToday.length / todayAppointments.length) * 100
         : 0;
 
-    const totalRevenue = appointments
+    const totalRevenue = safeAppointments
       .filter((apt) => apt.status === "concluido")
-      .reduce((sum, apt) => sum + apt.price, 0);
+      .reduce((sum, apt) => sum + (apt.price || 0), 0);
 
     const avgServiceTime =
-      appointments.length > 0
-        ? appointments.reduce((sum, apt) => sum + apt.duration, 0) /
-          appointments.length
+      safeAppointments.length > 0
+        ? safeAppointments.reduce((sum, apt) => sum + (apt.duration || 60), 0) /
+          safeAppointments.length
         : 0;
 
     const totalSlots = 20 * professionals.length;
@@ -241,10 +244,13 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
     const occupancyRate =
       totalSlots > 0 ? (occupiedSlots / totalSlots) * 100 : 0;
 
-    const cancelledCount = appointments.filter(
+    const cancelledCount = safeAppointments.filter(
       (apt) => apt.status === "cancelado",
     ).length;
-    const cancellationRate = (cancelledCount / appointments.length) * 100;
+    const cancellationRate =
+      safeAppointments.length > 0
+        ? (cancelledCount / safeAppointments.length) * 100
+        : 0;
 
     return {
       todayAppointments: todayAppointments.length,
@@ -254,7 +260,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
       occupancyRate,
       cancellationRate,
     };
-  }, [appointments]);
+  }, [supabaseAppointments]);
 
   // Filter appointments
   const filteredAppointments = useMemo(() => {
