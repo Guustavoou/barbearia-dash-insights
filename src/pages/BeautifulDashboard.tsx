@@ -184,59 +184,18 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
     };
   }, [currentStats]);
 
-  // Dados de gráficos combinando Supabase com fallback
-  const revenueChartData = businessReports?.overview ||
-    fallbackRevenue?.data || [
-      { month: "Jan", revenue: 35000, expenses: 15000, profit: 20000 },
-      { month: "Fev", revenue: 38000, expenses: 16000, profit: 22000 },
-      { month: "Mar", revenue: 42000, expenses: 17000, profit: 25000 },
-      { month: "Abr", revenue: 45680, expenses: 18230, profit: 27450 },
-    ];
+  // APENAS DADOS REAIS DO SUPABASE - Sem mocks ou fallbacks
+  const revenueChartData = businessReports?.overview || [];
 
-  const servicesData = salesPerformance?.map((service, index) => ({
-    name: service.service_name,
-    count: service.total_appointments,
-    revenue: service.total_revenue,
-    color: ["#00112F", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB"][index % 5],
-  })) ||
-    fallbackServices?.data || [
-      { name: "Corte Masculino", count: 145, revenue: 7250, color: "#00112F" },
-      { name: "Barba", count: 89, revenue: 4450, color: "#4B5563" },
-      { name: "Coloração", count: 67, revenue: 6700, color: "#6B7280" },
-      { name: "Tratamentos", count: 45, revenue: 4500, color: "#9CA3AF" },
-      { name: "Escova", count: 32, revenue: 1600, color: "#D1D5DB" },
-    ];
+  const servicesData =
+    salesPerformance?.map((service, index) => ({
+      name: service.service_name,
+      count: service.total_appointments,
+      revenue: service.total_revenue,
+      color: ["#00112F", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB"][index % 5],
+    })) || [];
 
-  const appointmentsToday = appointments ||
-    fallbackAppointments?.data || [
-      {
-        id: "1",
-        client_name: "Ana Silva",
-        service: "Corte + Escova",
-        time: "09:00",
-        professional: "Maria",
-        status: "confirmado",
-        value: 120,
-      },
-      {
-        id: "2",
-        client_name: "Carlos Santos",
-        service: "Barba",
-        time: "10:30",
-        professional: "João",
-        status: "pendente",
-        value: 50,
-      },
-      {
-        id: "3",
-        client_name: "Beatriz Costa",
-        service: "Coloração",
-        time: "14:00",
-        professional: "Paula",
-        status: "confirmado",
-        value: 180,
-      },
-    ];
+  const appointmentsToday = appointments || [];
 
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
