@@ -84,9 +84,13 @@ export class TestRunner {
 
       return report;
     } catch (error) {
-      console.error("❌ Erro durante a validação:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      console.error("❌ Erro durante a validação:", errorMessage);
       report.overallStatus = "FAIL";
-      report.recommendations.push(`Erro crítico durante a execução: ${error}`);
+      report.recommendations.push(
+        `Erro crítico durante a execução: ${errorMessage}`,
+      );
       report.executionTime = Date.now() - startTime;
       return report;
     }
@@ -375,8 +379,8 @@ ${this.generateConclusion(report)}
       return `
 🎉 **APLICAÇÃO APROVADA PARA PRODUÇÃO**
 
-A aplicação passou em todos os testes críticos e está pronta para uso em produção. 
-Todos os sistemas estão funcionando corretamente, a performance está dentro dos parâmetros 
+A aplicação passou em todos os testes críticos e está pronta para uso em produção.
+Todos os sistemas estão funcionando corretamente, a performance está dentro dos parâmetros
 aceitáveis e a integridade dos dados está garantida.
 
 **Próximos passos:**
@@ -387,8 +391,8 @@ aceitáveis e a integridade dos dados está garantida.
       return `
 ⚠️ **APLICAÇÃO COM RESSALVAS**
 
-A aplicação está funcional mas apresenta algumas questões que devem ser endereçadas 
-antes do deploy em produção. Os problemas identificados não são críticos mas podem 
+A aplicação está funcional mas apresenta algumas questões que devem ser endereçadas
+antes do deploy em produção. Os problemas identificados não são críticos mas podem
 impactar a experiência do usuário.
 
 **Próximos passos:**
@@ -399,7 +403,7 @@ impactar a experiência do usuário.
       return `
 ❌ **APLICAÇÃO NÃO APROVADA**
 
-Foram identificados problemas críticos que impedem o deploy seguro em produção. 
+Foram identificados problemas críticos que impedem o deploy seguro em produção.
 É necessário corrigir os problemas antes de considerar a aplicação pronta.
 
 **Próximos passos:**
@@ -458,5 +462,5 @@ Foram identificados problemas críticos que impedem o deploy seguro em produçã
   }
 }
 
-// Inst��ncia global para uso fácil
+// Instância global para uso fácil
 export const testRunner = new TestRunner();
