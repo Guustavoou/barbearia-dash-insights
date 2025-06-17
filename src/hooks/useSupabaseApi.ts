@@ -43,11 +43,21 @@ export function useSupabaseQuery<T>(
         });
       }
     } catch (error) {
-      console.error("❌ [Supabase] Erro:", error);
+      const errorMessage = (() => {
+        if (error instanceof Error) {
+          return error.message;
+        }
+        if (typeof error === 'object' && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      console.error("❌ [Supabase] Erro detalhado:", errorMessage);
       setState({
         data: null,
         loading: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: errorMessage,
       });
     }
   }, dependencies);
@@ -99,8 +109,17 @@ export function useSupabaseMutation<T, P = any>(
           return null;
         }
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = (() => {
+          if (error instanceof Error) {
+            return error.message;
+          }
+          if (typeof error === 'object' && error !== null) {
+            return JSON.stringify(error, null, 2);
+          }
+          return String(error);
+        })();
+
+        console.error("❌ [Supabase Mutation] Erro detalhado:", errorMessage);
         setError(errorMessage);
         options?.onError?.(errorMessage);
         toast({
@@ -109,6 +128,7 @@ export function useSupabaseMutation<T, P = any>(
           variant: "destructive",
         });
         return null;
+      }
       } finally {
         setLoading(false);
       }
