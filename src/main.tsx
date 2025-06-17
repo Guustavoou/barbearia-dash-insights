@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { safeSupabaseApi } from "./lib/safeSupabaseApi";
+import "./lib/authTest";
+import "./lib/alternativeSupabaseTest";
 
 // Diagnóstico completo do Supabase na inicialização
 safeSupabaseApi.getConnectionStatus().then((status) => {
