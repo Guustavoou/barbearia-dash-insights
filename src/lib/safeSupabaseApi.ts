@@ -20,6 +20,15 @@ class SafeSupabaseApi {
 
   // Método para verificar se uma tabela é segura de usar
   async isTableSafe(tableName: string): Promise<boolean> {
+    // CIRCUIT BREAKER: Se Supabase está desabilitado, não tenta nada
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        `Supabase desabilitado - pulando verificação de ${tableName}`,
+      );
+      this.verifiedTables.set(tableName, false);
+      return false;
+    }
+
     if (this.blacklistedTables.has(tableName)) {
       logSupabaseDebug(`Tabela ${tableName} está na blacklist`);
       return false;
@@ -160,6 +169,9 @@ class SafeSupabaseApi {
 
   async safeGetClients(params?: any) {
     if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - retornando mock para clients",
+      );
       return this.getMockResponse("clients", []);
     }
 
@@ -222,6 +234,9 @@ class SafeSupabaseApi {
 
   async safeGetAppointments(params?: any) {
     if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - retornando mock para appointments",
+      );
       return this.getMockResponse("appointments", []);
     }
 
@@ -286,6 +301,9 @@ class SafeSupabaseApi {
 
   async safeGetServices(params?: any) {
     if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - retornando mock para services",
+      );
       return this.getMockResponse("services", []);
     }
 
