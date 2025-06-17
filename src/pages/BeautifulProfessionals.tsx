@@ -64,7 +64,12 @@ import {
   ProfessionalSortOrder,
   ProfessionalStatus,
 } from "@/lib/professionalsTypes";
-import { useProfessionals } from "@/hooks/useApi";
+import {
+  useSupabaseProfessionals,
+  useCreateSupabaseProfessional,
+  useUpdateSupabaseProfessional,
+  useDeleteSupabaseProfessional,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulProfessionalsProps {
   darkMode: boolean;
