@@ -73,7 +73,9 @@ export class SupabaseIntegrityValidator {
           );
         }
       } catch (error) {
-        console.error(`Erro ao validar tabela ${table}:`, error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.error(`Erro ao validar tabela ${table}:`, errorMessage);
         results.push({
           table,
           totalRecords: 0,
@@ -84,7 +86,9 @@ export class SupabaseIntegrityValidator {
           schemaValid: false,
           sampleData: [],
         });
-        recommendations.push(`Erro ao acessar tabela ${table}: ${error}`);
+        recommendations.push(
+          `Erro ao acessar tabela ${table}: ${errorMessage}`,
+        );
       }
     }
 
