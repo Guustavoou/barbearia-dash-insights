@@ -1021,20 +1021,25 @@ export class SupabaseApi {
     try {
       console.log("➕ Creating product in Supabase...");
 
+      const baseData = {
+        name: productData.name,
+        brand: productData.brand,
+        category: productData.category,
+        price: productData.price,
+        cost_price: productData.cost || productData.cost_price,
+        stock_quantity:
+          productData.stock_quantity || productData.stockQuantity || 0,
+        min_stock: productData.min_stock || productData.minStock || 0,
+        supplier: productData.supplier,
+        status: productData.status || "ativo",
+      };
+
+      // ISOLAMENTO MULTI-TENANT: Adicionar business_id
+      const tenantData = addTenantToData(baseData);
+
       const { data, error } = await supabase
         .from("products")
-        .insert({
-          name: productData.name,
-          brand: productData.brand,
-          category: productData.category,
-          price: productData.price,
-          cost_price: productData.cost || productData.cost_price,
-          stock_quantity:
-            productData.stock_quantity || productData.stockQuantity || 0,
-          min_stock: productData.min_stock || productData.minStock || 0,
-          supplier: productData.supplier,
-          status: productData.status || "ativo",
-        })
+        .insert(tenantData)
         .select()
         .single();
 
