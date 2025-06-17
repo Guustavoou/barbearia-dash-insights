@@ -1,7 +1,7 @@
 // Configuração para debug do Supabase
 export const SUPABASE_CONFIG = {
-  // Flag para desabilitar Supabase durante debug
-  ENABLE_SUPABASE: true,
+  // Flag para desabilitar Supabase durante debug (temporariamente false para evitar erros)
+  ENABLE_SUPABASE: false,
 
   // Flag para usar dados mock como fallback
   USE_MOCK_FALLBACK: true,
