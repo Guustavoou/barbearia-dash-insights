@@ -37,14 +37,14 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ darkMode }) => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
 
-  // API data hooks with automatic fallback
-  const { data: stats, loading: statsLoading } = useDashboardStats();
-  const { data: revenueData, loading: revenueLoading } =
-    useRevenueData(selectedPeriod);
-  const { data: topServices, loading: servicesLoading } = useTopServices(5);
+  // INTEGRAÇÃO REAL COM SUPABASE - Apenas dados reais
+  const { data: stats, loading: statsLoading } = useSupabaseDashboardStats();
+  const { data: businessReports, loading: revenueLoading } =
+    useSupabaseBusinessReports(selectedPeriod);
+  const { data: topServices, loading: servicesLoading } =
+    useSupabaseSalesPerformance(selectedPeriod, 5);
   const { data: upcomingAppointments, loading: appointmentsLoading } =
-    useUpcomingAppointments(8);
-  const { data: birthdays, loading: birthdaysLoading } = useBirthdays();
+    useSupabaseAppointments({ limit: 8 });
 
   const isLoading =
     statsLoading || revenueLoading || servicesLoading || appointmentsLoading;
