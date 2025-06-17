@@ -1,23 +1,28 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { adaptiveSupabaseApi } from "./lib/adaptiveSupabaseApi";
-import "./lib/directSupabaseTest";
+import { safeSupabaseApi } from "./lib/safeSupabaseApi";
 
-// Verificar tabelas na inicialização
-adaptiveSupabaseApi.verifyAllTables().then((results) => {
-  console.log("🔍 [Inicialização] Tabelas verificadas:", results);
+// Diagnóstico completo do Supabase na inicialização
+safeSupabaseApi.getConnectionStatus().then((status) => {
+  console.log("🔍 [SafeSupabase] Status da conexão:", status);
 
-  const workingTables = Object.entries(results)
-    .filter(([_, config]: [string, any]) => config.found)
-    .map(([table, config]: [string, any]) => `${table} (${config.actualName})`);
-
-  if (workingTables.length > 0) {
-    console.log("✅ [Inicialização] Tabelas funcionais:", workingTables);
+  if (status.connected) {
+    console.log("✅ [SafeSupabase] Conectado com sucesso!");
+    console.log("📋 [SafeSupabase] Tabelas funcionais:", status.workingTables);
   } else {
+    console.log("⚠️ [SafeSupabase] Nenhuma tabela funcional - modo mock ativo");
+  }
+
+  if (status.blacklistedTables.length > 0) {
     console.log(
-      "⚠️ [Inicialização] Nenhuma tabela encontrada - usando dados mock",
+      "🚫 [SafeSupabase] Tabelas com problemas (blacklist):",
+      status.blacklistedTables,
     );
+  }
+
+  if (status.errors.length > 0) {
+    console.log("❌ [SafeSupabase] Erros encontrados:", status.errors);
   }
 });
 
