@@ -228,10 +228,20 @@ class AdaptiveSupabaseApi {
         },
       };
     } catch (error) {
-      logSupabaseError("Erro ao buscar agendamentos:", error);
+      const errorMsg = (() => {
+        if (error instanceof Error) {
+          return error.message;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      logSupabaseError("Erro ao buscar agendamentos:", errorMsg);
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMsg,
       };
     }
   }
@@ -286,10 +296,20 @@ class AdaptiveSupabaseApi {
         },
       };
     } catch (error) {
-      logSupabaseError("Erro ao buscar serviços:", error);
+      const errorMsg = (() => {
+        if (error instanceof Error) {
+          return error.message;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      logSupabaseError("Erro ao buscar serviços:", errorMsg);
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMsg,
       };
     }
   }
@@ -336,10 +356,20 @@ class AdaptiveSupabaseApi {
         data: stats,
       };
     } catch (error) {
-      logSupabaseError("Erro ao calcular estatísticas:", error);
+      const errorMsg = (() => {
+        if (error instanceof Error) {
+          return error.message;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      logSupabaseError("Erro ao calcular estatísticas:", errorMsg);
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMsg,
       };
     }
   }
