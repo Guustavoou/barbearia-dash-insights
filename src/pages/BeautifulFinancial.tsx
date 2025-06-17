@@ -100,24 +100,22 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock financial data
-  const financialData = {
-    revenue: 45680,
-    expenses: 18230,
-    profit: 27450,
-    profitMargin: 60.1,
-    transactions: 145,
-    averageTicket: 315.03,
-    growth: 12.5,
-    targetRevenue: 50000,
+  // DADOS REAIS DO SUPABASE - Informações financeiras
+  const { data: financialStats, loading: statsLoading } =
+    useSupabaseFinancialStats(selectedPeriod);
+  const { data: businessReports, loading: reportsLoading } =
+    useSupabaseBusinessReports(selectedPeriod);
+  const { data: transactions, loading: transactionsLoading } =
+    useSupabaseTransactions({ limit: 100 });
+
+  const financialData = financialStats || {
+    total_revenue: 0,
+    total_expenses: 0,
+    net_income: 0,
+    profit_margin: 0,
   };
 
-  const revenueData = [
-    { month: "Jan", revenue: 35000, expenses: 15000, profit: 20000 },
-    { month: "Fev", revenue: 38000, expenses: 16000, profit: 22000 },
-    { month: "Mar", revenue: 42000, expenses: 17000, profit: 25000 },
-    { month: "Abr", revenue: 45680, expenses: 18230, profit: 27450 },
-  ];
+  const revenueData = businessReports?.overview || [];
 
   const expenseCategories = [
     { name: "Salários", value: 8500, color: "#00112F", percentage: 46.6 },
