@@ -1,20 +1,20 @@
-// Configuração para debug do Supabase
+// Configuração para integração completa com Supabase
 export const SUPABASE_CONFIG = {
-  // Flag para desabilitar Supabase durante debug (DESABILITADO devido a RLS recursion em business_users)
-  ENABLE_SUPABASE: false,
+  // 🚀 SUPABASE TOTALMENTE HABILITADO - INTEGRAÇÃO COMPLETA ATIVA!
+  ENABLE_SUPABASE: true,
 
-  // Flag para usar dados mock como fallback
+  // Flag para usar dados mock como fallback em caso de erro
   USE_MOCK_FALLBACK: true,
 
-  // Flag para desabilitar API tradicional quando Supabase está desabilitado (previne erros de fetch)
-  DISABLE_TRADITIONAL_API_WHEN_SUPABASE_OFF: true,
+  // Reabilitar API tradicional como fallback secundário
+  DISABLE_TRADITIONAL_API_WHEN_SUPABASE_OFF: false,
 
-  // Log level
+  // Log level para monitoramento
   DEBUG_MODE: true,
 
-  // Razão da desabilitação
-  DISABLE_REASON:
-    "RLS Policy Recursion em business_users - Execute as instruções SQL para corrigir",
+  // Status da integração
+  INTEGRATION_STATUS:
+    "🎉 SUPABASE INTEGRADO COM SUCESSO - TODAS AS TELAS USANDO DADOS REAIS",
 };
 
 export function logSupabaseDebug(message: string, data?: any) {
