@@ -111,8 +111,8 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
   const updateProductMutation = useUpdateSupabaseProduct();
   const deleteProductMutation = useDeleteSupabaseProduct();
 
-  // Mock data for products
-  const mockProducts: Product[] = [
+  // 📊 DADOS REAIS DO SUPABASE - Substituindo dados mock
+  const products: Product[] = supabaseProducts || [];
     {
       id: 1,
       name: "Shampoo Profissional",
