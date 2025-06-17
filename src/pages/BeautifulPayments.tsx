@@ -86,28 +86,29 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
     order: "DESC",
   });
 
-  // Calculate metrics
+  // Calculate metrics usando dados reais do Supabase
   const metrics = useMemo(() => {
-    const totalPayments = mockPayments.length;
-    const approvedPayments = mockPayments.filter(
-      (p) => p.status === "aprovado",
+    const safePayments = paymentsData || [];
+    const totalPayments = safePayments.length;
+    const approvedPayments = safePayments.filter(
+      (p) => p.status === "confirmado",
     ).length;
-    const totalAmount = mockPayments
-      .filter((p) => p.status === "aprovado")
-      .reduce((sum, p) => sum + p.amount, 0);
-    const pendingAmount = mockPayments
+    const totalAmount = safePayments
+      .filter((p) => p.status === "confirmado")
+      .reduce((sum, p) => sum + (p.amount || 0), 0);
+    const pendingAmount = safePayments
       .filter((p) => p.status === "pendente")
-      .reduce((sum, p) => sum + p.amount, 0);
-    const avgTicket = approvedPayments > 0 ? totalAmount / approvedPayments : 0;
+      .reduce((sum, p) => sum + (p.amount || 0), 0);
 
     return {
       totalPayments,
       approvedPayments,
       totalAmount,
       pendingAmount,
-      avgTicket,
-      approvalRate: (approvedPayments / totalPayments) * 100,
+      approvalRate: totalPayments > 0 ? (approvedPayments / totalPayments) * 100 : 0,
+      averageTicket: approvedPayments > 0 ? totalAmount / approvedPayments : 0,
     };
+  }, [paymentsData]);
   }, [mockPayments]);
 
   const handleNavigate = (page: PageType) => {
