@@ -265,12 +265,8 @@ export class SupabaseApi {
     try {
       console.log("🔍 Fetching appointments from Supabase...");
 
-      let query = supabase.from("appointments").select(`
-        *,
-        clients(name, phone, email),
-        professionals(name),
-        services(name, duration, price)
-      `);
+      // Query simples sem relacionamentos até configurarmos foreign keys
+      let query = supabase.from("appointments").select("*");
 
       // Apply filters
       if (params?.status && params.status !== "all") {
@@ -1181,18 +1177,10 @@ export class SupabaseApi {
     try {
       console.log("📊 Fetching sales performance from Supabase...");
 
+      // Query simples sem relacionamentos até configurarmos foreign keys
       const { data, error } = await supabase
         .from("services")
-        .select(
-          `
-          *,
-          appointments(
-            price,
-            status,
-            date
-          )
-        `,
-        )
+        .select("*")
         .eq("is_active", true)
         .limit(limit || 10);
 

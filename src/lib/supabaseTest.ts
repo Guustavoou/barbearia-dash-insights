@@ -4,12 +4,15 @@ export async function testSupabaseConnection() {
   console.log("🔍 Testando conectividade Supabase...");
 
   try {
-    // Teste 1: Verificar conexão básica
+    // Teste 1: Verificar conexão básica com RPC
     const { data: tables, error: tablesError } = await supabase
-      .from("information_schema.tables")
-      .select("table_name")
-      .eq("table_schema", "public")
-      .limit(5);
+      .rpc("get_schema_tables")
+      .catch(async () => {
+        // Fallback: testar conexão simples
+        return await supabase
+          .from("auth.users")
+          .select("count", { count: "exact", head: true });
+      });
 
     if (tablesError) {
       console.error("❌ Erro ao buscar tabelas:", tablesError);
