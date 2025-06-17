@@ -69,6 +69,13 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import { clientsApi, type NeonClient } from "@/lib/clientsApi";
+import {
+  useSupabaseClients,
+  useCreateSupabaseClient,
+  useUpdateSupabaseClient,
+  useDeleteSupabaseClient,
+  useSupabaseRealTimeClients,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulClientsProps {
   darkMode: boolean;
@@ -109,104 +116,8 @@ interface KPICardProps {
 
 type SortField = "name" | "email" | "createdAt" | "lastVisit" | "totalSpent";
 
-// Initial mock data (compatible with NeonClient)
-const initialClients: Client[] = [
-  {
-    id: "1",
-    name: "Ana Oliveira",
-    email: "ana.oliveira@email.com",
-    phone: "(11) 66666-6666",
-    address: "Rua do Sol, 789",
-    birthDate: "1988-12-03",
-    createdAt: "2020-04-20T15:00:00Z",
-    lastVisit: "2024-12-10T13:00:00Z",
-    status: "ativo",
-    totalSpent: 950,
-    visitCount: 6,
-    avgInterval: 20,
-    notes: "Cliente preferencial",
-    visits: [
-      {
-        id: "v4",
-        date: "2024-12-10T13:00:00Z",
-        service: "Manicure + Pedicure",
-        amount: 80,
-        professional: "Lucia",
-        rating: 4,
-      },
-    ],
-  },
-  {
-    id: "2",
-    name: "João Silva",
-    email: "joao.silva@email.com",
-    phone: "(11) 99999-9999",
-    address: "Rua das Flores, 123",
-    birthDate: "1985-03-15",
-    createdAt: "2023-01-15T10:00:00Z",
-    lastVisit: "2024-01-10T14:30:00Z",
-    status: "ativo",
-    totalSpent: 1250,
-    visitCount: 8,
-    avgInterval: 15,
-    notes: "Cliente preferencial",
-    visits: [
-      {
-        id: "v1",
-        date: "2024-01-10T14:30:00Z",
-        service: "Corte + Barba",
-        amount: 85,
-        professional: "Carlos",
-        rating: 5,
-      },
-      {
-        id: "v2",
-        date: "2023-12-20T16:00:00Z",
-        service: "Corte",
-        amount: 60,
-        professional: "Ana",
-        rating: 4,
-      },
-    ],
-  },
-  {
-    id: "3",
-    name: "Maria Costa",
-    email: "maria.costa@email.com",
-    phone: "(11) 88888-8888",
-    address: "Av. Principal, 456",
-    birthDate: "1990-07-22",
-    createdAt: "2023-02-10T11:00:00Z",
-    lastVisit: "2023-05-15T10:00:00Z",
-    status: "inativo",
-    totalSpent: 780,
-    visitCount: 5,
-    avgInterval: 30,
-    visits: [
-      {
-        id: "v3",
-        date: "2023-05-15T10:00:00Z",
-        service: "Escova + Corte",
-        amount: 120,
-        professional: "Ana",
-        rating: 5,
-      },
-    ],
-  },
-  {
-    id: "4",
-    name: "Pedro Santos",
-    email: "pedro.santos@email.com",
-    phone: "(11) 77777-7777",
-    createdAt: "2023-03-05T09:00:00Z",
-    lastVisit: "2024-01-05T11:30:00Z",
-    status: "ativo",
-    totalSpent: 420,
-    visitCount: 3,
-    avgInterval: 45,
-    visits: [],
-  },
-];
+// Initial state - will be replaced by Supabase data
+const initialClients: Client[] = [];
 
 const KPICard: React.FC<KPICardProps> = ({
   title,
@@ -693,7 +604,7 @@ const ClientCard: React.FC<{
 
   const handleWhatsApp = useCallback(() => {
     const cleanPhone = client.phone.replace(/\D/g, "");
-    const whatsappUrl = `https://wa.me/55${cleanPhone}?text=Olá ${client.name}, aqui �� da Unclic! Como posso ajudá-lo hoje?`;
+    const whatsappUrl = `https://wa.me/55${cleanPhone}?text=Olá ${client.name}, aqui é da Unclic! Como posso ajudá-lo hoje?`;
     window.open(whatsappUrl, "_blank");
     toast({
       title: "💬 WhatsApp Aberto",
