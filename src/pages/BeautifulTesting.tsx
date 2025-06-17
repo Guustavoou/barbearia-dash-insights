@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { TestingDashboard } from "../components/TestingDashboard";
 import { DatabaseDiagnostic } from "../components/DatabaseDiagnostic";
+import { DatabaseFullDiagnostic } from "../components/DatabaseFullDiagnostic";
+import { AutoFixDatabase } from "../components/AutoFixDatabase";
 import { ProductionValidationPanel } from "../components/ProductionValidationPanel";
 import { testRunner } from "../tests/test-runner";
 import { checkDatabaseQuickly } from "../tests/database-status-checker";
@@ -279,7 +281,7 @@ export const BeautifulTesting: React.FC = () => {
                 <Zap className="w-6 h-6 text-green-500" />
                 <span className="font-medium">Teste de Carga</span>
                 <span className="text-xs text-gray-500">
-                  Performance, Concorrência
+                  Performance, Concorr��ncia
                 </span>
               </Button>
 
