@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabaseApi } from "@/lib/supabaseApi";
 import { adaptiveSupabaseApi } from "@/lib/adaptiveSupabaseApi";
 import { safeSupabaseApi } from "@/lib/safeSupabaseApi";
+import { noSchemaSupabaseApi } from "@/lib/noSchemaSupabaseApi";
 import { useToast } from "@/hooks/use-toast";
 
 interface UseSupabaseState<T> {
@@ -165,11 +166,9 @@ export function useSupabaseClients(params?: any) {
       // Último fallback para API original
       return await supabaseApi.getClients(params);
     } catch (error) {
-      console.warn("⚠️ Todas as APIs falharam, usando dados mock");
-      return {
-        success: true,
-        data: [], // Retorna array vazio em vez de erro
-      };
+      console.warn("⚠️ Todas as APIs Supabase falharam, usando NoSchemaAPI");
+      // Fallback final - sempre funciona
+      return await noSchemaSupabaseApi.getClients(params);
     }
   }, [JSON.stringify(params)]);
 }
@@ -221,16 +220,9 @@ export function useSupabaseDashboardStats() {
       // Último fallback para API original
       return await supabaseApi.getDashboardStats();
     } catch (error) {
-      console.warn("⚠️ Todas as APIs falharam, usando dados mock");
-      return {
-        success: true,
-        data: {
-          total_clients: 0,
-          total_appointments: 0,
-          total_professionals: 0,
-          total_revenue: 0,
-        },
-      };
+      console.warn("⚠️ Todas as APIs Supabase falharam, usando NoSchemaAPI");
+      // Fallback final - sempre funciona
+      return await noSchemaSupabaseApi.getDashboardStats();
     }
   });
 }
@@ -267,12 +259,10 @@ export function useSupabaseSalesPerformance(period?: string, limit?: number) {
       return await supabaseApi.getSalesPerformance(period, limit);
     } catch (error) {
       console.warn(
-        "⚠️ Erro ao buscar performance de vendas, usando dados mock",
+        "⚠️ Erro ao buscar performance de vendas, usando NoSchemaAPI",
       );
-      return {
-        success: true,
-        data: [], // Retorna array vazio em vez de erro
-      };
+      // Fallback final - sempre funciona
+      return await noSchemaSupabaseApi.getSalesPerformance(period, limit);
     }
   }, [period, limit]);
 }
@@ -297,11 +287,9 @@ export function useSupabaseAppointments(params?: any) {
       return await (supabaseApi.getAppointments?.(params) ||
         Promise.resolve({ success: true, data: [] }));
     } catch (error) {
-      console.warn("⚠️ Todas as APIs falharam, usando dados mock");
-      return {
-        success: true,
-        data: [], // Retorna array vazio em vez de erro
-      };
+      console.warn("⚠️ Todas as APIs Supabase falharam, usando NoSchemaAPI");
+      // Fallback final - sempre funciona
+      return await noSchemaSupabaseApi.getAppointments(params);
     }
   }, [JSON.stringify(params)]);
 }
