@@ -69,39 +69,18 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data for payments
-  const mockPayments = [
-    {
-      id: 1,
-      client: "Ana Silva",
-      amount: 150.0,
-      method: "cartao",
-      status: "aprovado",
-      service: "Corte + Escova",
-      date: new Date(),
-      transaction_id: "TXN123456",
-    },
-    {
-      id: 2,
-      client: "Carlos Santos",
-      amount: 80.0,
-      method: "pix",
-      status: "pendente",
-      service: "Barba Completa",
-      date: new Date(),
-      transaction_id: "TXN123457",
-    },
-    {
-      id: 3,
-      client: "Maria Costa",
-      amount: 200.0,
-      method: "dinheiro",
-      status: "aprovado",
-      service: "Coloração",
-      date: new Date(Date.now() - 86400000),
-      transaction_id: "TXN123458",
-    },
-  ];
+  // DADOS REAIS DO SUPABASE - Transações e pagamentos
+  const {
+    data: paymentsData = [],
+    loading: paymentsLoading,
+    error: paymentsError,
+    refetch: refetchPayments,
+  } = useSupabaseTransactions({
+    type: "receita",
+    limit: 100,
+    sort: "date",
+    order: "DESC",
+  });
 
   // Calculate metrics
   const metrics = useMemo(() => {
