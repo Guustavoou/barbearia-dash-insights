@@ -232,6 +232,12 @@ const UnclicAppContent: React.FC = () => {
         return (
           <BeautifulTesting darkMode={darkMode} onPageChange={setCurrentPage} />
         );
+      case "database-emergency":
+        return (
+          <DatabaseEmergencyFix
+            onComplete={() => setCurrentPage("dashboard")}
+          />
+        );
       default:
         return (
           <BeautifulDashboard
