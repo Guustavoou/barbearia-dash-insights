@@ -121,7 +121,7 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
     stock_quantity: product.stock_quantity || 0,
     min_stock: product.min_stock || 0,
     price: product.price || 0,
-    cost: product.cost || 0,
+    cost: product.cost_price || 0,
     supplier: product.supplier || "Não informado",
     last_updated: product.updated_at || new Date().toISOString(),
     status:
