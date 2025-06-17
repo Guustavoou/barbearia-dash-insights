@@ -352,11 +352,13 @@ const UnclicAppContent: React.FC = () => {
 const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <UnclicAppContent />
-      </AuthProvider>
+      <SupabaseAuthProvider>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <UnclicAppContent />
+        </AuthProvider>
+      </SupabaseAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
