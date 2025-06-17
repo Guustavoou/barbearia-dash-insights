@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabaseApi } from "@/lib/supabaseApi";
+import { adaptiveSupabaseApi } from "@/lib/adaptiveSupabaseApi";
 import { useToast } from "@/hooks/use-toast";
 
 interface UseSupabaseState<T> {
@@ -148,6 +149,13 @@ export function useSupabaseMutation<T, P = any>(
 export function useSupabaseClients(params?: any) {
   return useSupabaseQuery(async () => {
     try {
+      // Tenta API adaptativa primeiro
+      const result = await adaptiveSupabaseApi.getClients(params);
+      if (result.success) {
+        return result;
+      }
+
+      // Fallback para API original
       return await supabaseApi.getClients(params);
     } catch (error) {
       console.warn("⚠️ Tabela clients não encontrada, usando dados mock");
@@ -189,7 +197,29 @@ export function useDeleteSupabaseClient(
 
 // DASHBOARD
 export function useSupabaseDashboardStats() {
-  return useSupabaseQuery(() => supabaseApi.getDashboardStats());
+  return useSupabaseQuery(async () => {
+    try {
+      // Tenta API adaptativa primeiro
+      const result = await adaptiveSupabaseApi.getDashboardStats();
+      if (result.success) {
+        return result;
+      }
+
+      // Fallback para API original
+      return await supabaseApi.getDashboardStats();
+    } catch (error) {
+      console.warn("⚠️ Erro no dashboard, usando dados mock");
+      return {
+        success: true,
+        data: {
+          total_clients: 0,
+          total_appointments: 0,
+          total_professionals: 0,
+          total_revenue: 0,
+        },
+      };
+    }
+  });
 }
 
 export function useSupabaseBusinessReports(period?: string) {
@@ -217,6 +247,13 @@ export function useSupabaseSalesPerformance(period?: string, limit?: number) {
 export function useSupabaseAppointments(params?: any) {
   return useSupabaseQuery(async () => {
     try {
+      // Tenta API adaptativa primeiro
+      const result = await adaptiveSupabaseApi.getAppointments(params);
+      if (result.success) {
+        return result;
+      }
+
+      // Fallback para API original
       return await (supabaseApi.getAppointments?.(params) ||
         Promise.resolve({ success: true, data: [] }));
     } catch (error) {
