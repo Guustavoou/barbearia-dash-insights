@@ -4,6 +4,7 @@ import { adaptiveSupabaseApi } from "@/lib/adaptiveSupabaseApi";
 import { safeSupabaseApi } from "@/lib/safeSupabaseApi";
 import { noSchemaSupabaseApi } from "@/lib/noSchemaSupabaseApi";
 import { useToast } from "@/hooks/use-toast";
+import { SUPABASE_CONFIG, logSupabaseDebug } from "@/lib/supabaseConfig";
 
 interface UseSupabaseState<T> {
   data: T | null;
@@ -150,6 +151,14 @@ export function useSupabaseMutation<T, P = any>(
 // CLIENTES
 export function useSupabaseClients(params?: any) {
   return useSupabaseQuery(async () => {
+    // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para clients",
+      );
+      return await noSchemaSupabaseApi.getClients(params);
+    }
+
     try {
       // Tenta SafeSupabaseApi primeiro (evita RLS e outras issues)
       const result = await safeSupabaseApi.safeGetClients(params);
@@ -204,6 +213,14 @@ export function useDeleteSupabaseClient(
 // DASHBOARD
 export function useSupabaseDashboardStats() {
   return useSupabaseQuery(async () => {
+    // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para dashboard",
+      );
+      return await noSchemaSupabaseApi.getDashboardStats();
+    }
+
     try {
       // Tenta SafeSupabaseApi primeiro (mais robusta)
       const result = await safeSupabaseApi.safeGetDashboardStats();
@@ -236,6 +253,14 @@ export function useSupabaseBusinessReports(period?: string) {
 
 export function useSupabaseSalesPerformance(period?: string, limit?: number) {
   return useSupabaseQuery(async () => {
+    // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para sales performance",
+      );
+      return await noSchemaSupabaseApi.getSalesPerformance(period, limit);
+    }
+
     try {
       // Tenta SafeSupabaseApi primeiro
       const result = await safeSupabaseApi.safeGetServices({ limit });
@@ -270,6 +295,14 @@ export function useSupabaseSalesPerformance(period?: string, limit?: number) {
 // APPOINTMENTS
 export function useSupabaseAppointments(params?: any) {
   return useSupabaseQuery(async () => {
+    // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
+    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
+      logSupabaseDebug(
+        "🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para appointments",
+      );
+      return await noSchemaSupabaseApi.getAppointments(params);
+    }
+
     try {
       // Tenta SafeSupabaseApi primeiro (evita RLS e outras issues)
       const result = await safeSupabaseApi.safeGetAppointments(params);
