@@ -29,6 +29,7 @@ import { BeautifulMarketing } from "@/pages/BeautifulMarketing";
 import { BeautifulDocuments } from "@/pages/BeautifulDocuments";
 import { BeautifulTesting } from "@/pages/BeautifulTesting";
 import { DatabaseEmergencyFix } from "@/pages/DatabaseEmergencyFix";
+import { AutoDatabaseErrorHandler } from "@/components/AutoDatabaseErrorHandler";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
 import { Professionals } from "@/pages/Professionals";
