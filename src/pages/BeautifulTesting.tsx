@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { TestingDashboard } from "../components/TestingDashboard";
 import { DatabaseDiagnostic } from "../components/DatabaseDiagnostic";
+import { ProductionValidationPanel } from "../components/ProductionValidationPanel";
 import { testRunner } from "../tests/test-runner";
 import { checkDatabaseQuickly } from "../tests/database-status-checker";
 import {
@@ -239,6 +240,11 @@ export const BeautifulTesting: React.FC = () => {
             </Card>
           </div>
         )}
+
+        {/* Production Validation Panel - MAIN FEATURE */}
+        <div className="bg-white/90 backdrop-blur border-2 border-blue-300 rounded-xl p-1">
+          <ProductionValidationPanel />
+        </div>
 
         {/* Quick Actions */}
         <Card className="bg-white/80 backdrop-blur">
