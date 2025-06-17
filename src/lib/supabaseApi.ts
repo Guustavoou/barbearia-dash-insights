@@ -525,16 +525,21 @@ export class SupabaseApi {
     try {
       console.log("➕ Creating service in Supabase...");
 
+      const baseData = {
+        name: serviceData.name,
+        description: serviceData.description,
+        price: serviceData.price,
+        duration: serviceData.duration,
+        category: serviceData.category,
+        is_active: serviceData.isActive ?? true,
+      };
+
+      // ISOLAMENTO MULTI-TENANT: Adicionar business_id
+      const tenantData = addTenantToData(baseData);
+
       const { data, error } = await supabase
         .from("services")
-        .insert({
-          name: serviceData.name,
-          description: serviceData.description,
-          price: serviceData.price,
-          duration: serviceData.duration,
-          category: serviceData.category,
-          is_active: serviceData.isActive ?? true,
-        })
+        .insert(tenantData)
         .select()
         .single();
 
