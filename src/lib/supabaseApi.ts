@@ -433,7 +433,7 @@ export class SupabaseApi {
 
       if (error) throw error;
 
-      console.log(`��� Appointment ${id} deleted from Supabase`);
+      console.log(`✅ Appointment ${id} deleted from Supabase`);
 
       return {
         success: true,
@@ -686,16 +686,21 @@ export class SupabaseApi {
     try {
       console.log("➕ Creating professional in Supabase...");
 
+      const baseData = {
+        name: professionalData.name,
+        email: professionalData.email,
+        phone: professionalData.phone,
+        specialties: professionalData.specialties,
+        commission: professionalData.commission || 0,
+        status: professionalData.status || "ativo",
+      };
+
+      // ISOLAMENTO MULTI-TENANT: Adicionar business_id
+      const tenantData = addTenantToData(baseData);
+
       const { data, error } = await supabase
         .from("professionals")
-        .insert({
-          name: professionalData.name,
-          email: professionalData.email,
-          phone: professionalData.phone,
-          specialties: professionalData.specialties,
-          is_active: professionalData.isActive ?? true,
-          commission_rate: professionalData.commissionRate || 0,
-        })
+        .insert(tenantData)
         .select()
         .single();
 
@@ -749,7 +754,7 @@ export class SupabaseApi {
 
   async deleteProfessional(id: string) {
     try {
-      console.log(`🗑️ Deleting professional ${id} from Supabase...`);
+      console.log(`🗑��� Deleting professional ${id} from Supabase...`);
 
       const { error } = await supabase
         .from("professionals")
