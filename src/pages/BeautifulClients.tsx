@@ -1392,7 +1392,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
         ? Math.round((clientsWithMultipleVisits / activeClients) * 100)
         : 0;
 
-    const totalRevenue = clients.reduce(
+    const totalRevenue = safeClients.reduce(
       (sum, c) => sum + (c.totalSpent || 0),
       0,
     );
@@ -1410,7 +1410,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   // Filter and sort clients
   const filteredClients = useMemo(() => {
-    let filtered = clients.filter((client) => {
+    // Add null safety for clients data
+    const safeClients = clients || [];
+    let filtered = safeClients.filter((client) => {
       const matchesSearch =
         client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
