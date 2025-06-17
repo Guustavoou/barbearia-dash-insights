@@ -103,49 +103,7 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
     limit: 50,
   });
 
-  // Mock data para fallback
-  const mockServices = [
-    {
-      id: 1,
-      name: "Corte Masculino",
-      description: "Corte tradicional masculino",
-      price: 50,
-      duration: 30,
-      category: "cabelo" as ServiceCategory,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      name: "Barba Completa",
-      description: "Barba com navalha e acabamento",
-      price: 40,
-      duration: 25,
-      category: "barba" as ServiceCategory,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 3,
-      name: "Coloração",
-      description: "Coloração completa do cabelo",
-      price: 120,
-      duration: 90,
-      category: "cabelo" as ServiceCategory,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 4,
-      name: "Escova",
-      description: "Escova modeladora",
-      price: 35,
-      duration: 45,
-      category: "cabelo" as ServiceCategory,
-      is_active: true,
-      created_at: new Date().toISOString(),
-    },
-  ];
+  // 📊 REMOVIDO: Dados mock eliminados - usando apenas dados reais do Supabase
 
   // 📊 DADOS REAIS DO SUPABASE - Apenas dados do banco
   const servicesData = apiResponse?.data || [];
