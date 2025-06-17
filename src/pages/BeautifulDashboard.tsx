@@ -82,13 +82,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
-import {
-  useDashboardStats,
-  useRevenueData,
-  useTopServices,
-  useUpcomingAppointments,
-  useBirthdays,
-} from "@/hooks/useApi";
+// Removidas as importações de API tradicional - usando apenas dados reais do Supabase
 import {
   useSupabaseDashboardStats,
   useSupabaseBusinessReports,
