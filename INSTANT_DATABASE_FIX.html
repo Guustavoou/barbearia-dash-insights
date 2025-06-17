@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🚨 Correção Emergencial do Banco</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+        color: white;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        max-width: 800px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .error-code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        font-family: monospace;
+        font-size: 14px;
+      }
+      .btn {
+        background: #16a34a;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+      .btn:hover {
+        background: #15803d;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+      .btn-secondary {
+        background: #3b82f6;
+      }
+      .btn-secondary:hover {
+        background: #2563eb;
+      }
+      .script-container {
+        background: #1f2937;
+        color: #f3f4f6;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: left;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 2px solid #374151;
+      }
+      .success {
+        background: rgba(34, 197, 94, 0.2);
+        border: 2px solid #22c55e;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+      }
+      .warning {
+        background: rgba(251, 191, 36, 0.2);
+        border: 2px solid #fbbf24;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+      }
+      .step {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border-left: 4px solid #22c55e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚨 Correção Emergencial</h1>
+
+      <div class="error-code">
+        <strong>Erro Detectado:</strong><br />
+        ❌ relation "public.appointments" does not exist<br />
+        ❌ ReferenceError: X is not defined<br />
+        <strong>Código:</strong> 42P01
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ Situação:</strong> As tabelas do banco de dados não foram
+        criadas no Supabase.<br />
+        A aplicação não pode funcionar sem estas tabelas.
+      </div>
+
+      <h2>🚀 Correção Automática (30 segundos)</h2>
+
+      <div class="step">
+        <strong>Passo 1:</strong> Clique no botão abaixo para abrir o SQL Editor
+        do Supabase
+      </div>
+
+      <button class="btn" onclick="openSupabaseAndCopy()">
+        🔧 Abrir Supabase & Copiar Script
+      </button>
+
+      <div class="step">
+        <strong>Passo 2:</strong> Cole o script no editor (Ctrl+V) e clique em
+        "Run"
+      </div>
+
+      <div class="step">
+        <strong>Passo 3:</strong> Volte à aplicação e recarregue a página
+      </div>
+
+      <button class="btn btn-secondary" onclick="showScript()">
+        📄 Ver Script SQL
+      </button>
+
+      <div id="scriptDisplay" class="script-container" style="display: none">
+        <strong>Script de Correção:</strong><br /><br />
+        <div id="sqlScript"></div>
+      </div>
+
+      <div class="success" id="successMessage" style="display: none">
+        ✅ <strong>Script copiado!</strong> Agora cole no SQL Editor do Supabase
+        e execute.
+      </div>
+
+      <h3>🎯 Resultado Esperado:</h3>
+      <ul style="text-align: left; max-width: 500px; margin: 0 auto">
+        <li>✅ Tabela "appointments" criada</li>
+        <li>✅ Erros JavaScript eliminados</li>
+        <li>✅ Aplicação funcionando 100%</li>
+        <li>✅ Dashboard com dados reais</li>
+      </ul>
+
+      <div style="margin-top: 30px; font-size: 14px; opacity: 0.8">
+        <p>
+          💡 Se algo não funcionar, execute o script manualmente no SQL Editor.
+        </p>
+        <p>
+          🔗
+          <strong>URL do SQL Editor:</strong>
+          app.supabase.com/project/jcdymkgmtxpryceziazt/sql/new
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const sqlScript = `-- 🚨 CORREÇÃO EMERGENCIAL DO BANCO DE DADOS
+-- Execute este script completo no SQL Editor do Supabase
+
+-- 1. Habilitar extensões
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 2. Criar tabela businesses (necessária para foreign key)
+CREATE TABLE IF NOT EXISTS public.businesses (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL,
+  business_type TEXT DEFAULT 'salon',
+  email TEXT,
+  phone TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 3. Criar tabela appointments (RESOLVE O ERRO PRINCIPAL!)
+CREATE TABLE IF NOT EXISTS public.appointments (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  business_id UUID REFERENCES public.businesses(id) ON DELETE CASCADE,
+  client_id UUID,
+  professional_id UUID,
+  service_id UUID,
+  client_name TEXT,
+  service TEXT,
+  professional TEXT,
+  date DATE NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME,
+  duration INTEGER DEFAULT 60,
+  status TEXT DEFAULT 'pendente' CHECK (status IN ('pendente', 'confirmado', 'concluido', 'cancelado')),
+  price NUMERIC DEFAULT 0,
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 4. Habilitar Row Level Security
+ALTER TABLE public.businesses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
+
+-- 5. Criar índices para performance
+CREATE INDEX IF NOT EXISTS idx_appointments_business_id ON public.appointments(business_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_date ON public.appointments(date);
+
+-- 6. Inserir dados iniciais
+INSERT INTO public.businesses (id, name, business_type) VALUES 
+('550e8400-e29b-41d4-a716-446655440000', 'Salão Premium', 'salon')
+ON CONFLICT (id) DO NOTHING;
+
+-- 7. Inserir agendamentos de teste
+INSERT INTO public.appointments (business_id, client_name, service, date, start_time, status, price) VALUES 
+('550e8400-e29b-41d4-a716-446655440000', 'Ana Silva', 'Corte Feminino', CURRENT_DATE, '10:00', 'confirmado', 80.00),
+('550e8400-e29b-41d4-a716-446655440000', 'Carlos Santos', 'Corte Masculino', CURRENT_DATE, '14:00', 'pendente', 50.00)
+ON CONFLICT DO NOTHING;
+
+-- 8. Verificar se funcionou
+SELECT 
+  'SUCCESS: Tabelas criadas com sucesso!' as resultado,
+  COUNT(*) as total_agendamentos
+FROM public.appointments;
+
+-- ✅ Se ver este resultado, o problema foi resolvido!`;
+
+      async function openSupabaseAndCopy() {
+        try {
+          // Copiar script para área de transferência
+          await navigator.clipboard.writeText(sqlScript);
+
+          // Mostrar mensagem de sucesso
+          document.getElementById("successMessage").style.display = "block";
+
+          // Abrir SQL Editor do Supabase
+          window.open(
+            "https://app.supabase.com/project/jcdymkgmtxpryceziazt/sql/new",
+            "_blank",
+          );
+
+          console.log("✅ Script copiado e SQL Editor aberto!");
+        } catch (error) {
+          console.error("❌ Erro ao copiar script:", error);
+          alert(
+            '❌ Erro ao copiar. Use o botão "Ver Script SQL" e copie manualmente.',
+          );
+        }
+      }
+
+      function showScript() {
+        const display = document.getElementById("scriptDisplay");
+        const scriptElement = document.getElementById("sqlScript");
+
+        if (display.style.display === "none") {
+          display.style.display = "block";
+          scriptElement.textContent = sqlScript;
+        } else {
+          display.style.display = "none";
+        }
+      }
+
+      // Auto-executar se URL contém parâmetro fix=true
+      if (window.location.search.includes("fix=true")) {
+        setTimeout(openSupabaseAndCopy, 1000);
+      }
+    </script>
+  </body>
+</html>
