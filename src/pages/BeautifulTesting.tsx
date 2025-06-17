@@ -4,6 +4,7 @@ import { DatabaseDiagnostic } from "../components/DatabaseDiagnostic";
 import { ProductionValidationPanel } from "../components/ProductionValidationPanel";
 import { testRunner } from "../tests/test-runner";
 import { checkDatabaseQuickly } from "../tests/database-status-checker";
+import "../tests/manual-test-execution";
 import {
   Card,
   CardContent,
