@@ -116,19 +116,15 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
     id: product.id,
     name: product.name,
     category: product.category,
-    brand: product.brand || "Sem marca",
+    brand: product.brand || 'Sem marca',
     stock_quantity: product.stock_quantity || 0,
     min_stock: product.min_stock || 0,
     price: product.price || 0,
     cost: product.cost || 0,
-    supplier: product.supplier || "Não informado",
+    supplier: product.supplier || 'Não informado',
     last_updated: product.updated_at || new Date().toISOString(),
-    status:
-      product.stock_quantity <= 0
-        ? "esgotado"
-        : product.stock_quantity <= product.min_stock
-          ? "baixo_estoque"
-          : "disponivel",
+    status: product.stock_quantity <= 0 ? 'esgotado' :
+            product.stock_quantity <= product.min_stock ? 'baixo_estoque' : 'disponivel'
   }));
 
   // Filter products usando dados reais do Supabase
@@ -192,15 +188,79 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
     }
   };
 
-  const handleRefreshData = () => {
+  const handleRefreshData = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await refetchProducts();
       setLastUpdate(new Date());
-      setIsLoading(false);
       toast({
-        title: "✨ Dados Atualizados",
-        description: "Estoque atualizado com sucesso",
+        title: "✅ Dados atualizados",
+        description: "Informações de estoque sincronizadas com sucesso.",
       });
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao atualizar",
+        description: "Não foi possível sincronizar os dados.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 🚀 OPERAÇÕES CRUD COM SUPABASE
+  const handleCreateProduct = async (productData: any) => {
+    try {
+      await createProductMutation.mutateAsync(productData);
+      toast({
+        title: "✅ Produto criado",
+        description: "Produto adicionado ao estoque com sucesso.",
+      });
+      setShowNewProductModal(false);
+      await refetchProducts();
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao criar produto",
+        description: "Não foi possível adicionar o produto.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateProduct = async (productId: string, productData: any) => {
+    try {
+      await updateProductMutation.mutateAsync({ id: productId, ...productData });
+      toast({
+        title: "✅ Produto atualizado",
+        description: "Informações do produto foram salvas.",
+      });
+      setEditingProduct(null);
+      await refetchProducts();
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao atualizar produto",
+        description: "Não foi possível salvar as alterações.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      await deleteProductMutation.mutateAsync(productId);
+      toast({
+        title: "✅ Produto removido",
+        description: "Produto foi removido do estoque.",
+      });
+      await refetchProducts();
+    } catch (error) {
+      toast({
+        title: "❌ Erro ao remover produto",
+        description: "Não foi possível remover o produto.",
+        variant: "destructive",
+      });
+    }
+  };
     }, 1000);
   };
 
