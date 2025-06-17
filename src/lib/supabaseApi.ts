@@ -274,13 +274,17 @@ export class SupabaseApi {
     search?: string;
     status?: string;
     date?: string;
-    professionalId?: string;
   }) {
     try {
       console.log("🔍 Fetching appointments from Supabase...");
+      logTenantDebug(
+        `Filtrando appointments para business: ${getCurrentBusinessId()}`,
+      );
 
-      // Query simples sem relacionamentos até configurarmos foreign keys
-      let query = supabase.from("appointments").select("*");
+      let query = supabase.from("appointments").select("*", { count: "exact" });
+
+      // ISOLAMENTO MULTI-TENANT: Aplicar filtro de business_id
+      query = addTenantFilter(query);
 
       // Apply filters
       if (params?.status && params.status !== "all") {
@@ -291,8 +295,10 @@ export class SupabaseApi {
         query = query.eq("date", params.date);
       }
 
-      if (params?.professionalId) {
-        query = query.eq("professional_id", params.professionalId);
+      if (params?.search) {
+        query = query.or(
+          `notes.ilike.%${params.search}%,client_name.ilike.%${params.search}%`,
+        );
       }
 
       if (params?.search) {
