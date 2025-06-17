@@ -157,7 +157,7 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
     },
   });
 
-  // Calculate filtered and sorted services
+  // Calculate filtered and sorted services using real Supabase data
   const filteredServices = useMemo(() => {
     const safeServices = servicesData || [];
     let filtered = safeServices.filter((service: Service) => {
