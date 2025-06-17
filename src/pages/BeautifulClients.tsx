@@ -1455,15 +1455,16 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
 
   const handleRefreshData = useCallback(() => {
     setIsLoading(true);
+    refetchClients();
     setTimeout(() => {
       setLastUpdate(new Date());
       setIsLoading(false);
       toast({
         title: "✨ Dados Atualizados",
-        description: "Lista de clientes atualizada com sucesso",
+        description: "Lista de clientes recarregada do Supabase",
       });
     }, 1000);
-  }, [toast]);
+  }, [refetchClients, toast]);
 
   const handleExportData = useCallback(async () => {
     setIsExporting(true);
@@ -1482,7 +1483,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
           client.email,
           client.phone,
           client.status,
-          client.totalSpent.toString(),
+          client.totalSpent?.toString() || "0",
           client.lastVisit ? formatDate(client.lastVisit) : "Nunca",
         ]),
       ];
@@ -1526,16 +1527,18 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   }, [toast]);
 
   const handleResetData = useCallback(() => {
-    // Clear localStorage and reset data
-    localStorage.removeItem("unclic-clients");
-    setClients(initialClients);
+    console.log(
+      "⚠️ Reset não disponível com Supabase - dados persistem no banco",
+    );
     toast({
-      title: "🔄 Dados Resetados",
-      description: "Base de clientes restaurada para o estado inicial",
+      title: "ℹ️ Reset Não Disponível",
+      description:
+        "Os dados estão salvos no Supabase e não podem ser resetados localmente",
+      variant: "destructive",
     });
   }, [toast]);
 
-  const handleAddTestClient = useCallback(async () => {
+  const handleAddTestClient = useCallback(() => {
     const testClient = {
       name: `Cliente Teste ${new Date().toLocaleTimeString()}`,
       email: `teste${Date.now()}@email.com`,
@@ -1545,12 +1548,8 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
       notes: "Cliente criado para teste",
     };
 
-    await handleAddClient(testClient);
-    toast({
-      title: "🧪 Cliente de Teste Adicionado",
-      description: `${testClient.name} foi criado para teste`,
-    });
-  }, [handleAddClient, toast]);
+    handleAddClient(testClient);
+  }, [handleAddClient]);
 
   const handleNavigate = (page: PageType) => {
     if (onPageChange) {
