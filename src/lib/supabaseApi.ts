@@ -1002,10 +1002,12 @@ export class SupabaseApi {
           brand: productData.brand,
           category: productData.category,
           price: productData.price,
-          cost: productData.cost,
-          stock_quantity: productData.stockQuantity || 0,
-          min_stock: productData.minStock || 0,
-          is_active: productData.isActive ?? true,
+          cost_price: productData.cost || productData.cost_price,
+          stock_quantity:
+            productData.stock_quantity || productData.stockQuantity || 0,
+          min_stock: productData.min_stock || productData.minStock || 0,
+          supplier: productData.supplier,
+          status: productData.status || "ativo",
         })
         .select()
         .single();
@@ -1023,6 +1025,73 @@ export class SupabaseApi {
       return {
         success: false,
         error: "Failed to create product in Supabase",
+      };
+    }
+  }
+
+  async updateProduct(productId: string, productData: any) {
+    try {
+      console.log("✏️ Updating product in Supabase...");
+
+      const { data, error } = await supabase
+        .from("products")
+        .update({
+          name: productData.name,
+          brand: productData.brand,
+          category: productData.category,
+          price: productData.price,
+          cost_price: productData.cost || productData.cost_price,
+          stock_quantity:
+            productData.stock_quantity || productData.stockQuantity,
+          min_stock: productData.min_stock || productData.minStock,
+          supplier: productData.supplier,
+          status: productData.status,
+        })
+        .eq("id", productId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log("✅ Product updated in Supabase");
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      console.error("❌ Error updating product:", error);
+      return {
+        success: false,
+        error: "Failed to update product in Supabase",
+      };
+    }
+  }
+
+  async deleteProduct(productId: string) {
+    try {
+      console.log("🗑️ Deleting product from Supabase...");
+
+      const { data, error } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", productId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log("✅ Product deleted from Supabase");
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      console.error("❌ Error deleting product:", error);
+      return {
+        success: false,
+        error: "Failed to delete product from Supabase",
       };
     }
   }
