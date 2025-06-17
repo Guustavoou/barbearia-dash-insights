@@ -408,15 +408,14 @@ export const OptimizedDashboard: React.FC<OptimizedDashboardProps> = ({
   const [showNewKPIs, setShowNewKPIs] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  // API hooks
-  const { data: stats, loading: statsLoading } = useDashboardStats();
-  const { data: revenueData, loading: revenueLoading } = useRevenueData(
-    selectedPeriod,
-    true,
-  );
-  const { data: topServices, loading: servicesLoading } = useTopServices(5);
+  // INTEGRAÇÃO REAL COM SUPABASE - Apenas dados reais
+  const { data: stats, loading: statsLoading } = useSupabaseDashboardStats();
+  const { data: businessReports, loading: revenueLoading } =
+    useSupabaseBusinessReports(selectedPeriod);
+  const { data: topServices, loading: servicesLoading } =
+    useSupabaseSalesPerformance(selectedPeriod, 5);
   const { data: financialMetrics, loading: financialLoading } =
-    useFinancialMetrics(selectedPeriod);
+    useSupabaseFinancialStats(selectedPeriod);
   const { data: operationalMetrics, loading: operationalLoading } =
     useOperationalMetrics();
 
