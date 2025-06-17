@@ -47,7 +47,7 @@ export function useSupabaseQuery<T>(
         if (error instanceof Error) {
           return error.message;
         }
-        if (typeof error === 'object' && error !== null) {
+        if (typeof error === "object" && error !== null) {
           return JSON.stringify(error, null, 2);
         }
         return String(error);
@@ -113,7 +113,7 @@ export function useSupabaseMutation<T, P = any>(
           if (error instanceof Error) {
             return error.message;
           }
-          if (typeof error === 'object' && error !== null) {
+          if (typeof error === "object" && error !== null) {
             return JSON.stringify(error, null, 2);
           }
           return String(error);
@@ -128,7 +128,6 @@ export function useSupabaseMutation<T, P = any>(
           variant: "destructive",
         });
         return null;
-      }
       } finally {
         setLoading(false);
       }
