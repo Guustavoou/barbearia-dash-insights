@@ -51,6 +51,7 @@ import { MultiTenantOnboardingProvider } from "@/contexts/MultiTenantOnboardingC
 
 // Supabase provider
 import { SupabaseAuthProvider } from "@/contexts/SupabaseAuthContext";
+import { SupabaseStatus } from "@/components/SupabaseStatus";
 
 const queryClient = new QueryClient();
 
