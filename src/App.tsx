@@ -65,7 +65,22 @@ const UnclicAppContent: React.FC = () => {
   const { session, isLoading, logout } = useAuth();
   const { isMobile, isTablet, isDesktop } = useResponsive();
   const [appState, setAppState] = useState<AppState>("login");
-  const [currentPage, setCurrentPage] = useState<PageType>("dashboard");
+  const [currentPage, setCurrentPage] = useState<PageType>(() => {
+    // Check URL for emergency database fix
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = urlParams.get("page");
+      const hashPage = window.location.hash.substring(1); // Remove #
+
+      if (
+        pageParam === "database-emergency" ||
+        hashPage === "database-emergency"
+      ) {
+        return "database-emergency";
+      }
+    }
+    return "dashboard";
+  });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
   const rightSidebar = useRightSidebar({
     defaultOpen: !isMobile, // Aberta por padrão apenas em desktop
