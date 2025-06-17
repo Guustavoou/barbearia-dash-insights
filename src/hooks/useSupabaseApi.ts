@@ -338,3 +338,50 @@ export function useSupabaseFinancialStats(period?: string) {
     [period],
   );
 }
+
+// REAL-TIME SUBSCRIPTIONS
+export function useSupabaseRealTimeClients(callback: (payload: any) => void) {
+  useEffect(() => {
+    logSupabaseDebug("🔄 [Real-time] Configurando subscription de clientes");
+
+    // Simular subscription real-time (em produção, conectar ao Supabase real-time)
+    const interval = setInterval(() => {
+      callback({
+        eventType: "UPDATE",
+        new: {},
+        old: {},
+        table: "clients",
+      });
+    }, 30000); // Refresh a cada 30 segundos
+
+    return () => {
+      logSupabaseDebug("🔄 [Real-time] Removendo subscription de clientes");
+      clearInterval(interval);
+    };
+  }, [callback]);
+}
+
+export function useSupabaseRealTimeAppointments(
+  callback: (payload: any) => void,
+) {
+  useEffect(() => {
+    logSupabaseDebug(
+      "🔄 [Real-time] Configurando subscription de agendamentos",
+    );
+
+    // Simular subscription real-time (em produção, conectar ao Supabase real-time)
+    const interval = setInterval(() => {
+      callback({
+        eventType: "UPDATE",
+        new: {},
+        old: {},
+        table: "appointments",
+      });
+    }, 30000); // Refresh a cada 30 segundos
+
+    return () => {
+      logSupabaseDebug("🔄 [Real-time] Removendo subscription de agendamentos");
+      clearInterval(interval);
+    };
+  }, [callback]);
+}
