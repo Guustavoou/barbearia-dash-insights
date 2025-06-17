@@ -58,6 +58,15 @@ import {
 import { NewAppointmentModal } from "@/components/NewAppointmentModal";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import {
+  useSupabaseAppointments,
+  useSupabaseProfessionals,
+  useSupabaseClients,
+  useCreateSupabaseAppointment,
+  useUpdateSupabaseAppointment,
+  useDeleteSupabaseAppointment,
+  useSupabaseRealTimeAppointments,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulAppointmentsProps {
   darkMode: boolean;
@@ -928,7 +937,7 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
               format="percentage"
             />
             <BeautifulKPICard
-              title="Tempo Médio"
+              title="Tempo M��dio"
               value={Math.round(metrics.avgServiceTime)}
               period="Minutos por serviço"
               icon={Clock}
