@@ -85,13 +85,17 @@ class SafeSupabaseApi {
           return false;
         }
 
-        logSupabaseError(`Tabela ${tableName} não é segura:`, {
+        const safeErrorLog = {
           message: error?.message || "Sem mensagem",
           code: error?.code || "Sem código",
           details: error?.details || "Sem detalhes",
           hint: error?.hint || "Sem dica",
-          fullError: errorStr,
-        });
+        };
+
+        logSupabaseError(
+          `Tabela ${tableName} não é segura:`,
+          JSON.stringify(safeErrorLog, null, 2),
+        );
 
         // Verifica se é um dos problemas conhecidos
         if (errorStr.includes(PROBLEMATIC_PATTERNS.RLS_RECURSION)) {

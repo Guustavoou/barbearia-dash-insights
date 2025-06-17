@@ -26,11 +26,15 @@ export async function testAlternativeMethods() {
         .limit(0);
 
       if (error) {
-        logSupabaseError(`Select limit 0 falhou para ${tableName}:`, {
+        const errorInfo = {
           message: error.message || "Sem mensagem",
           code: error.code || "Sem código",
           details: error.details || "Sem detalhes",
-        });
+        };
+        logSupabaseError(
+          `Select limit 0 falhou para ${tableName}:`,
+          JSON.stringify(errorInfo, null, 2),
+        );
         tableResult.methods["select_limit_0"] = { success: false, error };
       } else {
         logSupabaseSuccess(`Select limit 0 funcionou para ${tableName}`);
@@ -55,10 +59,14 @@ export async function testAlternativeMethods() {
         .select("*", { count: "estimated", head: true });
 
       if (error) {
-        logSupabaseError(`Count estimado falhou para ${tableName}:`, {
+        const errorInfo = {
           message: error.message || "Sem mensagem",
           code: error.code || "Sem código",
-        });
+        };
+        logSupabaseError(
+          `Count estimado falhou para ${tableName}:`,
+          JSON.stringify(errorInfo, null, 2),
+        );
         tableResult.methods["count_estimated"] = { success: false, error };
       } else {
         logSupabaseSuccess(
@@ -87,10 +95,14 @@ export async function testAlternativeMethods() {
         .maybeSingle();
 
       if (error) {
-        logSupabaseError(`Select single falhou para ${tableName}:`, {
+        const errorInfo = {
           message: error.message || "Sem mensagem",
           code: error.code || "Sem código",
-        });
+        };
+        logSupabaseError(
+          `Select single falhou para ${tableName}:`,
+          JSON.stringify(errorInfo, null, 2),
+        );
         tableResult.methods["select_single"] = { success: false, error };
       } else {
         logSupabaseSuccess(`Select single funcionou para ${tableName}`);
