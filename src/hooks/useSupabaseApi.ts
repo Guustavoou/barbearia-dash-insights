@@ -20,18 +20,22 @@ export function useSupabaseQuery<T>(
   });
 
   const fetchData = useCallback(async () => {
+    console.log("🔄 [Supabase] Iniciando fetch...");
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
       const response = await queryFn();
+      console.log("📦 [Supabase] Resposta recebida:", response);
 
       if (response.success && response.data) {
+        console.log("✅ [Supabase] Dados carregados com sucesso");
         setState({
           data: response.data,
           loading: false,
           error: null,
         });
       } else {
+        console.log("⚠️ [Supabase] Falha na resposta:", response.error);
         setState({
           data: null,
           loading: false,
@@ -39,6 +43,7 @@ export function useSupabaseQuery<T>(
         });
       }
     } catch (error) {
+      console.error("❌ [Supabase] Erro:", error);
       setState({
         data: null,
         loading: false,
