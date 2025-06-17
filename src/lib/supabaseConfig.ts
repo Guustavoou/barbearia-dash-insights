@@ -6,6 +6,9 @@ export const SUPABASE_CONFIG = {
   // Flag para usar dados mock como fallback
   USE_MOCK_FALLBACK: true,
 
+  // Flag para desabilitar API tradicional quando Supabase está desabilitado (previne erros de fetch)
+  DISABLE_TRADITIONAL_API_WHEN_SUPABASE_OFF: true,
+
   // Log level
   DEBUG_MODE: true,
 

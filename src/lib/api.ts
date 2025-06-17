@@ -976,6 +976,26 @@ class ApiClient {
   }
 }
 
+// Circuit breaker control functions
+export function enableApiCircuitBreaker() {
+  API_CIRCUIT_BREAKER_ENABLED = true;
+  console.log("🛑 Traditional API circuit breaker manually enabled");
+}
+
+export function disableApiCircuitBreaker() {
+  API_CIRCUIT_BREAKER_ENABLED = false;
+  CONSECUTIVE_FAILURES = 0;
+  console.log("✅ Traditional API circuit breaker disabled");
+}
+
+export function getApiCircuitBreakerStatus() {
+  return {
+    enabled: API_CIRCUIT_BREAKER_ENABLED,
+    consecutiveFailures: CONSECUTIVE_FAILURES,
+    maxFailures: MAX_CONSECUTIVE_FAILURES,
+  };
+}
+
 // Create and export API client instance
 export const api = new ApiClient(API_BASE_URL);
 
