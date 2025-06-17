@@ -32,11 +32,36 @@ class SafeSupabaseApi {
     try {
       logSupabaseDebug(`Testando segurança da tabela: ${tableName}`);
 
-      // Teste mais simples possível - apenas count
-      const { error } = await supabase
-        .from(tableName)
-        .select("*", { count: "exact", head: true })
-        .limit(1);
+      // Método 1: Tentar select com limit 0 (mais leve)
+      let { error } = await supabase.from(tableName).select("*").limit(0);
+
+      // Se limit 0 falhou, tenta count estimado
+      if (error) {
+        logSupabaseDebug(
+          `Limit 0 falhou para ${tableName}, tentando count estimado...`,
+        );
+
+        const result = await supabase
+          .from(tableName)
+          .select("*", { count: "estimated", head: true });
+
+        error = result.error;
+      }
+
+      // Se count estimado falhou, tenta select simples
+      if (error) {
+        logSupabaseDebug(
+          `Count estimado falhou para ${tableName}, tentando select simples...`,
+        );
+
+        const result = await supabase
+          .from(tableName)
+          .select("*")
+          .limit(1)
+          .maybeSingle();
+
+        error = result.error;
+      }
 
       if (error) {
         // Debug mais detalhado do erro
