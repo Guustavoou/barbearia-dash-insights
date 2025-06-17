@@ -501,10 +501,16 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
         bg: "bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 dark:from-slate-900/30 dark:to-slate-800/30 dark:text-slate-400",
         border: "border-l-slate-500",
       },
+      concluido: {
+        bg: "bg-gradient-to-r from-green-100 to-green-200 text-green-700 dark:from-green-900/30 dark:to-green-800/30 dark:text-green-400",
+        border: "border-l-green-500",
+      },
     };
 
+    // Garantir que sempre temos um status válido
     const status =
-      statusStyles[appointment.status as keyof typeof statusStyles];
+      statusStyles[appointment.status as keyof typeof statusStyles] ||
+      statusStyles.pendente; // Fallback para pendente se status não reconhecido
 
     return (
       <Card
@@ -536,7 +542,11 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
                 ? "Confirmado"
                 : appointment.status === "pendente"
                   ? "Pendente"
-                  : "Cancelado"}
+                  : appointment.status === "cancelado"
+                    ? "Cancelado"
+                    : appointment.status === "concluido"
+                      ? "Concluído"
+                      : "Pendente"}
             </Badge>
           </div>
 
