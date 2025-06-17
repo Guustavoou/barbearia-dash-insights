@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AlertTriangle, Database, Zap } from "lucide-react";
+import { AlertTriangle, Database, Zap, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageType } from "@/lib/types";
