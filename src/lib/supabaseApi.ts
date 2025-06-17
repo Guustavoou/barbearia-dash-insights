@@ -433,7 +433,7 @@ export class SupabaseApi {
 
       if (error) throw error;
 
-      console.log(`✅ Appointment ${id} deleted from Supabase`);
+      console.log(`��� Appointment ${id} deleted from Supabase`);
 
       return {
         success: true,
@@ -621,12 +621,18 @@ export class SupabaseApi {
     sort?: string;
     order?: "ASC" | "DESC";
     search?: string;
-    isActive?: boolean;
+    status?: string;
   }) {
     try {
       console.log("🔍 Fetching professionals from Supabase...");
+      logTenantDebug(
+        `Filtrando professionals para business: ${getCurrentBusinessId()}`,
+      );
 
       let query = supabase.from("professionals").select("*");
+
+      // ISOLAMENTO MULTI-TENANT: Aplicar filtro de business_id
+      query = addTenantFilter(query);
 
       // Apply filters
       if (params?.isActive !== undefined) {
