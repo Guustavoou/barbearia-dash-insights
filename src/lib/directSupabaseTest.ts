@@ -3,49 +3,62 @@ import { supabase } from "./supabase";
 export async function testDirectQuery() {
   console.log("🔍 Teste direto de query Supabase...");
 
-  try {
-    // Teste 1: Query mais simples possível
-    const { data, error } = await supabase.from("clients").select("count");
+  // Teste diferentes nomes de tabela e cenários
+  const testTables = [
+    "clients",
+    "Clients",
+    "appointments",
+    "Appointments",
+    "services",
+    "Services",
+  ];
 
-    if (error) {
-      console.error("❌ Erro na query count:", error);
+  const results = [];
 
-      // Se count não funciona, tenta select simples
-      const { data: simpleData, error: simpleError } = await supabase
-        .from("clients")
-        .select("*")
-        .limit(1);
+  for (const tableName of testTables) {
+    try {
+      console.log(`🔍 Testando tabela: ${tableName}`);
 
-      if (simpleError) {
-        console.error("❌ Erro na query select:", simpleError);
-        return {
+      const { data, error, count } = await supabase
+        .from(tableName)
+        .select("*", { count: "exact", head: true });
+
+      if (error) {
+        console.log(`❌ Tabela ${tableName} erro:`, {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        results.push({
+          table: tableName,
           success: false,
-          error: `Select failed: ${simpleError.message}`,
-          details: simpleError,
-        };
+          error: error.message,
+          code: error.code,
+        });
+      } else {
+        console.log(`✅ Tabela ${tableName} OK - ${count} registros`);
+        results.push({
+          table: tableName,
+          success: true,
+          count: count || 0,
+        });
       }
-
-      console.log("✅ Query select funcionou:", simpleData);
-      return {
-        success: true,
-        message: "Select works, count doesn't",
-        data: simpleData,
-      };
+    } catch (error) {
+      console.log(`💥 Erro inesperado na tabela ${tableName}:`, error);
+      results.push({
+        table: tableName,
+        success: false,
+        error: String(error),
+      });
     }
-
-    console.log("✅ Query count funcionou:", data);
-    return {
-      success: true,
-      message: "Both count and select work",
-      count: data,
-    };
-  } catch (error) {
-    console.error("❌ Erro geral:", error);
-    return {
-      success: false,
-      error: String(error),
-    };
   }
+
+  return {
+    success: results.some((r) => r.success),
+    results,
+    workingTables: results.filter((r) => r.success).map((r) => r.table),
+  };
 }
 
 // Executar teste
