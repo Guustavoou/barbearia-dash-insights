@@ -1236,6 +1236,9 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   darkMode,
   onPageChange,
 }) => {
+  // Initialize toast hook first
+  const { toast } = useToast();
+
   // Supabase hooks para dados em tempo real
   const {
     data: clients = [],
@@ -1313,8 +1316,7 @@ export const BeautifulClients: React.FC<BeautifulClientsProps> = ({
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Initialize toast hook before useCallback hooks that depend on it
-  const { toast } = useToast();
+  // Toast hook já foi inicializado no início do componente
 
   // Callbacks para operações CRUD usando hooks do Supabase
   const handleAddClient = useCallback(
