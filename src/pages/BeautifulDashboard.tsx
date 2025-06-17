@@ -89,6 +89,13 @@ import {
   useUpcomingAppointments,
   useBirthdays,
 } from "@/hooks/useApi";
+import {
+  useSupabaseDashboardStats,
+  useSupabaseBusinessReports,
+  useSupabaseSalesPerformance,
+  useSupabaseClients,
+  useSupabaseAppointments,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulDashboardProps {
   darkMode: boolean;
