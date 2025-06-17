@@ -39,8 +39,34 @@ class SafeSupabaseApi {
         .limit(1);
 
       if (error) {
+        // Debug mais detalhado do erro
+        logSupabaseDebug(`Erro bruto para ${tableName}:`, {
+          error,
+          keys: Object.keys(error || {}),
+          message: error?.message,
+          code: error?.code,
+          details: error?.details,
+          hint: error?.hint,
+        });
+
         const errorStr = JSON.stringify(error, null, 2);
-        logSupabaseError(`Tabela ${tableName} não é segura:`, errorStr);
+
+        // Se message está vazio, pode ser um problema de acesso
+        if (!error?.message && !error?.code) {
+          logSupabaseError(
+            `Tabela ${tableName} - erro sem detalhes (possível problema de acesso)`,
+          );
+          this.verifiedTables.set(tableName, false);
+          return false;
+        }
+
+        logSupabaseError(`Tabela ${tableName} não é segura:`, {
+          message: error?.message || "Sem mensagem",
+          code: error?.code || "Sem código",
+          details: error?.details || "Sem detalhes",
+          hint: error?.hint || "Sem dica",
+          fullError: errorStr,
+        });
 
         // Verifica se é um dos problemas conhecidos
         if (errorStr.includes(PROBLEMATIC_PATTERNS.RLS_RECURSION)) {
@@ -59,6 +85,13 @@ class SafeSupabaseApi {
             `Problema com business_users detectado - evitando esta query`,
           );
           this.blacklistedTables.add(tableName);
+        }
+
+        // Se é erro vazio, pode ser problema de autenticação
+        if (!error?.message) {
+          logSupabaseError(
+            `Possível problema de autenticação/acesso para ${tableName}`,
+          );
         }
 
         this.verifiedTables.set(tableName, false);
