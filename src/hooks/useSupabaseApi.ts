@@ -151,31 +151,24 @@ export function useSupabaseMutation<T, P = any>(
 // CLIENTS - APENAS DADOS REAIS DO SUPABASE
 export function useSupabaseClients(params?: any) {
   return useSupabaseQuery(
-    () => supabaseApi.getClients(params),
+    async () => {
+      logSupabaseDebug("🔄 Buscando clientes do Supabase (apenas dados reais)");
+      try {
+        const response = await supabaseApi.getClients(params);
+        if (response.success) {
+          return response;
+        } else {
+          throw new Error(response.error || "Falha ao buscar clientes");
+        }
+      } catch (error) {
+        console.error("❌ [Error] Erro ao buscar clientes:", error);
+        logSupabaseError("Erro na query de clientes", error);
+        throw error;
+      }
+    },
     [JSON.stringify(params)],
   );
 }
-      try {
-        // Tenta SafeSupabaseApi primeiro (evita RLS e outras issues)
-        const result = await safeSupabaseApi.safeGetClients(params);
-        if (result.success) {
-          return result;
-        }
-
-        // Fallback para API adaptativa
-        const adaptiveResult = await adaptiveSupabaseApi.getClients(params);
-        if (adaptiveResult.success) {
-          return adaptiveResult;
-        }
-
-        // Último fallback para API original
-        return await supabaseApi.getClients(params);
-      } catch (error) {
-        console.warn("⚠️ Todas as APIs Supabase falharam, usando NoSchemaAPI");
-        // Fallback final - sempre funciona
-        return await noSchemaSupabaseApi.getClients(params);
-      }
-    },
     [JSON.stringify(params)],
   );
 }
