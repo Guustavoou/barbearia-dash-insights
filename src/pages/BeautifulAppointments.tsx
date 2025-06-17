@@ -192,8 +192,13 @@ export const BeautifulAppointments: React.FC<BeautifulAppointmentsProps> = ({
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [appointments, setAppointments] =
-    useState<Appointment[]>(mockAppointments);
+  // DADOS REAIS DO SUPABASE - Agendamentos do banco de dados
+  const {
+    data: supabaseAppointments = [],
+    loading: appointmentsLoading,
+    error: appointmentsError,
+    refetch: refetchAppointments,
+  } = useSupabaseAppointments({ limit: 100 });
   const [isMobile, setIsMobile] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
