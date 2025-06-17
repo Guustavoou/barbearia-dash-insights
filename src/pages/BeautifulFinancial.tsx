@@ -61,6 +61,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import {
+  useSupabaseTransactions,
+  useSupabaseFinancialStats,
+  useCreateSupabaseTransaction,
+} from "@/hooks/useSupabaseApi";
 
 interface BeautifulFinancialProps {
   darkMode: boolean;
