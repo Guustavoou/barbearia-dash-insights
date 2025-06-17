@@ -78,10 +78,18 @@ class AdaptiveSupabaseApi {
           config.verified = true;
           return tableName;
         } else {
-          logSupabaseDebug(`Tabela ${tableName} não funciona:`, error.message);
+          const errorMsg =
+            typeof error === "object" && error !== null
+              ? JSON.stringify(error, null, 2)
+              : String(error);
+          logSupabaseDebug(`Tabela ${tableName} não funciona:`, errorMsg);
         }
       } catch (error) {
-        logSupabaseDebug(`Erro ao verificar ${tableName}:`, error);
+        const errorMsg =
+          typeof error === "object" && error !== null
+            ? JSON.stringify(error, null, 2)
+            : String(error);
+        logSupabaseDebug(`Erro ao verificar ${tableName}:`, errorMsg);
       }
     }
 
@@ -151,10 +159,20 @@ class AdaptiveSupabaseApi {
         },
       };
     } catch (error) {
-      logSupabaseError("Erro ao buscar clientes:", error);
+      const errorMsg = (() => {
+        if (error instanceof Error) {
+          return error.message;
+        }
+        if (typeof error === "object" && error !== null) {
+          return JSON.stringify(error, null, 2);
+        }
+        return String(error);
+      })();
+
+      logSupabaseError("Erro ao buscar clientes:", errorMsg);
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMsg,
       };
     }
   }
