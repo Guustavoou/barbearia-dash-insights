@@ -137,40 +137,30 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   const { data: appointments, loading: appointmentsLoading } =
     useSupabaseAppointments({ limit: 8 });
 
-  // API tradicional como fallback
-  const { data: fallbackStats } = useDashboardStats();
-  const { data: fallbackRevenue } = useRevenueData(selectedPeriod);
-  const { data: fallbackServices } = useTopServices(5);
-  const { data: fallbackAppointments } = useUpcomingAppointments(8);
-  const { data: fallbackBirthdays } = useBirthdays();
-
   const loading =
     statsLoading || reportsLoading || salesLoading || appointmentsLoading;
 
-  // Fallback data with complete dashboard metrics
-  const defaultStats = {
-    total_clients: 1250,
-    total_professionals: 8,
-    today_appointments: 23,
-    month_revenue: 45680,
-    month_expenses: 18230,
-    net_income: 27450,
-    profit_margin: 60.1,
-    growth_rate: 12.5,
-    conversion_rate: 78.3,
-    average_ticket: 185.5,
-    retention_rate: 89.2,
-    occupancy_rate: 75.8,
-    cancellation_rate: 8.5,
-    average_service_time: 65,
+  // APENAS DADOS REAIS DO SUPABASE - Sem mocks ou fallbacks
+  const currentStats = stats || {
+    total_clients: 0,
+    total_professionals: 0,
+    today_appointments: 0,
+    month_revenue: 0,
+    month_expenses: 0,
+    net_income: 0,
+    profit_margin: 0,
+    growth_rate: 0,
+    conversion_rate: 0,
+    average_ticket: 0,
+    retention_rate: 0,
+    occupancy_rate: 0,
+    cancellation_rate: 0,
+    average_service_time: 0,
     monthly_goal: 50000,
-    weekly_appointments: 145,
-    pending_payments: 3450,
-    confirmed_today: 18,
+    weekly_appointments: 0,
+    pending_payments: 0,
+    confirmed_today: 0,
   };
-
-  // Combinar dados do Supabase com fallback
-  const currentStats = stats || fallbackStats?.data || defaultStats;
 
   // Calculate comprehensive metrics
   const metrics = useMemo(() => {
