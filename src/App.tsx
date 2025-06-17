@@ -53,6 +53,7 @@ import { MultiTenantOnboardingProvider } from "@/contexts/MultiTenantOnboardingC
 import { SupabaseAuthProvider } from "@/contexts/SupabaseAuthContext";
 import { SupabaseStatus } from "@/components/SupabaseStatus";
 import { RLSUrgentNotification } from "@/components/RLSUrgentNotification";
+import { ApiStatusDebug } from "@/components/ApiStatusDebug";
 
 const queryClient = new QueryClient();
 
@@ -349,6 +350,9 @@ const UnclicAppContent: React.FC = () => {
 
           {/* Supabase Status */}
           <SupabaseStatus />
+
+          {/* API Status Debug */}
+          <ApiStatusDebug />
         </div>
       );
 
