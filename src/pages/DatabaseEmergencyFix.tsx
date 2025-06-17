@@ -30,6 +30,43 @@ export const DatabaseEmergencyFix: React.FC<DatabaseEmergencyFixProps> = ({
   const projectId = supabaseUrl ? supabaseUrl.split("//")[1].split(".")[0] : "";
   const sqlEditorUrl = `https://app.supabase.com/project/${projectId}/sql/new`;
 
+  // Quick fix script - minimal to solve the immediate error
+  const quickFixScript = `-- 🚨 CORREÇÃO RÁPIDA: Resolver erro "appointments does not exist"
+-- Execute este script mínimo para resolver o erro imediatamente
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Criar businesses (necessário para foreign key)
+CREATE TABLE IF NOT EXISTS public.businesses (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL,
+  business_type TEXT DEFAULT 'salon',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Criar appointments (RESOLVE O ERRO!)
+CREATE TABLE IF NOT EXISTS public.appointments (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  business_id UUID REFERENCES public.businesses(id) ON DELETE CASCADE,
+  client_name TEXT,
+  service TEXT,
+  date DATE NOT NULL,
+  start_time TIME NOT NULL,
+  status TEXT DEFAULT 'pendente',
+  price NUMERIC DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Inserir dados iniciais
+INSERT INTO public.businesses (id, name) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'Salão Premium')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.appointments (business_id, client_name, service, date, start_time) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'Cliente Teste', 'Serviço Teste', CURRENT_DATE, '10:00');
+
+SELECT 'Erro resolvido! Appointments criada.' as resultado;`;
+
   const sqlScript = `-- URGENT FIX: Create Missing Tables for Appointments
 -- Execute this complete script in Supabase SQL Editor
 
@@ -172,25 +209,25 @@ CREATE INDEX IF NOT EXISTS idx_products_business_id ON public.products(business_
 CREATE INDEX IF NOT EXISTS idx_transactions_business_id ON public.transactions(business_id);
 
 -- Insert sample businesses
-INSERT INTO public.businesses (id, name, business_type, email, phone) VALUES 
+INSERT INTO public.businesses (id, name, business_type, email, phone) VALUES
 ('550e8400-e29b-41d4-a716-446655440000', 'Salão Premium', 'salon', 'contato@salaopremium.com', '(11) 99999-0000'),
 ('550e8400-e29b-41d4-a716-446655440001', 'Barbearia Elite', 'barbershop', 'contato@barbearia.com', '(11) 99999-0001')
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample data for testing
-INSERT INTO public.clients (business_id, name, email, phone, city) VALUES 
+INSERT INTO public.clients (business_id, name, email, phone, city) VALUES
 ('550e8400-e29b-41d4-a716-446655440000', 'Ana Silva', 'ana@email.com', '(11) 99999-1111', 'São Paulo'),
 ('550e8400-e29b-41d4-a716-446655440000', 'Carlos Santos', 'carlos@email.com', '(11) 99999-2222', 'São Paulo'),
 ('550e8400-e29b-41d4-a716-446655440001', 'João Oliveira', 'joao@email.com', '(11) 99999-3333', 'Rio de Janeiro')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO public.professionals (business_id, name, email, specialties) VALUES 
+INSERT INTO public.professionals (business_id, name, email, specialties) VALUES
 ('550e8400-e29b-41d4-a716-446655440000', 'Maria Santos', 'maria@salon.com', ARRAY['Corte', 'Coloração']),
 ('550e8400-e29b-41d4-a716-446655440000', 'Paula Costa', 'paula@salon.com', ARRAY['Escova', 'Tratamentos']),
 ('550e8400-e29b-41d4-a716-446655440001', 'Roberto Silva', 'roberto@barber.com', ARRAY['Corte Masculino', 'Barba'])
 ON CONFLICT DO NOTHING;
 
-INSERT INTO public.services (business_id, name, price, duration, category) VALUES 
+INSERT INTO public.services (business_id, name, price, duration, category) VALUES
 ('550e8400-e29b-41d4-a716-446655440000', 'Corte Feminino', 80.00, 60, 'corte'),
 ('550e8400-e29b-41d4-a716-446655440000', 'Coloração', 150.00, 120, 'coloracao'),
 ('550e8400-e29b-41d4-a716-446655440001', 'Corte Masculino', 50.00, 30, 'corte'),
