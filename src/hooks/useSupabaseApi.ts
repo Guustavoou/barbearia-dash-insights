@@ -1,10 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabaseApi } from "@/lib/supabaseApi";
-import { adaptiveSupabaseApi } from "@/lib/adaptiveSupabaseApi";
-import { safeSupabaseApi } from "@/lib/safeSupabaseApi";
-import { noSchemaSupabaseApi } from "@/lib/noSchemaSupabaseApi";
 import { useToast } from "@/hooks/use-toast";
-import { SUPABASE_CONFIG, logSupabaseDebug } from "@/lib/supabaseConfig";
+import { logSupabaseDebug, logSupabaseError } from "@/lib/supabaseConfig";
 
 interface UseSupabaseState<T> {
   data: T | null;
@@ -12,7 +9,12 @@ interface UseSupabaseState<T> {
   error: string | null;
 }
 
-// Hook genérico para queries do Supabase
+interface UseSupabaseMutationOptions<TData, TVariables> {
+  onSuccess?: (data: TData) => void;
+  onError?: (error: string) => void;
+}
+
+// Hook genérico para queries do Supabase - APENAS DADOS REAIS
 export function useSupabaseQuery<T>(
   queryFn: () => Promise<any>,
   dependencies: any[] = [],
@@ -24,42 +26,33 @@ export function useSupabaseQuery<T>(
   });
 
   const fetchData = useCallback(async () => {
-    console.log("🔄 [Supabase] Iniciando fetch...");
+    logSupabaseDebug("🔄 [Real Data] Iniciando fetch...");
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
       const response = await queryFn();
-      console.log("📦 [Supabase] Resposta recebida:", response);
 
-      if (response.success && response.data) {
-        console.log("✅ [Supabase] Dados carregados com sucesso");
+      if (response.success) {
+        logSupabaseDebug("✅ [Real Data] Dados carregados com sucesso");
         setState({
-          data: response.data,
+          data: response.data || [],
           loading: false,
           error: null,
         });
       } else {
-        console.log("⚠️ [Supabase] Falha na resposta:", response.error);
+        logSupabaseError("⚠️ [Real Data] Falha na resposta", response.error);
         setState({
-          data: null,
+          data: [],
           loading: false,
           error: response.error || "Failed to fetch data",
         });
       }
     } catch (error) {
-      const errorMessage = (() => {
-        if (error instanceof Error) {
-          return error.message;
-        }
-        if (typeof error === 'object' && error !== null) {
-          return JSON.stringify(error, null, 2);
-        }
-        return String(error);
-      })();
-
-      console.error("❌ [Supabase] Erro detalhado:", errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      logSupabaseError("❌ [Real Data] Erro no fetch", errorMessage);
       setState({
-        data: null,
+        data: [],
         loading: false,
         error: errorMessage,
       });
@@ -76,105 +69,59 @@ export function useSupabaseQuery<T>(
   };
 }
 
-// Hook para mutations (create, update, delete)
-interface UseSupabaseMutationOptions<T, P> {
-  onSuccess?: (data: T) => void;
-  onError?: (error: string) => void;
-}
-
-export function useSupabaseMutation<T, P = any>(
-  mutationFn: (params: P) => Promise<any>,
-  options?: UseSupabaseMutationOptions<T, P>,
+// Hook para mutations
+export function useSupabaseMutation<TData, TVariables>(
+  mutationFn: (variables: TVariables) => Promise<any>,
+  options?: UseSupabaseMutationOptions<TData, TVariables>,
 ) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const mutate = useCallback(
-    async (params: P) => {
-      setLoading(true);
-      setError(null);
-
+    async (variables: TVariables) => {
+      setIsLoading(true);
       try {
-        const response = await mutationFn(params);
+        const response = await mutationFn(variables);
 
-        if (response.success && response.data) {
+        if (response.success) {
+          logSupabaseDebug("✅ [Real Data] Mutation executada com sucesso");
           options?.onSuccess?.(response.data);
-          return response.data;
+          return response;
         } else {
-          const errorMessage = response.error || "Mutation failed";
-          setError(errorMessage);
-          options?.onError?.(errorMessage);
-          toast({
-            title: "Erro",
-            description: errorMessage,
-            variant: "destructive",
-          });
-          return null;
+          throw new Error(response.error || "Mutation failed");
         }
       } catch (error) {
-        const errorMessage = (() => {
-          if (error instanceof Error) {
-            return error.message;
-          }
-          if (typeof error === 'object' && error !== null) {
-            return JSON.stringify(error, null, 2);
-          }
-          return String(error);
-        })();
-
-        console.error("❌ [Supabase Mutation] Erro detalhado:", errorMessage);
-        setError(errorMessage);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        logSupabaseError("❌ [Real Data] Erro na mutation", errorMessage);
         options?.onError?.(errorMessage);
-        toast({
-          title: "Erro",
-          description: errorMessage,
-          variant: "destructive",
-        });
-        return null;
+        throw error;
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     },
-    [mutationFn, options, toast],
+    [mutationFn, options],
   );
+
+  const mutateAsync = mutate;
 
   return {
     mutate,
-    loading,
-    error,
+    mutateAsync,
+    isLoading,
   };
 }
 
-// Hooks específicos para cada entidade
+// ==============================================
+// HOOKS ESPECÍFICOS - APENAS DADOS REAIS
+// ==============================================
 
-// CLIENTS - APENAS DADOS REAIS DO SUPABASE
+// CLIENTS
 export function useSupabaseClients(params?: any) {
   return useSupabaseQuery(
-    async () => {
-      logSupabaseDebug("🔄 Buscando clientes do Supabase (apenas dados reais)");
-      try {
-        const response = await supabaseApi.getClients(params);
-        if (response.success) {
-          return response;
-        } else {
-          throw new Error(response.error || "Falha ao buscar clientes");
-        }
-      } catch (error) {
-        console.error("❌ [Error] Erro ao buscar clientes:", error);
-        logSupabaseError("Erro na query de clientes", error);
-        throw error;
-      }
-    },
+    () => supabaseApi.getClients(params),
     [JSON.stringify(params)],
   );
-}
-    [JSON.stringify(params)],
-  );
-}
-
-export function useSupabaseClient(id: string) {
-  return useSupabaseQuery(() => supabaseApi.getClientById(id), [id]);
 }
 
 export function useCreateSupabaseClient(
@@ -187,131 +134,28 @@ export function useCreateSupabaseClient(
 }
 
 export function useUpdateSupabaseClient(
-  options?: UseSupabaseMutationOptions<any, { id: string; data: any }>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    ({ id, data }) => supabaseApi.updateClient(id, data),
+    (data: { id: string; [key: string]: any }) =>
+      supabaseApi.updateClient(data.id, data),
     options,
   );
 }
 
 export function useDeleteSupabaseClient(
-  options?: UseSupabaseMutationOptions<any, string>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
-  return useSupabaseMutation((id) => supabaseApi.deleteClient(id), options);
-}
-
-// DASHBOARD
-export function useSupabaseDashboardStats() {
-  return useSupabaseQuery(async () => {
-    // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
-    if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
-      logSupabaseDebug("🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para dashboard");
-      return await noSchemaSupabaseApi.getDashboardStats();
-    }
-
-    try {
-      // Tenta SafeSupabaseApi primeiro (mais robusta)
-      const result = await safeSupabaseApi.safeGetDashboardStats();
-      if (result.success) {
-        return result;
-      }
-
-      // Fallback para API adaptativa
-      const adaptiveResult = await adaptiveSupabaseApi.getDashboardStats();
-      if (adaptiveResult.success) {
-        return adaptiveResult;
-      }
-
-      // Último fallback para API original
-      return await supabaseApi.getDashboardStats();
-    } catch (error) {
-      console.warn("⚠️ Todas as APIs Supabase falharam, usando NoSchemaAPI");
-      // Fallback final - sempre funciona
-      return await noSchemaSupabaseApi.getDashboardStats();
-    }
-  });
-}
-
-export function useSupabaseBusinessReports(period?: string) {
-  return useSupabaseQuery(
-    () => supabaseApi.getBusinessReports(period),
-    [period],
-  );
-}
-
-export function useSupabaseSalesPerformance(period?: string, limit?: number) {
-  return useSupabaseQuery(
-    async () => {
-      // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
-      if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
-        logSupabaseDebug("🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para sales performance");
-        return await noSchemaSupabaseApi.getSalesPerformance(period, limit);
-      }
-
-      try {
-        // Tenta SafeSupabaseApi primeiro
-        const result = await safeSupabaseApi.safeGetServices({ limit });
-        if (result.success) {
-          // Transforma os dados de serviços em performance de vendas
-          const salesData = result.data.map((service: any, index: number) => ({
-            service_name: service.name || `Serviço ${index + 1}`,
-            category: service.category || "Geral",
-            total_appointments: 0, // Será calculado quando tivermos relacionamentos
-            total_revenue: service.price || 0,
-            average_price: service.price || 0,
-          }));
-
-          return {
-            success: true,
-            data: salesData,
-          };
-        }
-
-        // Fallback para API original
-        return await supabaseApi.getSalesPerformance(period, limit);
-      } catch (error) {
-        console.warn("⚠️ Erro ao buscar performance de vendas, usando NoSchemaAPI");
-        // Fallback final - sempre funciona
-        return await noSchemaSupabaseApi.getSalesPerformance(period, limit);
-      }
-    },
-    [period, limit],
+  return useSupabaseMutation(
+    (clientId: string) => supabaseApi.deleteClient(clientId),
+    options,
   );
 }
 
 // APPOINTMENTS
 export function useSupabaseAppointments(params?: any) {
   return useSupabaseQuery(
-    async () => {
-      // CIRCUIT BREAKER: Se Supabase está desabilitado, vai direto para NoSchemaAPI
-      if (!SUPABASE_CONFIG.ENABLE_SUPABASE) {
-        logSupabaseDebug("🛑 [Circuit Breaker] Supabase desabilitado - usando NoSchemaAPI para appointments");
-        return await noSchemaSupabaseApi.getAppointments(params);
-      }
-
-      try {
-        // Tenta SafeSupabaseApi primeiro (evita RLS e outras issues)
-        const result = await safeSupabaseApi.safeGetAppointments(params);
-        if (result.success) {
-          return result;
-        }
-
-        // Fallback para API adaptativa
-        const adaptiveResult = await adaptiveSupabaseApi.getAppointments(params);
-        if (adaptiveResult.success) {
-          return adaptiveResult;
-        }
-
-        // Último fallback para API original
-        return await (supabaseApi.getAppointments?.(params) ||
-          Promise.resolve({ success: true, data: [] }));
-      } catch (error) {
-        console.warn("⚠️ Todas as APIs Supabase falharam, usando NoSchemaAPI");
-        // Fallback final - sempre funciona
-        return await noSchemaSupabaseApi.getAppointments(params);
-      }
-    },
+    () => supabaseApi.getAppointments(params),
     [JSON.stringify(params)],
   );
 }
@@ -320,30 +164,26 @@ export function useCreateSupabaseAppointment(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (appointmentData) =>
-      supabaseApi.createAppointment?.(appointmentData) ||
-      Promise.resolve({ success: true, data: appointmentData }),
+    (appointmentData) => supabaseApi.createAppointment(appointmentData),
     options,
   );
 }
 
 export function useUpdateSupabaseAppointment(
-  options?: UseSupabaseMutationOptions<any, { id: string; data: any }>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    ({ id, data }) =>
-      supabaseApi.updateAppointment?.(id, data) ||
-      Promise.resolve({ success: true, data }),
+    (data: { id: string; [key: string]: any }) =>
+      supabaseApi.updateAppointment(data.id, data),
     options,
   );
 }
 
 export function useDeleteSupabaseAppointment(
-  options?: UseSupabaseMutationOptions<any, string>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (id) =>
-      supabaseApi.deleteAppointment?.(id) || Promise.resolve({ success: true }),
+    (appointmentId: string) => supabaseApi.deleteAppointment(appointmentId),
     options,
   );
 }
@@ -351,9 +191,7 @@ export function useDeleteSupabaseAppointment(
 // SERVICES
 export function useSupabaseServices(params?: any) {
   return useSupabaseQuery(
-    () =>
-      supabaseApi.getServices?.(params) ||
-      Promise.resolve({ success: true, data: [] }),
+    () => supabaseApi.getServices(params),
     [JSON.stringify(params)],
   );
 }
@@ -362,30 +200,26 @@ export function useCreateSupabaseService(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (serviceData) =>
-      supabaseApi.createService?.(serviceData) ||
-      Promise.resolve({ success: true, data: serviceData }),
+    (serviceData) => supabaseApi.createService(serviceData),
     options,
   );
 }
 
 export function useUpdateSupabaseService(
-  options?: UseSupabaseMutationOptions<any, { id: string; data: any }>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    ({ id, data }) =>
-      supabaseApi.updateService?.(id, data) ||
-      Promise.resolve({ success: true, data }),
+    (data: { id: string; [key: string]: any }) =>
+      supabaseApi.updateService(data.id, data),
     options,
   );
 }
 
 export function useDeleteSupabaseService(
-  options?: UseSupabaseMutationOptions<any, string>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (id) =>
-      supabaseApi.deleteService?.(id) || Promise.resolve({ success: true }),
+    (serviceId: string) => supabaseApi.deleteService(serviceId),
     options,
   );
 }
@@ -393,9 +227,7 @@ export function useDeleteSupabaseService(
 // PROFESSIONALS
 export function useSupabaseProfessionals(params?: any) {
   return useSupabaseQuery(
-    () =>
-      supabaseApi.getProfessionals?.(params) ||
-      Promise.resolve({ success: true, data: [] }),
+    () => supabaseApi.getProfessionals(params),
     [JSON.stringify(params)],
   );
 }
@@ -404,80 +236,34 @@ export function useCreateSupabaseProfessional(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (professionalData) =>
-      supabaseApi.createProfessional?.(professionalData) ||
-      Promise.resolve({ success: true, data: professionalData }),
+    (professionalData) => supabaseApi.createProfessional(professionalData),
     options,
   );
 }
 
 export function useUpdateSupabaseProfessional(
-  options?: UseSupabaseMutationOptions<any, { id: string; data: any }>,
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    ({ id, data }) =>
-      supabaseApi.updateProfessional?.(id, data) ||
-      Promise.resolve({ success: true, data }),
+    (data: { id: string; [key: string]: any }) =>
+      supabaseApi.updateProfessional(data.id, data),
     options,
   );
 }
 
 export function useDeleteSupabaseProfessional(
-  options?: UseSupabaseMutationOptions<any, string>,
-) {
-  return useSupabaseMutation(
-    (id) =>
-      supabaseApi.deleteProfessional?.(id) ||
-      Promise.resolve({ success: true }),
-    options,
-  );
-}
-
-// FINANCIAL
-export function useSupabaseTransactions(params?: any) {
-  return useSupabaseQuery(
-    () =>
-      supabaseApi.getTransactions?.(params) ||
-      Promise.resolve({ success: true, data: [] }),
-    [JSON.stringify(params)],
-  );
-}
-
-export function useSupabaseFinancialStats(period?: string) {
-  return useSupabaseQuery(
-    () =>
-      supabaseApi.getFinancialStats?.(period) ||
-      Promise.resolve({ success: true, data: {} }),
-    [period],
-  );
-}
-
-export function useCreateSupabaseTransaction(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (transactionData) =>
-      supabaseApi.createTransaction?.(transactionData) ||
-      Promise.resolve({ success: true, data: transactionData }),
+    (professionalId: string) => supabaseApi.deleteProfessional(professionalId),
     options,
   );
 }
 
-// PRODUCTS/STOCK
+// PRODUCTS
 export function useSupabaseProducts(params?: any) {
   return useSupabaseQuery(
-    () =>
-      supabaseApi.getProducts?.(params) ||
-      Promise.resolve({ success: true, data: [] }),
-    [JSON.stringify(params)],
-  );
-}
-
-export function useSupabaseStock(params?: any) {
-  return useSupabaseQuery(
-    () =>
-      supabaseApi.getStock?.(params) ||
-      Promise.resolve({ success: true, data: [] }),
+    () => supabaseApi.getProducts(params),
     [JSON.stringify(params)],
   );
 }
@@ -486,9 +272,7 @@ export function useCreateSupabaseProduct(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (productData) =>
-      supabaseApi.createProduct?.(productData) ||
-      Promise.resolve({ success: true, data: productData }),
+    (productData) => supabaseApi.createProduct(productData),
     options,
   );
 }
@@ -497,9 +281,8 @@ export function useUpdateSupabaseProduct(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (productData: { id: string; [key: string]: any }) =>
-      supabaseApi.updateProduct?.(productData.id, productData) ||
-      Promise.resolve({ success: true, data: productData }),
+    (data: { id: string; [key: string]: any }) =>
+      supabaseApi.updateProduct(data.id, data),
     options,
   );
 }
@@ -508,30 +291,50 @@ export function useDeleteSupabaseProduct(
   options?: UseSupabaseMutationOptions<any, any>,
 ) {
   return useSupabaseMutation(
-    (productId: string) =>
-      supabaseApi.deleteProduct?.(productId) ||
-      Promise.resolve({ success: true, data: { id: productId } }),
+    (productId: string) => supabaseApi.deleteProduct(productId),
     options,
   );
 }
 
-// Real-time subscriptions
-export function useSupabaseRealTimeClients(callback: (payload: any) => void) {
-  useEffect(() => {
-    const subscription = supabaseApi.subscribeToClients(callback);
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [callback]);
+// TRANSACTIONS
+export function useSupabaseTransactions(params?: any) {
+  return useSupabaseQuery(
+    () => supabaseApi.getTransactions(params),
+    [JSON.stringify(params)],
+  );
 }
 
-export function useSupabaseRealTimeAppointments(
-  callback: (payload: any) => void,
+export function useCreateSupabaseTransaction(
+  options?: UseSupabaseMutationOptions<any, any>,
 ) {
-  useEffect(() => {
-    const subscription = supabaseApi.subscribeToAppointments(callback);
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [callback]);
+  return useSupabaseMutation(
+    (transactionData) => supabaseApi.createTransaction(transactionData),
+    options,
+  );
+}
+
+// DASHBOARD & REPORTS
+export function useSupabaseDashboardStats() {
+  return useSupabaseQuery(() => supabaseApi.getDashboardStats(), []);
+}
+
+export function useSupabaseBusinessReports(period: string) {
+  return useSupabaseQuery(
+    () => supabaseApi.getBusinessReports(period),
+    [period],
+  );
+}
+
+export function useSupabaseSalesPerformance(period: string, limit: number) {
+  return useSupabaseQuery(
+    () => supabaseApi.getSalesPerformance(period, limit),
+    [period, limit],
+  );
+}
+
+export function useSupabaseFinancialStats(period?: string) {
+  return useSupabaseQuery(
+    () => supabaseApi.getFinancialStats(period),
+    [period],
+  );
 }
