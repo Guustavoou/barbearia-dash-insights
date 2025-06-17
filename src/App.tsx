@@ -342,6 +342,9 @@ const UnclicAppContent: React.FC = () => {
 
           {/* Quick Actions Hub */}
           <QuickActionsHub onPageChange={setCurrentPage} />
+
+          {/* Supabase Status */}
+          <SupabaseStatus />
         </div>
       );
 
