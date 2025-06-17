@@ -27,6 +27,7 @@ import { BeautifulSettings } from "@/pages/BeautifulSettings";
 import { BeautifulReports } from "@/pages/BeautifulReports";
 import { BeautifulMarketing } from "@/pages/BeautifulMarketing";
 import { BeautifulDocuments } from "@/pages/BeautifulDocuments";
+import { BeautifulTesting } from "@/pages/BeautifulTesting";
 import { Stock } from "@/pages/Stock";
 import { Services } from "@/pages/Services";
 import { Professionals } from "@/pages/Professionals";
@@ -225,6 +226,10 @@ const UnclicAppContent: React.FC = () => {
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
+        );
+      case "testing":
+        return (
+          <BeautifulTesting darkMode={darkMode} onPageChange={setCurrentPage} />
         );
       default:
         return (
