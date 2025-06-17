@@ -2,6 +2,18 @@
 // Use relative URL to leverage Vite proxy configuration
 const API_BASE_URL = "/api";
 
+// Circuit breaker for traditional API when Supabase is preferred
+let API_CIRCUIT_BREAKER_ENABLED = false;
+let CONSECUTIVE_FAILURES = 0;
+const MAX_CONSECUTIVE_FAILURES = 3;
+
+function shouldUseCircuitBreaker(): boolean {
+  return (
+    API_CIRCUIT_BREAKER_ENABLED ||
+    CONSECUTIVE_FAILURES >= MAX_CONSECUTIVE_FAILURES
+  );
+}
+
 interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
@@ -523,6 +535,14 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
+    // Circuit breaker check - return mock data immediately if enabled
+    if (shouldUseCircuitBreaker()) {
+      console.log(
+        `🛑 [Circuit Breaker] Skipping API call to ${endpoint}, using mock data`,
+      );
+      return this.getMockResponse<T>(endpoint, options);
+    }
+
     const url = `${this.baseURL}${endpoint}`;
 
     const defaultOptions: RequestInit = {
@@ -530,12 +550,20 @@ class ApiClient {
         "Content-Type": "application/json",
         ...options.headers,
       },
-      timeout: 10000, // 10 second timeout
       ...options,
     };
 
     try {
-      const response = await fetch(url, defaultOptions);
+      // Wrap fetch in a timeout promise to handle hanging requests
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(
+          () => reject(new Error("Request timeout after 8 seconds")),
+          8000,
+        );
+      });
+
+      const fetchPromise = fetch(url, defaultOptions);
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -559,10 +587,31 @@ class ApiClient {
       }
 
       const data: ApiResponse<T> = await response.json();
+
+      // Reset failure count on successful request
+      CONSECUTIVE_FAILURES = 0;
+
       return data;
     } catch (error) {
-      console.warn(`API request failed for ${endpoint}:`, error);
-      console.warn("Falling back to mock data...");
+      // Increment failure count
+      CONSECUTIVE_FAILURES++;
+
+      // Enhanced error logging
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.warn(
+        `🔴 API request failed for ${endpoint} (${CONSECUTIVE_FAILURES}/${MAX_CONSECUTIVE_FAILURES}):`,
+        errorMessage,
+      );
+      console.warn("🔄 Falling back to mock data...");
+
+      // Auto-enable circuit breaker if too many failures
+      if (CONSECUTIVE_FAILURES >= MAX_CONSECUTIVE_FAILURES) {
+        API_CIRCUIT_BREAKER_ENABLED = true;
+        console.warn(
+          `🛑 Circuit breaker enabled after ${MAX_CONSECUTIVE_FAILURES} consecutive failures`,
+        );
+      }
 
       // Return mock data for development/demo when backend is unavailable
       return this.getMockResponse<T>(endpoint, options);
