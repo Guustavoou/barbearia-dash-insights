@@ -504,6 +504,28 @@ export function useCreateSupabaseProduct(
   );
 }
 
+export function useUpdateSupabaseProduct(
+  options?: UseSupabaseMutationOptions<any, any>,
+) {
+  return useSupabaseMutation(
+    (productData: { id: string; [key: string]: any }) =>
+      supabaseApi.updateProduct?.(productData.id, productData) ||
+      Promise.resolve({ success: true, data: productData }),
+    options,
+  );
+}
+
+export function useDeleteSupabaseProduct(
+  options?: UseSupabaseMutationOptions<any, any>,
+) {
+  return useSupabaseMutation(
+    (productId: string) =>
+      supabaseApi.deleteProduct?.(productId) ||
+      Promise.resolve({ success: true, data: { id: productId } }),
+    options,
+  );
+}
+
 // Real-time subscriptions
 export function useSupabaseRealTimeClients(callback: (payload: any) => void) {
   useEffect(() => {
