@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import { sql } from "../../database/neon-config";
+import {
+  generateBusinessSlug,
+  generateUniqueSlug,
+} from "../../utils/slugUtils";
 
 export const createBusiness = async (req: Request, res: Response) => {
   try {
@@ -20,13 +24,13 @@ export const createBusiness = async (req: Request, res: Response) => {
     // Create business record
     const businessResult = await sql`
       INSERT INTO businesses (
-        name, email, phone, cnpj, address, cep, 
+        name, email, phone, cnpj, address, cep,
         website, instagram, facebook, logo_url, banner_url,
         created_at, updated_at
       )
       VALUES (
         ${name}, ${email}, ${phone}, ${cnpj || null}, ${address}, ${cep},
-        ${website || null}, ${instagram || null}, ${facebook || null}, 
+        ${website || null}, ${instagram || null}, ${facebook || null},
         ${logo || null}, ${banner || null},
         NOW(), NOW()
       )
@@ -69,7 +73,7 @@ export const createServices = async (req: Request, res: Response) => {
           is_active, created_at, updated_at
         )
         VALUES (
-          ${service.name}, ${service.description || null}, 
+          ${service.name}, ${service.description || null},
           ${service.duration}, ${service.price}, ${service.category},
           ${service.active !== false}, NOW(), NOW()
         )
@@ -162,7 +166,7 @@ export const createWorkingHours = async (req: Request, res: Response) => {
           lunch_break_start, lunch_break_end, created_at, updated_at
         )
         VALUES (
-          ${hours.day}, ${hours.isOpen}, 
+          ${hours.day}, ${hours.isOpen},
           ${hours.isOpen ? hours.openTime : null},
           ${hours.isOpen ? hours.closeTime : null},
           ${hours.lunchBreak?.start || null},
@@ -201,15 +205,15 @@ export const completeOnboarding = async (req: Request, res: Response) => {
     // Create business
     businessResult = await sql`
       INSERT INTO businesses (
-        name, email, phone, cnpj, address, cep, 
+        name, email, phone, cnpj, address, cep,
         website, instagram, facebook, logo_url, banner_url,
         created_at, updated_at
       )
       VALUES (
-        ${businessInfo.name}, ${businessInfo.email}, ${businessInfo.phone}, 
+        ${businessInfo.name}, ${businessInfo.email}, ${businessInfo.phone},
         ${businessInfo.cnpj || null}, ${businessInfo.address}, ${businessInfo.cep},
-        ${businessInfo.website || null}, ${businessInfo.instagram || null}, 
-        ${businessInfo.facebook || null}, ${businessInfo.logo || null}, 
+        ${businessInfo.website || null}, ${businessInfo.instagram || null},
+        ${businessInfo.facebook || null}, ${businessInfo.logo || null},
         ${businessInfo.banner || null}, NOW(), NOW()
       )
       RETURNING *
@@ -226,7 +230,7 @@ export const completeOnboarding = async (req: Request, res: Response) => {
             is_active, created_at, updated_at
           )
           VALUES (
-            ${service.name}, ${service.description || null}, 
+            ${service.name}, ${service.description || null},
             ${service.duration}, ${service.price}, ${service.category},
             ${service.active !== false}, NOW(), NOW()
           )
@@ -269,7 +273,7 @@ export const completeOnboarding = async (req: Request, res: Response) => {
             lunch_break_start, lunch_break_end, created_at, updated_at
           )
           VALUES (
-            ${hours.day}, ${hours.isOpen}, 
+            ${hours.day}, ${hours.isOpen},
             ${hours.isOpen ? hours.openTime : null},
             ${hours.isOpen ? hours.closeTime : null},
             ${hours.lunchBreak?.start || null},
