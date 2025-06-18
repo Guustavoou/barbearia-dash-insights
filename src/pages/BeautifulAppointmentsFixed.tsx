@@ -869,8 +869,8 @@ export default function BeautifulAppointmentsFixed() {
   const { data: clients = [] } = useClients();
   const { data: services = [] } = useServices();
   const { data: professionals = [] } = useProfessionals();
-  const { globalLoading } = useGlobalLoading();
-  const { globalError } = useGlobalError();
+  const globalLoading = useGlobalLoading();
+  const globalError = useGlobalError();
 
   // Hooks de mutação
   const createAppointmentMutation = useCreateAppointment();
