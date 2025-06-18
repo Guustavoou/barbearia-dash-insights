@@ -223,7 +223,9 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
                       <Sparkles className="w-4 h-4 mr-2" />
                       Ver detalhes
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => universalExport("clientes")}>
+                    <DropdownMenuItem
+                      onClick={() => universalExport("clientes")}
+                    >
                       <Download className="w-4 h-4 mr-2" />
                       Exportar dados
                     </DropdownMenuItem>
@@ -787,7 +789,6 @@ export const BeautifulClientsProduction: React.FC<BeautifulClientsProps> = ({
               >
                 <Download className="w-4 h-4 mr-2" />
                 Exportar
-              </Button>
               </Button>
               <Button
                 onClick={() => setIsModalOpen(true)}
