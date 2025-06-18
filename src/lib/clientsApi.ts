@@ -15,6 +15,14 @@ export interface NeonClient {
   status: string;
   total_spent: number;
   visits: number;
+  // Add missing properties that are being used in components
+  lastVisit?: string;
+  visitCount?: number;
+  totalSpent?: number;
+  createdAt?: string;
+  birthDate?: string;
+  address?: string;
+  avgInterval?: number;
 }
 
 export interface ClientsApiInterface {
@@ -90,5 +98,5 @@ export const clientsApi: ClientsApiInterface = {
 // Export as ClientsAPI for backward compatibility
 export const ClientsAPI = clientsApi;
 
-// Re-export ApiResponse for convenience
-export { ApiResponse } from './types';
+// Re-export ApiResponse for convenience - using export type to fix TS error
+export type { ApiResponse } from './types';

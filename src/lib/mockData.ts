@@ -145,6 +145,11 @@ export const mockAppointments: Appointment[] = [
   }
 ];
 
+// Add missing upcomingAppointments export to fix runtime error
+export const upcomingAppointments = mockAppointments.filter(apt => 
+  new Date(apt.date) >= new Date() && apt.status === 'agendado'
+);
+
 // Mock Services Data
 export const mockServices: Service[] = [
   {

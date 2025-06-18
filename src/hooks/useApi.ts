@@ -1,306 +1,94 @@
-import { useState, useEffect, useCallback } from "react";
-import { api, ApiResponse } from "@/lib/api";
 
-interface UseApiState<T> {
-  data: T | null;
-  loading: boolean;
-  error: string | null;
-}
+import { useState } from 'react';
+import { clientsApi } from '@/lib/clientsApi';
 
-export function useApi<T>(
-  apiCall: () => Promise<ApiResponse<T>>,
-  dependencies: any[] = [],
-) {
-  const [state, setState] = useState<UseApiState<T>>({
-    data: null,
-    loading: true,
-    error: null,
-  });
-
-  const fetchData = useCallback(async () => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-
-    try {
-      const response = await apiCall();
-
-      if (response.success && response.data) {
-        setState({
-          data: response.data,
-          loading: false,
-          error: null,
-        });
-      } else {
-        setState({
-          data: null,
-          loading: false,
-          error: response.error || "Failed to fetch data",
-        });
-      }
-    } catch (error) {
-      setState({
-        data: null,
-        loading: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  }, dependencies);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return {
-    ...state,
-    refetch: fetchData,
-  };
-}
-
-// Specialized hooks for common API calls
-export function useDashboardStats() {
-  return useApi(() => api.getDashboardStats());
-}
-
-export function useRevenueData(period?: string, compare?: boolean) {
-  return useApi(() => api.getRevenueData(period, compare), [period, compare]);
-}
-
-export function useTopServices(limit?: number) {
-  return useApi(() => api.getTopServices(limit), [limit]);
-}
-
-export function useUpcomingAppointments(limit?: number) {
-  return useApi(() => api.getUpcomingAppointments(limit), [limit]);
-}
-
-export function useBirthdays() {
-  return useApi(() => api.getBirthdaysThisMonth());
-}
-
-export function useClients(params?: any) {
-  return useApi(() => api.getClients(params), [JSON.stringify(params)]);
-}
-
-export function useAppointments(params?: any) {
-  return useApi(() => api.getAppointments(params), [JSON.stringify(params)]);
-}
-
-export function useServices(params?: any) {
-  return useApi(() => api.getServices(params), [JSON.stringify(params)]);
-}
-
-export function useProfessionals(params?: any) {
-  return useApi(() => api.getProfessionals(params), [JSON.stringify(params)]);
-}
-
-export function useProducts(params?: any) {
-  return useApi(() => api.getProducts(params), [JSON.stringify(params)]);
-}
-
-export function useTransactions(params?: any) {
-  return useApi(() => api.getTransactions(params), [JSON.stringify(params)]);
-}
-
-export function useFinancialStats(period?: string) {
-  return useApi(() => api.getFinancialStats(period), [period]);
-}
-
-export function useMonthlyRevenue(months?: number) {
-  return useApi(() => api.getMonthlyRevenue(months), [months]);
-}
-
-// Hook for API mutations (create, update, delete)
-interface UseMutationOptions<T, P> {
-  onSuccess?: (data: T) => void;
-  onError?: (error: string) => void;
-}
-
-export function useMutation<T, P = any>(
-  mutationFn: (params: P) => Promise<ApiResponse<T>>,
-  options?: UseMutationOptions<T, P>,
-) {
+export const useClients = (params?: any) => {
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const mutate = useCallback(
-    async (params: P) => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await mutationFn(params);
-
-        if (response.success && response.data) {
-          options?.onSuccess?.(response.data);
-          return response.data;
-        } else {
-          const errorMessage = response.error || "Mutation failed";
-          setError(errorMessage);
-          options?.onError?.(errorMessage);
-          return null;
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
-        setError(errorMessage);
-        options?.onError?.(errorMessage);
-        return null;
-      } finally {
-        setLoading(false);
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await clientsApi.getClients(params);
+      
+      if (!result.success) {
+        setError(result.error || 'Failed to fetch clients');
+        return;
       }
-    },
-    [mutationFn, options],
-  );
-
-  return {
-    mutate,
-    loading,
-    error,
+      
+      setData(result.data || []);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
-}
 
-// Specialized mutation hooks
-export function useCreateClient(options?: UseMutationOptions<any, any>) {
-  return useMutation((clientData) => api.createClient(clientData), options);
-}
+  return { data, loading, error, refetch };
+};
 
-export function useUpdateClient(
-  options?: UseMutationOptions<any, { id: number; data: any }>,
-) {
-  return useMutation(({ id, data }) => api.updateClient(id, data), options);
-}
+export const useCreateClient = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (clientData: any) => {
+    setLoading(true);
+    try {
+      const result = await clientsApi.addClient(clientData);
+      if (result.success && options?.onSuccess) {
+        options.onSuccess();
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-export function useDeleteClient(options?: UseMutationOptions<any, number>) {
-  return useMutation((id) => api.deleteClient(id), options);
-}
+  return { mutate, isLoading: loading };
+};
 
-export function useCreateAppointment(options?: UseMutationOptions<any, any>) {
-  return useMutation(
-    (appointmentData) => api.createAppointment(appointmentData),
-    options,
-  );
-}
+export const useUpdateClient = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (variables: { id: string; data: any }) => {
+    setLoading(true);
+    try {
+      const result = await clientsApi.updateClient(variables.id, variables.data);
+      if (result.success && options?.onSuccess) {
+        options.onSuccess();
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-export function useUpdateAppointment(
-  options?: UseMutationOptions<any, { id: number; data: any }>,
-) {
-  return useMutation(
-    ({ id, data }) => api.updateAppointment(id, data),
-    options,
-  );
-}
+  return { mutate, isLoading: loading };
+};
 
-export function useDeleteAppointment(
-  options?: UseMutationOptions<any, number>,
-) {
-  return useMutation((id) => api.deleteAppointment(id), options);
-}
+export const useDeleteClient = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (id: string) => {
+    setLoading(true);
+    try {
+      const result = await clientsApi.deleteClient(id);
+      if (result.success && options?.onSuccess) {
+        options.onSuccess();
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-export function useCreateService(options?: UseMutationOptions<any, any>) {
-  return useMutation((serviceData) => api.createService(serviceData), options);
-}
-
-export function useUpdateService(
-  options?: UseMutationOptions<any, { id: number; data: any }>,
-) {
-  return useMutation(({ id, data }) => api.updateService(id, data), options);
-}
-
-export function useDeleteService(options?: UseMutationOptions<any, number>) {
-  return useMutation((id) => api.deleteService(id), options);
-}
-
-export function useCreateProfessional(options?: UseMutationOptions<any, any>) {
-  return useMutation(
-    (professionalData) => api.createProfessional(professionalData),
-    options,
-  );
-}
-
-export function useUpdateProfessional(
-  options?: UseMutationOptions<any, { id: number; data: any }>,
-) {
-  return useMutation(
-    ({ id, data }) => api.updateProfessional(id, data),
-    options,
-  );
-}
-
-export function useDeleteProfessional(
-  options?: UseMutationOptions<any, number>,
-) {
-  return useMutation((id) => api.deleteProfessional(id), options);
-}
-
-export function useCreateProduct(options?: UseMutationOptions<any, any>) {
-  return useMutation((productData) => api.createProduct(productData), options);
-}
-
-export function useUpdateProduct(
-  options?: UseMutationOptions<any, { id: number; data: any }>,
-) {
-  return useMutation(({ id, data }) => api.updateProduct(id, data), options);
-}
-
-export function useDeleteProduct(options?: UseMutationOptions<any, number>) {
-  return useMutation((id) => api.deleteProduct(id), options);
-}
-
-export function useCreateTransaction(options?: UseMutationOptions<any, any>) {
-  return useMutation(
-    (transactionData) => api.createTransaction(transactionData),
-    options,
-  );
-}
-
-export function useUpdateTransaction(
-  options?: UseMutationOptions<any, { id: number; data: any }>,
-) {
-  return useMutation(
-    ({ id, data }) => api.updateTransaction(id, data),
-    options,
-  );
-}
-
-export function useDeleteTransaction(
-  options?: UseMutationOptions<any, number>,
-) {
-  return useMutation((id) => api.deleteTransaction(id), options);
-}
-
-// Reports hooks
-export function useBusinessReports(period?: string) {
-  return useApi(() => api.getBusinessReports(period), [period]);
-}
-
-export function useSalesPerformance(period?: string, limit?: number) {
-  return useApi(() => api.getSalesPerformance(period, limit), [period, limit]);
-}
-
-export function useProfessionalReports(period?: string) {
-  return useApi(() => api.getProfessionalReports(period), [period]);
-}
-
-export function useClientAnalysis(period?: string) {
-  return useApi(() => api.getClientAnalysis(period), [period]);
-}
-
-export function useAppointmentTrends(period?: string) {
-  return useApi(() => api.getAppointmentTrends(period), [period]);
-}
-
-export function useFinancialAnalysis(period?: string) {
-  return useApi(() => api.getFinancialAnalysis(period), [period]);
-}
-
-export function useInventoryReport() {
-  return useApi(() => api.getInventoryReport());
-}
-
-// New advanced dashboard hooks
-export function useFinancialMetrics(period?: string) {
-  return useApi(() => api.getFinancialMetrics(period), [period]);
-}
-
-export function useOperationalMetrics() {
-  return useApi(() => api.getOperationalMetrics());
-}
+  return { mutate, isLoading: loading };
+};
