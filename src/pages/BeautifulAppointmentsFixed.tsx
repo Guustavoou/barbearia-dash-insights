@@ -422,7 +422,7 @@ const AppointmentModal = ({
               required
             >
               <option value="">Selecione um cliente</option>
-              {clients.map((client) => (
+              {(clients || []).map((client) => (
                 <option key={client.id} value={client.id}>
                   {client.name}
                 </option>
@@ -443,7 +443,7 @@ const AppointmentModal = ({
               required
             >
               <option value="">Selecione um serviço</option>
-              {services.map((service) => (
+              {(services || []).map((service) => (
                 <option key={service.id} value={service.id}>
                   {service.name}
                   {service.price && ` - R$ ${service.price.toFixed(2)}`}
@@ -465,7 +465,7 @@ const AppointmentModal = ({
               required
             >
               <option value="">Selecione um profissional</option>
-              {professionals.map((professional) => (
+              {(professionals || []).map((professional) => (
                 <option key={professional.id} value={professional.id}>
                   {professional.name}
                 </option>
