@@ -1391,9 +1391,11 @@ export default function BeautifulAppointmentsFixed() {
                 <option value="">Todos profissionais</option>
                 {Array.from(
                   new Set(
-                    (appointments || [])
-                      .map((apt) => apt.professional_name)
-                      .filter(Boolean),
+                    Array.isArray(appointments)
+                      ? appointments
+                          .map((apt) => apt.professional_name)
+                          .filter(Boolean)
+                      : [],
                   ),
                 ).map((name) => (
                   <option key={name} value={name}>
