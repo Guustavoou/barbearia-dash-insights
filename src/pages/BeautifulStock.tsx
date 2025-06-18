@@ -239,8 +239,8 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
               </div>
             </div>
             <div className="mt-4 flex items-center">
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              <span className="text-sm text-green-600 dark:text-green-400">
+              <TrendingUp className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
                 +8% vs mês anterior
               </span>
             </div>
@@ -289,8 +289,8 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
               </div>
             </div>
             <div className="mt-4 flex items-center">
-              <AlertTriangle className="w-4 h-4 text-yellow-500 mr-1" />
-              <span className="text-sm text-yellow-600 dark:text-yellow-400">
+              <AlertTriangle className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
                 Requer atenção
               </span>
             </div>
@@ -314,8 +314,8 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
               </div>
             </div>
             <div className="mt-4 flex items-center">
-              <RefreshCw className="w-4 h-4 text-red-500 mr-1" />
-              <span className="text-sm text-red-600 dark:text-red-400">
+              <RefreshCw className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
                 Necessita reposição
               </span>
             </div>
