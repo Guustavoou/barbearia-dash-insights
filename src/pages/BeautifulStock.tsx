@@ -190,7 +190,7 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20 space-y-6 p-6">
       {/* Beautiful Header */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 text-white shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-800/20" />
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl" />
 
@@ -259,7 +259,7 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
                   {stockData.length}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-xl text-white shadow-lg">
                 <Package className="w-6 h-6" />
               </div>
             </div>
@@ -284,7 +284,7 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
                   {lowStockProducts}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl text-white shadow-lg">
                 <AlertTriangle className="w-6 h-6" />
               </div>
             </div>
@@ -309,7 +309,7 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
                   {outOfStockProducts}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-700 to-blue-900 rounded-xl text-white shadow-lg">
                 <Package className="w-6 h-6" />
               </div>
             </div>
