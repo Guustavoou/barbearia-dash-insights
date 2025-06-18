@@ -333,8 +333,8 @@ const UnclicAppContent: React.FC = () => {
       return <SuccessStep onGoToDashboard={handleGoToDashboard} />;
 
     case "main":
-      // Allow public access to landing page
-      if (currentPage === "landing") {
+      // Allow public access to landing page only when not authenticated
+      if (currentPage === "landing" && !session) {
         return <UnclicWebsite onNavigateToLogin={() => setAppState("login")} />;
       }
 
