@@ -434,13 +434,8 @@ export class SupabaseApiFixed {
         query = query.eq("type", params.type);
       }
 
-      if (params?.dateFrom) {
-        query = query.gte("created_at", params.dateFrom);
-      }
-
-      if (params?.dateTo) {
-        query = query.lte("created_at", params.dateTo);
-      }
+      // For now, skip date filtering until we confirm column names
+      // Date filtering will be re-enabled once we confirm the correct column name
 
       const { data, error } = await query.order("created_at", {
         ascending: false,
