@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
 import { Database } from '@/integrations/supabase/types';
 
+// Use the correct table name from the database schema
 type Appointment = Database['public']['Tables']['appointments']['Row'] & {
   clients?: {
     name: string;
@@ -44,9 +45,9 @@ export const useAppointments = () => {
           professionals(name),
           services!inner(name, price)
         `)
-        .eq('barbershop_id', barbershop.id)
-        .order('appointment_date', { ascending: true })
-        .order('appointment_time', { ascending: true });
+        .eq('business_id', barbershop.id) // Changed from barbershop_id to business_id
+        .order('date', { ascending: true })
+        .order('start_time', { ascending: true });
 
       if (error) {
         console.error('Error fetching appointments:', error);
@@ -60,7 +61,7 @@ export const useAppointments = () => {
     }
   };
 
-  const addAppointment = async (appointmentData: Omit<AppointmentInsert, 'barbershop_id'>) => {
+  const addAppointment = async (appointmentData: Omit<AppointmentInsert, 'business_id'>) => {
     if (!barbershop?.id) return null;
 
     try {
@@ -68,7 +69,7 @@ export const useAppointments = () => {
         .from('appointments')
         .insert({
           ...appointmentData,
-          barbershop_id: barbershop.id,
+          business_id: barbershop.id, // Changed from barbershop_id to business_id
         })
         .select(`
           *,
@@ -84,9 +85,9 @@ export const useAppointments = () => {
       }
 
       setAppointments(prev => [...prev, data].sort((a, b) => {
-        const dateCompare = new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime();
+        const dateCompare = new Date(a.date || '').getTime() - new Date(b.date || '').getTime();
         if (dateCompare === 0) {
-          return a.appointment_time.localeCompare(b.appointment_time);
+          return (a.start_time || '').localeCompare(b.start_time || '');
         }
         return dateCompare;
       }));

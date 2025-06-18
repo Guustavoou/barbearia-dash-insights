@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import {
   MultiTenantOnboardingData,
@@ -253,7 +254,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [data, dispatch] = useReducer(onboardingReducer, initialData);
-  const { session } = useAuth();
+  const { user } = useAuth(); // Changed from session to user
 
   // Load progress from localStorage on mount
   useEffect(() => {
@@ -353,7 +354,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
 
   const saveProgress = () => {
     try {
-      const userId = session?.user.id || "anonymous";
+      const userId = user?.id || "anonymous"; // Changed from session to user
       localStorage.setItem(
         `unclic-multitenant-onboarding-progress-${userId}`,
         JSON.stringify(data),
@@ -365,7 +366,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
 
   const loadProgress = () => {
     try {
-      const userId = session?.user.id || "anonymous";
+      const userId = user?.id || "anonymous"; // Changed from session to user
       const saved = localStorage.getItem(
         `unclic-multitenant-onboarding-progress-${userId}`,
       );

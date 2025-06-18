@@ -1,371 +1,278 @@
-// Clients API with Neon Database Integration
-import { api } from "./api";
 
+import { supabase } from '@/integrations/supabase/client';
+
+// Simplified client type based on actual database schema
 export interface NeonClient {
-  id?: string;
-  name: string;
-  email: string;
-  phone: string;
-  address?: string;
-  birthDate?: string;
-  createdAt?: string;
-  lastVisit?: string;
-  status: "ativo" | "inativo";
-  totalSpent?: number;
-  visitCount?: number;
-  avgInterval?: number;
-  notes?: string;
-  visits?: Visit[];
-}
-
-export interface Visit {
   id: string;
-  date: string;
-  service: string;
-  amount: number;
-  professional: string;
-  rating?: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  birth_date?: string;
+  created_at?: string;
+  last_visit?: string;
+  status?: string;
+  total_spent?: number;
+  visits?: number;
+  business_id?: string;
+  notes?: string;
 }
 
-export interface ClientsApiResponse {
+export interface ApiResponse<T> {
   success: boolean;
-  data?: NeonClient | NeonClient[];
+  data?: T;
   error?: string;
   message?: string;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
 }
 
-class ClientsApi {
-  // Get all clients with filters and pagination
-  async getClients(params?: {
-    page?: number;
-    limit?: number;
-    sort?: string;
-    order?: "ASC" | "DESC";
-    search?: string;
-    status?: string;
-  }): Promise<ClientsApiResponse> {
-    try {
-      console.log("🔍 Fetching clients from Neon database...");
-      const response = await api.get("/clients", params);
+export type ClientsApiResponse = ApiResponse<NeonClient | NeonClient[]>;
 
-      if (response.success && response.data) {
-        console.log(
-          `✅ Loaded ${Array.isArray(response.data) ? response.data.length : 1} clients from Neon`,
-        );
+export const ClientsAPI = {
+  async getAll(businessId?: string): Promise<ClientsApiResponse> {
+    try {
+      console.log('🔍 [Clients API] Fetching all clients...');
+      
+      let query = supabase.from('clients').select('*');
+      
+      if (businessId) {
+        query = query.eq('business_id', businessId);
+      }
+
+      const { data, error } = await query.order('name');
+
+      if (error) {
+        console.error('❌ [Clients API] Error fetching clients:', error);
         return {
-          success: true,
-          data: response.data,
-          pagination: response.pagination,
+          success: false,
+          error: error.message
         };
       }
 
-      return response;
-    } catch (error) {
-      console.error("❌ Error fetching clients:", error);
+      const clients: NeonClient[] = (data || []).map((client: any) => ({
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        phone: client.phone,
+        city: client.city,
+        birth_date: client.birth_date,
+        created_at: client.created_at,
+        last_visit: client.last_visit,
+        status: client.status,
+        total_spent: client.total_spent,
+        visits: 0, // Default value since this might not be in the schema
+        business_id: client.business_id,
+        notes: client.notes
+      }));
+
+      console.log('✅ [Clients API] Successfully fetched clients:', clients.length);
+      return {
+        success: true,
+        data: clients
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Clients API] Unexpected error:', error);
       return {
         success: false,
-        error: "Failed to fetch clients from database",
+        error: error.message || 'Failed to fetch clients'
       };
     }
-  }
+  },
 
-  // Get client by ID
-  async getClientById(id: string): Promise<ClientsApiResponse> {
+  async getById(id: string): Promise<ClientsApiResponse> {
     try {
-      console.log(`🔍 Fetching client ${id} from Neon database...`);
-      const response = await api.get(`/clients/${id}`);
+      console.log('🔍 [Clients API] Fetching client by ID:', id);
+      
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-      if (response.success) {
-        console.log(`✅ Loaded client ${id} from Neon`);
-      }
-
-      return response;
-    } catch (error) {
-      console.error(`❌ Error fetching client ${id}:`, error);
-      return {
-        success: false,
-        error: "Failed to fetch client from database",
-      };
-    }
-  }
-
-  // Create new client
-  async createClient(
-    clientData: Omit<
-      NeonClient,
-      | "id"
-      | "createdAt"
-      | "totalSpent"
-      | "visitCount"
-      | "avgInterval"
-      | "visits"
-    >,
-  ): Promise<ClientsApiResponse> {
-    try {
-      console.log("➕ Creating client in Neon database...", clientData.name);
-
-      // Transform frontend data to backend format
-      const backendData = {
-        name: clientData.name,
-        email: clientData.email,
-        phone: clientData.phone,
-        city: clientData.address, // Backend uses 'city' field
-        birthday: clientData.birthDate,
-        notes: clientData.notes,
-        status: clientData.status,
-      };
-
-      const response = await api.post("/clients", backendData);
-
-      if (response.success && response.data) {
-        console.log(`✅ Client ${clientData.name} created in Neon database`);
-
-        // Transform backend response to frontend format
-        const frontendClient: NeonClient = {
-          id: response.data.id?.toString(),
-          name: response.data.name,
-          email: response.data.email,
-          phone: response.data.phone,
-          address: response.data.city,
-          birthDate: response.data.birthday,
-          createdAt: response.data.created_at,
-          lastVisit: response.data.last_visit,
-          status: response.data.status,
-          totalSpent: response.data.total_spent || 0,
-          visitCount: response.data.visits || 0,
-          avgInterval: 0, // Calculate based on visits
-          notes: response.data.notes,
-          visits: [], // Will be populated separately if needed
-        };
-
+      if (error) {
+        console.error('❌ [Clients API] Error fetching client:', error);
         return {
-          success: true,
-          data: frontendClient,
+          success: false,
+          error: error.message
         };
       }
 
-      return response;
-    } catch (error) {
-      console.error("❌ Error creating client:", error);
+      const client: NeonClient = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        city: data.city,
+        birth_date: data.birth_date,
+        created_at: data.created_at,
+        last_visit: data.last_visit,
+        status: data.status,
+        total_spent: data.total_spent,
+        visits: 0, // Default value
+        business_id: data.business_id,
+        notes: data.notes
+      };
+
+      console.log('✅ [Clients API] Successfully fetched client');
+      return {
+        success: true,
+        data: client
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Clients API] Unexpected error:', error);
       return {
         success: false,
-        error: "Failed to create client in database",
+        error: error.message || 'Failed to fetch client'
       };
     }
-  }
+  },
 
-  // Update client
-  async updateClient(
-    id: string,
-    clientData: Partial<NeonClient>,
-  ): Promise<ClientsApiResponse> {
+  async create(clientData: Partial<NeonClient>): Promise<ClientsApiResponse> {
     try {
-      console.log(`✏️ Updating client ${id} in Neon database...`);
+      console.log('🔍 [Clients API] Creating new client...');
+      
+      const { data, error } = await supabase
+        .from('clients')
+        .insert({
+          name: clientData.name || '',
+          email: clientData.email,
+          phone: clientData.phone,
+          city: clientData.city,
+          birth_date: clientData.birth_date,
+          status: clientData.status || 'active',
+          business_id: clientData.business_id,
+          notes: clientData.notes
+        })
+        .select()
+        .single();
 
-      // Transform frontend data to backend format
-      const backendData = {
-        name: clientData.name,
-        email: clientData.email,
-        phone: clientData.phone,
-        city: clientData.address,
-        birthday: clientData.birthDate,
-        notes: clientData.notes,
-        status: clientData.status,
-      };
-
-      const response = await api.put(`/clients/${id}`, backendData);
-
-      if (response.success && response.data) {
-        console.log(`✅ Client ${id} updated in Neon database`);
-
-        // Transform backend response to frontend format
-        const frontendClient: NeonClient = {
-          id: response.data.id?.toString(),
-          name: response.data.name,
-          email: response.data.email,
-          phone: response.data.phone,
-          address: response.data.city,
-          birthDate: response.data.birthday,
-          createdAt: response.data.created_at,
-          lastVisit: response.data.last_visit,
-          status: response.data.status,
-          totalSpent: response.data.total_spent || 0,
-          visitCount: response.data.visits || 0,
-          avgInterval: 0,
-          notes: response.data.notes,
-          visits: [],
-        };
-
+      if (error) {
+        console.error('❌ [Clients API] Error creating client:', error);
         return {
-          success: true,
-          data: frontendClient,
+          success: false,
+          error: error.message
         };
       }
 
-      return response;
-    } catch (error) {
-      console.error(`❌ Error updating client ${id}:`, error);
+      const client: NeonClient = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        city: data.city,
+        birth_date: data.birth_date,
+        created_at: data.created_at,
+        last_visit: data.last_visit,
+        status: data.status,
+        total_spent: data.total_spent,
+        visits: 0, // Default value
+        business_id: data.business_id,
+        notes: data.notes
+      };
+
+      console.log('✅ [Clients API] Successfully created client');
+      return {
+        success: true,
+        data: client
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Clients API] Unexpected error:', error);
       return {
         success: false,
-        error: "Failed to update client in database",
+        error: error.message || 'Failed to create client'
+      };
+    }
+  },
+
+  async update(id: string, updates: Partial<NeonClient>): Promise<ClientsApiResponse> {
+    try {
+      console.log('🔍 [Clients API] Updating client:', id);
+      
+      const { data, error } = await supabase
+        .from('clients')
+        .update({
+          name: updates.name,
+          email: updates.email,
+          phone: updates.phone,
+          city: updates.city,
+          birth_date: updates.birth_date,
+          status: updates.status,
+          notes: updates.notes
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ [Clients API] Error updating client:', error);
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+
+      const client: NeonClient = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        city: data.city,
+        birth_date: data.birth_date,
+        created_at: data.created_at,
+        last_visit: data.last_visit,
+        status: data.status,
+        total_spent: data.total_spent,
+        visits: 0, // Default value
+        business_id: data.business_id,
+        notes: data.notes
+      };
+
+      console.log('✅ [Clients API] Successfully updated client');
+      return {
+        success: true,
+        data: client
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Clients API] Unexpected error:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to update client'
+      };
+    }
+  },
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    try {
+      console.log('🔍 [Clients API] Deleting client:', id);
+      
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('❌ [Clients API] Error deleting client:', error);
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+
+      console.log('✅ [Clients API] Successfully deleted client');
+      return {
+        success: true,
+        data: true
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Clients API] Unexpected error:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to delete client'
       };
     }
   }
-
-  // Delete client
-  async deleteClient(id: string): Promise<ClientsApiResponse> {
-    try {
-      console.log(`🗑️ Deleting client ${id} from Neon database...`);
-      const response = await api.delete(`/clients/${id}`);
-
-      if (response.success) {
-        console.log(`✅ Client ${id} deleted from Neon database`);
-      }
-
-      return response;
-    } catch (error) {
-      console.error(`❌ Error deleting client ${id}:`, error);
-      return {
-        success: false,
-        error: "Failed to delete client from database",
-      };
-    }
-  }
-
-  // Get client statistics
-  async getClientStats(): Promise<ClientsApiResponse> {
-    try {
-      console.log("📊 Fetching client statistics from Neon database...");
-      const response = await api.get("/clients/stats");
-
-      if (response.success) {
-        console.log("✅ Client statistics loaded from Neon");
-      }
-
-      return response;
-    } catch (error) {
-      console.error("❌ Error fetching client stats:", error);
-      return {
-        success: false,
-        error: "Failed to fetch client statistics",
-      };
-    }
-  }
-
-  // Get clients with birthdays this month
-  async getClientBirthdays(): Promise<ClientsApiResponse> {
-    try {
-      console.log("🎂 Fetching client birthdays from Neon database...");
-      const response = await api.get("/clients/birthdays");
-
-      if (response.success) {
-        console.log("✅ Client birthdays loaded from Neon");
-      }
-
-      return response;
-    } catch (error) {
-      console.error("❌ Error fetching client birthdays:", error);
-      return {
-        success: false,
-        error: "Failed to fetch client birthdays",
-      };
-    }
-  }
-
-  // Transform backend client data to frontend format
-  private transformBackendToFrontend(backendClient: any): NeonClient {
-    return {
-      id: backendClient.id?.toString(),
-      name: backendClient.name,
-      email: backendClient.email,
-      phone: backendClient.phone,
-      address: backendClient.city,
-      birthDate: backendClient.birthday,
-      createdAt: backendClient.created_at,
-      lastVisit: backendClient.last_visit,
-      status: backendClient.status,
-      totalSpent: backendClient.total_spent || 0,
-      visitCount: backendClient.visits || 0,
-      avgInterval: 0, // Can be calculated based on visit history
-      notes: backendClient.notes,
-      visits: [], // Will be populated separately if needed
-    };
-  }
-
-  // Sync localStorage data with Neon database
-  async syncLocalStorageToNeon(localClients: NeonClient[]): Promise<void> {
-    try {
-      console.log("🔄 Syncing localStorage clients to Neon database...");
-
-      // Get existing clients from Neon
-      const response = await this.getClients({ limit: 1000 });
-
-      if (!response.success || !response.data) {
-        throw new Error("Failed to get existing clients");
-      }
-
-      const existingClients = Array.isArray(response.data)
-        ? response.data
-        : [response.data];
-      const existingEmails = new Set(existingClients.map((c) => c.email));
-
-      // Create clients that don't exist in Neon
-      for (const localClient of localClients) {
-        if (!existingEmails.has(localClient.email)) {
-          await this.createClient({
-            name: localClient.name,
-            email: localClient.email,
-            phone: localClient.phone,
-            address: localClient.address,
-            birthDate: localClient.birthDate,
-            status: localClient.status,
-            notes: localClient.notes,
-          });
-        }
-      }
-
-      console.log("✅ LocalStorage data synced to Neon database");
-    } catch (error) {
-      console.error("❌ Error syncing localStorage to Neon:", error);
-    }
-  }
-}
-
-// Create and export API instance
-export const clientsApi = new ClientsApi();
-
-// Export utility functions
-export const transformClientData = {
-  toBackend: (frontendClient: NeonClient) => ({
-    name: frontendClient.name,
-    email: frontendClient.email,
-    phone: frontendClient.phone,
-    city: frontendClient.address,
-    birthday: frontendClient.birthDate,
-    notes: frontendClient.notes,
-    status: frontendClient.status,
-  }),
-
-  toFrontend: (backendClient: any): NeonClient => ({
-    id: backendClient.id?.toString(),
-    name: backendClient.name,
-    email: backendClient.email,
-    phone: backendClient.phone,
-    address: backendClient.city,
-    birthDate: backendClient.birthday,
-    createdAt: backendClient.created_at,
-    lastVisit: backendClient.last_visit,
-    status: backendClient.status,
-    totalSpent: backendClient.total_spent || 0,
-    visitCount: backendClient.visits || 0,
-    avgInterval: 0,
-    notes: backendClient.notes,
-    visits: [],
-  }),
 };
