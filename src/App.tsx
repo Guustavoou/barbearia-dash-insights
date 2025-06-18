@@ -27,6 +27,7 @@ import { BeautifulProfessionals } from "@/pages/BeautifulProfessionals";
 import { BeautifulStock } from "@/pages/BeautifulStock";
 import { BeautifulPayments } from "@/pages/BeautifulPayments";
 import { BeautifulSettings } from "@/pages/BeautifulSettings";
+import { BeautifulSettingsImproved } from "@/pages/BeautifulSettingsImproved";
 import { BeautifulReports } from "@/pages/BeautifulReports";
 import { BeautifulMarketing } from "@/pages/BeautifulMarketing";
 import { BeautifulDocuments } from "@/pages/BeautifulDocuments";
