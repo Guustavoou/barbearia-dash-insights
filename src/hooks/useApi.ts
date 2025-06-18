@@ -557,3 +557,34 @@ export const useBusinessReports = () => {
 
   return { data, loading, error, refetch };
 };
+
+// Adding missing client analysis hook
+export const useClientAnalysis = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        totalClients: 0,
+        newClients: 0,
+        retentionRate: 0,
+        averageSpending: 0,
+        topClients: [],
+        segmentation: {}
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};

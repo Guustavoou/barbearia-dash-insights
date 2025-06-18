@@ -1,165 +1,60 @@
 
-// Core business types
+export interface DashboardStats {
+  total_revenue: number;
+  total_expenses: number;
+  net_income: number;
+  profit_margin: number;
+  overview: any;
+  data: any[];
+}
+
+export type PageType = 
+  | "dashboard" 
+  | "appointments" 
+  | "clients" 
+  | "professionals" 
+  | "services" 
+  | "payments" 
+  | "reports" 
+  | "settings";
+
+// Client types
+export type ClientSortField = 'name' | 'email' | 'created_at' | 'total_spent' | 'last_visit';
+export type ClientSortOrder = 'asc' | 'desc';
+
 export interface Client {
   id: string;
   name: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
+  address?: string;
   city?: string;
-  status: 'ativo' | 'inativo';
-  birthday?: string;
-  totalSpent?: number;
-  visits?: number;
-  lastVisit?: string;
-  createdAt: string;
-  updatedAt: string;
+  birth_date?: string;
   notes?: string;
-  joinDate?: string; // For compatibility
-  // Legacy field mappings for backward compatibility
+  status: 'active' | 'inactive';
+  business_id: string;
+  created_at: string;
+  updated_at: string;
   total_spent?: number;
   last_visit?: string;
-  join_date?: string;
 }
 
-export interface Service {
+// NeonClient interface for compatibility
+export interface NeonClient {
   id: string;
   name: string;
-  description?: string;
-  price: number;
-  duration: number;
-  category: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Professional {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  specialty: string;
-  commissionRate: number;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city: string;
+  business_id: string;
+  created_at: string;
+  total_spent: number;
   status: 'ativo' | 'inativo';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Appointment {
-  id: string;
-  clientId: string;
-  professionalId: string;
-  serviceId: string;
-  date: string;
-  time: string;
-  status: 'agendado' | 'concluido' | 'cancelado' | 'faltou';
-  price: number;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  category: string;
-  brand?: string;
-  costPrice: number;
-  price: number;
-  currentStock: number;
-  minStock: number;
-  status: 'ativo' | 'inativo';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Transaction {
-  id: string;
-  type: 'receita' | 'despesa';
-  category: string;
-  amount: number;
-  paymentMethod?: string;
-  appointmentId?: string;
-  description?: string;
-  date: string;
-  status: 'pendente' | 'confirmado' | 'cancelado';
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Additional types for compatibility
-export interface Birthday {
-  id: string;
-  clientId: string;
-  clientName: string;
-  date: string;
-  age: number;
-}
-
-export interface RevenueData {
-  date: string;
-  revenue: number;
-  appointments: number;
-}
-
-export interface DashboardData {
-  totalClients: number;
-  totalAppointments: number;
-  monthlyRevenue: number;
-  todayAppointments: number;
-}
-
-// UI and application types
-export type PageType = 
-  | 'dashboard' 
-  | 'appointments' 
-  | 'clients' 
-  | 'professionals' 
-  | 'services' 
-  | 'stock' 
-  | 'financial' 
-  | 'reports' 
-  | 'settings'
-  | 'calendar'
-  | 'marketing'
-  | 'payments'
-  | 'documents'
-  | 'help'
-  | 'database-emergency';
-
-export interface DashboardStats {
-  totalClients: number;
-  totalAppointments: number;
-  totalServices: number;
-  totalProfessionals: number;
-  todayAppointments: number;
-  monthlyRevenue: number;
-  pendingAppointments: number;
-  completedAppointments: number;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-// Form and validation types
-export interface FormErrors {
-  [key: string]: string;
-}
-
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
-  sort?: string;
-  order?: 'ASC' | 'DESC';
-}
-
-export interface SearchParams extends PaginationParams {
-  search?: string;
-  status?: string;
-  category?: string;
+  createdAt?: string;
+  totalSpent?: number;
+  visitCount?: number;
+  avgInterval?: number;
+  visits?: any[];
 }
