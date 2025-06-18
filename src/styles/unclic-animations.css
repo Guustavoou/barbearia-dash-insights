@@ -248,6 +248,31 @@
   animation: scale-pulse 2s ease-in-out infinite;
 }
 
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+.animate-float-3d {
+  animation: float-3d 6s ease-in-out infinite;
+}
+
+.animate-morph {
+  animation: morph 8s ease-in-out infinite;
+}
+
+.animate-pulse-3d {
+  animation: pulse-3d 2s infinite;
+}
+
+.animate-tilt {
+  animation: tilt 10s infinite linear;
+}
+
+.animate-scroll {
+  animation: scroll-infinite 25s linear infinite;
+}
+
 .animate-shimmer {
   background: linear-gradient(
     90deg,
