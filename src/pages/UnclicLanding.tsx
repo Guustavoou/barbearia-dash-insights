@@ -45,6 +45,7 @@ import {
   Code,
   Laptop,
   TabletSmartphone,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
