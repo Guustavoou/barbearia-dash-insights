@@ -7,12 +7,19 @@ import { Separator } from '@/components/ui/separator';
 import { Building2, Users, Wrench, Clock, Check } from 'lucide-react';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 
-export const ReviewStep: React.FC = () => {
+interface ReviewStepProps {
+  onComplete?: () => void;
+}
+
+export const ReviewStep: React.FC<ReviewStepProps> = ({ onComplete }) => {
   const { data, prevStep, submitOnboarding } = useOnboarding();
 
   const handleSubmit = async () => {
     try {
       await submitOnboarding();
+      if (onComplete) {
+        onComplete();
+      }
     } catch (error) {
       console.error('Error submitting onboarding:', error);
     }

@@ -1,5 +1,4 @@
 
-
 export interface OnboardingBusiness {
   name: string;
   slug: string;
@@ -30,6 +29,9 @@ export interface OnboardingBusiness {
   banner?: string | File;
 }
 
+// For backward compatibility
+export interface BusinessInfo extends OnboardingBusiness {}
+
 export interface WorkingHours {
   [key: string]: {
     isOpen: boolean;
@@ -41,6 +43,16 @@ export interface WorkingHours {
     }>;
   };
 }
+
+export const defaultWorkingHours: WorkingHours = {
+  monday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
+  tuesday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
+  wednesday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
+  thursday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
+  friday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
+  saturday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
+  sunday: { isOpen: false, start: '09:00', end: '18:00', breaks: [] }
+};
 
 export interface OnboardingProfessional {
   id?: string;
@@ -112,8 +124,18 @@ export interface OnboardingContextType {
   reset: () => void;
 }
 
+// Service template interface
+export interface ServiceTemplate {
+  name: string;
+  description: string;
+  duration: number;
+  price: number;
+  category: string;
+  isActive: boolean;
+}
+
 // Service templates for the onboarding process
-export const serviceTemplates = [
+export const serviceTemplates: ServiceTemplate[] = [
   {
     name: 'Corte de Cabelo',
     description: 'Corte tradicional masculino',
@@ -139,4 +161,3 @@ export const serviceTemplates = [
     isActive: true
   }
 ];
-

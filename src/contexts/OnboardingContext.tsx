@@ -1,8 +1,9 @@
+
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import {
   OnboardingData,
   OnboardingContextType,
-  BusinessInfo,
+  OnboardingBusiness,
   OnboardingService,
   OnboardingProfessional,
   WorkingHours,
@@ -10,39 +11,49 @@ import {
 } from "@/lib/onboardingTypes";
 
 const initialData: OnboardingData = {
-  businessInfo: {
+  business: {
     name: "",
-    email: "",
+    adminEmail: "",
     phone: "",
-    cnpj: "",
+    ein: "",
+    legalName: "",
+    tradeName: "",
     address: "",
-    cep: "",
-    website: "",
-    instagram: "",
-    facebook: "",
+    addressNumber: "",
+    addressComplement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    description: "",
+    language: "pt-BR",
+    currency: "BRL",
+    timezone: "America/Sao_Paulo",
+    slug: "",
   },
   services: [],
   professionals: [],
   workingHours: defaultWorkingHours,
+  schedule: {},
   currentStep: 0,
-  isCompleted: false,
+  completed: false,
 };
 
 type OnboardingAction =
-  | { type: "UPDATE_BUSINESS_INFO"; payload: Partial<BusinessInfo> }
+  | { type: "UPDATE_BUSINESS_INFO"; payload: Partial<OnboardingBusiness> }
   | { type: "ADD_SERVICE"; payload: OnboardingService }
   | {
       type: "UPDATE_SERVICE";
-      payload: { id: string; service: Partial<OnboardingService> };
+      payload: { index: number; service: Partial<OnboardingService> };
     }
-  | { type: "REMOVE_SERVICE"; payload: string }
+  | { type: "REMOVE_SERVICE"; payload: number }
   | { type: "ADD_PROFESSIONAL"; payload: OnboardingProfessional }
   | {
       type: "UPDATE_PROFESSIONAL";
-      payload: { id: string; professional: Partial<OnboardingProfessional> };
+      payload: { index: number; professional: Partial<OnboardingProfessional> };
     }
-  | { type: "REMOVE_PROFESSIONAL"; payload: string }
-  | { type: "UPDATE_WORKING_HOURS"; payload: WorkingHours[] }
+  | { type: "REMOVE_PROFESSIONAL"; payload: number }
+  | { type: "UPDATE_WORKING_HOURS"; payload: WorkingHours }
   | { type: "SET_CURRENT_STEP"; payload: number }
   | { type: "NEXT_STEP" }
   | { type: "PREVIOUS_STEP" }
@@ -58,7 +69,7 @@ function onboardingReducer(
     case "UPDATE_BUSINESS_INFO":
       return {
         ...state,
-        businessInfo: { ...state.businessInfo, ...action.payload },
+        business: { ...state.business, ...action.payload },
       };
 
     case "ADD_SERVICE":
@@ -74,8 +85,8 @@ function onboardingReducer(
     case "UPDATE_SERVICE":
       return {
         ...state,
-        services: state.services.map((service) =>
-          service.id === action.payload.id
+        services: state.services.map((service, index) =>
+          index === action.payload.index
             ? { ...service, ...action.payload.service }
             : service,
         ),
@@ -84,9 +95,7 @@ function onboardingReducer(
     case "REMOVE_SERVICE":
       return {
         ...state,
-        services: state.services.filter(
-          (service) => service.id !== action.payload,
-        ),
+        services: state.services.filter((_, index) => index !== action.payload),
       };
 
     case "ADD_PROFESSIONAL":
@@ -102,8 +111,8 @@ function onboardingReducer(
     case "UPDATE_PROFESSIONAL":
       return {
         ...state,
-        professionals: state.professionals.map((professional) =>
-          professional.id === action.payload.id
+        professionals: state.professionals.map((professional, index) =>
+          index === action.payload.index
             ? { ...professional, ...action.payload.professional }
             : professional,
         ),
@@ -112,9 +121,7 @@ function onboardingReducer(
     case "REMOVE_PROFESSIONAL":
       return {
         ...state,
-        professionals: state.professionals.filter(
-          (professional) => professional.id !== action.payload,
-        ),
+        professionals: state.professionals.filter((_, index) => index !== action.payload),
       };
 
     case "UPDATE_WORKING_HOURS":
@@ -151,7 +158,7 @@ function onboardingReducer(
     case "COMPLETE_ONBOARDING":
       return {
         ...state,
-        isCompleted: true,
+        completed: true,
       };
 
     case "RESET_ONBOARDING":
@@ -181,12 +188,12 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Save progress whenever data changes
   useEffect(() => {
-    if (data.currentStep > 0 || data.businessInfo.name) {
+    if (data.currentStep > 0 || data.business.name) {
       saveProgress();
     }
   }, [data]);
 
-  const updateBusinessInfo = (info: Partial<BusinessInfo>) => {
+  const updateBusiness = (info: Partial<OnboardingBusiness>) => {
     dispatch({ type: "UPDATE_BUSINESS_INFO", payload: info });
   };
 
@@ -194,12 +201,12 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     dispatch({ type: "ADD_SERVICE", payload: service });
   };
 
-  const updateService = (id: string, service: Partial<OnboardingService>) => {
-    dispatch({ type: "UPDATE_SERVICE", payload: { id, service } });
+  const updateService = (index: number, service: Partial<OnboardingService>) => {
+    dispatch({ type: "UPDATE_SERVICE", payload: { index, service } });
   };
 
-  const removeService = (id: string) => {
-    dispatch({ type: "REMOVE_SERVICE", payload: id });
+  const removeService = (index: number) => {
+    dispatch({ type: "REMOVE_SERVICE", payload: index });
   };
 
   const addProfessional = (professional: OnboardingProfessional) => {
@@ -207,17 +214,17 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const updateProfessional = (
-    id: string,
+    index: number,
     professional: Partial<OnboardingProfessional>,
   ) => {
-    dispatch({ type: "UPDATE_PROFESSIONAL", payload: { id, professional } });
+    dispatch({ type: "UPDATE_PROFESSIONAL", payload: { index, professional } });
   };
 
-  const removeProfessional = (id: string) => {
-    dispatch({ type: "REMOVE_PROFESSIONAL", payload: id });
+  const removeProfessional = (index: number) => {
+    dispatch({ type: "REMOVE_PROFESSIONAL", payload: index });
   };
 
-  const updateWorkingHours = (hours: WorkingHours[]) => {
+  const updateWorkingHours = (hours: WorkingHours) => {
     dispatch({ type: "UPDATE_WORKING_HOURS", payload: hours });
   };
 
@@ -231,17 +238,13 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
       data.currentStep,
     );
     dispatch({ type: "NEXT_STEP" });
-    console.log(
-      "OnboardingContext: dispatch sent, new step should be:",
-      data.currentStep + 1,
-    );
   };
 
-  const previousStep = () => {
+  const prevStep = () => {
     dispatch({ type: "PREVIOUS_STEP" });
   };
 
-  const completeOnboarding = async () => {
+  const submitOnboarding = async () => {
     try {
       // Import API here to avoid circular dependencies
       const { OnboardingAPI } = await import("@/lib/onboardingApi");
@@ -279,7 +282,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const resetOnboarding = () => {
+  const reset = () => {
     dispatch({ type: "RESET_ONBOARDING" });
     localStorage.removeItem("unclic-onboarding-progress");
   };
@@ -304,9 +307,13 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const goToStep = (step: number) => {
+    setCurrentStep(step);
+  };
+
   const contextValue: OnboardingContextType = {
     data,
-    updateBusinessInfo,
+    updateBusiness,
     addService,
     updateService,
     removeService,
@@ -316,11 +323,10 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     updateWorkingHours,
     setCurrentStep,
     nextStep,
-    previousStep,
-    completeOnboarding,
-    resetOnboarding,
-    saveProgress,
-    loadProgress,
+    prevStep,
+    goToStep,
+    submitOnboarding,
+    reset,
   };
 
   return (
