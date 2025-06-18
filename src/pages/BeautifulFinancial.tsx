@@ -211,7 +211,14 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
   }) => {
     const isClickable = onCardClick || navigateTo;
 
-    const formatValue = (val: string | number) => {
+    const formatValue = (val: string | number | undefined | null) => {
+      // Add null safety check
+      if (val === undefined || val === null) {
+        if (format === "currency") return formatCurrency(0);
+        if (format === "percentage") return "0.0%";
+        return "0";
+      }
+
       if (format === "currency") return formatCurrency(Number(val));
       if (format === "percentage") return `${Number(val).toFixed(1)}%`;
       return val.toString();
