@@ -255,12 +255,28 @@ export const onboardingAPI = {
         {
           id: '1',
           name: 'Alice Johnson',
-          establishment_id: businessId
+          establishment_id: businessId,
+          email: 'alice@example.com',
+          phone: '+1234567890',
+          role: 'stylist',
+          type: 'employee',
+          specialties: ['haircut', 'coloring'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         },
         {
           id: '2',
           name: 'Bob Smith',
-          establishment_id: businessId
+          establishment_id: businessId,
+          email: 'bob@example.com',
+          phone: '+1234567891',
+          role: 'barber',
+          type: 'employee',
+          specialties: ['beard', 'haircut'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         }
       ];
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -288,7 +304,15 @@ export const onboardingAPI = {
       const newProfessional: EstablishmentProfessional = {
         ...professional,
         id: Date.now().toString(),
-        establishment_id: businessId
+        establishment_id: businessId,
+        email: professional.email || '',
+        phone: professional.phone || '',
+        role: professional.role || 'employee',
+        type: professional.type || 'employee',
+        specialties: professional.specialties || [],
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -315,7 +339,15 @@ export const onboardingAPI = {
       const updatedProfessional: EstablishmentProfessional = {
         id,
         name: professional.name || 'Updated Professional',
-        establishment_id: businessId
+        establishment_id: businessId,
+        email: professional.email || '',
+        phone: professional.phone || '',
+        role: professional.role || 'employee',
+        type: professional.type || 'employee',
+        specialties: professional.specialties || [],
+        is_active: professional.is_active !== undefined ? professional.is_active : true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       await new Promise(resolve => setTimeout(resolve, 500));
 

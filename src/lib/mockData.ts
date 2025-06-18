@@ -1,3 +1,4 @@
+
 import {
   Client,
   Service,
@@ -247,5 +248,6 @@ export const mockDashboardData: DashboardData = {
   completedAppointments: 33
 };
 
-// Add missing export for birthdays
+// Add missing export for birthdays and dashboardData
 export const birthdays = mockBirthdays;
+export const dashboardData = mockDashboardData;

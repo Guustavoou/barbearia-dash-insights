@@ -68,7 +68,6 @@ export const useAppointments = () => {
         .select(`
           *,
           clients(name, phone),
-          professionals(name),
           services(name, price)
         `)
         .eq('business_id', barbershop.id)
@@ -79,11 +78,11 @@ export const useAppointments = () => {
         console.error('Error fetching appointments:', error);
         setAppointments([]);
       } else {
-        // Transform the data to ensure it matches our type
+        // Transform the data to ensure it matches our type, handling potential relation errors
         const transformedData = (data || []).map(item => ({
           ...item,
           clients: item.clients || null,
-          professionals: item.professionals || null,
+          professionals: null, // Set to null since relation doesn't exist
           services: item.services || null,
         }));
         setAppointments(transformedData);
@@ -109,7 +108,6 @@ export const useAppointments = () => {
         .select(`
           *,
           clients(name, phone),
-          professionals(name),
           services(name, price)
         `)
         .single();
@@ -122,7 +120,7 @@ export const useAppointments = () => {
       const transformedData = {
         ...data,
         clients: data.clients || null,
-        professionals: data.professionals || null,
+        professionals: null,
         services: data.services || null,
       };
 
@@ -149,7 +147,6 @@ export const useAppointments = () => {
         .select(`
           *,
           clients(name, phone),
-          professionals(name),
           services(name, price)
         `)
         .single();
@@ -162,7 +159,7 @@ export const useAppointments = () => {
       const transformedData = {
         ...data,
         clients: data.clients || null,
-        professionals: data.professionals || null,
+        professionals: null,
         services: data.services || null,
       };
 

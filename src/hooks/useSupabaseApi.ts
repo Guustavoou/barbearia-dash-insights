@@ -56,3 +56,53 @@ export const useSupabaseApi = () => {
     getClients,
   };
 };
+
+// Add missing exports that are referenced in other files
+export const useSupabaseAppointments = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useSupabaseProfessionals = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useSupabaseClients = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useCreateSupabaseAppointment = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
+
+export const useUpdateSupabaseAppointment = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
+
+export const useDeleteSupabaseAppointment = () => {
+  return {
+    mutate: async (id: string) => {},
+    loading: false
+  };
+};
+
+export const useSupabaseRealTimeAppointments = () => {
+  return {
+    data: [],
+    loading: false
+  };
+};

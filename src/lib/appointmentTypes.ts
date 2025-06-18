@@ -28,7 +28,7 @@ export interface AppointmentStats {
   confirmados: number;
 }
 
-export type CalendarViewType = "mensal" | "semanal";
+export type CalendarViewType = "mensal" | "semanal" | "calendario" | "lista";
 export type AppointmentViewMode = "calendario" | "lista";
 
 // Additional exports for compatibility
@@ -38,7 +38,7 @@ export interface AppointmentWithDetails extends AppointmentItem {
   professionalName: string;
 }
 
-export type AppointmentStatus = "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou";
+export type AppointmentStatus = "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou" | "pendente" | "finalizado" | "no_show";
 
 export type AppointmentSortField = "date" | "client" | "service" | "professional" | "status" | "price";
 
