@@ -878,7 +878,7 @@ export default function BeautifulAppointmentsFixed() {
   const deleteAppointmentMutation = useDeleteAppointment();
 
   // Filtrar appointments
-  const filteredAppointments = appointments.filter((appointment) => {
+  const filteredAppointments = (appointments || []).filter((appointment) => {
     // Filtro de data baseado no modo de visualização
     const appointmentDate = appointment.date
       ? new Date(appointment.date)
