@@ -59,7 +59,13 @@ interface Value {
   gradient: string;
 }
 
-export const UnclicAbout: React.FC = () => {
+interface UnclicAboutProps {
+  onNavigateToLogin?: () => void;
+}
+
+export const UnclicAbout: React.FC<UnclicAboutProps> = ({
+  onNavigateToLogin,
+}) => {
   const teamMembers: TeamMember[] = [
     {
       name: "Carlos Silva",
