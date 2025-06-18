@@ -1704,7 +1704,7 @@ export const BeautifulSettingsImproved: React.FC<
                     {
                       key: "requireUppercase",
                       label: "Exigir Maiúsculas",
-                      icon: Type,
+                      icon: AlignLeft,
                     },
                   ].map(({ key, label, icon: Icon }) => (
                     <div
