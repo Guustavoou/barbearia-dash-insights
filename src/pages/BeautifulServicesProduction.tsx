@@ -99,156 +99,119 @@ interface NewServiceForm {
   commission_percentage: string;
 }
 
-const CATEGORIES = [
-  { value: "corte", label: "Corte", icon: "✂️" },
-  { value: "coloracao", label: "Coloração", icon: "🎨" },
-  { value: "tratamento", label: "Tratamento", icon: "💆" },
-  { value: "escova", label: "Escova", icon: "💨" },
-  { value: "barba", label: "Barba", icon: "🧔" },
-  { value: "sobrancelha", label: "Sobrancelha", icon: "👁️" },
-  { value: "manicure", label: "Manicure", icon: "💅" },
-  { value: "depilacao", label: "Depilação", icon: "🪒" },
-  { value: "massagem", label: "Massagem", icon: "🤲" },
-  { value: "outros", label: "Outros", icon: "🌟" },
-];
-
-export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
+export default function BeautifulServicesProduction({
   darkMode,
   onPageChange,
-}) => {
+}: BeautifulServicesProps) {
   const { toast } = useToast();
-
-  // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-
-  // Modal states
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [isNewServiceModalOpen, setIsNewServiceModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // Form state
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [newServiceForm, setNewServiceForm] = useState<NewServiceForm>({
     name: "",
     description: "",
     price: "",
-    duration: "60",
-    category: "corte",
-    commission_percentage: "10",
+    duration: "",
+    category: "",
+    commission_percentage: "",
   });
 
-  // 🚀 DADOS REAIS DO SUPABASE - SEM MOCKS
+  // 🚀 PRODUCTION HOOKS - DADOS REAIS DO SUPABASE
   const {
-    data: services,
-    loading: servicesLoading,
-    error: servicesError,
+    data: servicesData,
+    isLoading,
+    error,
     refetch: refetchServices,
-  } = useServices({
-    category: categoryFilter === "all" ? undefined : categoryFilter,
-    active: statusFilter === "all" ? undefined : statusFilter === "active",
-  });
+  } = useServices();
+  const globalLoading = useGlobalLoading();
+  const globalError = useGlobalError();
 
-  // Mutations
-  const createServiceMutation = useCreateService({
-    onSuccess: () => {
-      setIsNewServiceModalOpen(false);
-      setNewServiceForm({
-        name: "",
-        description: "",
-        price: "",
-        duration: "60",
-        category: "corte",
-        commission_percentage: "10",
-      });
-      refetchServices();
-    },
-  });
+  const createServiceMutation = useCreateService();
+  const updateServiceMutation = useUpdateService();
+  const deleteServiceMutation = useDeleteService();
 
-  const updateServiceMutation = useUpdateService({
-    onSuccess: () => {
-      setIsEditModalOpen(false);
-      setSelectedService(null);
-      refetchServices();
-    },
-  });
+  // Ensure we always have an array
+  const services = Array.isArray(servicesData) ? servicesData : [];
 
-  const deleteServiceMutation = useDeleteService({
-    onSuccess: () => {
-      setIsDeleteModalOpen(false);
-      setSelectedService(null);
-      refetchServices();
-    },
-  });
-
-  // Global states
-  const isLoading = useGlobalLoading(
-    { loading: servicesLoading },
-    { loading: createServiceMutation.isLoading },
-    { loading: updateServiceMutation.isLoading },
-    { loading: deleteServiceMutation.isLoading },
-  );
-
-  const globalError = useGlobalError({ error: servicesError });
-
-  // Filtered services
-  const filteredServices = useMemo(() => {
-    if (!services) return [];
-
-    return services.filter((service) => {
-      const matchesSearch =
-        !searchTerm ||
-        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesCategory =
-        categoryFilter === "all" || service.category === categoryFilter;
-
-      const matchesStatus =
-        statusFilter === "all" ||
-        (statusFilter === "active" && service.is_active) ||
-        (statusFilter === "inactive" && !service.is_active);
-
-      return matchesSearch && matchesCategory && matchesStatus;
-    });
-  }, [services, searchTerm, categoryFilter, statusFilter]);
-
-  // Statistics
+  // Calculate statistics
   const serviceStats = useMemo(() => {
-    if (!services) {
-      return {
-        total: 0,
-        active: 0,
-        inactive: 0,
-        averagePrice: 0,
-        averageDuration: 0,
-      };
-    }
-
     const total = services.length;
-    const active = services.filter((s) => s.is_active).length;
+    const active = services.filter((service) => service.is_active).length;
     const inactive = total - active;
     const averagePrice =
-      total > 0 ? services.reduce((sum, s) => sum + s.price, 0) / total : 0;
-    const averageDuration =
-      total > 0 ? services.reduce((sum, s) => sum + s.duration, 0) / total : 0;
+      services.length > 0
+        ? services.reduce((sum, service) => sum + (service.price || 0), 0) /
+          services.length
+        : 0;
+    const totalRevenue = services.reduce(
+      (sum, service) => sum + (service.price || 0),
+      0,
+    );
 
     return {
       total,
       active,
       inactive,
       averagePrice,
-      averageDuration,
+      totalRevenue,
     };
   }, [services]);
 
-  // Event handlers
+  // Filter and sort services
+  const filteredServices = useMemo(() => {
+    let filtered = services.filter((service) => {
+      const matchesSearch =
+        service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || service.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    filtered.sort((a, b) => {
+      let aValue: any, bValue: any;
+
+      switch (sortBy) {
+        case "name":
+          aValue = a.name?.toLowerCase() || "";
+          bValue = b.name?.toLowerCase() || "";
+          break;
+        case "price":
+          aValue = a.price || 0;
+          bValue = b.price || 0;
+          break;
+        case "duration":
+          aValue = a.duration || 0;
+          bValue = b.duration || 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [services, searchTerm, selectedCategory, sortBy, sortOrder]);
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    const cats = services.map((service) => service.category).filter(Boolean);
+    return [...new Set(cats)];
+  }, [services]);
+
   const handleCreateService = useCallback(async () => {
-    if (!newServiceForm.name || !newServiceForm.price) {
+    if (!newServiceForm.name.trim()) {
       toast({
         title: "Erro",
-        description: "Nome e preço são obrigatórios",
+        description: "Nome do serviço é obrigatório",
         variant: "destructive",
       });
       return;
@@ -258,65 +221,123 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
       await createServiceMutation.mutate({
         name: newServiceForm.name,
         description: newServiceForm.description,
-        price: parseFloat(newServiceForm.price),
-        duration: parseInt(newServiceForm.duration),
+        price: parseFloat(newServiceForm.price) || 0,
+        duration: parseInt(newServiceForm.duration) || 0,
         category: newServiceForm.category,
-        commission_percentage: parseFloat(newServiceForm.commission_percentage),
+        commission_percentage:
+          parseFloat(newServiceForm.commission_percentage) || 0,
         is_active: true,
       });
+
+      toast({
+        title: "Sucesso",
+        description: "Serviço criado com sucesso!",
+      });
+
+      setIsNewServiceModalOpen(false);
+      setNewServiceForm({
+        name: "",
+        description: "",
+        price: "",
+        duration: "",
+        category: "",
+        commission_percentage: "",
+      });
+      refetchServices();
     } catch (error) {
-      console.error("Error creating service:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar serviço",
+        variant: "destructive",
+      });
     }
-  }, [newServiceForm, createServiceMutation, toast]);
+  }, [newServiceForm, createServiceMutation, toast, refetchServices]);
 
-  const handleUpdateService = useCallback(
-    async (serviceData: Partial<Service>) => {
-      if (!selectedService) return;
+  const handleEditService = useCallback(async (service: Service) => {
+    setSelectedService(service);
+    setNewServiceForm({
+      name: service.name || "",
+      description: service.description || "",
+      price: service.price?.toString() || "",
+      duration: service.duration?.toString() || "",
+      category: service.category || "",
+      commission_percentage: service.commission_percentage?.toString() || "",
+    });
+    setIsEditModalOpen(true);
+  }, []);
 
-      try {
-        await updateServiceMutation.mutate({
-          id: selectedService.id,
-          data: serviceData,
-        });
-      } catch (error) {
-        console.error("Error updating service:", error);
-      }
-    },
-    [selectedService, updateServiceMutation],
-  );
+  const handleUpdateService = useCallback(async () => {
+    if (!selectedService) return;
+
+    try {
+      await updateServiceMutation.mutate({
+        id: selectedService.id,
+        name: newServiceForm.name,
+        description: newServiceForm.description,
+        price: parseFloat(newServiceForm.price) || 0,
+        duration: parseInt(newServiceForm.duration) || 0,
+        category: newServiceForm.category,
+        commission_percentage:
+          parseFloat(newServiceForm.commission_percentage) || 0,
+      });
+
+      toast({
+        title: "Sucesso",
+        description: "Serviço atualizado com sucesso!",
+      });
+
+      setIsEditModalOpen(false);
+      setSelectedService(null);
+      refetchServices();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar serviço",
+        variant: "destructive",
+      });
+    }
+  }, [
+    selectedService,
+    newServiceForm,
+    updateServiceMutation,
+    toast,
+    refetchServices,
+  ]);
 
   const handleDeleteService = useCallback(async () => {
     if (!selectedService) return;
 
     try {
       await deleteServiceMutation.mutate(selectedService.id);
+
+      toast({
+        title: "Sucesso",
+        description: "Serviço excluído com sucesso!",
+      });
+
+      setIsDeleteModalOpen(false);
+      setSelectedService(null);
+      refetchServices();
     } catch (error) {
-      console.error("Error deleting service:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir serviço",
+        variant: "destructive",
+      });
     }
-  }, [selectedService, deleteServiceMutation]);
+  }, [selectedService, deleteServiceMutation, toast, refetchServices]);
 
-  const getCategoryInfo = (category: string) => {
-    return CATEGORIES.find((cat) => cat.value === category) || CATEGORIES[0];
-  };
-
-  // Error state
-  if (globalError) {
+  if (globalLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20 space-y-6 p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center py-12">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Erro ao carregar serviços
-            </h2>
-            <p className="text-gray-600 mb-4">{globalError}</p>
-            <Button
-              onClick={refetchServices}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Tentar novamente
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -400,276 +421,289 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
           </div>
         </Card>
 
-          <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Ativos</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {serviceStats.active}
-                  </p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
+        <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Serviços Ativos
+                </p>
+                <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                  {serviceStats.active}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl text-white shadow-lg">
+                <CheckCircle className="w-6 h-6" />
               </div>
             </div>
-          </Card>
-
-          <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Inativos</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {serviceStats.inactive}
-                  </p>
-                </div>
-                <X className="h-8 w-8 text-red-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Preço Médio
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {formatCurrency(serviceStats.averagePrice)}
-                  </p>
-                </div>
-                <DollarSign className="h-8 w-8 text-blue-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Duração Média
-                  </p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {Math.round(serviceStats.averageDuration)}min
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-orange-600" />
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Filters and Search */}
-        <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
-          <div className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Buscar serviços..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="Categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as categorias</SelectItem>
-                  {CATEGORIES.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.icon} {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os status</SelectItem>
-                  <SelectItem value="active">Ativo</SelectItem>
-                  <SelectItem value="inactive">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button variant="outline" className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                Exportar
-              </Button>
+            <div className="mt-4 flex items-center">
+              <Activity className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Disponíveis
+              </span>
             </div>
           </div>
         </Card>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isLoading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <Card
-                key={i}
-                className="border-0 shadow-md bg-white/70 backdrop-blur-sm"
+        <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Preço Médio
+                </p>
+                <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                  {formatCurrency(serviceStats.averagePrice)}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-700 to-blue-900 rounded-xl text-white shadow-lg">
+                <DollarSign className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <Target className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Por serviço
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Receita Total
+                </p>
+                <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                  {formatCurrency(serviceStats.totalRevenue)}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl text-white shadow-lg">
+                <Star className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <Sparkles className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Potencial
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Categorias
+                </p>
+                <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                  {categories.length}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-800 to-[#00112F] rounded-xl text-white shadow-lg">
+                <Package className="w-6 h-6" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <Tag className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Organizadas
+              </span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filtros */}
+      <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Buscar serviços..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as categorias</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="Ordenar por" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Nome</SelectItem>
+                <SelectItem value="price">Preço</SelectItem>
+                <SelectItem value="duration">Duração</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button variant="outline" className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              Mais Filtros
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Lista de Serviços */}
+      <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
+              <Scissors className="w-5 h-5 mr-2" />
+              Catálogo de Serviços
+              <Badge
+                variant="secondary"
+                className="ml-3 bg-[#00112F] text-white"
               >
-                <div className="p-6 animate-pulse">
-                  <div className="h-6 bg-gray-200 rounded mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                  <div className="flex justify-between">
-                    <div className="h-6 bg-gray-200 rounded w-20"></div>
-                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                {filteredServices.length}
+              </Badge>
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredServices.map((service) => (
+              <Card
+                key={service.id}
+                className="group relative overflow-hidden transition-all duration-300 border-0 shadow-md hover:shadow-lg cursor-pointer bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-sm hover:bg-white dark:hover:bg-[#0D1117] hover:-translate-y-1 hover:scale-[1.02]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="relative p-4">
+                  {/* Header do Card */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] mb-1">
+                        {service.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        {service.description || "Sem descrição"}
+                      </p>
+                      {service.category && (
+                        <Badge variant="outline" className="text-xs">
+                          {service.category}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={
+                          service.is_active
+                            ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                            : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                        }
+                      >
+                        {service.is_active ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Informações do Serviço */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        Preço
+                      </div>
+                      <div className="text-xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                        {formatCurrency(service.price)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        Duração
+                      </div>
+                      <div className="text-xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                        {service.duration}min
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditService(service)}
+                      className="flex-1"
+                    >
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      Editar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedService(service);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </Card>
-            ))
-          ) : filteredServices.length === 0 ? (
-            <Card className="col-span-full border-0 shadow-md bg-white/70 backdrop-blur-sm">
-              <div className="p-12 text-center">
-                <Scissors className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Nenhum serviço encontrado
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {searchTerm ||
-                  categoryFilter !== "all" ||
-                  statusFilter !== "all"
-                    ? "Tente ajustar os filtros para encontrar serviços"
-                    : "Comece adicionando seu primeiro serviço"}
-                </p>
-                <Button
-                  onClick={() => setIsNewServiceModalOpen(true)}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Serviço
-                </Button>
-              </div>
-            </Card>
-          ) : (
-            filteredServices.map((service) => {
-              const categoryInfo = getCategoryInfo(
-                service.category || "outros",
-              );
+            ))}
+          </div>
 
-              return (
-                <Card
-                  key={service.id}
-                  className="border-0 shadow-md bg-white/70 backdrop-blur-sm hover:shadow-lg transition-shadow group"
-                >
-                  <div className="p-6">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                          <span className="text-xl">{categoryInfo.icon}</span>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
-                            {service.name}
-                          </h3>
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "text-xs",
-                              service.is_active
-                                ? "bg-green-50 text-green-700 border-green-200"
-                                : "bg-gray-50 text-gray-700 border-gray-200",
-                            )}
-                          >
-                            {service.is_active ? "Ativo" : "Inativo"}
-                          </Badge>
-                        </div>
-                      </div>
-                      <MoreHorizontal className="h-5 w-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" />
-                    </div>
-
-                    {/* Description */}
-                    {service.description && (
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                        {service.description}
-                      </p>
-                    )}
-
-                    {/* Details */}
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Categoria:</span>
-                        <span className="font-medium text-gray-900">
-                          {categoryInfo.label}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Duração:</span>
-                        <span className="font-medium text-gray-900 flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {service.duration}min
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Preço:</span>
-                        <span className="font-bold text-purple-600 text-lg">
-                          {formatCurrency(service.price)}
-                        </span>
-                      </div>
-                      {service.commission_percentage && (
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Comissão:</span>
-                          <span className="font-medium text-gray-900">
-                            {service.commission_percentage}%
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedService(service);
-                          setIsEditModalOpen(true);
-                        }}
-                        className="flex-1"
-                      >
-                        <Edit3 className="h-4 w-4 mr-2" />
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedService(service);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })
+          {filteredServices.length === 0 && (
+            <div className="text-center py-12">
+              <Scissors className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-500 dark:text-gray-400 mb-2">
+                Nenhum serviço encontrado
+              </h3>
+              <p className="text-gray-400 dark:text-gray-500 mb-4">
+                Não há serviços que correspondam aos filtros aplicados.
+              </p>
+              <Button
+                onClick={() => setIsNewServiceModalOpen(true)}
+                className="bg-[#00112F] hover:bg-[#00112F]/80 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Criar Primeiro Serviço
+              </Button>
+            </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* New Service Modal */}
       <Dialog
         open={isNewServiceModalOpen}
         onOpenChange={setIsNewServiceModalOpen}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white dark:bg-[#0D1117] border-0 shadow-2xl">
           <DialogHeader>
-            <DialogTitle>Novo Serviço</DialogTitle>
+            <DialogTitle className="text-[#00112F] dark:text-[#F9FAFB]">
+              Novo Serviço
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -680,7 +714,7 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
                 onChange={(e) =>
                   setNewServiceForm({ ...newServiceForm, name: e.target.value })
                 }
-                placeholder="Ex: Corte Feminino"
+                placeholder="Ex: Corte masculino"
               />
             </div>
             <div>
@@ -695,12 +729,11 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
                   })
                 }
                 placeholder="Descrição do serviço..."
-                rows={3}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="price">Preço (R$) *</Label>
+                <Label htmlFor="price">Preço</Label>
                 <Input
                   id="price"
                   type="number"
@@ -716,7 +749,7 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
                 />
               </div>
               <div>
-                <Label htmlFor="duration">Duração (min) *</Label>
+                <Label htmlFor="duration">Duração (min)</Label>
                 <Input
                   id="duration"
                   type="number"
@@ -727,76 +760,149 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
                       duration: e.target.value,
                     })
                   }
-                  placeholder="60"
+                  placeholder="30"
                 />
               </div>
             </div>
             <div>
               <Label htmlFor="category">Categoria</Label>
-              <Select
-                value={newServiceForm.category}
-                onValueChange={(value) =>
-                  setNewServiceForm({ ...newServiceForm, category: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.icon} {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="commission">Comissão (%)</Label>
               <Input
-                id="commission"
-                type="number"
-                step="0.01"
-                value={newServiceForm.commission_percentage}
+                id="category"
+                value={newServiceForm.category}
                 onChange={(e) =>
                   setNewServiceForm({
                     ...newServiceForm,
-                    commission_percentage: e.target.value,
+                    category: e.target.value,
                   })
                 }
-                placeholder="10"
+                placeholder="Ex: Cabelo"
               />
             </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsNewServiceModalOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleCreateService}
+                className="bg-[#00112F] hover:bg-[#00112F]/80 text-white"
+                disabled={createServiceMutation.isLoading}
+              >
+                {createServiceMutation.isLoading
+                  ? "Criando..."
+                  : "Criar Serviço"}
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setIsNewServiceModalOpen(false)}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleCreateService}
-              disabled={createServiceMutation.isLoading}
-              className="flex-1 bg-purple-600 hover:bg-purple-700"
-            >
-              {createServiceMutation.isLoading ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Save className="h-4 w-4 mr-2" />
-              )}
-              Salvar
-            </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Service Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-md bg-white dark:bg-[#0D1117] border-0 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-[#00112F] dark:text-[#F9FAFB]">
+              Editar Serviço
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-name">Nome do Serviço *</Label>
+              <Input
+                id="edit-name"
+                value={newServiceForm.name}
+                onChange={(e) =>
+                  setNewServiceForm({ ...newServiceForm, name: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-description">Descrição</Label>
+              <Textarea
+                id="edit-description"
+                value={newServiceForm.description}
+                onChange={(e) =>
+                  setNewServiceForm({
+                    ...newServiceForm,
+                    description: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-price">Preço</Label>
+                <Input
+                  id="edit-price"
+                  type="number"
+                  step="0.01"
+                  value={newServiceForm.price}
+                  onChange={(e) =>
+                    setNewServiceForm({
+                      ...newServiceForm,
+                      price: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-duration">Duração (min)</Label>
+                <Input
+                  id="edit-duration"
+                  type="number"
+                  value={newServiceForm.duration}
+                  onChange={(e) =>
+                    setNewServiceForm({
+                      ...newServiceForm,
+                      duration: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-category">Categoria</Label>
+              <Input
+                id="edit-category"
+                value={newServiceForm.category}
+                onChange={(e) =>
+                  setNewServiceForm({
+                    ...newServiceForm,
+                    category: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleUpdateService}
+                className="bg-[#00112F] hover:bg-[#00112F]/80 text-white"
+                disabled={updateServiceMutation.isLoading}
+              >
+                {updateServiceMutation.isLoading ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Modal */}
       <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white dark:bg-[#0D1117] border-0 shadow-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogTitle className="text-[#00112F] dark:text-[#F9FAFB]">
+              Confirmar Exclusão
+            </AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja excluir o serviço "{selectedService?.name}
               "? Esta ação não pode ser desfeita.
@@ -808,11 +914,6 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
               onClick={handleDeleteService}
               className="bg-red-600 hover:bg-red-700"
             >
-              {deleteServiceMutation.isLoading ? (
-                <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Trash2 className="h-4 w-4 mr-2" />
-              )}
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -820,6 +921,4 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
       </AlertDialog>
     </div>
   );
-};
-
-export default BeautifulServicesProduction;
+}
