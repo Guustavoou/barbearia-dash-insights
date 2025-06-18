@@ -1154,8 +1154,8 @@ export default function BeautifulAppointmentsFixed() {
               </div>
             </div>
             <div className="mt-4 flex items-center">
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-              <span className="text-sm text-green-600 dark:text-green-400">
+              <TrendingUp className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
                 +12% vs ontem
               </span>
             </div>
