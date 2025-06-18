@@ -86,7 +86,13 @@ interface Testimonial {
   rating: number;
 }
 
-export const UnclicLanding: React.FC = () => {
+interface UnclicLandingProps {
+  onNavigateToLogin?: () => void;
+}
+
+export const UnclicLanding: React.FC<UnclicLandingProps> = ({
+  onNavigateToLogin,
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [scrollY, setScrollY] = useState(0);
