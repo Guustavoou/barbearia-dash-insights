@@ -422,11 +422,13 @@ const AppointmentModal = ({
               required
             >
               <option value="">Selecione um cliente</option>
-              {(clients || []).map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
+              {Array.isArray(clients)
+                ? clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.name}
+                    </option>
+                  ))
+                : []}
             </select>
           </div>
 
@@ -443,12 +445,14 @@ const AppointmentModal = ({
               required
             >
               <option value="">Selecione um serviço</option>
-              {(services || []).map((service) => (
-                <option key={service.id} value={service.id}>
-                  {service.name}
-                  {service.price && ` - R$ ${service.price.toFixed(2)}`}
-                </option>
-              ))}
+              {Array.isArray(services)
+                ? services.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                      {service.price && ` - R$ ${service.price.toFixed(2)}`}
+                    </option>
+                  ))
+                : []}
             </select>
           </div>
 
@@ -465,11 +469,13 @@ const AppointmentModal = ({
               required
             >
               <option value="">Selecione um profissional</option>
-              {(professionals || []).map((professional) => (
-                <option key={professional.id} value={professional.id}>
-                  {professional.name}
-                </option>
-              ))}
+              {Array.isArray(professionals)
+                ? professionals.map((professional) => (
+                    <option key={professional.id} value={professional.id}>
+                      {professional.name}
+                    </option>
+                  ))
+                : []}
             </select>
           </div>
 
