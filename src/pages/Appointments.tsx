@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import { Calendar, List, Plus, BarChart3 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/unclicUtils";
@@ -34,7 +35,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
 
   // API integration with automatic fallback
   const {
-    data: apiResponse,
+    data: appointments,
     loading,
     error,
     refetch,
@@ -66,27 +67,24 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
     },
   });
 
-  // Use API data or fallback to empty array
-  const appointments = apiResponse?.data || [];
-
   // Calculate statistics
   const stats = useMemo(() => {
-    const total = appointments.length;
-    const agendado = appointments.filter(
+    const total = appointments?.length || 0;
+    const agendado = appointments?.filter(
       (a: any) => a.status === "agendado",
-    ).length;
-    const confirmado = appointments.filter(
+    ).length || 0;
+    const confirmado = appointments?.filter(
       (a: any) => a.status === "confirmado",
-    ).length;
-    const concluido = appointments.filter(
+    ).length || 0;
+    const concluido = appointments?.filter(
       (a: any) => a.status === "concluido",
-    ).length;
-    const cancelado = appointments.filter(
+    ).length || 0;
+    const cancelado = appointments?.filter(
       (a: any) => a.status === "cancelado",
-    ).length;
-    const faltou = appointments.filter(
+    ).length || 0;
+    const faltou = appointments?.filter(
       (a: any) => a.status === "faltou",
-    ).length;
+    ).length || 0;
 
     return {
       total,
@@ -113,7 +111,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   };
 
   // Filter appointments based on search term
-  const filteredAppointments = appointments.filter(
+  const filteredAppointments = (appointments || []).filter(
     (appointment: any) =>
       appointment.client_name
         ?.toLowerCase()

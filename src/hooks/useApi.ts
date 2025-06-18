@@ -142,7 +142,7 @@ export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
 export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
   const [loading, setLoading] = useState(false);
   
-  const mutate = async (id: any, data?: any) => {
+  const mutate = async (variables: { id: any; data: any }) => {
     setLoading(true);
     try {
       // Mock implementation
@@ -181,4 +181,173 @@ export const useDeleteAppointment = (options?: { onSuccess?: () => void }) => {
   };
 
   return { mutate, isLoading: loading, isPending: loading };
+};
+
+// Professional hooks
+export const useProfessionals = (params?: any) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+export const useCreateProfessional = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (professionalData: any) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useUpdateProfessional = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (variables: { id: any; data: any }) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useDeleteProfessional = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (id: any) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+// Services hooks
+export const useServices = (params?: any) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+// Transactions hooks
+export const useTransactions = (params?: any) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+// Dashboard stats hook
+export const useDashboardStats = (params?: any) => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        total_revenue: 0,
+        total_expenses: 0,
+        net_income: 0,
+        profit_margin: 0,
+        overview: {},
+        data: []
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
 };

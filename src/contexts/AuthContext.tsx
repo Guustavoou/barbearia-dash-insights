@@ -9,14 +9,18 @@ export interface User {
   business_id?: string;
 }
 
+interface AuthError {
+  message: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error?: string; data?: any }>;
+  signIn: (email: string, password: string) => Promise<{ error?: AuthError }>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ error?: AuthError; data?: any }>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error?: string }>;
-  resendConfirmation: (email: string) => Promise<{ error?: string }>;
+  resetPassword: (email: string) => Promise<{ error?: AuthError }>;
+  resendConfirmation: (email: string) => Promise<{ error?: AuthError }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -62,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(mockUser);
       return {};
     } catch (error) {
-      return { error: 'Sign in failed' };
+      return { error: { message: 'Sign in failed' } };
     } finally {
       setLoading(false);
     }
@@ -84,7 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(mockUser);
       return { data: { user: mockUser } };
     } catch (error) {
-      return { error: 'Sign up failed' };
+      return { error: { message: 'Sign up failed' } };
     } finally {
       setLoading(false);
     }
@@ -106,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       return {};
     } catch (error) {
-      return { error: 'Password reset failed' };
+      return { error: { message: 'Password reset failed' } };
     }
   };
 
@@ -116,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       return {};
     } catch (error) {
-      return { error: 'Resend confirmation failed' };
+      return { error: { message: 'Resend confirmation failed' } };
     }
   };
 
