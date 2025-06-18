@@ -204,22 +204,27 @@ export const BeautifulProfessionals: React.FC<BeautifulProfessionalsProps> = ({
     return filtered;
   }, [professionalsData, searchTerm, statusFilter, sortBy, sortOrder]);
 
-  // Calculate metrics
+  // Calculate metrics (with null safety)
   const metrics = useMemo(() => {
-    const total = professionalsData.length;
-    const active = professionalsData.filter(
+    const safeProfessionalsData = professionalsData || [];
+    const total = safeProfessionalsData.length;
+    const active = safeProfessionalsData.filter(
       (p: any) => p.status === "ativo",
     ).length;
     const avgRating =
-      professionalsData.reduce(
-        (sum: number, p: any) => sum + (p.rating || 0),
-        0,
-      ) / total;
+      total > 0
+        ? safeProfessionalsData.reduce(
+            (sum: number, p: any) => sum + (p.rating || 0),
+            0,
+          ) / total
+        : 0;
     const avgCommission =
-      professionalsData.reduce(
-        (sum: number, p: any) => sum + (p.commission_rate || 0),
-        0,
-      ) / total;
+      total > 0
+        ? safeProfessionalsData.reduce(
+            (sum: number, p: any) => sum + (p.commission_rate || 0),
+            0,
+          ) / total
+        : 0;
     const newThisMonth = Math.floor(total * 0.1); // Mock data
 
     return {
