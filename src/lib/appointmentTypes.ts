@@ -7,7 +7,7 @@ export interface AppointmentItem {
   date: Date;
   time: string;
   duration: number;
-  status: "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou";
+  status: "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou" | "pendente" | "finalizado" | "no_show";
   price: number;
   notes?: string;
   professional?: string;
@@ -38,7 +38,7 @@ export interface AppointmentWithDetails extends AppointmentItem {
   professionalName: string;
 }
 
-export type AppointmentStatus = "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou" | "pendente" | "finalizado" | "no_show";
+export type AppointmentStatus = "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou" | "pendente" | "finalizado" | "no_show" | "scheduled";
 
 export type AppointmentSortField = "date" | "client" | "service" | "professional" | "status" | "price";
 
