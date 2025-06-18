@@ -698,14 +698,14 @@ export class SupabaseApiProduction {
       }
 
       if (params?.dateFrom) {
-        query = query.gte("transaction_date", params.dateFrom);
+        query = query.gte("created_at", params.dateFrom);
       }
 
       if (params?.dateTo) {
-        query = query.lte("transaction_date", params.dateTo);
+        query = query.lte("created_at", params.dateTo);
       }
 
-      query = query.order("transaction_date", { ascending: false });
+      query = query.order("created_at", { ascending: false });
 
       // Apply pagination
       if (params?.page && params?.limit) {
