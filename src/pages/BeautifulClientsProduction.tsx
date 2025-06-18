@@ -99,7 +99,7 @@ interface BeautifulClientsProps {
   onPageChange?: (page: PageType) => void;
 }
 
-// 🎨 Beautiful KPI Card seguindo padrão do Dashboard
+// 🎨 Beautiful KPI Card seguindo padrão Beautiful Profissionais
 interface BeautifulKPICardProps {
   title: string;
   value: string | number;
@@ -305,6 +305,12 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
             {description}
           </p>
         )}
+
+        {period && (
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            {period}
+          </p>
+        )}
       </div>
     </Card>
   );
@@ -360,7 +366,7 @@ const ClientModal: React.FC<{
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center text-[#00112F]">
+          <DialogTitle className="flex items-center text-[#00112F] dark:text-[#F9FAFB]">
             <UserPlus className="w-5 h-5 mr-2" />
             {client ? "Editar Cliente" : "Novo Cliente"}
           </DialogTitle>
@@ -720,8 +726,8 @@ export const BeautifulClientsProduction: React.FC<BeautifulClientsProps> = ({
 
   if (globalError) {
     return (
-      <div className="min-h-screen p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
+        <div className="space-y-6 p-6">
           <Card className="p-8 text-center border-red-200 bg-red-50 dark:bg-red-900/20">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">
@@ -739,44 +745,52 @@ export const BeautifulClientsProduction: React.FC<BeautifulClientsProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* 🎨 HEADER BEAUTIFUL - Padrão do Dashboard */}
-      <div className="bg-gradient-to-r from-[#00112F] via-blue-800 to-blue-700 text-white shadow-2xl">
-        <div className="max-w-7xl mx-auto px-8 py-8">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
+      <div className="space-y-6 p-6">
+        {/* Beautiful Header - Padrão Profissionais */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 p-8 text-white shadow-2xl">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)]" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
+
+          <div className="relative flex items-center justify-between">
             <div>
-              <div className="flex items-center mb-2">
-                <Users className="w-8 h-8 mr-3 text-blue-200" />
-                <h1 className="text-4xl font-bold tracking-tight">Clientes</h1>
+              <div className="flex items-center space-x-3 mb-2">
+                <Users className="w-8 h-8 text-blue-200 animate-pulse" />
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                  Clientes Premium
+                </h1>
               </div>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-200 text-lg">
                 Gerencie sua base de clientes • {clientsStats.totalClients}{" "}
                 clientes encontrados
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-3">
               <Button
-                variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+                variant="secondary"
+                size="sm"
                 onClick={handleRefreshData}
                 disabled={isLoading}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               >
                 <RefreshCw
                   className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
                 />
-                Atualizar
+                {isLoading ? "Atualizando..." : "Atualizar"}
               </Button>
               <Button
-                variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+                variant="secondary"
+                size="sm"
                 onClick={() => handleNavigate("reports")}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Exportar
               </Button>
               <Button
-                className="bg-white text-[#00112F] hover:bg-white/90 font-medium"
                 onClick={() => setIsModalOpen(true)}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
                 Novo Cliente
@@ -784,131 +798,117 @@ export const BeautifulClientsProduction: React.FC<BeautifulClientsProps> = ({
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
-        {/* 📊 MÉTRICAS DE CLIENTES - Beautiful KPIs */}
+        {/* Beautiful KPI Cards */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[#00112F] dark:text-white flex items-center">
-              <Activity className="w-6 h-6 mr-3 text-[#00112F] dark:text-blue-400" />
-              Métricas de Clientes
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+            <Activity className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
+            Métricas de Clientes
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <BeautifulKPICard
-              title="NOVOS CLIENTES"
+              title="Novos Clientes"
               value={clientsStats.newClientsThisMonth}
               change={12}
+              period="Novos este mês"
               icon={UserPlus}
               variant="primary"
               format="number"
-              description="Novos este mês"
               loading={globalLoading}
             />
 
             <BeautifulKPICard
-              title="CLIENTES ATIVOS"
+              title="Clientes Ativos"
               value={clientsStats.activeClients}
               change={8}
+              period="Status ativo"
               icon={UserCheck}
               variant="success"
               format="number"
-              description="Status ativo"
               loading={globalLoading}
             />
 
             <BeautifulKPICard
-              title="NOVOS ESTE MÊS"
+              title="Novos Este Mês"
               value={clientsStats.growthRate}
               change={15}
+              period="Crescimento"
               icon={TrendingUp}
               variant="info"
               format="percentage"
-              description="Crescimento"
               loading={globalLoading}
             />
 
             <BeautifulKPICard
-              title="TICKET MÉDIO"
+              title="Ticket Médio"
               value={clientsStats.averageTicket}
               change={-2}
+              period="Por cliente"
               icon={DollarSign}
               variant="warning"
               format="currency"
-              description="Por cliente"
               loading={globalLoading}
             />
 
             <BeautifulKPICard
-              title="TAXA RETENÇÃO"
+              title="Taxa Retenção"
               value={clientsStats.retentionRate}
               change={5}
               target={70}
+              period="Fidelização"
               icon={Heart}
               variant="premium"
               format="percentage"
-              description="Fidelização"
               loading={globalLoading}
             />
 
             <BeautifulKPICard
-              title="VALOR TOTAL"
+              title="Valor Total"
               value={clientsStats.totalRevenue}
               change={18}
+              period="Receita total"
               icon={Crown}
               variant="premium"
               format="currency"
-              description="Receita total"
               loading={globalLoading}
             />
           </div>
         </section>
 
-        {/* 🔍 FILTROS E BUSCA */}
-        <section>
-          <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
-            <div className="p-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Buscar por nome, email ou telefone..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Todos os Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos os Status</SelectItem>
-                      <SelectItem value="ativo">Ativo</SelectItem>
-                      <SelectItem value="inativo">Inativo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button variant="outline">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filtros
-                  </Button>
-                </div>
+        {/* Beautiful Filters */}
+        <Card className="p-6 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg">
+          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-3 flex-1 max-w-2xl">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-3 text-[#00112F] dark:text-blue-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nome, email ou telefone..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 w-full border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB] placeholder-gray-500"
+                />
               </div>
-            </div>
-          </Card>
-        </section>
 
-        {/* 📋 LISTA DE CLIENTES */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00112F]/50 bg-gradient-to-r from-[#F9FAFB]/50 to-blue-50/50 dark:from-blue-900/20 dark:to-blue-800/20 text-[#00112F] dark:text-[#F9FAFB]"
+              >
+                <option value="all">Todos os Status</option>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+              </select>
+            </div>
+          </div>
+        </Card>
+
+        {/* Lista de Clientes */}
         <section>
           <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
+                <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
                   <Users className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
                   Lista de Clientes
                   <Badge
@@ -971,7 +971,7 @@ export const BeautifulClientsProduction: React.FC<BeautifulClientsProps> = ({
                               <Users className="w-6 h-6" />
                             </div>
                             <div>
-                              <h3 className="font-bold text-[#00112F] dark:text-white text-lg">
+                              <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg">
                                 {client.name}
                               </h3>
                               <Badge
@@ -1091,6 +1091,9 @@ export const BeautifulClientsProduction: React.FC<BeautifulClientsProps> = ({
                             </p>
                           </div>
                         </div>
+
+                        {/* Subtle hover glow usando cores da marca */}
+                        <div className="absolute inset-0 border border-[#00112F]/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                     </Card>
                   ))}
