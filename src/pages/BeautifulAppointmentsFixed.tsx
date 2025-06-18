@@ -870,13 +870,14 @@ export default function BeautifulAppointmentsFixed() {
     useState<Appointment | null>(null);
 
   // Hooks de dados
-  const { data: appointments = [], isLoading: appointmentsLoading } =
+  const { data: appointmentsData = [], isLoading: appointmentsLoading } =
     useAppointments();
   const { data: clientsData = [] } = useClients();
   const { data: servicesData = [] } = useServices();
   const { data: professionalsData = [] } = useProfessionals();
 
   // Ensure we always have arrays
+  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
   const clients = Array.isArray(clientsData) ? clientsData : [];
   const services = Array.isArray(servicesData) ? servicesData : [];
   const professionals = Array.isArray(professionalsData)
