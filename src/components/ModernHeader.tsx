@@ -11,6 +11,9 @@ import {
   Moon,
   Menu,
   Calendar,
+  Download,
+  FileText,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
