@@ -80,29 +80,31 @@ export class SupabaseApiProduction {
     try {
       logSupabaseDebug("Fetching dashboard statistics...");
 
-      // Get basic counts
+      // Test connection first
+      const connectionTest = await this.testConnection();
+      if (!connectionTest.success) {
+        logSupabaseError(
+          "Dashboard stats - Connection failed",
+          connectionTest.error,
+        );
+        throw new Error(`Connection failed: ${connectionTest.error}`);
+      }
+
+      // Get basic counts - temporarily remove business_id filtering
       const [
         { count: totalClients },
         { count: totalAppointments },
         { count: totalServices },
         { count: totalProfessionals },
       ] = await Promise.all([
-        supabase
-          .from("clients")
-          .select("*", { count: "exact", head: true })
-          .eq("business_id", this.businessId),
+        supabase.from("clients").select("*", { count: "exact", head: true }),
         supabase
           .from("appointments")
-          .select("*", { count: "exact", head: true })
-          .eq("business_id", this.businessId),
-        supabase
-          .from("services")
-          .select("*", { count: "exact", head: true })
-          .eq("business_id", this.businessId),
+          .select("*", { count: "exact", head: true }),
+        supabase.from("services").select("*", { count: "exact", head: true }),
         supabase
           .from("professionals")
-          .select("*", { count: "exact", head: true })
-          .eq("business_id", this.businessId),
+          .select("*", { count: "exact", head: true }),
       ]);
 
       // Get today's appointments
