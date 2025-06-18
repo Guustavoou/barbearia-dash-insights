@@ -20,6 +20,32 @@ export class SupabaseApiProduction {
     logTenantDebug(`API initialized for business: ${this.businessId}`);
   }
 
+  // Test Supabase connection
+  async testConnection() {
+    try {
+      logSupabaseDebug("Testing Supabase connection...");
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id")
+        .limit(1);
+
+      if (error) {
+        logSupabaseError("Connection test failed", error);
+        return { success: false, error: error.message };
+      }
+
+      logSupabaseSuccess("Supabase connection successful");
+      return { success: true, data };
+    } catch (error) {
+      logSupabaseError("Connection test error", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown connection error",
+      };
+    }
+  }
+
   // =====================================================
   // GENERIC HELPERS
   // =====================================================
