@@ -7,6 +7,7 @@
     "dev:full": "concurrently \"npm run dev\" \"cd backend && npm run dev:neon\"",
     "backend": "cd backend && npm run dev:neon",
     "build": "vite build",
+    "build:dev": "vite build --mode development"
     "test": "vitest --run",
     "test:load": "echo 'Executando testes de carga...' && npm run typecheck",
     "test:functional": "echo 'Executando testes funcionais...' && npm run typecheck",
