@@ -619,7 +619,7 @@ const WeekView = ({
   // Agrupar appointments por dia e horário
   const getAppointmentsForDayAndTime = (day: Date, timeSlot: string) => {
     const dayStr = day.toISOString().split("T")[0];
-    return appointments.filter((apt) => {
+    return (appointments || []).filter((apt) => {
       if (!apt.date || !apt.start_time) return false;
       const aptDate = new Date(apt.date).toISOString().split("T")[0];
       const aptHour = apt.start_time.split(":")[0] + ":00";
