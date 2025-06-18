@@ -11,12 +11,14 @@ import { RightSidebar } from "@/components/RightSidebar";
 import { OptimizedDashboard } from "@/pages/OptimizedDashboard";
 import { SimpleDashboard } from "@/pages/SimpleDashboard";
 import { EnhancedInteractiveDashboard } from "@/pages/EnhancedInteractiveDashboard";
-import { BeautifulDashboard } from "@/pages/BeautifulDashboard";
+// 🚀 PRODUCTION COMPONENTS - 100% SUPABASE INTEGRATION
+import BeautifulDashboardProduction from "@/pages/BeautifulDashboardProduction";
+import BeautifulClientsProduction from "@/pages/BeautifulClientsProduction";
+import { BeautifulAppointmentsFixed } from "@/pages/BeautifulAppointmentsFixed";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
-import { Clients } from "@/pages/Clients";
-import { Appointments } from "@/pages/Appointments";
-import { BeautifulAppointments } from "@/pages/BeautifulAppointments";
+// LEGACY COMPONENTS (for backup)
+import { BeautifulDashboard } from "@/pages/BeautifulDashboard";
 import { BeautifulClients } from "@/pages/BeautifulClients";
 import { BeautifulFinancial } from "@/pages/BeautifulFinancial";
 import { BeautifulServices } from "@/pages/BeautifulServices";
