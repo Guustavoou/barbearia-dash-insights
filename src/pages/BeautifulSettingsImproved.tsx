@@ -801,7 +801,7 @@ export const BeautifulSettingsImproved: React.FC<
         >
           {/* Enhanced Tab List */}
           <div className="relative overflow-x-auto">
-            <TabsList className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg p-2 grid grid-cols-4 lg:grid-cols-8 gap-1 min-w-full">
+            <TabsList className="bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg p-2 pb-16 grid grid-cols-4 lg:grid-cols-8 gap-1 min-w-full">
               {filteredTabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
