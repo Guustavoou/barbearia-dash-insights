@@ -62,11 +62,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import {
-  useSupabaseTransactions,
-  useSupabaseFinancialStats,
-  useSupabaseBusinessReports,
-  useCreateSupabaseTransaction,
-} from "@/hooks/useSupabaseApi";
+  useTransactions,
+  useDashboardStats,
+  useBusinessReports,
+  useCreateTransaction,
+} from "@/hooks/useSupabaseProduction";
 
 interface BeautifulFinancialProps {
   darkMode: boolean;
