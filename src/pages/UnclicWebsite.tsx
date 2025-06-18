@@ -5,7 +5,13 @@ import { UnclicNavigation } from "@/components/UnclicNavigation";
 
 type UnclicPageType = "landing" | "about" | "contact";
 
-export const UnclicWebsite: React.FC = () => {
+interface UnclicWebsiteProps {
+  onNavigateToLogin?: () => void;
+}
+
+export const UnclicWebsite: React.FC<UnclicWebsiteProps> = ({
+  onNavigateToLogin,
+}) => {
   const [currentPage, setCurrentPage] = useState<UnclicPageType>("landing");
   const [scrollY, setScrollY] = useState(0);
 
@@ -18,14 +24,14 @@ export const UnclicWebsite: React.FC = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "landing":
-        return <UnclicLanding />;
+        return <UnclicLanding onNavigateToLogin={onNavigateToLogin} />;
       case "about":
-        return <UnclicAbout />;
+        return <UnclicAbout onNavigateToLogin={onNavigateToLogin} />;
       case "contact":
         // TODO: Implementar página de contato se necessário
-        return <UnclicLanding />;
+        return <UnclicLanding onNavigateToLogin={onNavigateToLogin} />;
       default:
-        return <UnclicLanding />;
+        return <UnclicLanding onNavigateToLogin={onNavigateToLogin} />;
     }
   };
 
@@ -35,6 +41,7 @@ export const UnclicWebsite: React.FC = () => {
         currentPage={currentPage}
         onPageChange={setCurrentPage}
         scrollY={scrollY}
+        onNavigateToLogin={onNavigateToLogin}
       />
       <main>{renderCurrentPage()}</main>
     </div>
