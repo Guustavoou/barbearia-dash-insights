@@ -104,11 +104,27 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
   const { data: transactions, loading: transactionsLoading } =
     useSupabaseTransactions({ limit: 100 });
 
-  const financialData = financialStats || {
-    total_revenue: 0,
-    total_expenses: 0,
-    net_income: 0,
-    profit_margin: 0,
+  const financialData = {
+    // Map API response to expected properties
+    revenue: financialStats?.total_revenue || 0,
+    expenses: financialStats?.total_expenses || 0,
+    profit: financialStats?.net_income || 0,
+    profitMargin: financialStats?.profit_margin || 0,
+
+    // Calculate additional metrics with fallback values
+    transactions: transactions?.length || 0,
+    averageTicket:
+      transactions?.length > 0
+        ? (financialStats?.total_revenue || 0) / transactions.length
+        : 0,
+    growth: 15.2, // TODO: Calculate from historical data
+    targetRevenue: 50000,
+
+    // Keep original properties for backward compatibility
+    total_revenue: financialStats?.total_revenue || 0,
+    total_expenses: financialStats?.total_expenses || 0,
+    net_income: financialStats?.net_income || 0,
+    profit_margin: financialStats?.profit_margin || 0,
   };
 
   const revenueData = businessReports?.overview || [];
