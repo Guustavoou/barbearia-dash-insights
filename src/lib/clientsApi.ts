@@ -1,7 +1,7 @@
 
 import { ApiResponse } from './types';
 
-// Export the NeonClient interface
+// Export the NeonClient interface with all required properties
 export interface NeonClient {
   id: string;
   name: string;

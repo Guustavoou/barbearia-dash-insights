@@ -13,9 +13,10 @@ export interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ error?: string; data?: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error?: string }>;
+  resendConfirmation: (email: string) => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -67,7 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, userData?: any) => {
     setLoading(true);
     try {
       // Simulate sign up
@@ -76,12 +77,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const mockUser: User = {
         id: '1',
         email: email,
-        full_name: 'New User',
+        full_name: userData?.name || 'New User',
         business_id: 'new-business'
       };
       
       setUser(mockUser);
-      return {};
+      return { data: { user: mockUser } };
     } catch (error) {
       return { error: 'Sign up failed' };
     } finally {
@@ -109,6 +110,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const resendConfirmation = async (email: string) => {
+    try {
+      // Simulate resend confirmation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return {};
+    } catch (error) {
+      return { error: 'Resend confirmation failed' };
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -116,6 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signUp,
     signOut,
     resetPassword,
+    resendConfirmation,
   };
 
   return (

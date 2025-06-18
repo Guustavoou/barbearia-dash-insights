@@ -93,7 +93,7 @@ export const useDeleteClient = (options?: { onSuccess?: () => void }) => {
   return { mutate, isLoading: loading, isPending: loading };
 };
 
-// Add missing appointment hooks
+// Appointment hooks with consistent signatures
 export const useAppointments = (params?: any) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -114,7 +114,7 @@ export const useAppointments = (params?: any) => {
     }
   };
 
-  return { data: { data }, loading, error, refetch };
+  return { data, loading, error, refetch };
 };
 
 export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
@@ -142,7 +142,7 @@ export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
 export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
   const [loading, setLoading] = useState(false);
   
-  const mutate = async (variables: { id: any; data: any }) => {
+  const mutate = async (id: any, data?: any) => {
     setLoading(true);
     try {
       // Mock implementation
