@@ -97,12 +97,12 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   // DADOS REAIS DO SUPABASE - Informações financeiras
-  const { data: financialStats, loading: statsLoading } =
-    useSupabaseFinancialStats(selectedPeriod);
+  const { data: financialStats, loading: statsLoading } = useDashboardStats();
   const { data: businessReports, loading: reportsLoading } =
-    useSupabaseBusinessReports(selectedPeriod);
-  const { data: transactions, loading: transactionsLoading } =
-    useSupabaseTransactions({ limit: 100 });
+    useBusinessReports();
+  const { data: transactions, loading: transactionsLoading } = useTransactions({
+    limit: 100,
+  });
 
   const financialData = {
     // Map API response to expected properties
