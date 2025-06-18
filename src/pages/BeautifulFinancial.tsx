@@ -382,7 +382,8 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
                 </span>
                 <span className="text-gray-700 dark:text-gray-300 font-semibold">
                   {Math.round(
-                    (Number(value.toString().replace(/[^\d]/g, "")) / target) *
+                    (Number((value || 0).toString().replace(/[^\d]/g, "")) /
+                      target) *
                       100,
                   )}
                   %
@@ -391,7 +392,8 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
               <div className="relative">
                 <Progress
                   value={
-                    (Number(value.toString().replace(/[^\d]/g, "")) / target) *
+                    (Number((value || 0).toString().replace(/[^\d]/g, "")) /
+                      target) *
                     100
                   }
                   className="h-1.5"
@@ -399,7 +401,7 @@ export const BeautifulFinancial: React.FC<BeautifulFinancialProps> = ({
                 <div
                   className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-[#00112F] to-blue-600 rounded-full opacity-20 animate-pulse"
                   style={{
-                    width: `${(Number(value.toString().replace(/[^\d]/g, "")) / target) * 100}%`,
+                    width: `${(Number((value || 0).toString().replace(/[^\d]/g, "")) / target) * 100}%`,
                   }}
                 />
               </div>
