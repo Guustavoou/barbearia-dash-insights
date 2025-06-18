@@ -149,10 +149,14 @@ const UnclicAppContent: React.FC = () => {
   useEffect(() => {
     if (isLoading) return;
 
-    // If user just logged in and is on landing page, redirect to dashboard
+    // If user is authenticated and trying to access landing page, redirect to dashboard
     if (session && currentPage === "landing") {
       setCurrentPage("dashboard");
       setAppState("main");
+      // Update URL to reflect the dashboard
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, "", "/dashboard");
+      }
       return;
     }
 
