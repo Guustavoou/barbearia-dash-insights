@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/sonner";
@@ -36,6 +37,21 @@ function App() {
     setCurrentPage(page as PageType);
   };
 
+  // Mock user session for header props
+  const mockUserSession = {
+    user: {
+      id: '1',
+      email: 'user@example.com',
+      full_name: 'Demo User'
+    }
+  };
+
+  const mockCurrentTime = new Date().toLocaleTimeString();
+
+  const handleLogout = () => {
+    console.log('Logout clicked');
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -62,9 +78,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Index />
+                              <Index darkMode={darkMode} onPageChange={handlePageChange} />
                             </main>
                           </div>
                         </>
@@ -88,9 +107,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Dashboard />
+                              <Dashboard darkMode={darkMode} onPageChange={handlePageChange} />
                             </main>
                           </div>
                         </>
@@ -114,9 +136,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Appointments />
+                              <Appointments darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -140,9 +165,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Clients />
+                              <Clients darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -166,9 +194,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Professionals />
+                              <Professionals darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -192,9 +223,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Services />
+                              <Services darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -218,9 +252,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Stock />
+                              <Stock darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -244,9 +281,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Financial />
+                              <Financial darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -270,9 +310,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Reports />
+                              <Reports darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -296,9 +339,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Settings />
+                              <Settings darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -322,9 +368,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Calendar />
+                              <Calendar darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -348,9 +397,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Marketing />
+                              <Marketing darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -374,9 +426,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Payments />
+                              <Payments darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -400,9 +455,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Documents />
+                              <Documents darkMode={darkMode} />
                             </main>
                           </div>
                         </>
@@ -426,9 +484,12 @@ function App() {
                               darkMode={darkMode}
                               onToggleDarkMode={() => setDarkMode(!darkMode)}
                               onPageChange={handlePageChange}
+                              currentTime={mockCurrentTime}
+                              onLogout={handleLogout}
+                              userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Help />
+                              <Help darkMode={darkMode} />
                             </main>
                           </div>
                         </>
