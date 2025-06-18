@@ -96,17 +96,13 @@ export const UnclicNavigation: React.FC<UnclicNavigationProps> = ({
 
             {/* Quick Actions */}
             <div className="flex items-center space-x-2 border-l border-gray-200 pl-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => alert("Login em desenvolvimento")}
-              >
+              <Button variant="ghost" size="sm" onClick={onNavigateToLogin}>
                 Entrar
               </Button>
               <Button
                 size="sm"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-                onClick={() => alert("Teste grátis em desenvolvimento")}
+                onClick={onNavigateToLogin}
               >
                 Teste Grátis
                 <ArrowRight className="w-4 h-4 ml-2" />
