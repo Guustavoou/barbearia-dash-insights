@@ -97,6 +97,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import { universalExport } from "@/lib/exportUtils";
 // 🚀 INTEGRAÇÃO PRODUCTION SUPABASE - 100% DADOS REAIS
 import {
   useDashboardStats,
@@ -756,7 +757,7 @@ export const BeautifulDashboardProduction: React.FC<
                           formatCurrency(Number(value)),
                           "Receita",
                         ]}
-                        labelFormatter={(label) => `M��s: ${label}`}
+                        labelFormatter={(label) => `Mês: ${label}`}
                         contentStyle={{
                           backgroundColor: "rgba(255, 255, 255, 0.95)",
                           border: "none",
