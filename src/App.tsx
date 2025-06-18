@@ -149,6 +149,12 @@ const UnclicAppContent: React.FC = () => {
   useEffect(() => {
     if (isLoading) return;
 
+    // Allow public access to landing page
+    if (currentPage === "landing") {
+      setAppState("main");
+      return;
+    }
+
     if (!session) {
       setAppState("login");
       return;
@@ -162,7 +168,7 @@ const UnclicAppContent: React.FC = () => {
     } else {
       setAppState("main");
     }
-  }, [session, isLoading]);
+  }, [session, isLoading, currentPage]);
 
   const checkIfNeedsOnboarding = (establishment: any): boolean => {
     // Check if establishment has basic required data
