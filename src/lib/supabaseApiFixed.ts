@@ -435,14 +435,14 @@ export class SupabaseApiFixed {
       }
 
       if (params?.dateFrom) {
-        query = query.gte("payment_date", params.dateFrom);
+        query = query.gte("date", params.dateFrom);
       }
 
       if (params?.dateTo) {
-        query = query.lte("payment_date", params.dateTo);
+        query = query.lte("date", params.dateTo);
       }
 
-      const { data, error } = await query.order("payment_date", {
+      const { data, error } = await query.order("date", {
         ascending: false,
       });
 
