@@ -714,9 +714,17 @@ export class SupabaseApiProduction {
         query = query.range(from, to);
       }
 
+      logSupabaseDebug("Executing transactions query...");
       const { data, error, count } = await query;
 
-      if (error) throw error;
+      if (error) {
+        logSupabaseError("Transactions query failed", error);
+        throw error;
+      }
+
+      logSupabaseDebug(
+        `Transactions query successful: ${data?.length || 0} results, total count: ${count}`,
+      );
 
       return this.handleResponse(
         {
