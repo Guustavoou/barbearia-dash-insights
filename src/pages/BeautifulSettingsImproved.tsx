@@ -70,7 +70,6 @@ import {
   CloudUpload,
   FileJson,
   Import,
-  Export,
   Archive,
   CloudDownload,
   CircleCheck,
@@ -471,7 +470,7 @@ export const BeautifulSettingsImproved: React.FC<
     URL.revokeObjectURL(url);
 
     toast({
-      title: "📁 Configurações Exportadas",
+      title: "��� Configurações Exportadas",
       description: "Arquivo de configuração baixado com sucesso",
     });
   };
