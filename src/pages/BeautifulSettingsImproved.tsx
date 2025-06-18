@@ -669,7 +669,7 @@ export const BeautifulSettingsImproved: React.FC<
                 </div>
                 <div>
                   <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent">
-                    Configurações Premium
+                    Configurações
                   </h1>
                   <p className="text-blue-200 text-lg mt-2 flex items-center">
                     <Sparkles className="w-5 h-5 mr-2" />
