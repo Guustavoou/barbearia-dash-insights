@@ -25,15 +25,22 @@ const mockClients: Client[] = [
     email: "joao@email.com",
     phone: "(11) 99999-9999",
     city: "São Paulo",
-    status: "ativo",
+    status: "active", // Fixed: using "active" instead of "ativo"
     birthday: "1990-05-15",
+    birth_date: "1990-05-15",
     totalSpent: 450.00,
+    total_spent: 450.00,
     visits: 8,
     lastVisit: "2024-01-15",
-    createdAt: "2023-06-01T10:00:00Z",
-    updatedAt: "2024-01-15T14:30:00Z",
+    last_visit: "2024-01-15",
+    created_at: "2023-06-01T10:00:00Z",
+    updated_at: "2024-01-15T14:30:00Z",
+    createdAt: "2023-06-01T10:00:00Z", // Adding camelCase version
+    updatedAt: "2024-01-15T14:30:00Z", // Adding camelCase version
     notes: "Cliente preferencial",
-    joinDate: "2023-06-01T10:00:00Z"
+    joinDate: "2023-06-01T10:00:00Z",
+    join_date: "2023-06-01T10:00:00Z",
+    business_id: "business-1"
   },
   {
     id: "2", 
@@ -41,15 +48,22 @@ const mockClients: Client[] = [
     email: "maria@email.com",
     phone: "(11) 88888-8888",
     city: "Rio de Janeiro",
-    status: "ativo",
+    status: "active", // Fixed: using "active" instead of "ativo"
     birthday: "1985-12-22",
+    birth_date: "1985-12-22",
     totalSpent: 680.00,
+    total_spent: 680.00,
     visits: 12,
     lastVisit: "2024-01-20",
-    createdAt: "2023-07-15T09:00:00Z",
-    updatedAt: "2024-01-20T16:00:00Z",
+    last_visit: "2024-01-20",
+    created_at: "2023-07-15T09:00:00Z",
+    updated_at: "2024-01-20T16:00:00Z",
+    createdAt: "2023-07-15T09:00:00Z", // Adding camelCase version
+    updatedAt: "2024-01-20T16:00:00Z", // Adding camelCase version
     notes: "Gosta de cortes modernos",
-    joinDate: "2023-07-15T09:00:00Z"
+    joinDate: "2023-07-15T09:00:00Z",
+    join_date: "2023-07-15T09:00:00Z",
+    business_id: "business-1"
   }
 ];
 
@@ -75,8 +89,8 @@ export const useClients = (params: UseClientsParams = {}): UseClientsReturn => {
         const searchLower = params.search.toLowerCase();
         filteredClients = filteredClients.filter(client =>
           client.name.toLowerCase().includes(searchLower) ||
-          client.email.toLowerCase().includes(searchLower) ||
-          client.phone.includes(params.search!)
+          client.email?.toLowerCase().includes(searchLower) ||
+          client.phone?.includes(params.search!)
         );
       }
 
@@ -123,7 +137,7 @@ export const useClients = (params: UseClientsParams = {}): UseClientsReturn => {
 export const useCreateClient = () => {
   const [loading, setLoading] = useState(false);
 
-  const createClient = async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createClient = async (clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'>) => {
     setLoading(true);
     try {
       // Simulate API call
@@ -132,11 +146,12 @@ export const useCreateClient = () => {
       const newClient: Client = {
         ...clientData,
         id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        totalSpent: 0,
+        created_at: new Date().toISOString(), // Fixed: using created_at
+        updated_at: new Date().toISOString(), // Fixed: using updated_at
+        total_spent: 0,
         visits: 0,
-        joinDate: new Date().toISOString()
+        joinDate: new Date().toISOString(),
+        business_id: clientData.business_id || 'default-business'
       };
 
       return { success: true, data: newClient };
@@ -165,7 +180,7 @@ export const useUpdateClient = () => {
       const updatedClient: Client = {
         ...clientData as Client,
         id,
-        updatedAt: new Date().toISOString()
+        updated_at: new Date().toISOString() // Fixed: using updated_at
       };
 
       return { success: true, data: updatedClient };

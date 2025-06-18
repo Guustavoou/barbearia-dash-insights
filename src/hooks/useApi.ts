@@ -474,6 +474,34 @@ export const useFinancialStats = () => {
   return { data, loading, error, refetch };
 };
 
+// Adding the missing useFinancialAnalysis hook
+export const useFinancialAnalysis = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        analysis: {},
+        trends: [],
+        insights: []
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
 // Monthly revenue hook
 export const useMonthlyRevenue = () => {
   const [data, setData] = useState<any>(null);
@@ -530,7 +558,7 @@ export const useAppointmentTrends = () => {
   return { data, loading, error, refetch };
 };
 
-// Business reports hook - ADDING MISSING EXPORT
+// Business reports hook
 export const useBusinessReports = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
