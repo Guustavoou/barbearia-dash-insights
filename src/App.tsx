@@ -52,7 +52,20 @@ function App() {
     establishment: {
       id: '1',
       name: 'Salão da Maria',
-      slug: 'salao-da-maria'
+      email: 'contato@salaodamaria.com',
+      phone: '(11) 99999-9999',
+      cnpj: '12.345.678/0001-90',
+      address: 'Rua das Flores, 123',
+      cep: '01234-567',
+      website: 'https://salaodamaria.com',
+      instagram: '@salaodamaria',
+      facebook: 'salaodamaria',
+      logo_url: null,
+      banner_url: null,
+      subscription_plan: 'basic' as const,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     token: 'mock-token',
     permissions: ['read', 'write']
