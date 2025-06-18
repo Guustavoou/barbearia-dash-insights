@@ -46,6 +46,7 @@ import {
   Laptop,
   TabletSmartphone,
   Activity,
+  Send,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
