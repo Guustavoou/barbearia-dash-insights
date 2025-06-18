@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SmartNotifications } from "@/components/SmartNotifications";
 import { UserSession } from "@/lib/multiTenantTypes";
+import { toast } from "@/hooks/use-toast";
 
 interface ModernHeaderProps {
   darkMode: boolean;
