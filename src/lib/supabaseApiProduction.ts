@@ -691,7 +691,14 @@ export class SupabaseApiProduction {
       logSupabaseDebug(`Using business_id: ${this.businessId}`);
 
       let query = supabase.from("transactions").select("*", { count: "exact" });
-      query = this.addBusinessFilter(query);
+
+      // Try business_id first, fallback to barbershop_id if needed
+      try {
+        query = query.eq("business_id", this.businessId);
+      } catch (e) {
+        logSupabaseDebug("business_id not found, trying barbershop_id");
+        query = query.eq("barbershop_id", this.businessId);
+      }
 
       if (params?.type && params.type !== "all") {
         query = query.eq("type", params.type);
