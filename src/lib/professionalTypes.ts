@@ -17,5 +17,5 @@ export interface Professional {
   business_id: string;
   created_at: string;
   updated_at: string;
-  commission?: number; // Adding missing commission field
+  commission?: number; // Commission field
 }

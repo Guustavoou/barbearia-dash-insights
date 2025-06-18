@@ -363,7 +363,7 @@ export const useDeleteService = (options?: { onSuccess?: () => void }) => {
   return { mutate, isLoading: loading, isPending: loading };
 };
 
-// Products hooks - ADDING MISSING EXPORT
+// Products hooks
 export const useProducts = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -442,7 +442,7 @@ export const useDashboardStats = () => {
   return { data, loading, error, refetch };
 };
 
-// Financial stats hook - ADDING MISSING EXPORT with avgTicket alias
+// Financial stats hook with avgTicket alias
 export const useFinancialStats = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -474,7 +474,7 @@ export const useFinancialStats = () => {
   return { data, loading, error, refetch };
 };
 
-// Monthly revenue hook - ADDING MISSING EXPORT
+// Monthly revenue hook
 export const useMonthlyRevenue = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -502,7 +502,7 @@ export const useMonthlyRevenue = () => {
   return { data, loading, error, refetch };
 };
 
-// Adding missing appointment trends hook
+// Appointment trends hook
 export const useAppointmentTrends = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -519,6 +519,34 @@ export const useAppointmentTrends = () => {
         trends: [],
         growth: 0,
         totalAppointments: 0
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+// Business reports hook - ADDING MISSING EXPORT
+export const useBusinessReports = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        reports: [],
+        summary: {},
+        analytics: {}
       });
     } catch (err: any) {
       setError(err.message || 'An error occurred');

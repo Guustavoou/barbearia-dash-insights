@@ -244,7 +244,7 @@ export const useSupabaseRealTimeClients = () => {
   };
 };
 
-// Services hooks - ADDING MISSING EXPORTS
+// Services hooks
 export const useSupabaseServices = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -460,4 +460,47 @@ export const useCreateSupabaseTransaction = () => {
   };
   
   return { mutate, loading, isLoading: loading, isPending: loading };
+};
+
+// Products and Stock hooks - ADDING MISSING EXPORTS
+export const useSupabaseProducts = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return { data, loading, error, refetch, isLoading: loading };
+};
+
+export const useSupabaseStock = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return { data, loading, error, refetch, isLoading: loading };
 };
