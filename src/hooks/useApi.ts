@@ -142,7 +142,7 @@ export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
 export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
   const [loading, setLoading] = useState(false);
   
-  const mutate = async (id: any, data: any) => {
+  const mutate = async (variables: { id: any; data: any }) => {
     setLoading(true);
     try {
       // Mock implementation
@@ -232,7 +232,7 @@ export const useCreateProfessional = (options?: { onSuccess?: () => void }) => {
 export const useUpdateProfessional = (options?: { onSuccess?: () => void }) => {
   const [loading, setLoading] = useState(false);
   
-  const mutate = async (id: any, data: any) => {
+  const mutate = async (variables: { id: any; data: any }) => {
     setLoading(true);
     try {
       // Mock implementation
@@ -295,6 +295,72 @@ export const useServices = () => {
   };
 
   return { data, loading, error, refetch };
+};
+
+export const useCreateService = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (serviceData: any) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useUpdateService = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (variables: { id: string; data: any }) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useDeleteService = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (id: string) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
 };
 
 // Products hooks - ADDING MISSING EXPORT
@@ -395,7 +461,36 @@ export const useFinancialStats = () => {
         totalAmount: 0,
         pendingAmount: 0,
         approvalRate: 0,
-        averageTicket: 0
+        averageTicket: 0,
+        avgTicket: 0  // Adding this alias for compatibility
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+// Monthly revenue hook - ADDING MISSING EXPORT
+export const useMonthlyRevenue = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        monthlyData: [],
+        totalRevenue: 0,
+        growth: 0
       });
     } catch (err: any) {
       setError(err.message || 'An error occurred');

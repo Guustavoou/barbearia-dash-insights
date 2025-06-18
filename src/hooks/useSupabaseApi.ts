@@ -97,7 +97,7 @@ export const useSupabaseProfessionals = () => {
     }
   };
   
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useSupabaseClients = () => {
@@ -118,7 +118,7 @@ export const useSupabaseClients = () => {
     }
   };
   
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useCreateSupabaseAppointment = () => {
@@ -263,7 +263,7 @@ export const useSupabaseServices = () => {
     }
   };
   
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useCreateSupabaseService = (options?: { onSuccess?: () => void; onError?: (error: string) => void }) => {
@@ -357,21 +357,21 @@ export const useSupabaseDashboardStats = () => {
     }
   };
   
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useSupabaseBusinessReports = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  return { data, loading, refetch: () => Promise.resolve() };
+  return { data, loading, refetch: () => Promise.resolve(), isLoading: loading };
 };
 
 export const useSupabaseSalesPerformance = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  return { data, loading, refetch: () => Promise.resolve() };
+  return { data, loading, refetch: () => Promise.resolve(), isLoading: loading };
 };
 
 // Professional hooks
@@ -434,14 +434,14 @@ export const useSupabaseTransactions = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  return { data, loading, refetch: () => Promise.resolve() };
+  return { data, loading, refetch: () => Promise.resolve(), isLoading: loading };
 };
 
 export const useSupabaseFinancialStats = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  return { data, loading, refetch: () => Promise.resolve() };
+  return { data, loading, refetch: () => Promise.resolve(), isLoading: loading };
 };
 
 export const useCreateSupabaseTransaction = () => {

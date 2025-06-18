@@ -7,6 +7,7 @@ interface NewProfessionalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (professionalData: any) => void;
+  onSave?: (professionalData: any) => void;  // Adding this alias for compatibility
   darkMode: boolean;
 }
 
@@ -14,6 +15,7 @@ export const NewProfessionalModal: React.FC<NewProfessionalModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  onSave,
   darkMode
 }) => {
   const [formData, setFormData] = useState({
@@ -26,7 +28,15 @@ export const NewProfessionalModal: React.FC<NewProfessionalModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Call both onSubmit and onSave if provided for compatibility
+    if (onSubmit) {
+      onSubmit(formData);
+    }
+    if (onSave) {
+      onSave(formData);
+    }
+    
     setFormData({
       name: '',
       email: '',

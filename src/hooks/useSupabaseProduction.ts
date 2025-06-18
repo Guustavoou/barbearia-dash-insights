@@ -22,7 +22,7 @@ export const useTransactions = (params?: any) => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useCreateTransaction = (options?: { onSuccess?: () => void }) => {
@@ -111,7 +111,7 @@ export const useClients = () => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useCreateClient = () => {
@@ -187,7 +187,7 @@ export const useAppointments = () => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
@@ -272,7 +272,7 @@ export const useServices = () => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 // Adding missing service hooks
@@ -358,11 +358,11 @@ export const useProfessionals = () => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useGlobalLoading = () => {
-  return { loading: false };
+  return { loading: false, isLoading: false };
 };
 
 export const useGlobalError = () => {
@@ -388,7 +388,7 @@ export const useBusinessReports = () => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useDashboardStats = () => {
@@ -424,5 +424,5 @@ export const useDashboardStats = () => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
