@@ -349,7 +349,7 @@ export const UnclicLanding: React.FC<UnclicLandingProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
             <Badge className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 border-blue-200 mb-6 px-6 py-2 text-lg font-semibold">
-              <Gear className="w-5 h-5 mr-2" />
+              <Settings className="w-5 h-5 mr-2" />
               🛠️ Como funciona?
             </Badge>
             <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-8">
