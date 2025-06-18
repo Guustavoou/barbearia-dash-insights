@@ -1368,7 +1368,7 @@ export default function BeautifulAppointmentsFixed() {
                 <option value="">Todos profissionais</option>
                 {Array.from(
                   new Set(
-                    appointments
+                    (appointments || [])
                       .map((apt) => apt.professional_name)
                       .filter(Boolean),
                   ),
