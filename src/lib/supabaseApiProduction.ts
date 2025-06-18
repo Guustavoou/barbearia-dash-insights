@@ -270,16 +270,8 @@ export class SupabaseApiProduction {
     try {
       logSupabaseDebug("Fetching appointments...", params);
 
-      let query = supabase.from("appointments").select(
-        `
-        *,
-        clients!client_id(name, email, phone),
-        services!service_id(name, price, duration),
-        professionals_view!professional_id(name)
-      `,
-        { count: "exact" },
-      );
-
+      // Fetch appointments without joins to avoid view relationship issues
+      let query = supabase.from("appointments").select("*", { count: "exact" });
       query = this.addBusinessFilter(query);
 
       // Apply filters
@@ -307,32 +299,86 @@ export class SupabaseApiProduction {
         query = query.range(from, to);
       }
 
-      const { data, error, count } = await query;
+      const { data: appointments, error, count } = await query;
 
       if (error) throw error;
 
+      // Get related data separately to avoid join issues
+      const clientIds = [
+        ...new Set(
+          appointments?.map((apt) => apt.client_id).filter(Boolean) || [],
+        ),
+      ];
+      const serviceIds = [
+        ...new Set(
+          appointments?.map((apt) => apt.service_id).filter(Boolean) || [],
+        ),
+      ];
+      const professionalIds = [
+        ...new Set(
+          appointments?.map((apt) => apt.professional_id).filter(Boolean) || [],
+        ),
+      ];
+
+      // Fetch related data
+      const [clientsData, servicesData, professionalsData] = await Promise.all([
+        clientIds.length > 0
+          ? supabase
+              .from("clients")
+              .select("id, name, email, phone")
+              .in("id", clientIds)
+          : { data: [], error: null },
+        serviceIds.length > 0
+          ? supabase
+              .from("services")
+              .select("id, name, price, duration")
+              .in("id", serviceIds)
+          : { data: [], error: null },
+        professionalIds.length > 0
+          ? supabase
+              .from("professionals")
+              .select("id, name")
+              .in("id", professionalIds)
+          : { data: [], error: null },
+      ]);
+
+      // Create lookup maps
+      const clientsMap = new Map(clientsData.data?.map((c) => [c.id, c]) || []);
+      const servicesMap = new Map(
+        servicesData.data?.map((s) => [s.id, s]) || [],
+      );
+      const professionalsMap = new Map(
+        professionalsData.data?.map((p) => [p.id, p]) || [],
+      );
+
       // Transform data for frontend
       const transformedData =
-        data?.map((appointment) => ({
-          id: appointment.id,
-          clientId: appointment.client_id,
-          clientName: appointment.clients?.name || "Cliente",
-          professionalId: appointment.professional_id,
-          professionalName:
-            appointment.professionals_view?.name || "Profissional",
-          serviceId: appointment.service_id,
-          serviceName: appointment.services?.name || "Serviço",
-          date: appointment.date,
-          startTime: appointment.start_time,
-          endTime: appointment.end_time,
-          duration:
-            appointment.duration || appointment.services?.duration || 60,
-          status: appointment.status,
-          price: appointment.price || appointment.services?.price || 0,
-          notes: appointment.notes,
-          createdAt: appointment.created_at,
-          updatedAt: appointment.updated_at,
-        })) || [];
+        appointments?.map((appointment) => {
+          const client = clientsMap.get(appointment.client_id);
+          const service = servicesMap.get(appointment.service_id);
+          const professional = professionalsMap.get(
+            appointment.professional_id,
+          );
+
+          return {
+            id: appointment.id,
+            clientId: appointment.client_id,
+            clientName: client?.name || "Cliente",
+            professionalId: appointment.professional_id,
+            professionalName: professional?.name || "Profissional",
+            serviceId: appointment.service_id,
+            serviceName: service?.name || "Serviço",
+            date: appointment.date,
+            startTime: appointment.start_time,
+            endTime: appointment.end_time,
+            duration: appointment.duration || service?.duration || 60,
+            status: appointment.status,
+            price: appointment.price || service?.price || 0,
+            notes: appointment.notes,
+            createdAt: appointment.created_at,
+            updatedAt: appointment.updated_at,
+          };
+        }) || [];
 
       return this.handleResponse(
         {
