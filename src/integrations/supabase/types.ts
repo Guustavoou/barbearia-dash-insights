@@ -9,76 +9,136 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      appointments: {
+      advertisements: {
         Row: {
-          appointment_date: string
-          appointment_time: string
-          barbershop_id: string
+          business_id: string | null
+          clicks: number
+          createdAt: string
+          description: string | null
+          endDate: string
+          id: string
+          image: string | null
+          impressions: number
+          isActive: boolean
+          startDate: string
+          tenantId: string
+          title: string
+          updatedAt: string
+          url: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          clicks?: number
+          createdAt?: string
+          description?: string | null
+          endDate: string
+          id: string
+          image?: string | null
+          impressions?: number
+          isActive?: boolean
+          startDate: string
+          tenantId: string
+          title: string
+          updatedAt: string
+          url?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          clicks?: number
+          createdAt?: string
+          description?: string | null
+          endDate?: string
+          id?: string
+          image?: string | null
+          impressions?: number
+          isActive?: boolean
+          startDate?: string
+          tenantId?: string
+          title?: string
+          updatedAt?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advertisements_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      Appointments: {
+        Row: {
+          booking_date: string
+          business_id: string
           client_id: string
           created_at: string | null
           duration: number
+          employee_id: string
+          end_time: string
+          feedback_comment: string | null
           id: string
           notes: string | null
+          payment_method: string | null
           price: number
-          professional_id: string | null
+          rating: number | null
+          reminder_sent: boolean | null
           service_id: string
-          status: string | null
+          start_time: string
+          status: string
           updated_at: string | null
         }
         Insert: {
-          appointment_date: string
-          appointment_time: string
-          barbershop_id: string
+          booking_date: string
+          business_id: string
           client_id: string
           created_at?: string | null
           duration: number
+          employee_id: string
+          end_time: string
+          feedback_comment?: string | null
           id?: string
           notes?: string | null
-          price: number
-          professional_id?: string | null
+          payment_method?: string | null
+          price?: number
+          rating?: number | null
+          reminder_sent?: boolean | null
           service_id: string
-          status?: string | null
+          start_time: string
+          status?: string
           updated_at?: string | null
         }
         Update: {
-          appointment_date?: string
-          appointment_time?: string
-          barbershop_id?: string
+          booking_date?: string
+          business_id?: string
           client_id?: string
           created_at?: string | null
           duration?: number
+          employee_id?: string
+          end_time?: string
+          feedback_comment?: string | null
           id?: string
           notes?: string | null
+          payment_method?: string | null
           price?: number
-          professional_id?: string | null
+          rating?: number | null
+          reminder_sent?: boolean | null
           service_id?: string
-          status?: string | null
+          start_time?: string
+          status?: string
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "appointments_barbershop_id_fkey"
-            columns: ["barbershop_id"]
+            foreignKeyName: "fk_appointments_business"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "barbershops"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "appointments_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "appointments_professional_id_fkey"
-            columns: ["professional_id"]
-            isOneToOne: false
-            referencedRelation: "professionals"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "appointments_service_id_fkey"
+            foreignKeyName: "fk_appointments_service"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
@@ -86,475 +146,1936 @@ export type Database = {
           },
         ]
       }
-      arquiteturas: {
+      audit_logs: {
         Row: {
-          componentes: Json | null
-          created_at: string
-          descricao: string | null
-          diagrama: string | null
+          created_at: string | null
           id: string
-          nome: string
-          projeto_id: string
-          updated_at: string
-          versao: string | null
+          new_data: Json | null
+          old_data: Json | null
+          operation: string
+          record_id: string
+          table_name: string
+          tenant_id: string | null
+          user_id: string | null
         }
         Insert: {
-          componentes?: Json | null
-          created_at?: string
-          descricao?: string | null
-          diagrama?: string | null
+          created_at?: string | null
           id?: string
-          nome: string
-          projeto_id: string
-          updated_at?: string
-          versao?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation: string
+          record_id: string
+          table_name: string
+          tenant_id?: string | null
+          user_id?: string | null
         }
         Update: {
-          componentes?: Json | null
-          created_at?: string
-          descricao?: string | null
-          diagrama?: string | null
+          created_at?: string | null
           id?: string
-          nome?: string
-          projeto_id?: string
-          updated_at?: string
-          versao?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation?: string
+          record_id?: string
+          table_name?: string
+          tenant_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          booking_date: string
+          business_id: string
+          client_id: string
+          created_at: string | null
+          duration: number
+          employee_id: string
+          end_time: string
+          error_messages: Json | null
+          feedback_comment: string | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          price: number
+          rating: number | null
+          reminder_sent: boolean | null
+          service_id: string
+          start_time: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          booking_date: string
+          business_id: string
+          client_id: string
+          created_at?: string | null
+          duration?: number
+          employee_id: string
+          end_time: string
+          error_messages?: Json | null
+          feedback_comment?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          price?: number
+          rating?: number | null
+          reminder_sent?: boolean | null
+          service_id: string
+          start_time: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          booking_date?: string
+          business_id?: string
+          client_id?: string
+          created_at?: string | null
+          duration?: number
+          employee_id?: string
+          end_time?: string
+          error_messages?: Json | null
+          feedback_comment?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          price?: number
+          rating?: number | null
+          reminder_sent?: boolean | null
+          service_id?: string
+          start_time?: string
+          status?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "arquiteturas_projeto_id_fkey"
-            columns: ["projeto_id"]
+            foreignKeyName: "fk_bookings_business"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "projetos"
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_bookings_client"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_bookings_service"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
         ]
       }
-      barbershops: {
+      business_analysis: {
         Row: {
-          address: string | null
-          city: string | null
-          created_at: string | null
-          email: string
+          agendamentos_concluidos: number | null
+          clientes_recorrentes: number | null
+          criado_em: string | null
+          data: string
+          despesas_total: number | null
+          funcionarios_destaque: Json | null
           id: string
-          name: string
-          owner_id: string | null
-          phone: string | null
-          updated_at: string | null
+          id_negocio: string
+          lucro_liquido: number | null
+          novos_clientes: number | null
+          nps: number | null
+          receita_total: number | null
+          servicos_populares: Json | null
+          taxa_cancelamento: number | null
+          taxa_ocupacao: number | null
+          tempo_medio_atendimento: number | null
+          total_agendamentos: number | null
         }
         Insert: {
-          address?: string | null
-          city?: string | null
-          created_at?: string | null
-          email: string
+          agendamentos_concluidos?: number | null
+          clientes_recorrentes?: number | null
+          criado_em?: string | null
+          data: string
+          despesas_total?: number | null
+          funcionarios_destaque?: Json | null
           id?: string
-          name: string
-          owner_id?: string | null
-          phone?: string | null
-          updated_at?: string | null
+          id_negocio: string
+          lucro_liquido?: number | null
+          novos_clientes?: number | null
+          nps?: number | null
+          receita_total?: number | null
+          servicos_populares?: Json | null
+          taxa_cancelamento?: number | null
+          taxa_ocupacao?: number | null
+          tempo_medio_atendimento?: number | null
+          total_agendamentos?: number | null
         }
         Update: {
-          address?: string | null
-          city?: string | null
-          created_at?: string | null
-          email?: string
+          agendamentos_concluidos?: number | null
+          clientes_recorrentes?: number | null
+          criado_em?: string | null
+          data?: string
+          despesas_total?: number | null
+          funcionarios_destaque?: Json | null
           id?: string
-          name?: string
-          owner_id?: string | null
-          phone?: string | null
-          updated_at?: string | null
+          id_negocio?: string
+          lucro_liquido?: number | null
+          novos_clientes?: number | null
+          nps?: number | null
+          receita_total?: number | null
+          servicos_populares?: Json | null
+          taxa_cancelamento?: number | null
+          taxa_ocupacao?: number | null
+          tempo_medio_atendimento?: number | null
+          total_agendamentos?: number | null
         }
         Relationships: []
       }
+      business_settings: {
+        Row: {
+          allow_online_booking: boolean | null
+          banner_url: string | null
+          business_id: string
+          created_at: string | null
+          id: string
+          logo_url: string | null
+          maximum_days_in_advance: number | null
+          minimum_notice_time: number | null
+          notes: Json | null
+          primary_color: string | null
+          require_advance_payment: boolean | null
+          secondary_color: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          allow_online_booking?: boolean | null
+          banner_url?: string | null
+          business_id: string
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          maximum_days_in_advance?: number | null
+          minimum_notice_time?: number | null
+          notes?: Json | null
+          primary_color?: string | null
+          require_advance_payment?: boolean | null
+          secondary_color?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          allow_online_booking?: boolean | null
+          banner_url?: string | null
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          maximum_days_in_advance?: number | null
+          minimum_notice_time?: number | null
+          notes?: Json | null
+          primary_color?: string | null
+          require_advance_payment?: boolean | null
+          secondary_color?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_settings_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: true
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_users: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          id: string
+          role: string
+          role_id: string | null
+          status: Database["public"]["Enums"]["user_status"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          role_id?: string | null
+          status?: Database["public"]["Enums"]["user_status"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          role?: string
+          role_id?: string | null
+          status?: Database["public"]["Enums"]["user_status"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_users_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_users_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      businesses: {
+        Row: {
+          address: string | null
+          address_complement: string | null
+          address_number: string | null
+          admin_email: string
+          city: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          ein: string | null
+          error_messages: Json | null
+          id: string
+          language: string | null
+          latitude: number | null
+          legal_name: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          neighborhood: string | null
+          phone: string | null
+          slug: string
+          state: string | null
+          status: string | null
+          subscription_end_date: string | null
+          subscription_status: string | null
+          timezone: string | null
+          trade_name: string | null
+          trial_end_date: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          address_complement?: string | null
+          address_number?: string | null
+          admin_email: string
+          city?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          ein?: string | null
+          error_messages?: Json | null
+          id?: string
+          language?: string | null
+          latitude?: number | null
+          legal_name?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          neighborhood?: string | null
+          phone?: string | null
+          slug: string
+          state?: string | null
+          status?: string | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
+          timezone?: string | null
+          trade_name?: string | null
+          trial_end_date?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          address_complement?: string | null
+          address_number?: string | null
+          admin_email?: string
+          city?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          ein?: string | null
+          error_messages?: Json | null
+          id?: string
+          language?: string | null
+          latitude?: number | null
+          legal_name?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          neighborhood?: string | null
+          phone?: string | null
+          slug?: string
+          state?: string | null
+          status?: string | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
+          timezone?: string | null
+          trade_name?: string | null
+          trial_end_date?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          business_id: string
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          business_id: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
-          barbershop_id: string
+          address: string | null
+          birth_date: string | null
+          business_id: string
           city: string | null
-          cpf: string | null
           created_at: string | null
           email: string | null
+          error_messages: Json | null
+          gender: string | null
           id: string
-          join_date: string | null
           last_visit: string | null
           name: string
           notes: string | null
           phone: string | null
-          profession: string | null
+          preferences: Json | null
+          state: string | null
           status: string | null
           total_spent: number | null
           updated_at: string | null
-          visits: number | null
+          zip_code: string | null
         }
         Insert: {
-          barbershop_id: string
+          address?: string | null
+          birth_date?: string | null
+          business_id: string
           city?: string | null
-          cpf?: string | null
           created_at?: string | null
           email?: string | null
+          error_messages?: Json | null
+          gender?: string | null
           id?: string
-          join_date?: string | null
           last_visit?: string | null
           name: string
           notes?: string | null
           phone?: string | null
-          profession?: string | null
+          preferences?: Json | null
+          state?: string | null
           status?: string | null
           total_spent?: number | null
           updated_at?: string | null
-          visits?: number | null
+          zip_code?: string | null
         }
         Update: {
-          barbershop_id?: string
+          address?: string | null
+          birth_date?: string | null
+          business_id?: string
           city?: string | null
-          cpf?: string | null
           created_at?: string | null
           email?: string | null
+          error_messages?: Json | null
+          gender?: string | null
           id?: string
-          join_date?: string | null
           last_visit?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
-          profession?: string | null
+          preferences?: Json | null
+          state?: string | null
           status?: string | null
           total_spent?: number | null
           updated_at?: string | null
-          visits?: number | null
+          zip_code?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "clients_barbershop_id_fkey"
-            columns: ["barbershop_id"]
+            foreignKeyName: "fk_clients_business"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "barbershops"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
         ]
       }
-      integracoes: {
+      commission_rules: {
         Row: {
+          business_id: string | null
+          createdAt: string
+          description: string | null
+          id: string
+          isActive: boolean
+          isDefault: boolean
+          name: string
+          tenantId: string
+          type: Database["public"]["Enums"]["CommissionType"]
+          updatedAt: string
+          value: number
+        }
+        Insert: {
+          business_id?: string | null
+          createdAt?: string
+          description?: string | null
+          id: string
+          isActive?: boolean
+          isDefault?: boolean
+          name: string
+          tenantId: string
+          type: Database["public"]["Enums"]["CommissionType"]
+          updatedAt: string
+          value: number
+        }
+        Update: {
+          business_id?: string | null
+          createdAt?: string
+          description?: string | null
+          id?: string
+          isActive?: boolean
+          isDefault?: boolean
+          name?: string
+          tenantId?: string
+          type?: Database["public"]["Enums"]["CommissionType"]
+          updatedAt?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_rules_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commissions: {
+        Row: {
+          amount: number
+          appointmentId: string | null
+          createdAt: string
+          financialTransactionId: string | null
+          id: string
+          paidAt: string | null
+          professionalId: string
+          status: Database["public"]["Enums"]["CommissionStatus"]
+          updatedAt: string
+        }
+        Insert: {
+          amount: number
+          appointmentId?: string | null
+          createdAt?: string
+          financialTransactionId?: string | null
+          id: string
+          paidAt?: string | null
+          professionalId: string
+          status?: Database["public"]["Enums"]["CommissionStatus"]
+          updatedAt: string
+        }
+        Update: {
+          amount?: number
+          appointmentId?: string | null
+          createdAt?: string
+          financialTransactionId?: string | null
+          id?: string
+          paidAt?: string | null
+          professionalId?: string
+          status?: Database["public"]["Enums"]["CommissionStatus"]
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_professionalId_fkey"
+            columns: ["professionalId"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      establishments: {
+        Row: {
+          address: string | null
+          addressComplement: string | null
+          addressNumber: string | null
+          business_id: string | null
+          city: string | null
+          coverImage: string | null
+          createdAt: string
+          description: string | null
+          email: string | null
+          id: string
+          isActive: boolean
+          logo: string | null
+          name: string
+          neighborhood: string | null
+          openingHours: Json | null
+          phone: string | null
+          slug: string
+          state: string | null
+          tenantId: string
+          updatedAt: string
+          website: string | null
+          zipCode: string | null
+        }
+        Insert: {
+          address?: string | null
+          addressComplement?: string | null
+          addressNumber?: string | null
+          business_id?: string | null
+          city?: string | null
+          coverImage?: string | null
+          createdAt?: string
+          description?: string | null
+          email?: string | null
+          id: string
+          isActive?: boolean
+          logo?: string | null
+          name: string
+          neighborhood?: string | null
+          openingHours?: Json | null
+          phone?: string | null
+          slug: string
+          state?: string | null
+          tenantId: string
+          updatedAt: string
+          website?: string | null
+          zipCode?: string | null
+        }
+        Update: {
+          address?: string | null
+          addressComplement?: string | null
+          addressNumber?: string | null
+          business_id?: string | null
+          city?: string | null
+          coverImage?: string | null
+          createdAt?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          isActive?: boolean
+          logo?: string | null
+          name?: string
+          neighborhood?: string | null
+          openingHours?: Json | null
+          phone?: string | null
+          slug?: string
+          state?: string | null
+          tenantId?: string
+          updatedAt?: string
+          website?: string | null
+          zipCode?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "establishments_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_accounts: {
+        Row: {
+          accountNumber: string | null
+          agency: string | null
+          bank: string | null
+          business_id: string | null
+          createdAt: string
+          currentBalance: number
+          description: string | null
+          establishmentId: string
+          id: string
+          initialBalance: number
+          isActive: boolean
+          name: string
+          tenantId: string
+          type: Database["public"]["Enums"]["AccountType"]
+          updatedAt: string
+        }
+        Insert: {
+          accountNumber?: string | null
+          agency?: string | null
+          bank?: string | null
+          business_id?: string | null
+          createdAt?: string
+          currentBalance?: number
+          description?: string | null
+          establishmentId: string
+          id: string
+          initialBalance?: number
+          isActive?: boolean
+          name: string
+          tenantId: string
+          type: Database["public"]["Enums"]["AccountType"]
+          updatedAt: string
+        }
+        Update: {
+          accountNumber?: string | null
+          agency?: string | null
+          bank?: string | null
+          business_id?: string | null
+          createdAt?: string
+          currentBalance?: number
+          description?: string | null
+          establishmentId?: string
+          id?: string
+          initialBalance?: number
+          isActive?: boolean
+          name?: string
+          tenantId?: string
+          type?: Database["public"]["Enums"]["AccountType"]
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_accounts_establishmentId_fkey"
+            columns: ["establishmentId"]
+            isOneToOne: false
+            referencedRelation: "establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_accounts_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_categories: {
+        Row: {
+          business_id: string | null
+          color: string | null
+          createdAt: string
+          icon: string | null
+          id: string
+          isActive: boolean
+          name: string
+          parentId: string | null
+          tenantId: string
+          type: Database["public"]["Enums"]["TransactionType"]
+          updatedAt: string
+        }
+        Insert: {
+          business_id?: string | null
+          color?: string | null
+          createdAt?: string
+          icon?: string | null
+          id: string
+          isActive?: boolean
+          name: string
+          parentId?: string | null
+          tenantId: string
+          type: Database["public"]["Enums"]["TransactionType"]
+          updatedAt: string
+        }
+        Update: {
+          business_id?: string | null
+          color?: string | null
+          createdAt?: string
+          icon?: string | null
+          id?: string
+          isActive?: boolean
+          name?: string
+          parentId?: string | null
+          tenantId?: string
+          type?: Database["public"]["Enums"]["TransactionType"]
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_categories_parentId_fkey"
+            columns: ["parentId"]
+            isOneToOne: false
+            referencedRelation: "financial_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_categories_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horarios_disponibilidade: {
+        Row: {
+          atualizado_em: string | null
+          capacidade_simultanea: number | null
+          criado_em: string | null
+          dia_folga: boolean | null
+          dia_semana: number
+          hora_fim: string
+          hora_inicio: string
+          id: string
+          id_funcionario: string | null
+          id_negocio: string
+          id_servico: string | null
+          intervalo_entre_agendamentos: number | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          capacidade_simultanea?: number | null
+          criado_em?: string | null
+          dia_folga?: boolean | null
+          dia_semana: number
+          hora_fim: string
+          hora_inicio: string
+          id?: string
+          id_funcionario?: string | null
+          id_negocio: string
+          id_servico?: string | null
+          intervalo_entre_agendamentos?: number | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          capacidade_simultanea?: number | null
+          criado_em?: string | null
+          dia_folga?: boolean | null
+          dia_semana?: number
+          hora_fim?: string
+          hora_inicio?: string
+          id?: string
+          id_funcionario?: string | null
+          id_negocio?: string
+          id_servico?: string | null
+          intervalo_entre_agendamentos?: number | null
+        }
+        Relationships: []
+      }
+      integrations: {
+        Row: {
+          ativo: boolean | null
+          atualizado_em: string | null
           configuracao: Json | null
-          created_at: string
+          criado_em: string | null
+          data_expiracao_token: string | null
           id: string
-          projeto_id: string
-          status: string
+          id_negocio: string
+          nome_provedor: string
+          status_ultima_sincronizacao: string | null
           tipo: string
-          updated_at: string
+          token_acesso: string | null
+          token_refresh: string | null
+          ultima_sincronizacao: string | null
         }
         Insert: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
           configuracao?: Json | null
-          created_at?: string
+          criado_em?: string | null
+          data_expiracao_token?: string | null
           id?: string
-          projeto_id: string
-          status?: string
+          id_negocio: string
+          nome_provedor: string
+          status_ultima_sincronizacao?: string | null
           tipo: string
-          updated_at?: string
+          token_acesso?: string | null
+          token_refresh?: string | null
+          ultima_sincronizacao?: string | null
         }
         Update: {
+          ativo?: boolean | null
+          atualizado_em?: string | null
           configuracao?: Json | null
-          created_at?: string
+          criado_em?: string | null
+          data_expiracao_token?: string | null
           id?: string
-          projeto_id?: string
-          status?: string
+          id_negocio?: string
+          nome_provedor?: string
+          status_ultima_sincronizacao?: string | null
           tipo?: string
-          updated_at?: string
+          token_acesso?: string | null
+          token_refresh?: string | null
+          ultima_sincronizacao?: string | null
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          barcode: string | null
+          business_id: string
+          category_id: string | null
+          cost_price: number | null
+          created_at: string | null
+          description: string | null
+          expiry_date: string | null
+          id: string
+          image_url: string | null
+          is_equipment: boolean | null
+          last_restock_date: string | null
+          location: string | null
+          min_quantity: number | null
+          name: string
+          quantity: number
+          sale_price: number | null
+          sku: string | null
+          supplier_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          barcode?: string | null
+          business_id: string
+          category_id?: string | null
+          cost_price?: number | null
+          created_at?: string | null
+          description?: string | null
+          expiry_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_equipment?: boolean | null
+          last_restock_date?: string | null
+          location?: string | null
+          min_quantity?: number | null
+          name: string
+          quantity?: number
+          sale_price?: number | null
+          sku?: string | null
+          supplier_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          barcode?: string | null
+          business_id?: string
+          category_id?: string | null
+          cost_price?: number | null
+          created_at?: string | null
+          description?: string | null
+          expiry_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_equipment?: boolean | null
+          last_restock_date?: string | null
+          location?: string | null
+          min_quantity?: number | null
+          name?: string
+          quantity?: number
+          sale_price?: number | null
+          sku?: string | null
+          supplier_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "integracoes_projeto_id_fkey"
-            columns: ["projeto_id"]
+            foreignKeyName: "inventory_business_id_fkey"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "projetos"
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
             referencedColumns: ["id"]
           },
         ]
       }
-      issues: {
+      invoices: {
         Row: {
-          arquivo: string | null
-          codigo_corrigido: string | null
-          codigo_original: string | null
-          created_at: string
-          descricao: string | null
+          amount: number
+          created_at: string | null
+          customer_id: string | null
+          due_date: string | null
           id: string
-          linha: number | null
-          projeto_id: string
-          severidade: string | null
-          solucao: string | null
+          line_items: Json | null
+          metadata: Json | null
+          paid_date: string | null
+          payment_method: string | null
+          payment_url: string | null
+          provider_invoice_id: string | null
           status: string
-          tipo: string
-          titulo: string
-          updated_at: string
+          subscription_id: string | null
+          tenant_id: string | null
+          updated_at: string | null
         }
         Insert: {
-          arquivo?: string | null
-          codigo_corrigido?: string | null
-          codigo_original?: string | null
-          created_at?: string
-          descricao?: string | null
+          amount: number
+          created_at?: string | null
+          customer_id?: string | null
+          due_date?: string | null
           id?: string
-          linha?: number | null
-          projeto_id: string
-          severidade?: string | null
-          solucao?: string | null
-          status?: string
-          tipo: string
-          titulo: string
-          updated_at?: string
+          line_items?: Json | null
+          metadata?: Json | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_url?: string | null
+          provider_invoice_id?: string | null
+          status: string
+          subscription_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string | null
         }
         Update: {
-          arquivo?: string | null
-          codigo_corrigido?: string | null
-          codigo_original?: string | null
-          created_at?: string
-          descricao?: string | null
+          amount?: number
+          created_at?: string | null
+          customer_id?: string | null
+          due_date?: string | null
           id?: string
-          linha?: number | null
-          projeto_id?: string
-          severidade?: string | null
-          solucao?: string | null
+          line_items?: Json | null
+          metadata?: Json | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_url?: string | null
+          provider_invoice_id?: string | null
           status?: string
-          tipo?: string
-          titulo?: string
-          updated_at?: string
+          subscription_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "issues_projeto_id_fkey"
-            columns: ["projeto_id"]
+            foreignKeyName: "invoices_subscription_id_fkey"
+            columns: ["subscription_id"]
             isOneToOne: false
-            referencedRelation: "projetos"
+            referencedRelation: "subscriptions"
             referencedColumns: ["id"]
           },
         ]
       }
-      metricas_custo: {
+      loyalty_cards: {
         Row: {
-          ano: number
-          created_at: string
-          custo_atual: number
-          custo_otimizado: number | null
-          detalhes: Json | null
+          createdAt: string
+          currentPoints: number
+          customerId: string
           id: string
-          mes: string
-          moeda: string
-          projeto_id: string
+          isActive: boolean
+          loyaltyLevelId: string | null
+          loyaltyProgramId: string
+          totalEarnedPoints: number
+          totalRedeemedPoints: number
+          updatedAt: string
         }
         Insert: {
-          ano: number
-          created_at?: string
-          custo_atual: number
-          custo_otimizado?: number | null
-          detalhes?: Json | null
-          id?: string
-          mes: string
-          moeda?: string
-          projeto_id: string
+          createdAt?: string
+          currentPoints?: number
+          customerId: string
+          id: string
+          isActive?: boolean
+          loyaltyLevelId?: string | null
+          loyaltyProgramId: string
+          totalEarnedPoints?: number
+          totalRedeemedPoints?: number
+          updatedAt: string
         }
         Update: {
-          ano?: number
-          created_at?: string
-          custo_atual?: number
-          custo_otimizado?: number | null
-          detalhes?: Json | null
+          createdAt?: string
+          currentPoints?: number
+          customerId?: string
           id?: string
-          mes?: string
-          moeda?: string
-          projeto_id?: string
+          isActive?: boolean
+          loyaltyLevelId?: string | null
+          loyaltyProgramId?: string
+          totalEarnedPoints?: number
+          totalRedeemedPoints?: number
+          updatedAt?: string
         }
         Relationships: [
           {
-            foreignKeyName: "metricas_custo_projeto_id_fkey"
-            columns: ["projeto_id"]
+            foreignKeyName: "loyalty_cards_loyaltyLevelId_fkey"
+            columns: ["loyaltyLevelId"]
             isOneToOne: false
-            referencedRelation: "projetos"
+            referencedRelation: "loyalty_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_cards_loyaltyProgramId_fkey"
+            columns: ["loyaltyProgramId"]
+            isOneToOne: false
+            referencedRelation: "loyalty_programs"
             referencedColumns: ["id"]
           },
         ]
       }
-      modelos_llm: {
+      loyalty_levels: {
         Row: {
-          api_key: string | null
-          created_at: string
-          endpoint: string | null
+          benefits: Json | null
+          color: string | null
+          createdAt: string
+          description: string | null
+          icon: string | null
           id: string
-          is_ativo: boolean | null
-          nome: string
-          parametros: Json | null
-          provedor: string
-          self_hosted: boolean | null
-          updated_at: string
+          isActive: boolean
+          loyaltyProgramId: string
+          name: string
+          pointsRequired: number
+          updatedAt: string
         }
         Insert: {
-          api_key?: string | null
-          created_at?: string
-          endpoint?: string | null
-          id?: string
-          is_ativo?: boolean | null
-          nome: string
-          parametros?: Json | null
-          provedor: string
-          self_hosted?: boolean | null
-          updated_at?: string
+          benefits?: Json | null
+          color?: string | null
+          createdAt?: string
+          description?: string | null
+          icon?: string | null
+          id: string
+          isActive?: boolean
+          loyaltyProgramId: string
+          name: string
+          pointsRequired: number
+          updatedAt: string
         }
         Update: {
-          api_key?: string | null
-          created_at?: string
-          endpoint?: string | null
+          benefits?: Json | null
+          color?: string | null
+          createdAt?: string
+          description?: string | null
+          icon?: string | null
           id?: string
-          is_ativo?: boolean | null
+          isActive?: boolean
+          loyaltyProgramId?: string
+          name?: string
+          pointsRequired?: number
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_levels_loyaltyProgramId_fkey"
+            columns: ["loyaltyProgramId"]
+            isOneToOne: false
+            referencedRelation: "loyalty_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_programs: {
+        Row: {
+          business_id: string | null
+          createdAt: string
+          description: string | null
+          id: string
+          isActive: boolean
+          name: string
+          tenantId: string
+          updatedAt: string
+        }
+        Insert: {
+          business_id?: string | null
+          createdAt?: string
+          description?: string | null
+          id: string
+          isActive?: boolean
+          name: string
+          tenantId: string
+          updatedAt: string
+        }
+        Update: {
+          business_id?: string | null
+          createdAt?: string
+          description?: string | null
+          id?: string
+          isActive?: boolean
+          name?: string
+          tenantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_programs_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_rules: {
+        Row: {
+          action: Database["public"]["Enums"]["LoyaltyAction"]
+          createdAt: string
+          description: string | null
+          id: string
+          isActive: boolean
+          loyaltyProgramId: string
+          minTransactionValue: number | null
+          name: string
+          pointsValue: number
+          productIds: string[] | null
+          serviceIds: string[] | null
+          updatedAt: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["LoyaltyAction"]
+          createdAt?: string
+          description?: string | null
+          id: string
+          isActive?: boolean
+          loyaltyProgramId: string
+          minTransactionValue?: number | null
+          name: string
+          pointsValue: number
+          productIds?: string[] | null
+          serviceIds?: string[] | null
+          updatedAt: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["LoyaltyAction"]
+          createdAt?: string
+          description?: string | null
+          id?: string
+          isActive?: boolean
+          loyaltyProgramId?: string
+          minTransactionValue?: number | null
+          name?: string
+          pointsValue?: number
+          productIds?: string[] | null
+          serviceIds?: string[] | null
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_rules_loyaltyProgramId_fkey"
+            columns: ["loyaltyProgramId"]
+            isOneToOne: false
+            referencedRelation: "loyalty_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_transactions: {
+        Row: {
+          appointmentId: string | null
+          createdAt: string
+          description: string | null
+          expiresAt: string | null
+          financialTransactionId: string | null
+          id: string
+          loyaltyCardId: string
+          points: number
+          tenantId: string
+          type: Database["public"]["Enums"]["LoyaltyTransactionType"]
+        }
+        Insert: {
+          appointmentId?: string | null
+          createdAt?: string
+          description?: string | null
+          expiresAt?: string | null
+          financialTransactionId?: string | null
+          id: string
+          loyaltyCardId: string
+          points: number
+          tenantId: string
+          type: Database["public"]["Enums"]["LoyaltyTransactionType"]
+        }
+        Update: {
+          appointmentId?: string | null
+          createdAt?: string
+          description?: string | null
+          expiresAt?: string | null
+          financialTransactionId?: string | null
+          id?: string
+          loyaltyCardId?: string
+          points?: number
+          tenantId?: string
+          type?: Database["public"]["Enums"]["LoyaltyTransactionType"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_transactions_loyaltyCardId_fkey"
+            columns: ["loyaltyCardId"]
+            isOneToOne: false
+            referencedRelation: "loyalty_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_transactions_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_campaigns: {
+        Row: {
+          atualizado_em: string | null
+          canais: string[] | null
+          cliques: number | null
+          conversoes: number | null
+          criado_em: string | null
+          criado_por: string | null
+          data_fim: string
+          data_inicio: string
+          id: string
+          id_negocio: string
+          impressoes: number | null
+          nome: string
+          orcamento: number | null
+          publico_alvo: string | null
+          resultados: Json | null
+          roi: number | null
+          status: string | null
+          tipo: string
+          total_gasto: number | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          canais?: string[] | null
+          cliques?: number | null
+          conversoes?: number | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_fim: string
+          data_inicio: string
+          id?: string
+          id_negocio: string
+          impressoes?: number | null
+          nome: string
+          orcamento?: number | null
+          publico_alvo?: string | null
+          resultados?: Json | null
+          roi?: number | null
+          status?: string | null
+          tipo: string
+          total_gasto?: number | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          canais?: string[] | null
+          cliques?: number | null
+          conversoes?: number | null
+          criado_em?: string | null
+          criado_por?: string | null
+          data_fim?: string
+          data_inicio?: string
+          id?: string
+          id_negocio?: string
+          impressoes?: number | null
           nome?: string
-          parametros?: Json | null
-          provedor?: string
-          self_hosted?: boolean | null
-          updated_at?: string
+          orcamento?: number | null
+          publico_alvo?: string | null
+          resultados?: Json | null
+          roi?: number | null
+          status?: string | null
+          tipo?: string
+          total_gasto?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campanhas_marketing_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_consents: {
+        Row: {
+          channel: Database["public"]["Enums"]["MarketingChannel"]
+          consented: boolean
+          consentedAt: string | null
+          createdAt: string
+          customerId: string
+          id: string
+          revokedAt: string | null
+          updatedAt: string
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["MarketingChannel"]
+          consented?: boolean
+          consentedAt?: string | null
+          createdAt?: string
+          customerId: string
+          id: string
+          revokedAt?: string | null
+          updatedAt: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["MarketingChannel"]
+          consented?: boolean
+          consentedAt?: string | null
+          createdAt?: string
+          customerId?: string
+          id?: string
+          revokedAt?: string | null
+          updatedAt?: string
+        }
+        Relationships: []
+      }
+      metricas_dashboard: {
+        Row: {
+          created_at: string | null
+          data_referencia: string
+          horarios_pico: Json | null
+          id: string
+          novos_clientes: number
+          servicos_populares: Json | null
+          taxa_cancelamento: number
+          tenant_id: string
+          ticket_medio: number
+          total_agendamentos: number
+          total_vendas: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_referencia: string
+          horarios_pico?: Json | null
+          id?: string
+          novos_clientes?: number
+          servicos_populares?: Json | null
+          taxa_cancelamento?: number
+          tenant_id: string
+          ticket_medio?: number
+          total_agendamentos?: number
+          total_vendas?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data_referencia?: string
+          horarios_pico?: Json | null
+          id?: string
+          novos_clientes?: number
+          servicos_populares?: Json | null
+          taxa_cancelamento?: number
+          tenant_id?: string
+          ticket_medio?: number
+          total_agendamentos?: number
+          total_vendas?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      onboarding_progress: {
+        Row: {
+          business_id: string | null
+          completed: boolean
+          completedAt: string | null
+          createdAt: string
+          data: Json | null
+          id: string
+          step: string
+          tenantId: string
+          updatedAt: string
+        }
+        Insert: {
+          business_id?: string | null
+          completed?: boolean
+          completedAt?: string | null
+          createdAt?: string
+          data?: Json | null
+          id: string
+          step: string
+          tenantId: string
+          updatedAt: string
+        }
+        Update: {
+          business_id?: string | null
+          completed?: boolean
+          completedAt?: string | null
+          createdAt?: string
+          data?: Json | null
+          id?: string
+          step?: string
+          tenantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_progress_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partnership_deals: {
+        Row: {
+          business_id: string | null
+          createdAt: string
+          description: string | null
+          endDate: string | null
+          id: string
+          isActive: boolean
+          partnerName: string
+          startDate: string
+          tenantId: string
+          terms: string | null
+          updatedAt: string
+        }
+        Insert: {
+          business_id?: string | null
+          createdAt?: string
+          description?: string | null
+          endDate?: string | null
+          id: string
+          isActive?: boolean
+          partnerName: string
+          startDate: string
+          tenantId: string
+          terms?: string | null
+          updatedAt: string
+        }
+        Update: {
+          business_id?: string | null
+          createdAt?: string
+          description?: string | null
+          endDate?: string | null
+          id?: string
+          isActive?: boolean
+          partnerName?: string
+          startDate?: string
+          tenantId?: string
+          terms?: string | null
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partnership_deals_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_logs: {
+        Row: {
+          created_at: string | null
+          details: Json | null
+          id: string
+          operation: string
+          status: string
+          tenant_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          operation: string
+          status: string
+          tenant_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          operation?: string
+          status?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          brand: string | null
+          created_at: string | null
+          customer_id: string | null
+          expiry_date: string | null
+          holder_name: string | null
+          id: string
+          is_default: boolean | null
+          last_four: string | null
+          metadata: Json | null
+          provider: string
+          provider_payment_method_id: string | null
+          tenant_id: string | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          expiry_date?: string | null
+          holder_name?: string | null
+          id?: string
+          is_default?: boolean | null
+          last_four?: string | null
+          metadata?: Json | null
+          provider: string
+          provider_payment_method_id?: string | null
+          tenant_id?: string | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          expiry_date?: string | null
+          holder_name?: string | null
+          id?: string
+          is_default?: boolean | null
+          last_four?: string | null
+          metadata?: Json | null
+          provider?: string
+          provider_payment_method_id?: string | null
+          tenant_id?: string | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payment_providers: {
+        Row: {
+          client_id: string | null
+          client_secret: string | null
+          configuration: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          provider_name: string
+          tenant_id: string | null
+          updated_at: string | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          client_secret?: string | null
+          configuration?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          provider_name: string
+          tenant_id?: string | null
+          updated_at?: string | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          client_secret?: string | null
+          configuration?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          provider_name?: string
+          tenant_id?: string | null
+          updated_at?: string | null
+          webhook_secret?: string | null
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string | null
+          business_id: string
+          created_at: string | null
+          id: string
+          payment_date: string | null
+          payment_method: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          booking_id?: string | null
+          business_id: string
+          created_at?: string | null
+          id?: string
+          payment_date?: string | null
+          payment_method: string
+          status: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          booking_id?: string | null
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          payment_date?: string | null
+          payment_method?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      permissions: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          module: string
+          name: Database["public"]["Enums"]["permission_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          module: string
+          name: Database["public"]["Enums"]["permission_type"]
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          module?: string
+          name?: Database["public"]["Enums"]["permission_type"]
         }
         Relationships: []
       }
       products: {
         Row: {
-          barbershop_id: string
           barcode: string | null
-          category: string
-          created_at: string | null
+          business_id: string | null
+          costPrice: number | null
+          createdAt: string
+          description: string | null
           id: string
-          last_sale: string | null
-          min_quantity: number | null
+          image: string | null
+          isActive: boolean
+          isSellable: boolean
+          isService: boolean
+          minStock: number | null
           name: string
-          price: number
-          quantity: number | null
-          sales_count: number | null
-          status: string | null
-          supplier: string | null
-          updated_at: string | null
+          salePrice: number | null
+          sku: string | null
+          tenantId: string
+          unit: Database["public"]["Enums"]["ProductUnit"]
+          updatedAt: string
         }
         Insert: {
-          barbershop_id: string
           barcode?: string | null
-          category: string
-          created_at?: string | null
-          id?: string
-          last_sale?: string | null
-          min_quantity?: number | null
+          business_id?: string | null
+          costPrice?: number | null
+          createdAt?: string
+          description?: string | null
+          id: string
+          image?: string | null
+          isActive?: boolean
+          isSellable?: boolean
+          isService?: boolean
+          minStock?: number | null
           name: string
-          price: number
-          quantity?: number | null
-          sales_count?: number | null
-          status?: string | null
-          supplier?: string | null
-          updated_at?: string | null
+          salePrice?: number | null
+          sku?: string | null
+          tenantId: string
+          unit?: Database["public"]["Enums"]["ProductUnit"]
+          updatedAt: string
         }
         Update: {
-          barbershop_id?: string
           barcode?: string | null
-          category?: string
-          created_at?: string | null
+          business_id?: string | null
+          costPrice?: number | null
+          createdAt?: string
+          description?: string | null
           id?: string
-          last_sale?: string | null
-          min_quantity?: number | null
+          image?: string | null
+          isActive?: boolean
+          isSellable?: boolean
+          isService?: boolean
+          minStock?: number | null
           name?: string
-          price?: number
-          quantity?: number | null
-          sales_count?: number | null
-          status?: string | null
-          supplier?: string | null
-          updated_at?: string | null
+          salePrice?: number | null
+          sku?: string | null
+          tenantId?: string
+          unit?: Database["public"]["Enums"]["ProductUnit"]
+          updatedAt?: string
         }
         Relationships: [
           {
-            foreignKeyName: "products_barbershop_id_fkey"
-            columns: ["barbershop_id"]
+            foreignKeyName: "products_tenantId_fkey"
+            columns: ["tenantId"]
             isOneToOne: false
-            referencedRelation: "barbershops"
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_commission_rules: {
+        Row: {
+          categoryId: string | null
+          commissionRuleId: string
+          createdAt: string
+          endDate: string | null
+          id: string
+          isActive: boolean
+          professionalId: string
+          serviceId: string | null
+          startDate: string | null
+          updatedAt: string
+        }
+        Insert: {
+          categoryId?: string | null
+          commissionRuleId: string
+          createdAt?: string
+          endDate?: string | null
+          id: string
+          isActive?: boolean
+          professionalId: string
+          serviceId?: string | null
+          startDate?: string | null
+          updatedAt: string
+        }
+        Update: {
+          categoryId?: string | null
+          commissionRuleId?: string
+          createdAt?: string
+          endDate?: string | null
+          id?: string
+          isActive?: boolean
+          professionalId?: string
+          serviceId?: string | null
+          startDate?: string | null
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_commission_rules_commissionRuleId_fkey"
+            columns: ["commissionRuleId"]
+            isOneToOne: false
+            referencedRelation: "commission_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_commission_rules_professionalId_fkey"
+            columns: ["professionalId"]
+            isOneToOne: false
+            referencedRelation: "professionals"
             referencedColumns: ["id"]
           },
         ]
       }
       professionals: {
         Row: {
+          avatar: string | null
           avatar_url: string | null
-          barbershop_id: string
           bio: string | null
-          cancelled_services: number | null
-          certifications: string[] | null
-          commission: number | null
-          completed_services: number | null
-          created_at: string | null
+          business_id: string
+          createdAt: string
           email: string | null
-          experience: number | null
-          hired_date: string | null
+          establishmentId: string
           id: string
-          is_owner: boolean | null
+          isActive: boolean
           name: string
           phone: string | null
           rating: number | null
-          specialties: string[] | null
           status: string | null
-          total_revenue: number | null
-          total_services: number | null
-          updated_at: string | null
-          work_days: string[] | null
-          work_hours_end: string | null
-          work_hours_start: string | null
+          tenantId: string
+          total_reviews: number | null
+          updatedAt: string
+          userId: string | null
+          working_hours: Json | null
+          workingHours: Json | null
         }
         Insert: {
+          avatar?: string | null
           avatar_url?: string | null
-          barbershop_id: string
           bio?: string | null
-          cancelled_services?: number | null
-          certifications?: string[] | null
-          commission?: number | null
-          completed_services?: number | null
-          created_at?: string | null
+          business_id: string
+          createdAt?: string
           email?: string | null
-          experience?: number | null
-          hired_date?: string | null
-          id?: string
-          is_owner?: boolean | null
+          establishmentId: string
+          id: string
+          isActive?: boolean
           name: string
           phone?: string | null
           rating?: number | null
-          specialties?: string[] | null
           status?: string | null
-          total_revenue?: number | null
-          total_services?: number | null
-          updated_at?: string | null
-          work_days?: string[] | null
-          work_hours_end?: string | null
-          work_hours_start?: string | null
+          tenantId: string
+          total_reviews?: number | null
+          updatedAt: string
+          userId?: string | null
+          working_hours?: Json | null
+          workingHours?: Json | null
         }
         Update: {
+          avatar?: string | null
           avatar_url?: string | null
-          barbershop_id?: string
           bio?: string | null
-          cancelled_services?: number | null
-          certifications?: string[] | null
-          commission?: number | null
-          completed_services?: number | null
-          created_at?: string | null
+          business_id?: string
+          createdAt?: string
           email?: string | null
-          experience?: number | null
-          hired_date?: string | null
+          establishmentId?: string
           id?: string
-          is_owner?: boolean | null
+          isActive?: boolean
           name?: string
           phone?: string | null
           rating?: number | null
-          specialties?: string[] | null
           status?: string | null
-          total_revenue?: number | null
-          total_services?: number | null
-          updated_at?: string | null
-          work_days?: string[] | null
-          work_hours_end?: string | null
-          work_hours_start?: string | null
+          tenantId?: string
+          total_reviews?: number | null
+          updatedAt?: string
+          userId?: string | null
+          working_hours?: Json | null
+          workingHours?: Json | null
         }
         Relationships: [
           {
-            foreignKeyName: "professionals_barbershop_id_fkey"
-            columns: ["barbershop_id"]
+            foreignKeyName: "professionals_business_id_fkey"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "barbershops"
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professionals_establishmentId_fkey"
+            columns: ["establishmentId"]
+            isOneToOne: false
+            referencedRelation: "establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professionals_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -562,324 +2083,851 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
-          created_at: string
+          business_id: string | null
+          created_at: string | null
           email: string | null
+          full_name: string | null
           id: string
-          nome: string | null
-          telefone: string | null
-          tipo_usuario: string | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
-          created_at?: string
+          business_id?: string | null
+          created_at?: string | null
           email?: string | null
+          full_name?: string | null
           id: string
-          nome?: string | null
-          telefone?: string | null
-          tipo_usuario?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
-          created_at?: string
+          business_id?: string | null
+          created_at?: string | null
           email?: string | null
+          full_name?: string | null
           id?: string
-          nome?: string | null
-          telefone?: string | null
-          tipo_usuario?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
-      projetos: {
+      role_permissions: {
         Row: {
-          data_atualizacao: string
-          data_criacao: string
-          descricao: string | null
+          created_at: string | null
           id: string
-          nome: string
-          repositorio_url: string | null
-          status: string
-          supabase_key: string | null
-          supabase_url: string | null
-          tipo: string
-          user_id: string
+          permission_name: Database["public"]["Enums"]["permission_type"]
+          role_id: string
         }
         Insert: {
-          data_atualizacao?: string
-          data_criacao?: string
-          descricao?: string | null
+          created_at?: string | null
           id?: string
-          nome: string
-          repositorio_url?: string | null
-          status?: string
-          supabase_key?: string | null
-          supabase_url?: string | null
-          tipo: string
-          user_id: string
+          permission_name: Database["public"]["Enums"]["permission_type"]
+          role_id: string
         }
         Update: {
-          data_atualizacao?: string
-          data_criacao?: string
-          descricao?: string | null
+          created_at?: string | null
           id?: string
-          nome?: string
-          repositorio_url?: string | null
-          status?: string
-          supabase_key?: string | null
-          supabase_url?: string | null
-          tipo?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      prompts: {
-        Row: {
-          categoria: string | null
-          conteudo: string
-          created_at: string
-          id: string
-          modelo_id: string | null
-          projeto_id: string | null
-          tags: string[] | null
-          titulo: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          categoria?: string | null
-          conteudo: string
-          created_at?: string
-          id?: string
-          modelo_id?: string | null
-          projeto_id?: string | null
-          tags?: string[] | null
-          titulo: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          categoria?: string | null
-          conteudo?: string
-          created_at?: string
-          id?: string
-          modelo_id?: string | null
-          projeto_id?: string | null
-          tags?: string[] | null
-          titulo?: string
-          updated_at?: string
-          user_id?: string
+          permission_name?: Database["public"]["Enums"]["permission_type"]
+          role_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "prompts_modelo_id_fkey"
-            columns: ["modelo_id"]
+            foreignKeyName: "role_permissions_permission_name_fkey"
+            columns: ["permission_name"]
             isOneToOne: false
-            referencedRelation: "modelos_llm"
-            referencedColumns: ["id"]
+            referencedRelation: "permissions"
+            referencedColumns: ["name"]
           },
           {
-            foreignKeyName: "prompts_projeto_id_fkey"
-            columns: ["projeto_id"]
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
             isOneToOne: false
-            referencedRelation: "projetos"
+            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
       }
-      recomendacoes_custo: {
+      roles: {
         Row: {
-          created_at: string
-          descricao: string
-          economia_potencial: number
+          business_id: string
+          created_at: string | null
+          description: string | null
           id: string
-          impacto: string
-          projeto_id: string
-          status: string
-          titulo: string
-          updated_at: string
+          is_system: boolean | null
+          name: string
+          role_type: Database["public"]["Enums"]["role_type"]
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          descricao: string
-          economia_potencial: number
+          business_id: string
+          created_at?: string | null
+          description?: string | null
           id?: string
-          impacto: string
-          projeto_id: string
-          status?: string
-          titulo: string
-          updated_at?: string
+          is_system?: boolean | null
+          name: string
+          role_type?: Database["public"]["Enums"]["role_type"]
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          descricao?: string
-          economia_potencial?: number
+          business_id?: string
+          created_at?: string | null
+          description?: string | null
           id?: string
-          impacto?: string
-          projeto_id?: string
-          status?: string
-          titulo?: string
-          updated_at?: string
+          is_system?: boolean | null
+          name?: string
+          role_type?: Database["public"]["Enums"]["role_type"]
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "recomendacoes_custo_projeto_id_fkey"
-            columns: ["projeto_id"]
+            foreignKeyName: "roles_business_id_fkey"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "projetos"
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_audit_logs: {
+        Row: {
+          action: string
+          business_id: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          success: boolean | null
+          table_name: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          business_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          success?: boolean | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          business_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          success?: boolean | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_audit_logs_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_events: {
+        Row: {
+          business_id: string | null
+          created_at: string | null
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      service_categories: {
+        Row: {
+          business_id: string | null
+          color: string | null
+          createdAt: string
+          description: string | null
+          icon: string | null
+          id: string
+          isActive: boolean
+          name: string
+          order: number
+          tenantId: string
+          updatedAt: string
+        }
+        Insert: {
+          business_id?: string | null
+          color?: string | null
+          createdAt?: string
+          description?: string | null
+          icon?: string | null
+          id: string
+          isActive?: boolean
+          name: string
+          order?: number
+          tenantId: string
+          updatedAt: string
+        }
+        Update: {
+          business_id?: string | null
+          color?: string | null
+          createdAt?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          isActive?: boolean
+          name?: string
+          order?: number
+          tenantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_categories_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_products: {
+        Row: {
+          createdAt: string
+          id: string
+          productId: string
+          quantity: number
+          serviceId: string
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          id: string
+          productId: string
+          quantity: number
+          serviceId: string
+          updatedAt: string
+        }
+        Update: {
+          createdAt?: string
+          id?: string
+          productId?: string
+          quantity?: number
+          serviceId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_products_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
       }
       services: {
         Row: {
-          average_rating: number | null
-          barbershop_id: string
-          category: string
-          commission: number | null
+          business_id: string
+          category: string | null
+          commission_percentage: number | null
           created_at: string | null
           description: string | null
           duration: number
           id: string
+          image_url: string | null
           is_active: boolean | null
           name: string
-          popularity: number | null
           price: number
-          professionals: string[] | null
           updated_at: string | null
         }
         Insert: {
-          average_rating?: number | null
-          barbershop_id: string
-          category: string
-          commission?: number | null
+          business_id: string
+          category?: string | null
+          commission_percentage?: number | null
           created_at?: string | null
           description?: string | null
           duration: number
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           name: string
-          popularity?: number | null
           price: number
-          professionals?: string[] | null
           updated_at?: string | null
         }
         Update: {
-          average_rating?: number | null
-          barbershop_id?: string
-          category?: string
-          commission?: number | null
+          business_id?: string
+          category?: string | null
+          commission_percentage?: number | null
           created_at?: string | null
           description?: string | null
           duration?: number
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           name?: string
-          popularity?: number | null
           price?: number
-          professionals?: string[] | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "services_barbershop_id_fkey"
-            columns: ["barbershop_id"]
+            foreignKeyName: "fk_services_business"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "barbershops"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
         ]
       }
+      stock_items: {
+        Row: {
+          batchNumber: string | null
+          business_id: string | null
+          createdAt: string
+          establishmentId: string
+          expiryDate: string | null
+          id: string
+          productId: string
+          quantity: number
+          tenantId: string
+          updatedAt: string
+        }
+        Insert: {
+          batchNumber?: string | null
+          business_id?: string | null
+          createdAt?: string
+          establishmentId: string
+          expiryDate?: string | null
+          id: string
+          productId: string
+          quantity: number
+          tenantId: string
+          updatedAt: string
+        }
+        Update: {
+          batchNumber?: string | null
+          business_id?: string | null
+          createdAt?: string
+          establishmentId?: string
+          expiryDate?: string | null
+          id?: string
+          productId?: string
+          quantity?: number
+          tenantId?: string
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_items_establishmentId_fkey"
+            columns: ["establishmentId"]
+            isOneToOne: false
+            referencedRelation: "establishments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_items_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_items_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_movements: {
+        Row: {
+          batchNumber: string | null
+          business_id: string | null
+          createdAt: string
+          createdById: string | null
+          establishmentId: string
+          expiryDate: string | null
+          id: string
+          notes: string | null
+          productId: string
+          quantity: number
+          reason: Database["public"]["Enums"]["MovementReason"]
+          tenantId: string
+          type: Database["public"]["Enums"]["MovementType"]
+        }
+        Insert: {
+          batchNumber?: string | null
+          business_id?: string | null
+          createdAt?: string
+          createdById?: string | null
+          establishmentId: string
+          expiryDate?: string | null
+          id: string
+          notes?: string | null
+          productId: string
+          quantity: number
+          reason: Database["public"]["Enums"]["MovementReason"]
+          tenantId: string
+          type: Database["public"]["Enums"]["MovementType"]
+        }
+        Update: {
+          batchNumber?: string | null
+          business_id?: string | null
+          createdAt?: string
+          createdById?: string | null
+          establishmentId?: string
+          expiryDate?: string | null
+          id?: string
+          notes?: string | null
+          productId?: string
+          quantity?: number
+          reason?: Database["public"]["Enums"]["MovementReason"]
+          tenantId?: string
+          type?: Database["public"]["Enums"]["MovementType"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_productId_fkey"
+            columns: ["productId"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_tenantId_fkey"
+            columns: ["tenantId"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          features: Json | null
+          id: string
+          interval: string
+          interval_count: number
+          name: string
+          price: number
+          provider_plan_id: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          interval: string
+          interval_count?: number
+          name: string
+          price: number
+          provider_plan_id?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          interval?: string
+          interval_count?: number
+          name?: string
+          price?: number
+          provider_plan_id?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          canceled_at: string | null
+          created_at: string | null
+          customer_id: string | null
+          end_date: string | null
+          id: string
+          metadata: Json | null
+          payment_method: string | null
+          plan_id: string | null
+          provider_subscription_id: string | null
+          start_date: string
+          status: string
+          tenant_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          plan_id?: string | null
+          provider_subscription_id?: string | null
+          start_date: string
+          status: string
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          plan_id?: string | null
+          provider_subscription_id?: string | null
+          start_date?: string
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          createdAt: string
+          customDomain: string | null
+          id: string
+          name: string
+          planExpiresAt: string | null
+          planId: string | null
+          settings: Json | null
+          slug: string
+          status: Database["public"]["Enums"]["TenantStatus"]
+          updatedAt: string
+        }
+        Insert: {
+          createdAt?: string
+          customDomain?: string | null
+          id: string
+          name: string
+          planExpiresAt?: string | null
+          planId?: string | null
+          settings?: Json | null
+          slug: string
+          status?: Database["public"]["Enums"]["TenantStatus"]
+          updatedAt: string
+        }
+        Update: {
+          createdAt?: string
+          customDomain?: string | null
+          id?: string
+          name?: string
+          planExpiresAt?: string | null
+          planId?: string | null
+          settings?: Json | null
+          slug?: string
+          status?: Database["public"]["Enums"]["TenantStatus"]
+          updatedAt?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
-          appointment_id: string | null
-          barbershop_id: string
-          category: string
+          booking_id: string | null
+          business_id: string
+          category_id: string | null
           client_id: string | null
           created_at: string | null
-          description: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
           id: string
+          notes: string | null
+          payment_date: string | null
           payment_method: string | null
-          professional_id: string | null
-          recurring: boolean | null
-          service_id: string | null
+          receipt_url: string | null
           status: string | null
-          tags: string[] | null
-          transaction_date: string
           type: string
           updated_at: string | null
         }
         Insert: {
           amount: number
-          appointment_id?: string | null
-          barbershop_id: string
-          category: string
+          booking_id?: string | null
+          business_id: string
+          category_id?: string | null
           client_id?: string | null
           created_at?: string | null
-          description: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
           id?: string
+          notes?: string | null
+          payment_date?: string | null
           payment_method?: string | null
-          professional_id?: string | null
-          recurring?: boolean | null
-          service_id?: string | null
+          receipt_url?: string | null
           status?: string | null
-          tags?: string[] | null
-          transaction_date: string
           type: string
           updated_at?: string | null
         }
         Update: {
           amount?: number
-          appointment_id?: string | null
-          barbershop_id?: string
-          category?: string
+          booking_id?: string | null
+          business_id?: string
+          category_id?: string | null
           client_id?: string | null
           created_at?: string | null
-          description?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
           id?: string
+          notes?: string | null
+          payment_date?: string | null
           payment_method?: string | null
-          professional_id?: string | null
-          recurring?: boolean | null
-          service_id?: string | null
+          receipt_url?: string | null
           status?: string | null
-          tags?: string[] | null
-          transaction_date?: string
           type?: string
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "transactions_appointment_id_fkey"
-            columns: ["appointment_id"]
+            foreignKeyName: "transactions_business_id_fkey"
+            columns: ["business_id"]
             isOneToOne: false
-            referencedRelation: "appointments"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "transactions_barbershop_id_fkey"
-            columns: ["barbershop_id"]
+            foreignKeyName: "transactions_category_id_fkey"
+            columns: ["category_id"]
             isOneToOne: false
-            referencedRelation: "barbershops"
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          createdAt: string
+          id: string
+          roleId: string
+          userId: string
+        }
+        Insert: {
+          createdAt?: string
+          id: string
+          roleId: string
+          userId: string
+        }
+        Update: {
+          createdAt?: string
+          id?: string
+          roleId?: string
+          userId?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          atualizado_em: string | null
+          cpf: string | null
+          criado_em: string | null
+          data_nascimento: string | null
+          email: string
+          funcao: string | null
+          id: string
+          id_negocio: string | null
+          nome_completo: string
+          senha_hash: string | null
+          status: string | null
+          telefone: string | null
+          ultimo_acesso: string | null
+          url_avatar: string | null
+        }
+        Insert: {
+          atualizado_em?: string | null
+          cpf?: string | null
+          criado_em?: string | null
+          data_nascimento?: string | null
+          email: string
+          funcao?: string | null
+          id?: string
+          id_negocio?: string | null
+          nome_completo: string
+          senha_hash?: string | null
+          status?: string | null
+          telefone?: string | null
+          ultimo_acesso?: string | null
+          url_avatar?: string | null
+        }
+        Update: {
+          atualizado_em?: string | null
+          cpf?: string | null
+          criado_em?: string | null
+          data_nascimento?: string | null
+          email?: string
+          funcao?: string | null
+          id?: string
+          id_negocio?: string | null
+          nome_completo?: string
+          senha_hash?: string | null
+          status?: string | null
+          telefone?: string | null
+          ultimo_acesso?: string | null
+          url_avatar?: string | null
+        }
+        Relationships: []
+      }
+      webhook_events: {
+        Row: {
+          created_at: string | null
+          error: string | null
+          event_id: string
+          event_type: string
+          id: string
+          payload: Json
+          processed: boolean | null
+          processed_at: string | null
+          provider: string
+          tenant_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error?: string | null
+          event_id: string
+          event_type: string
+          id?: string
+          payload: Json
+          processed?: boolean | null
+          processed_at?: string | null
+          provider: string
+          tenant_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error?: string | null
+          event_id?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          processed?: boolean | null
+          processed_at?: string | null
+          provider?: string
+          tenant_id?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      appointments: {
+        Row: {
+          business_id: string | null
+          client_id: string | null
+          created_at: string | null
+          date: string | null
+          duration: number | null
+          end_time: string | null
+          id: string | null
+          notes: string | null
+          price: number | null
+          professional_id: string | null
+          service_id: string | null
+          start_time: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          date?: string | null
+          duration?: number | null
+          end_time?: string | null
+          id?: string | null
+          notes?: string | null
+          price?: number | null
+          professional_id?: string | null
+          service_id?: string | null
+          start_time?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          date?: string | null
+          duration?: number | null
+          end_time?: string | null
+          id?: string | null
+          notes?: string | null
+          price?: number | null
+          professional_id?: string | null
+          service_id?: string | null
+          start_time?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_appointments_business"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "transactions_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transactions_professional_id_fkey"
-            columns: ["professional_id"]
-            isOneToOne: false
-            referencedRelation: "professionals"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transactions_service_id_fkey"
+            foreignKeyName: "fk_appointments_service"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
@@ -888,17 +2936,324 @@ export type Database = {
         ]
       }
     }
-    Views: {
-      [_ in never]: never
-    }
     Functions: {
-      user_barbershop_id: {
+      belongs_to_tenant: {
+        Args: { tenant_id: string }
+        Returns: boolean
+      }
+      check_data_integrity: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          table_name: string
+          issue_type: string
+          issue_count: number
+          description: string
+        }[]
+      }
+      clean_existing_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      clear_tenant_context: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      convert_tenant_id_to_business_id: {
+        Args: { tenant_text: string }
+        Returns: string
+      }
+      create_default_roles_for_business: {
+        Args: { business_id_param: string }
+        Returns: undefined
+      }
+      ensure_user_business_access: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      fetch_agendamentos: {
+        Args: { business_id_param: string }
+        Returns: Json[]
+      }
+      get_appointments_with_details: {
+        Args: { p_business_id: string }
+        Returns: {
+          id: string
+          business_id: string
+          client_id: string
+          client_name: string
+          employee_id: string
+          employee_name: string
+          service_id: string
+          service_name: string
+          booking_date: string
+          start_time: string
+          end_time: string
+          duration: number
+          price: number
+          status: string
+          notes: string
+          payment_method: string
+          created_at: string
+        }[]
+      }
+      get_business_metrics: {
+        Args: { p_business_id: string }
+        Returns: Json
+      }
+      get_current_tenant_context: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_current_tenant_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_error_message: {
+        Args: { error_code: string; default_message?: string }
+        Returns: string
+      }
+      get_user_business_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_business_id_safe: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_business_ids: {
+        Args: Record<PropertyKey, never>
+        Returns: string[]
+      }
+      get_user_permissions: {
+        Args: { user_id_param: string; business_id_param: string }
+        Returns: Database["public"]["Enums"]["permission_type"][]
+      }
+      get_user_tenant_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      has_permission: {
+        Args: { permission_name: string }
+        Returns: boolean
+      }
+      log_security_audit: {
+        Args: {
+          action_param: string
+          table_name_param?: string
+          record_id_param?: string
+          old_values_param?: Json
+          new_values_param?: Json
+          business_id_param?: string
+        }
+        Returns: undefined
+      }
+      log_security_event: {
+        Args: {
+          event_type_param: string
+          business_id_param?: string
+          details_param?: Json
+        }
+        Returns: undefined
+      }
+      migrate_all_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      migrate_businesses: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      migrate_clients: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      normalize_status: {
+        Args: { status_value: string }
+        Returns: string
+      }
+      obter_metricas_periodo: {
+        Args:
+          | { business_id_param: string; periodo?: string }
+          | { p_tenant_id: string; p_data_inicio: string; p_data_fim: string }
+        Returns: Json
+      }
+      obter_metricas_periodo_safe: {
+        Args: { business_id_param: string; periodo?: string }
+        Returns: Json
+      }
+      set_business_status: {
+        Args: { business_id: string; new_status: string }
+        Returns: boolean
+      }
+      set_tenant_context: {
+        Args: { tenant_id: string }
+        Returns: undefined
+      }
+      sync_legacy_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      table_exists: {
+        Args: { table_name: string }
+        Returns: boolean
+      }
+      user_belongs_to_business_safe: {
+        Args: { business_id_param: string }
+        Returns: boolean
+      }
+      user_belongs_to_business_secure: {
+        Args: { business_id_param: string }
+        Returns: boolean
+      }
+      user_belongs_to_tenant: {
+        Args: { tenant_id: string }
+        Returns: boolean
+      }
+      user_has_business_access_secure: {
+        Args: { business_id_param: string }
+        Returns: boolean
+      }
+      user_has_permission: {
+        Args: {
+          permission_name: Database["public"]["Enums"]["permission_type"]
+          business_id_param?: string
+        }
+        Returns: boolean
+      }
+      user_has_permission_on_resource: {
+        Args: { resource_name: string }
+        Returns: boolean
+      }
+      user_has_role: {
+        Args: { role_name: string }
+        Returns: boolean
+      }
+      user_is_admin_for_tenant: {
+        Args: { tenant_id: string }
+        Returns: boolean
+      }
+      usuario_tem_acesso_ao_negocio: {
+        Args: { id_negocio_verificar: string }
+        Returns: boolean
+      }
+      validate_email: {
+        Args: { email_text: string }
+        Returns: boolean
+      }
+      validate_phone: {
+        Args: { phone_text: string }
+        Returns: boolean
+      }
+      validate_zip_code: {
+        Args: { zip_text: string }
+        Returns: boolean
+      }
+      verificar_completar_onboarding: {
+        Args: { business_id_param: string }
+        Returns: Json
+      }
+      verificar_completar_onboarding_v2: {
+        Args: { business_id_param: string }
+        Returns: Json
+      }
     }
     Enums: {
-      [_ in never]: never
+      AccountType: "CASH" | "BANK" | "CREDIT_CARD" | "PAYMENT_GATEWAY" | "OTHER"
+      AppointmentSource: "STAFF" | "ONLINE" | "INTEGRATION"
+      AppointmentStatus:
+        | "SCHEDULED"
+        | "CONFIRMED"
+        | "COMPLETED"
+        | "CANCELLED"
+        | "NO_SHOW"
+      CampaignStatus: "DRAFT" | "SCHEDULED" | "SENT" | "CANCELLED"
+      CampaignType:
+        | "PROMOTION"
+        | "ANNOUNCEMENT"
+        | "REMINDER"
+        | "BIRTHDAY"
+        | "REACTIVATION"
+        | "LOYALTY"
+        | "CUSTOM"
+      CommissionStatus: "PENDING" | "PAID" | "CANCELLED"
+      CommissionType: "FIXED" | "PERCENTAGE" | "PROGRESSIVE"
+      Gender: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY"
+      IntegrationStatus: "ACTIVE" | "INACTIVE" | "ERROR"
+      IntegrationType:
+        | "PAYMENT_GATEWAY"
+        | "CALENDAR"
+        | "MESSAGING"
+        | "ACCOUNTING"
+        | "MARKETING"
+        | "CUSTOM"
+      LoyaltyAction:
+        | "EARN_PER_VISIT"
+        | "EARN_PER_SPEND"
+        | "EARN_PER_SERVICE"
+        | "EARN_PER_PRODUCT"
+        | "EARN_PER_REFERRAL"
+        | "REDEEM_DISCOUNT"
+        | "REDEEM_FREE_SERVICE"
+        | "REDEEM_FREE_PRODUCT"
+        | "REDEEM_CUSTOM"
+      LoyaltyTransactionType: "EARN" | "REDEEM" | "EXPIRE" | "ADJUST"
+      MarketingChannel: "EMAIL" | "SMS" | "WHATSAPP" | "PUSH"
+      MovementReason:
+        | "PURCHASE"
+        | "SALE"
+        | "RETURN"
+        | "LOSS"
+        | "EXPIRY"
+        | "ADJUSTMENT"
+        | "TRANSFER"
+        | "SERVICE_USAGE"
+        | "OTHER"
+      MovementType: "IN" | "OUT" | "ADJUSTMENT"
+      PaymentMethod:
+        | "CASH"
+        | "CREDIT_CARD"
+        | "DEBIT_CARD"
+        | "BANK_TRANSFER"
+        | "PIX"
+        | "BOLETO"
+        | "ONLINE"
+        | "OTHER"
+      permission_type:
+        | "appointments.view"
+        | "appointments.create"
+        | "appointments.edit"
+        | "appointments.delete"
+        | "clients.view"
+        | "clients.create"
+        | "clients.edit"
+        | "clients.delete"
+        | "services.view"
+        | "services.create"
+        | "services.edit"
+        | "services.delete"
+        | "professionals.view"
+        | "professionals.create"
+        | "professionals.edit"
+        | "professionals.delete"
+        | "financial.view"
+        | "financial.create"
+        | "financial.edit"
+        | "financial.delete"
+        | "reports.view"
+        | "inventory.view"
+        | "inventory.create"
+        | "inventory.edit"
+        | "inventory.delete"
+        | "settings.view"
+        | "settings.edit"
+        | "admin.full_access"
+      ProductUnit: "UNIT" | "KG" | "G" | "MG" | "L" | "ML" | "M" | "CM" | "MM"
+      role_type: "owner" | "admin" | "manager" | "staff" | "professional"
+      TenantStatus: "ACTIVE" | "SUSPENDED" | "CANCELLED" | "TRIAL"
+      TransactionStatus: "PENDING" | "PAID" | "CANCELLED" | "PARTIAL"
+      TransactionType: "INCOME" | "EXPENSE" | "TRANSFER"
+      user_status: "active" | "inactive" | "blocked" | "pending"
+      UserStatus: "ACTIVE" | "INACTIVE" | "SUSPENDED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1013,6 +3368,110 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      AccountType: ["CASH", "BANK", "CREDIT_CARD", "PAYMENT_GATEWAY", "OTHER"],
+      AppointmentSource: ["STAFF", "ONLINE", "INTEGRATION"],
+      AppointmentStatus: [
+        "SCHEDULED",
+        "CONFIRMED",
+        "COMPLETED",
+        "CANCELLED",
+        "NO_SHOW",
+      ],
+      CampaignStatus: ["DRAFT", "SCHEDULED", "SENT", "CANCELLED"],
+      CampaignType: [
+        "PROMOTION",
+        "ANNOUNCEMENT",
+        "REMINDER",
+        "BIRTHDAY",
+        "REACTIVATION",
+        "LOYALTY",
+        "CUSTOM",
+      ],
+      CommissionStatus: ["PENDING", "PAID", "CANCELLED"],
+      CommissionType: ["FIXED", "PERCENTAGE", "PROGRESSIVE"],
+      Gender: ["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"],
+      IntegrationStatus: ["ACTIVE", "INACTIVE", "ERROR"],
+      IntegrationType: [
+        "PAYMENT_GATEWAY",
+        "CALENDAR",
+        "MESSAGING",
+        "ACCOUNTING",
+        "MARKETING",
+        "CUSTOM",
+      ],
+      LoyaltyAction: [
+        "EARN_PER_VISIT",
+        "EARN_PER_SPEND",
+        "EARN_PER_SERVICE",
+        "EARN_PER_PRODUCT",
+        "EARN_PER_REFERRAL",
+        "REDEEM_DISCOUNT",
+        "REDEEM_FREE_SERVICE",
+        "REDEEM_FREE_PRODUCT",
+        "REDEEM_CUSTOM",
+      ],
+      LoyaltyTransactionType: ["EARN", "REDEEM", "EXPIRE", "ADJUST"],
+      MarketingChannel: ["EMAIL", "SMS", "WHATSAPP", "PUSH"],
+      MovementReason: [
+        "PURCHASE",
+        "SALE",
+        "RETURN",
+        "LOSS",
+        "EXPIRY",
+        "ADJUSTMENT",
+        "TRANSFER",
+        "SERVICE_USAGE",
+        "OTHER",
+      ],
+      MovementType: ["IN", "OUT", "ADJUSTMENT"],
+      PaymentMethod: [
+        "CASH",
+        "CREDIT_CARD",
+        "DEBIT_CARD",
+        "BANK_TRANSFER",
+        "PIX",
+        "BOLETO",
+        "ONLINE",
+        "OTHER",
+      ],
+      permission_type: [
+        "appointments.view",
+        "appointments.create",
+        "appointments.edit",
+        "appointments.delete",
+        "clients.view",
+        "clients.create",
+        "clients.edit",
+        "clients.delete",
+        "services.view",
+        "services.create",
+        "services.edit",
+        "services.delete",
+        "professionals.view",
+        "professionals.create",
+        "professionals.edit",
+        "professionals.delete",
+        "financial.view",
+        "financial.create",
+        "financial.edit",
+        "financial.delete",
+        "reports.view",
+        "inventory.view",
+        "inventory.create",
+        "inventory.edit",
+        "inventory.delete",
+        "settings.view",
+        "settings.edit",
+        "admin.full_access",
+      ],
+      ProductUnit: ["UNIT", "KG", "G", "MG", "L", "ML", "M", "CM", "MM"],
+      role_type: ["owner", "admin", "manager", "staff", "professional"],
+      TenantStatus: ["ACTIVE", "SUSPENDED", "CANCELLED", "TRIAL"],
+      TransactionStatus: ["PENDING", "PAID", "CANCELLED", "PARTIAL"],
+      TransactionType: ["INCOME", "EXPENSE", "TRANSFER"],
+      user_status: ["active", "inactive", "blocked", "pending"],
+      UserStatus: ["ACTIVE", "INACTIVE", "SUSPENDED"],
+    },
   },
 } as const
