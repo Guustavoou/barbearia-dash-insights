@@ -71,7 +71,7 @@ import {
   FileJson,
   Import,
   Export,
-  Backup,
+  Archive,
   CloudDownload,
   CircleCheck,
   CircleX,
@@ -559,7 +559,7 @@ export const BeautifulSettingsImproved: React.FC<
       label: "Notificações",
       icon: Bell,
       color: "from-blue-700 to-blue-800",
-      description: "Alertas e comunicações",
+      description: "Alertas e comunicaç��es",
     },
     {
       id: "security",
