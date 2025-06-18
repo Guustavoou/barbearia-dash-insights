@@ -1,6 +1,22 @@
 
 import { ApiResponse } from './types';
 
+// Export the NeonClient interface
+export interface NeonClient {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  birth_date?: string;
+  notes?: string;
+  business_id: string;
+  created_at: string;
+  status: string;
+  total_spent: number;
+  visits: number;
+}
+
 export interface ClientsApiInterface {
   getClients: (params?: any) => Promise<ApiResponse<any[]>>;
   addClient: (clientData: any) => Promise<ApiResponse<any>>;
@@ -73,3 +89,6 @@ export const clientsApi: ClientsApiInterface = {
 
 // Export as ClientsAPI for backward compatibility
 export const ClientsAPI = clientsApi;
+
+// Re-export ApiResponse for convenience
+export { ApiResponse } from './types';

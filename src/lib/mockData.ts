@@ -253,3 +253,42 @@ export const revenueData = mockRevenueData;
 // Add missing export for birthdays and dashboardData
 export const birthdays = mockBirthdays;
 export const dashboardData = mockDashboardData;
+
+// Add missing export for topServices
+export const topServices = [
+  {
+    id: '1',
+    name: 'Corte Feminino',
+    count: 45,
+    revenue: 2700.00,
+    percentage: 35
+  },
+  {
+    id: '2',
+    name: 'Coloração',
+    count: 30,
+    revenue: 3600.00,
+    percentage: 25
+  },
+  {
+    id: '3',
+    name: 'Escova',
+    count: 25,
+    revenue: 1000.00,
+    percentage: 20
+  },
+  {
+    id: '4',
+    name: 'Corte Masculino',
+    count: 20,
+    revenue: 800.00,
+    percentage: 15
+  },
+  {
+    id: '5',
+    name: 'Manicure',
+    count: 15,
+    revenue: 450.00,
+    percentage: 12
+  }
+];

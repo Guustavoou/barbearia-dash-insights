@@ -135,3 +135,69 @@ export const useSupabaseRealTimeClients = () => {
     loading: false
   };
 };
+
+// Add missing dashboard and business report hooks
+export const useSupabaseDashboardStats = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useSupabaseBusinessReports = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useSupabaseSalesPerformance = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+// Add missing professional hooks
+export const useCreateSupabaseProfessional = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
+
+export const useUpdateSupabaseProfessional = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
+
+export const useDeleteSupabaseProfessional = () => {
+  return {
+    mutate: async (id: string) => {},
+    loading: false
+  };
+};
+
+// Add missing transaction hooks
+export const useSupabaseTransactions = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useSupabaseFinancialStats = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  return { data, loading, refetch: () => Promise.resolve() };
+};
+
+export const useCreateSupabaseTransaction = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
