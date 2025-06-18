@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { Calendar, List, Plus, BarChart3 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/unclicUtils";
@@ -33,20 +32,13 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   const [sortOrder, setSortOrder] = useState<AppointmentSortOrder>("desc");
   const [showNewModal, setShowNewModal] = useState(false);
 
-  // API integration with automatic fallback
+  // API integration with automatic fallback - Updated to match hook signatures
   const {
-    data: appointments,
+    data: appointmentsData,
     loading,
     error,
     refetch,
-  } = useAppointments({
-    search: searchTerm,
-    status: statusFilter !== "todos" ? statusFilter : undefined,
-    sort: sortBy,
-    order: sortOrder.toUpperCase() as "ASC" | "DESC",
-    page: 1,
-    limit: 100,
-  });
+  } = useAppointments();
 
   const createAppointmentMutation = useCreateAppointment({
     onSuccess: () => {
@@ -66,6 +58,9 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
       refetch();
     },
   });
+
+  // Get appointments array safely
+  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -101,7 +96,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   };
 
   const handleUpdateAppointment = async (id: number, appointmentData: any) => {
-    await updateAppointmentMutation.mutate({ id, data: appointmentData });
+    await updateAppointmentMutation.mutate(id, appointmentData);
   };
 
   const handleDeleteAppointment = async (id: number) => {

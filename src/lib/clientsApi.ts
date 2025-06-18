@@ -25,6 +25,33 @@ export interface NeonClient {
   avgInterval?: number;
 }
 
+// Helper function to create a client object with all required fields
+export const createClientData = (clientInput: {
+  name: string;
+  email: string;
+  phone: string;
+  address?: string;
+  birthDate?: string;
+  notes?: string;
+  status?: "ativo" | "inativo";
+}): Omit<NeonClient, "id" | "createdAt" | "totalSpent" | "visitCount" | "avgInterval" | "visits"> => {
+  return {
+    name: clientInput.name,
+    email: clientInput.email,
+    phone: clientInput.phone,
+    city: "São Paulo", // Default city
+    business_id: "default-business", // Default business ID
+    birth_date: clientInput.birthDate || null,
+    notes: clientInput.notes || null,
+    created_at: new Date().toISOString(),
+    status: clientInput.status || "ativo",
+    total_spent: 0,
+    address: clientInput.address || "",
+    lastVisit: null,
+    birthDate: clientInput.birthDate || null,
+  };
+};
+
 export interface ClientsApiInterface {
   getClients: (params?: any) => Promise<ApiResponse<any[]>>;
   addClient: (clientData: any) => Promise<ApiResponse<any>>;
@@ -52,9 +79,10 @@ export const clientsApi: ClientsApiInterface = {
   async addClient(clientData: any) {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
+      const fullClientData = createClientData(clientData);
       return {
         success: true,
-        data: { ...clientData, id: Date.now().toString() }
+        data: { ...fullClientData, id: Date.now().toString() }
       };
     } catch (error: any) {
       return {
@@ -67,9 +95,10 @@ export const clientsApi: ClientsApiInterface = {
   async updateClient(id: string, updates: any) {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
+      const fullClientData = createClientData(updates);
       return {
         success: true,
-        data: { ...updates, id }
+        data: { ...fullClientData, id }
       };
     } catch (error: any) {
       return {

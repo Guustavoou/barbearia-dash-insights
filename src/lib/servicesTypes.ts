@@ -1,50 +1,28 @@
-export interface Service {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  duration: number; // in minutes
-  commission: number; // percentage
-  isActive: boolean;
-  popularity: number; // number of bookings
-  averageRating: number;
-  professionals: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
 
-export interface ServiceCategory {
+// Service-related types and interfaces
+export type ServiceCategory = 
+  | 'cabelo' 
+  | 'barba' 
+  | 'manicure' 
+  | 'pedicure' 
+  | 'estetica' 
+  | 'massagem' 
+  | 'outros';
+
+export type ServiceSortField = 'name' | 'price' | 'duration' | 'category' | 'created_at';
+export type ServiceSortOrder = 'asc' | 'desc';
+
+export interface Service {
   id: string;
   name: string;
-  description: string;
-  services: number; // count of services in this category
-  color: string;
-}
-
-export interface ServiceStats {
-  totalServices: number;
-  activeServices: number;
-  totalRevenue: number;
-  averagePrice: number;
-  mostPopularService: string;
-  categoriesCount: number;
-}
-
-export interface ServiceFormData {
-  name: string;
-  description: string;
-  category: string;
+  description?: string;
+  category: ServiceCategory;
   price: number;
   duration: number;
-  commission: number;
-  professionals: string[];
+  is_active: boolean;
+  commission_percentage?: number;
+  image_url?: string;
+  business_id: string;
+  created_at: string;
+  updated_at: string;
 }
-
-export type ServiceSortField =
-  | "name"
-  | "price"
-  | "duration"
-  | "popularity"
-  | "category";
-export type ServiceSortOrder = "asc" | "desc";

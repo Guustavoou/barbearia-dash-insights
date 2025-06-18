@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { clientsApi } from '@/lib/clientsApi';
 
-export const useClients = (params?: any) => {
+export const useClients = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -12,7 +12,7 @@ export const useClients = (params?: any) => {
     setError(null);
     
     try {
-      const result = await clientsApi.getClients(params);
+      const result = await clientsApi.getClients();
       
       if (!result.success) {
         setError(result.error || 'Failed to fetch clients');
@@ -94,7 +94,7 @@ export const useDeleteClient = (options?: { onSuccess?: () => void }) => {
 };
 
 // Appointment hooks with consistent signatures
-export const useAppointments = (params?: any) => {
+export const useAppointments = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +114,7 @@ export const useAppointments = (params?: any) => {
     }
   };
 
-  return { data, loading, error, refetch };
+  return { data, loading, error, refetch, isLoading: loading };
 };
 
 export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
@@ -142,7 +142,7 @@ export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
 export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
   const [loading, setLoading] = useState(false);
   
-  const mutate = async (variables: { id: any; data: any }) => {
+  const mutate = async (id: any, data: any) => {
     setLoading(true);
     try {
       // Mock implementation
@@ -184,7 +184,7 @@ export const useDeleteAppointment = (options?: { onSuccess?: () => void }) => {
 };
 
 // Professional hooks
-export const useProfessionals = (params?: any) => {
+export const useProfessionals = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -232,7 +232,7 @@ export const useCreateProfessional = (options?: { onSuccess?: () => void }) => {
 export const useUpdateProfessional = (options?: { onSuccess?: () => void }) => {
   const [loading, setLoading] = useState(false);
   
-  const mutate = async (variables: { id: any; data: any }) => {
+  const mutate = async (id: any, data: any) => {
     setLoading(true);
     try {
       // Mock implementation
@@ -274,7 +274,7 @@ export const useDeleteProfessional = (options?: { onSuccess?: () => void }) => {
 };
 
 // Services hooks
-export const useServices = (params?: any) => {
+export const useServices = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -298,7 +298,7 @@ export const useServices = (params?: any) => {
 };
 
 // Transactions hooks
-export const useTransactions = (params?: any) => {
+export const useTransactions = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -322,7 +322,7 @@ export const useTransactions = (params?: any) => {
 };
 
 // Dashboard stats hook
-export const useDashboardStats = (params?: any) => {
+export const useDashboardStats = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
