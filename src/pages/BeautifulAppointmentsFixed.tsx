@@ -951,7 +951,7 @@ export default function BeautifulAppointmentsFixed() {
   });
 
   // Calcular KPIs
-  const todayAppointments = appointments.filter((apt) => {
+  const todayAppointments = (appointments || []).filter((apt) => {
     const today = new Date().toDateString();
     const aptDate = apt.date ? new Date(apt.date).toDateString() : null;
     return aptDate === today;
