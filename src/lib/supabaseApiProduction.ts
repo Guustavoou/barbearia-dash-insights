@@ -680,6 +680,7 @@ export class SupabaseApiProduction {
   }) {
     try {
       logSupabaseDebug("Fetching transactions...", params);
+      logSupabaseDebug(`Using business_id: ${this.businessId}`);
 
       let query = supabase.from("transactions").select("*", { count: "exact" });
       query = this.addBusinessFilter(query);
