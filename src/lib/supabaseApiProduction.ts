@@ -112,16 +112,17 @@ export class SupabaseApiProduction {
       const { data: todayAppointments, error: todayError } = await supabase
         .from("appointments")
         .select("*")
-        .eq("business_id", this.businessId)
         .eq("date", today);
 
-      if (todayError) throw todayError;
+      if (todayError) {
+        logSupabaseError("Error fetching today's appointments", todayError);
+        throw todayError;
+      }
 
       // Calculate revenue
       const { data: monthlyRevenue, error: revenueError } = await supabase
         .from("appointments")
         .select("price")
-        .eq("business_id", this.businessId)
         .eq("status", "completed")
         .gte(
           "date",
