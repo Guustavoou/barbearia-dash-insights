@@ -196,7 +196,7 @@ const UnclicAppContent: React.FC = () => {
         );
       case "services":
         return (
-          <BeautifulServices
+          <BeautifulServicesProduction
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
