@@ -1174,7 +1174,7 @@ export default function BeautifulAppointmentsFixed() {
                   {occupancyRate.toFixed(1)}%
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-[#00112F] to-blue-700 rounded-xl text-white shadow-lg">
                 <Target className="w-6 h-6" />
               </div>
             </div>
@@ -1199,7 +1199,7 @@ export default function BeautifulAppointmentsFixed() {
                   R$ {todayRevenue.toFixed(2)}
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl text-white shadow-lg">
                 <DollarSign className="w-6 h-6" />
               </div>
             </div>
@@ -1224,7 +1224,7 @@ export default function BeautifulAppointmentsFixed() {
                   {occupancyRate.toFixed(1)}%
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-700 to-blue-900 rounded-xl text-white shadow-lg">
                 <Users className="w-6 h-6" />
               </div>
             </div>
@@ -1249,7 +1249,7 @@ export default function BeautifulAppointmentsFixed() {
                   {schedulingRate.toFixed(1)}%
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl text-white shadow-lg">
                 <CheckCircle className="w-6 h-6" />
               </div>
             </div>
@@ -1274,7 +1274,7 @@ export default function BeautifulAppointmentsFixed() {
                   {avgServiceTime}min
                 </p>
               </div>
-              <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl text-white shadow-lg">
+              <div className="p-3 bg-gradient-to-br from-blue-800 to-[#00112F] rounded-xl text-white shadow-lg">
                 <Clock className="w-6 h-6" />
               </div>
             </div>
