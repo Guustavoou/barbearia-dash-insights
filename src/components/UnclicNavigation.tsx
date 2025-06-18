@@ -21,12 +21,14 @@ interface UnclicNavigationProps {
   currentPage: "landing" | "about" | "contact";
   onPageChange: (page: "landing" | "about" | "contact") => void;
   scrollY?: number;
+  onNavigateToLogin?: () => void;
 }
 
 export const UnclicNavigation: React.FC<UnclicNavigationProps> = ({
   currentPage,
   onPageChange,
   scrollY = 0,
+  onNavigateToLogin,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
