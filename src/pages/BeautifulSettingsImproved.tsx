@@ -559,7 +559,7 @@ export const BeautifulSettingsImproved: React.FC<
       label: "Notificações",
       icon: Bell,
       color: "from-blue-700 to-blue-800",
-      description: "Alertas e comunicaç��es",
+      description: "Alertas e comunicações",
     },
     {
       id: "security",
@@ -730,7 +730,7 @@ export const BeautifulSettingsImproved: React.FC<
                     Exportar Configurações
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleBackupNow}>
-                    <Backup className="w-4 h-4 mr-2" />
+                    <Archive className="w-4 h-4 mr-2" />
                     Backup Manual
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
