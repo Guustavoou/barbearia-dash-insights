@@ -83,6 +83,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import { universalExport } from "@/lib/exportUtils";
+import { realSupabaseIntegration } from "@/lib/realSupabaseIntegration";
 // 🚀 INTEGRAÇÃO PRODUCTION SUPABASE - 100% DADOS REAIS
 import {
   useClients,
