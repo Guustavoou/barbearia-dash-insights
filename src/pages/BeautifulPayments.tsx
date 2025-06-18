@@ -94,7 +94,6 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
   const metrics = useMemo(() => {
     const safePayments = getPaymentsArray(paymentsData);
     const totalPayments = safePayments.length;
-    const totalPayments = safePayments.length;
     const approvedPayments = safePayments.filter(
       (p) => p.status === "confirmado",
     ).length;
