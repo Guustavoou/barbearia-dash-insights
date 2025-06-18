@@ -67,6 +67,7 @@ export interface DashboardData {
 }
 
 export type PageType =
+  | "landing"
   | "dashboard"
   | "clients"
   | "appointments"
