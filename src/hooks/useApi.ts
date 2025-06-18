@@ -92,3 +92,93 @@ export const useDeleteClient = (options?: { onSuccess?: () => void }) => {
 
   return { mutate, isLoading: loading };
 };
+
+// Add missing appointment hooks
+export const useAppointments = (params?: any) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data: { data }, loading, error, refetch };
+};
+
+export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (appointmentData: any) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading };
+};
+
+export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (variables: { id: any; data: any }) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading };
+};
+
+export const useDeleteAppointment = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (id: any) => {
+    setLoading(true);
+    try {
+      // Mock implementation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading };
+};
