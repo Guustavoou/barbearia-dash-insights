@@ -172,7 +172,7 @@ const UnclicAppContent: React.FC = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "landing":
-        return <UnclicLanding />;
+        return <UnclicWebsite />;
       case "dashboard":
         return (
           <BeautifulDashboardProduction
