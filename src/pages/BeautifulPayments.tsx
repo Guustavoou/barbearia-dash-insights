@@ -40,9 +40,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import {
-  useSupabaseTransactions,
-  useCreateSupabaseTransaction,
-} from "@/hooks/useSupabaseApi";
+  useTransactions,
+  useCreateTransaction,
+} from "@/hooks/useSupabaseProduction";
 
 interface BeautifulPaymentsProps {
   darkMode: boolean;
