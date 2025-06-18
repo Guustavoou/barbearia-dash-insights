@@ -1,3 +1,4 @@
+
 import { supabase } from './supabase';
 import { NeonClient, ApiResponse } from './clientsApi';
 import { 
@@ -264,9 +265,9 @@ export const supabaseAPI = {
           name: serviceData.name,
           description: serviceData.description,
           price: serviceData.price,
-          duration_minutes: serviceData.duration,
+          duration: serviceData.duration,
           category: serviceData.category,
-          is_active: serviceData.isActive
+          is_active: true
         })
         .select()
         .single();
@@ -293,7 +294,7 @@ export const supabaseAPI = {
           name: updates.name,
           description: updates.description,
           price: updates.price,
-          duration_minutes: updates.duration,
+          duration: updates.duration,
           category: updates.category,
           is_active: updates.isActive
         })
@@ -374,7 +375,7 @@ export const supabaseAPI = {
     }
   },
 
-  async createProfessional(professionalData: Omit<Professional, 'id' | 'createdAt' | 'updatedAt'>>): Promise<ApiResponse<Professional>> {
+  async createProfessional(professionalData: Omit<Professional, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Professional>> {
     try {
       const { data, error } = await supabase
         .from('professionals')
@@ -382,8 +383,6 @@ export const supabaseAPI = {
           name: professionalData.name,
           email: professionalData.email,
           phone: professionalData.phone,
-          specialty: professionalData.specialty,
-          commission_rate: professionalData.commissionRate,
           status: professionalData.status
         })
         .select()
@@ -411,8 +410,6 @@ export const supabaseAPI = {
           name: updates.name,
           email: updates.email,
           phone: updates.phone,
-          specialty: updates.specialty,
-          commission_rate: updates.commissionRate,
           status: updates.status
         })
         .eq('id', id)
@@ -485,7 +482,7 @@ export const supabaseAPI = {
     }
   },
 
-  async createAppointment(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>>): Promise<ApiResponse<Appointment>> {
+  async createAppointment(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Appointment>> {
     try {
       const { data, error } = await supabase
         .from('appointments')
@@ -608,7 +605,7 @@ export const supabaseAPI = {
     }
   },
 
-  async createProduct(productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>): Promise<ApiResponse<Product>> {
+  async createProduct(productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Product>> {
     try {
       const { data, error } = await supabase
         .from('products')
@@ -617,10 +614,10 @@ export const supabaseAPI = {
           sku: productData.sku,
           category: productData.category,
           brand: productData.brand,
-          cost_price: productData.costPrice,
+          costPrice: productData.costPrice,
           price: productData.price,
-          current_stock: productData.currentStock,
-          min_stock: productData.minStock,
+          currentStock: productData.currentStock,
+          minStock: productData.minStock,
           status: productData.status
         })
         .select()
@@ -649,10 +646,10 @@ export const supabaseAPI = {
           sku: updates.sku,
           category: updates.category,
           brand: updates.brand,
-          cost_price: updates.costPrice,
+          costPrice: updates.costPrice,
           price: updates.price,
-          current_stock: updates.currentStock,
-          min_stock: updates.minStock,
+          currentStock: updates.currentStock,
+          minStock: updates.minStock,
           status: updates.status
         })
         .eq('id', id)
@@ -725,7 +722,7 @@ export const supabaseAPI = {
     }
   },
 
-  async createTransaction(transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>>): Promise<ApiResponse<Transaction>> {
+  async createTransaction(transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Transaction>> {
     try {
       const { data, error } = await supabase
         .from('transactions')
