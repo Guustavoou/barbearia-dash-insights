@@ -15,7 +15,7 @@ import { EnhancedInteractiveDashboard } from "@/pages/EnhancedInteractiveDashboa
 import BeautifulDashboardProduction from "@/pages/BeautifulDashboardProduction";
 import BeautifulClientsProduction from "@/pages/BeautifulClientsProduction";
 import BeautifulServicesProduction from "@/pages/BeautifulServicesProduction";
-import { BeautifulAppointmentsFixed } from "@/pages/BeautifulAppointmentsFixed";
+import BeautifulAppointmentsFixed from "@/pages/BeautifulAppointmentsFixed";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
 // LEGACY COMPONENTS (for backup)
