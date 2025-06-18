@@ -47,6 +47,13 @@ import {
   TabletSmartphone,
   Activity,
   Send,
+  Settings,
+  UserCheck,
+  Bot,
+  CreditCard,
+  TrendingDown,
+  Briefcase,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
@@ -62,6 +69,14 @@ interface Feature {
   gradient: string;
 }
 
+interface Solution {
+  number: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
 interface Testimonial {
   name: string;
   role: string;
@@ -69,19 +84,6 @@ interface Testimonial {
   avatar: string;
   content: string;
   rating: number;
-}
-
-interface Plan {
-  name: string;
-  price: string;
-  originalPrice?: string;
-  description: string;
-  features: string[];
-  badge?: string;
-  badgeColor?: string;
-  buttonText: string;
-  buttonVariant: "default" | "secondary" | "outline";
-  popular?: boolean;
 }
 
 export const UnclicLanding: React.FC = () => {
@@ -97,46 +99,102 @@ export const UnclicLanding: React.FC = () => {
 
   const features: Feature[] = [
     {
-      icon: Calendar,
-      title: "Agendamentos Inteligentes",
-      description:
-        "Sistema automatizado que integra WhatsApp, lembretes automáticos e gestão completa de agenda em tempo real.",
+      icon: Settings,
+      title: "Configuração Inicial",
+      description: "Configure horários, funcionários e serviços rapidamente.",
       gradient: "from-blue-500 to-cyan-500",
     },
     {
-      icon: BarChart3,
-      title: "Relatórios Avançados",
+      icon: MessageCircle,
+      title: "Agendamentos Automatizados",
       description:
-        "Dashboards intuitivos com métricas de performance, análise de faturamento e insights estratégicos para crescimento.",
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: Users,
-      title: "Gestão de Clientes",
-      description:
-        "CRM completo com histórico detalhado, preferências, programa de fidelidade e comunicação personalizada.",
+        "Seus clientes agendam diretamente pelo WhatsApp, sem complicações.",
       gradient: "from-green-500 to-emerald-500",
     },
     {
-      icon: PieChart,
-      title: "Controle Financeiro",
+      icon: BarChart3,
+      title: "Gestão Completa",
       description:
-        "Gestão completa de receitas, despesas, comissões e relatórios fiscais com integração bancária.",
+        "Acompanhe agendamentos, estoque e finanças em uma plataforma centralizada.",
+      gradient: "from-purple-500 to-pink-500",
+    },
+  ];
+
+  const solutions: Solution[] = [
+    {
+      number: "1",
+      title: "Agendamentos Inteligentes",
+      description:
+        "Automatize agendamentos e reduza a carga de trabalho com IA integrada ao WhatsApp.",
+      buttonText: "Teste gratis agora mesmo",
+      icon: Calendar,
+    },
+    {
+      number: "2",
+      title: "Gestão Centralizada",
+      description:
+        "Controle tudo, desde estoque até relatórios financeiros, em um só lugar.",
+      buttonText: "Teste gratis agora mesmo",
+      icon: Building,
+    },
+    {
+      number: "3",
+      title: "Ferramentas de Comunicação",
+      description:
+        "Respostas automáticas e comunicação eficiente para facilitar o atendimento ao cliente.",
+      buttonText: "Teste gratis agora mesmo",
+      icon: MessageCircle,
+    },
+    {
+      number: "4",
+      title: "Pagamentos e Relatórios",
+      description:
+        "Processamento de pagamentos e relatórios financeiros que oferecem clareza e controle.",
+      buttonText: "Teste gratis agora mesmo",
+      icon: CreditCard,
+    },
+  ];
+
+  const features2: Feature[] = [
+    {
+      icon: Building,
+      title: "Gestão Integrada",
+      description: "Controle total das operações com um dashboard intuitivo.",
+      gradient: "from-blue-500 to-purple-500",
+    },
+    {
+      icon: Bot,
+      title: "Automação Personalizada",
+      description: "Processos otimizados para aumentar a produtividade.",
+      gradient: "from-green-500 to-blue-500",
+    },
+    {
+      icon: HeadphonesIcon,
+      title: "Suporte Especializado",
+      description:
+        "Equipe pronta para ajudar em todas as etapas do seu negócio.",
+      gradient: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: Activity,
+      title: "Insights em tempo real",
+      description:
+        "Fique à frente com monitoramento de desempenho preciso e em tempo real",
       gradient: "from-orange-500 to-red-500",
     },
     {
-      icon: Smartphone,
-      title: "App Mobile Nativo",
+      icon: TrendingUp,
+      title: "Crescimento mensurável",
       description:
-        "Aplicativo completo para iOS e Android com sincronização em tempo real e funcionalidades offline.",
-      gradient: "from-indigo-500 to-blue-500",
+        "Monitore seu progresso e alcance um crescimento sustentável",
+      gradient: "from-teal-500 to-green-500",
     },
     {
-      icon: Shield,
-      title: "Segurança Máxima",
+      icon: Users,
+      title: "Colaboração perfeita",
       description:
-        "Proteção de dados com criptografia, backup automático e conformidade com LGPD e regulamentações.",
-      gradient: "from-teal-500 to-green-500",
+        "simplifique seu fluxo de trabalho, tudo em um só lugar com facilidade",
+      gradient: "from-indigo-500 to-blue-500",
     },
   ];
 
@@ -170,427 +228,430 @@ export const UnclicLanding: React.FC = () => {
     },
   ];
 
-  const plans: Plan[] = [
-    {
-      name: "Starter",
-      price: "R$ 97",
-      originalPrice: "R$ 197",
-      description: "Perfeito para salões e barbearias iniciantes",
-      features: [
-        "Até 500 agendamentos/mês",
-        "Integração WhatsApp",
-        "Relatórios básicos",
-        "App mobile",
-        "Suporte por email",
-        "1 usuário",
-      ],
-      buttonText: "Começar Grátis",
-      buttonVariant: "outline",
-    },
-    {
-      name: "Professional",
-      price: "R$ 197",
-      originalPrice: "R$ 397",
-      description: "Para estabelecimentos em crescimento",
-      features: [
-        "Agendamentos ilimitados",
-        "WhatsApp + SMS + Email",
-        "Relatórios avançados",
-        "App mobile premium",
-        "Suporte prioritário",
-        "Até 5 usuários",
-        "Programa de fidelidade",
-        "Integração fiscal",
-      ],
-      badge: "Mais Popular",
-      badgeColor: "bg-gradient-to-r from-blue-500 to-purple-500",
-      buttonText: "Experimentar 30 Dias Grátis",
-      buttonVariant: "default",
-      popular: true,
-    },
-    {
-      name: "Enterprise",
-      price: "R$ 397",
-      originalPrice: "R$ 797",
-      description: "Solução completa para redes e franquias",
-      features: [
-        "Tudo do Professional",
-        "Multi-unidades ilimitadas",
-        "API personalizada",
-        "Relatórios corporativos",
-        "Suporte 24/7",
-        "Usuários ilimitados",
-        "Integrações avançadas",
-        "Consultoria especializada",
-      ],
-      badge: "Enterprise",
-      badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500",
-      buttonText: "Falar com Especialista",
-      buttonVariant: "secondary",
-    },
+  const scrollingFeatures = [
+    "Instant Savings",
+    "Flexible Payments",
+    "Smart Spending",
+    "Customizable Plans",
+    "Smart Insights",
+    "Automatic Adjustments",
+    "Real-Time Reports",
+    "Secure Transactions",
+    "Dedicated Support",
+    "Growth With AI",
   ];
-
-  const stats = [
-    { number: "15,000+", label: "Estabelecimentos Ativos", icon: Building },
-    { number: "2.5M+", label: "Agendamentos Processados", icon: Calendar },
-    { number: "98%", label: "Satisfação dos Clientes", icon: Heart },
-    { number: "35%", label: "Aumento Médio de Faturamento", icon: TrendingUp },
-  ];
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setActiveSection(sectionId);
-    }
-  };
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      {/* Navigation */}
-      <nav
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          scrollY > 50
-            ? "bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-100"
-            : "bg-transparent",
-        )}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-orange-400 to-pink-500 rounded-full animate-pulse" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  UNCLIC
-                </h1>
-                <p className="text-xs text-gray-500 -mt-1">Beauty Tech</p>
-              </div>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              {[
-                { id: "hero", label: "Início" },
-                { id: "features", label: "Recursos" },
-                { id: "testimonials", label: "Clientes" },
-                { id: "pricing", label: "Preços" },
-                { id: "contact", label: "Contato" },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={cn(
-                    "text-sm font-medium transition-colors duration-200 hover:text-blue-600",
-                    activeSection === item.id
-                      ? "text-blue-600"
-                      : "text-gray-700",
-                  )}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                Entrar
-              </Button>
-              <Button
-                size="sm"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
-              >
-                Teste Grátis
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
-            <div className="px-4 py-6 space-y-4">
-              {[
-                { id: "hero", label: "Início" },
-                { id: "features", label: "Recursos" },
-                { id: "testimonials", label: "Clientes" },
-                { id: "pricing", label: "Preços" },
-                { id: "contact", label: "Contato" },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    scrollToSection(item.id);
-                    setIsMenuOpen(false);
-                  }}
-                  className="block w-full text-left text-gray-700 hover:text-blue-600 py-2"
-                >
-                  {item.label}
-                </button>
-              ))}
-              <div className="pt-4 space-y-3">
-                <Button variant="ghost" className="w-full justify-start">
-                  Entrar
-                </Button>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                  Teste Grátis
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section
-        id="hero"
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      >
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob" />
-          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000" />
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="blob absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="blob absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-to-r from-yellow-400/30 to-pink-400/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="blob absolute bottom-1/4 left-1/3 w-96 h-96 bg-gradient-to-r from-green-400/30 to-blue-400/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-8">
-            <Badge className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border-0 px-4 py-2 mb-6">
-              <Rocket className="w-4 h-4 mr-2" />
-              #1 em Gestão para Salões de Beleza
+            <Badge className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 border-blue-200 mb-4">
+              <Sparkles className="w-4 h-4 mr-2" />
+              UNCLIC.TECH
             </Badge>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6">
-            Transforme Seu
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent block">
-              Salão em uma
-            </span>
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-              Máquina de Vendas
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Transforme a gestão do{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              seu estabelecimento
             </span>
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-            A única plataforma que você precisa para{" "}
-            <span className="font-semibold text-blue-600">automatizar</span>,{" "}
-            <span className="font-semibold text-purple-600">gerenciar</span> e{" "}
-            <span className="font-semibold text-pink-600">escalar</span> seu
-            negócio de beleza. Aumente seu faturamento em até{" "}
-            <span className="font-bold text-green-600">40%</span> nos primeiros
-            90 dias.
+            Automação de agendamentos, controle de estoque e gestão completa do
+            seu estabelecimento em uma única plataforma integrada ao WhatsApp.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-2xl px-8 py-4 text-lg rounded-xl transform hover:scale-105 transition-all duration-200"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
             >
-              <Play className="w-5 h-5 mr-2" />
-              Começar Teste Grátis de 30 Dias
+              <Rocket className="w-5 h-5 mr-2" />
+              Cadastra-se
             </Button>
             <Button
-              variant="outline"
               size="lg"
-              className="border-2 border-gray-300 hover:border-blue-500 px-8 py-4 text-lg rounded-xl"
+              variant="outline"
+              className="border-2 border-purple-200 hover:border-purple-300 px-8 py-4 text-lg hover:bg-purple-50 transition-all duration-300"
             >
-              <Eye className="w-5 h-5 mr-2" />
+              <Play className="w-5 h-5 mr-2" />
               Ver Demonstração
             </Button>
           </div>
 
-          <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-              Sem fidelidade
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto text-sm text-gray-600">
+            <div className="flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+              Sistema 100% Gratuito
             </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+            <div className="flex items-center justify-center">
+              <HeadphonesIcon className="w-5 h-5 text-blue-500 mr-2" />
               Suporte 24/7
             </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+            <div className="flex items-center justify-center">
+              <Clock className="w-5 h-5 text-purple-500 mr-2" />
               Configuração em 24h
             </div>
           </div>
         </div>
-
-        {/* Floating Dashboard Preview */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 hidden lg:block">
-          <div className="relative">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-96 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-800">
-                  Dashboard Preview
-                </h3>
-                <Badge className="bg-green-100 text-green-700">
-                  <Activity className="w-3 h-3 mr-1" />
-                  Live
-                </Badge>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">247</div>
-                  <div className="text-xs text-blue-700">Agendamentos hoje</div>
-                </div>
-                <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">
-                    R$ 8,5K
-                  </div>
-                  <div className="text-xs text-green-700">Receita mensal</div>
-                </div>
-              </div>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl -z-10 scale-110" />
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-gray-400" />
-        </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-gray-900 to-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                    {stat.number}
-                  </div>
-                  <div className="text-gray-300 text-sm md:text-base">
-                    {stat.label}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      {/* How it Works Section */}
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge className="bg-blue-50 text-blue-600 border-blue-200 mb-4">
-              <Zap className="w-4 h-4 mr-2" />
-              Recursos Poderosos
+              <Lightbulb className="w-4 h-4 mr-2" />
+              Como Funciona
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Tudo que você precisa para
+              Conheça a simplicidade e eficiência da{" "}
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {" "}
-                dominar o mercado
-              </span>
+                Unclic
+              </span>{" "}
+              para gerenciar seu negócio
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Uma suíte completa de ferramentas profissionais desenvolvidas
-              especificamente para estabelecimentos de beleza modernos
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
                 <Card
                   key={index}
-                  className="relative p-8 border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white overflow-hidden group"
+                  className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative z-10">
-                    <div
-                      className={cn(
-                        "w-16 h-16 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-r",
-                        feature.gradient,
-                      )}
-                    >
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                      {feature.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
                   <div
                     className={cn(
-                      "absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-5 rounded-full blur-2xl transform translate-x-16 -translate-y-16",
+                      "w-16 h-16 rounded-2xl bg-gradient-to-r flex items-center justify-center mb-6",
                       feature.gradient,
                     )}
-                  />
+                  >
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
                 </Card>
               );
             })}
           </div>
+        </div>
+      </section>
 
-          {/* Integration Section */}
-          <div className="mt-20 bg-gradient-to-r from-gray-50 to-gray-100 rounded-3xl p-8 md:p-12">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Integração Total com suas Ferramentas Favoritas
-              </h3>
-              <p className="text-gray-600 text-lg">
-                Conecte-se facilmente com mais de 50+ aplicações essenciais
-              </p>
-            </div>
+      {/* Scrolling Features Section */}
+      <section className="py-12 bg-white overflow-hidden">
+        <div className="text-center mb-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            Explore o Universo de Soluções da unclic!
+          </h3>
+          <p className="text-gray-600">
+            Não importa qual seja o seu segmento, aqui você encontra a
+            ferramenta perfeita para impulsionar o seu negócio.
+          </p>
+        </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center">
-              {[
-                "WhatsApp",
-                "Instagram",
-                "Google",
-                "Mercado Pago",
-                "PagSeguro",
-                "Stripe",
-              ].map((integration, index) => (
-                <div
+        <div className="relative">
+          <div className="flex animate-scroll space-x-8">
+            {[...Array(4)].map((_, setIndex) => (
+              <div key={setIndex} className="flex space-x-8 flex-shrink-0">
+                {scrollingFeatures.map((feature, index) => (
+                  <div
+                    key={`${setIndex}-${index}`}
+                    className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl px-6 py-3 border border-blue-100 flex-shrink-0"
+                  >
+                    <span className="text-blue-700 font-medium whitespace-nowrap">
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-purple-50 text-purple-600 border-purple-200 mb-4">
+              <Target className="w-4 h-4 mr-2" />
+              Nossas Soluções
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Descubra as ferramentas que vão{" "}
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                transformar a gestão
+              </span>{" "}
+              da sua empresa
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {solutions.map((solution, index) => {
+              const Icon = solution.icon;
+              return (
+                <Card
                   key={index}
-                  className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-200 w-24 h-24 flex items-center justify-center"
+                  className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
                 >
-                  <span className="font-semibold text-gray-600 text-sm text-center">
-                    {integration}
-                  </span>
+                  <div className="flex items-start mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mr-4 flex-shrink-0">
+                      {solution.number}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3">
+                        {solution.title}
+                      </h3>
+                      <p className="text-gray-600 mb-6 leading-relaxed">
+                        {solution.description}
+                      </p>
+                      <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
+                        {solution.buttonText}
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* AI & Efficiency Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-green-50 text-green-600 border-green-200 mb-4">
+              <Zap className="w-4 h-4 mr-2" />
+              EFICIÊNCIA ORIENTADA POR IA
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Nunca perca uma oportunidade
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Capture leads, analise tendências e centralize insights críticos
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            <Card className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-purple-50">
+              <Globe className="w-12 h-12 text-blue-600 mb-6" />
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Integração sem esforço
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Seus dados são sincronizados em tempo real em todos os
+                dispositivos, garantindo que você permaneça conectado e
+                informado, on-line ou off-line.
+              </p>
+            </Card>
+
+            <Card className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-blue-50">
+              <Shield className="w-12 h-12 text-green-600 mb-6" />
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Seguro e escalável
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                A criptografia de nível empresarial protege suas informações,
+                enquanto ferramentas flexíveis se adaptam às necessidades do seu
+                negócio.
+              </p>
+            </Card>
+
+            <Card className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-pink-50">
+              <BarChart3 className="w-12 h-12 text-purple-600 mb-6" />
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Insights acionáveis
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Aproveite a análise com tecnologia de IA para identificar
+                tendências, prever resultados e otimizar seu fluxo de trabalho
+                sem esforço.
+              </p>
+            </Card>
+          </div>
+
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-3xl p-8 md:p-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-6">
+                  Análise Inteligente & Colaboração em tempo real
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <TrendingUp className="w-6 h-6 text-green-500 mr-3" />
+                    <span className="text-gray-700">
+                      <strong className="text-green-600">35% aumento</strong> no
+                      faturamento
+                    </span>
+                  </div>
                 </div>
-              ))}
+              </div>
+              <div className="text-center">
+                <div className="w-64 h-64 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full mx-auto flex items-center justify-center">
+                  <BarChart3 className="w-32 h-32 text-blue-600" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Integration Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-blue-50 text-blue-600 border-blue-200 mb-4">
+              <Globe className="w-4 h-4 mr-2" />
+              Integrations
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Conexões perfeitas
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Integre-se sem esforço com suas ferramentas e plataformas
+              favoritas.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center">
+            {[
+              "WhatsApp",
+              "Instagram",
+              "Google",
+              "Mercado Pago",
+              "PagSeguro",
+              "Stripe",
+            ].map((integration, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-200 w-24 h-24 flex items-center justify-center"
+              >
+                <span className="font-semibold text-gray-600 text-sm text-center">
+                  {integration}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-purple-50 text-purple-600 border-purple-200 mb-4">
+              <Star className="w-4 h-4 mr-2" />
+              FEATURES
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Todos os recursos em uma ferramenta
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Tudo o que você precisa para colaborar, criar e escalar, tudo em
+              um só lugar.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features2.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <Card
+                  key={index}
+                  className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
+                >
+                  <div
+                    className={cn(
+                      "w-16 h-16 rounded-2xl bg-gradient-to-r flex items-center justify-center mb-6",
+                      feature.gradient,
+                    )}
+                  >
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* About Company Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-blue-50 text-blue-600 border-blue-200 mb-4">
+              <Building className="w-4 h-4 mr-2" />
+              INTRODUCING UNCLIC
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              A Plataforma Completa para{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Gerenciar Seu Negócio!
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto mb-8">
+              Transformando Desafios em Oportunidades
+            </p>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg"
+            >
+              Teste Gratuitamente
+            </Button>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  A Unclic foi desenvolvida para simplificar e potencializar a
+                  gestão de negócios de diversos segmentos. Com uma plataforma
+                  intuitiva e funcionalidades robustas, oferecemos soluções sob
+                  medida para que você se concentre no crescimento e na
+                  satisfação dos seus clientes.
+                </p>
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  Nossa missão é conectar inovação com a realidade de cada
+                  empreendimento, garantindo eficiência, automação e análises
+                  precisas para uma tomada de decisão assertiva.
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-48 h-48 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-4xl font-bold text-blue-600">UC</span>
+                </div>
+                <p className="text-gray-600">Co-founder & ex google designer</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge className="bg-green-50 text-green-600 border-green-200 mb-4">
@@ -604,10 +665,6 @@ export const UnclicLanding: React.FC = () => {
               </span>{" "}
               confiam na UNCLIC
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Veja como nossos clientes transformaram seus negócios e alcançaram
-              resultados extraordinários
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -645,319 +702,199 @@ export const UnclicLanding: React.FC = () => {
               </Card>
             ))}
           </div>
-
-          {/* Social Proof */}
-          <div className="mt-16 text-center">
-            <p className="text-gray-500 mb-8">
-              Avaliação média de 4.9/5 baseada em mais de 2,500 reviews
-            </p>
-            <div className="flex justify-center items-center space-x-8 opacity-60">
-              <div className="flex items-center space-x-2">
-                <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                <span className="font-semibold">4.9</span>
-                <span className="text-sm">Google</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                <span className="font-semibold">4.8</span>
-                <span className="text-sm">Trustpilot</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                <span className="font-semibold">4.9</span>
-                <span className="text-sm">App Store</span>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Pricing Section - NEW FREE MODEL */}
       <section id="pricing" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="bg-purple-50 text-purple-600 border-purple-200 mb-4">
-              <Crown className="w-4 h-4 mr-2" />
-              Planos e Preços
+            <Badge className="bg-green-50 text-green-600 border-green-200 mb-4">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Modelo Gratuito
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Escolha o plano perfeito
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                {" "}
-                para seu negócio
+              Sistema{" "}
+              <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                100% Gratuito
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Sem surpresas, sem taxas ocultas. Todos os planos incluem suporte
-              especializado e atualizações gratuitas
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+              O sistema é gratuito, sem taxa de implantação, mensalidade,
+              manutenção, e etc. Cobramos apenas uma taxa de serviço de{" "}
+              <strong className="text-green-600">
+                R$ 2,58 por agendamento
+              </strong>{" "}
+              já incluído taxa de processamento de pagamentos.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {plans.map((plan, index) => (
-              <Card
-                key={index}
-                className={cn(
-                  "relative p-8 border-2 transition-all duration-300 hover:shadow-2xl",
-                  plan.popular
-                    ? "border-purple-200 shadow-xl scale-105"
-                    : "border-gray-200 hover:border-purple-200",
-                )}
-              >
-                {plan.badge && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge
-                      className={cn(
-                        "text-white border-0 px-4 py-1",
-                        plan.badgeColor,
-                      )}
-                    >
-                      {plan.badge}
-                    </Badge>
-                  </div>
-                )}
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-12 border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 shadow-2xl">
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  Plano Único - Gratuito
+                </h3>
+                <p className="text-lg text-gray-600 mb-6">
+                  Todas as funcionalidades incluídas, sem limitações
+                </p>
 
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    {plan.name}
-                  </h3>
-                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-green-600">
+                    R$ 0
+                  </span>
+                  <span className="text-gray-600 text-xl">/mês</span>
+                </div>
 
-                  <div className="mb-4">
-                    {plan.originalPrice && (
-                      <span className="text-lg text-gray-400 line-through mr-2">
-                        {plan.originalPrice}
-                      </span>
-                    )}
-                    <span className="text-4xl font-bold text-gray-900">
-                      {plan.price}
+                <Badge className="bg-green-100 text-green-700 text-lg px-4 py-2">
+                  Apenas R$ 2,58 por agendamento realizado
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {[
+                  "✓ Agendamentos ilimitados",
+                  "✓ Integração WhatsApp completa",
+                  "✓ Gestão de clientes e estoque",
+                  "✓ Relatórios financeiros avançados",
+                  "✓ App mobile nativo",
+                  "✓ Suporte 24/7 especializado",
+                  "✓ Backup automático",
+                  "✓ Segurança empresarial",
+                  "✓ Múltiplos usuários",
+                  "✓ API personalizada",
+                  "✓ Programa de fidelidade",
+                  "✓ Configuração em 24h",
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center">
+                    <span className="text-green-600 text-lg mr-3">✓</span>
+                    <span className="text-gray-700">
+                      {feature.replace("✓ ", "")}
                     </span>
-                    <span className="text-gray-600">/mês</span>
                   </div>
+                ))}
+              </div>
 
-                  {plan.originalPrice && (
-                    <Badge className="bg-red-100 text-red-600 border-red-200">
-                      50% OFF - Oferta Limitada
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
+              <div className="text-center">
                 <Button
-                  className={cn(
-                    "w-full py-3",
-                    plan.buttonVariant === "default" &&
-                      "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white",
-                    plan.buttonVariant === "outline" &&
-                      "border-2 border-purple-600 text-purple-600 hover:bg-purple-50",
-                    plan.buttonVariant === "secondary" &&
-                      "bg-gray-100 text-gray-900 hover:bg-gray-200",
-                  )}
+                  size="lg"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-12 py-4 text-lg"
                 >
-                  {plan.buttonText}
+                  Começar Gratuitamente Agora
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
+                <p className="text-sm text-gray-500 mt-4">
+                  Sem cartão de crédito • Configuração imediata • Suporte
+                  incluído
+                </p>
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-16 text-center">
+            <h3 className="text-2xl font-bold text-gray-900 mb-8">
+              Perguntas Frequentes
+            </h3>
+            <div className="max-w-3xl mx-auto space-y-4">
+              <Card className="p-6 text-left">
+                <h4 className="font-bold text-gray-900 mb-2">
+                  Como funciona a cobrança por agendamento?
+                </h4>
+                <p className="text-gray-600">
+                  Você só paga quando um agendamento é efetivado no sistema. A
+                  taxa de R$ 2,58 já inclui todos os custos de processamento de
+                  pagamentos e uso da plataforma.
+                </p>
               </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-gray-600 mb-4">
-              Precisa de algo personalizado para sua rede ou franquia?
-            </p>
-            <Button variant="outline" size="lg">
-              <HeadphonesIcon className="w-5 h-5 mr-2" />
-              Falar com Especialista
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-900 via-purple-900 to-pink-900 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-        </div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Pronto para revolucionar
-            <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-              {" "}
-              seu negócio?
-            </span>
-          </h2>
-
-          <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-            Junte-se a milhares de proprietários que já transformaram seus
-            salões em máquinas de vendas automatizadas
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <Button
-              size="lg"
-              className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 text-lg rounded-xl transform hover:scale-105 transition-all duration-200 shadow-2xl"
-            >
-              <Rocket className="w-5 h-5 mr-2" />
-              Começar Agora - 30 Dias Grátis
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-purple-900 px-8 py-4 text-lg rounded-xl"
-            >
-              <Phone className="w-5 h-5 mr-2" />
-              (11) 9 9999-9999
-            </Button>
-          </div>
-
-          <div className="flex items-center justify-center space-x-8 text-sm text-gray-300">
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-              Configuração em 24h
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-              Migração gratuita
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-              Suporte especializado
+              <Card className="p-6 text-left">
+                <h4 className="font-bold text-gray-900 mb-2">
+                  Existe alguma taxa de setup ou mensalidade?
+                </h4>
+                <p className="text-gray-600">
+                  Não! O sistema é 100% gratuito para usar. Não cobramos taxa de
+                  implantação, mensalidade, manutenção ou qualquer outro custo
+                  fixo.
+                </p>
+              </Card>
+              <Card className="p-6 text-left">
+                <h4 className="font-bold text-gray-900 mb-2">
+                  Posso cancelar a qualquer momento?
+                </h4>
+                <p className="text-gray-600">
+                  Sim! Como não há contratos ou mensalidades, você pode parar de
+                  usar a qualquer momento sem nenhum custo adicional.
+                </p>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-gray-50">
+      <section
+        id="contact"
+        className="py-20 bg-gradient-to-br from-blue-900 via-purple-900 to-blue-900"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <Badge className="bg-blue-50 text-blue-600 border-blue-200 mb-4">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Fale Conosco
+            <div className="text-white">
+              <Badge className="bg-white/10 text-white border-white/20 mb-4">
+                <Mail className="w-4 h-4 mr-2" />
+                Entre em Contato
               </Badge>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Vamos conversar sobre
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {" "}
-                  seu sucesso
-                </span>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Pronto para{" "}
+                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  transformar
+                </span>{" "}
+                seu negócio?
               </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Nossa equipe de especialistas está pronta para ajudar você a
-                transformar seu negócio. Entre em contato e descubra como
-                podemos acelerar seus resultados.
+              <p className="text-xl text-blue-100 mb-8">
+                Nossa equipe está pronta para ajudar você a começar sua jornada
+                digital
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-4">
-                    <Phone className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Telefone</p>
-                    <p className="text-gray-600">(11) 9 9999-9999</p>
-                  </div>
+                  <Phone className="w-6 h-6 text-blue-400 mr-4" />
+                  <span className="text-blue-100">+55 (11) 99999-9999</span>
                 </div>
-
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-4">
-                    <Mail className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Email</p>
-                    <p className="text-gray-600">contato@unclic.com.br</p>
-                  </div>
+                  <Mail className="w-6 h-6 text-blue-400 mr-4" />
+                  <span className="text-blue-100">contato@unclic.tech</span>
                 </div>
-
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mr-4">
-                    <MapPin className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Endereço</p>
-                    <p className="text-gray-600">
-                      São Paulo, SP - Brasil
-                      <br />
-                      Atendimento em todo território nacional
-                    </p>
-                  </div>
+                  <MapPin className="w-6 h-6 text-blue-400 mr-4" />
+                  <span className="text-blue-100">São Paulo, SP - Brasil</span>
                 </div>
               </div>
             </div>
 
-            <Card className="p-8 border-0 shadow-xl">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Envie sua mensagem
-              </h3>
+            <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20">
               <form className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome
-                    </label>
-                    <Input
-                      placeholder="Seu nome completo"
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Telefone
-                    </label>
-                    <Input
-                      placeholder="(11) 9 9999-9999"
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
+                    placeholder="Nome"
+                    className="bg-white/10 border-white/20 text-white placeholder-white/60"
+                  />
+                  <Input
+                    placeholder="Email"
                     type="email"
-                    placeholder="seu@email.com"
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="bg-white/10 border-white/20 text-white placeholder-white/60"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tipo de estabelecimento
-                  </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option>Selecione...</option>
-                    <option>Salão de Beleza</option>
-                    <option>Barbearia</option>
-                    <option>Clínica de Estética</option>
-                    <option>Spa</option>
-                    <option>Outros</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mensagem
-                  </label>
-                  <Textarea
-                    placeholder="Conte-nos sobre seu negócio e como podemos ajudar..."
-                    rows={4}
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-
+                <Input
+                  placeholder="Empresa"
+                  className="bg-white/10 border-white/20 text-white placeholder-white/60"
+                />
+                <Textarea
+                  placeholder="Como podemos ajudar?"
+                  rows={4}
+                  className="bg-white/10 border-white/20 text-white placeholder-white/60"
+                />
                 <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3">
                   <Send className="w-5 h-5 mr-2" />
                   Enviar Mensagem
@@ -969,129 +906,94 @@ export const UnclicLanding: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white font-bold">UC</span>
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold">UNCLIC</h1>
-                  <p className="text-sm text-gray-400 -mt-1">Beauty Tech</p>
-                </div>
+                <span className="text-2xl font-bold">UNCLIC</span>
               </div>
-              <p className="text-gray-300 mb-6 max-w-md">
-                A plataforma mais completa para gestão de salões de beleza,
-                barbearias e clínicas de estética. Transformamos negócios em
-                máquinas de vendas automatizadas.
+              <p className="text-gray-400 mb-6 max-w-md">
+                A plataforma completa para gestão de estabelecimentos.
+                Automatize, gerencie e cresça seu negócio com tecnologia de
+                ponta.
               </p>
               <div className="flex space-x-4">
-                {[Instagram, Facebook, Twitter, Linkedin, Youtube].map(
-                  (Icon, index) => (
-                    <a
-                      key={index}
-                      href="#"
-                      className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 transition-all duration-200"
-                    >
-                      <Icon className="w-5 h-5" />
-                    </a>
-                  ),
-                )}
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
+                  <Facebook className="w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
+                  <Instagram className="w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
+                  <Twitter className="w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors cursor-pointer">
+                  <Linkedin className="w-5 h-5" />
+                </div>
               </div>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Produto</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Recursos
-                  </a>
+              <h4 className="font-bold mb-4">Produto</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Funcionalidades
                 </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Preços
-                  </a>
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Integrações
                 </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    API
-                  </a>
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Segurança
                 </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Integrações
-                  </a>
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  API
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">Suporte</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Central de Ajuda
-                  </a>
+              <h4 className="font-bold mb-4">Empresa</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Sobre nós
                 </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Documentação
-                  </a>
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Carreiras
                 </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Status
-                  </a>
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Blog
                 </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contato
-                  </a>
+                <li className="hover:text-white transition-colors cursor-pointer">
+                  Contato
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
               © 2024 UNCLIC. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                Privacidade
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                Termos
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                Cookies
-              </a>
+              <span className="text-gray-400 text-sm hover:text-white transition-colors cursor-pointer">
+                Termos de Uso
+              </span>
+              <span className="text-gray-400 text-sm hover:text-white transition-colors cursor-pointer">
+                Política de Privacidade
+              </span>
+              <span className="text-gray-400 text-sm hover:text-white transition-colors cursor-pointer">
+                LGPD
+              </span>
             </div>
           </div>
         </div>
       </footer>
-
-      {/* Floating WhatsApp Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          size="lg"
-          className="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16 shadow-2xl animate-pulse"
-        >
-          <MessageCircle className="w-8 h-8" />
-        </Button>
-      </div>
     </div>
   );
 };
+
+export default UnclicLanding;
