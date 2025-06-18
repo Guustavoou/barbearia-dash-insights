@@ -88,6 +88,28 @@ export interface Transaction {
   updatedAt: string;
 }
 
+// Additional types for compatibility
+export interface Birthday {
+  id: string;
+  clientId: string;
+  clientName: string;
+  date: string;
+  age: number;
+}
+
+export interface RevenueData {
+  date: string;
+  revenue: number;
+  appointments: number;
+}
+
+export interface DashboardData {
+  totalClients: number;
+  totalAppointments: number;
+  monthlyRevenue: number;
+  todayAppointments: number;
+}
+
 // UI and application types
 export type PageType = 
   | 'dashboard' 

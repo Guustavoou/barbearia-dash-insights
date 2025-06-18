@@ -2,10 +2,23 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
-import { Database } from '@/integrations/supabase/types';
 
-// Use the correct table name from the database schema
-type Appointment = Database['public']['Tables']['appointments']['Row'] & {
+// Use the bookings table which exists in the schema
+type Appointment = {
+  id: string;
+  business_id: string;
+  client_id: string;
+  employee_id: string;
+  service_id: string;
+  booking_date: string;
+  start_time: string;
+  end_time: string;
+  duration: number;
+  status: string;
+  price: number;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
   clients?: {
     name: string;
     phone: string;
@@ -19,8 +32,21 @@ type Appointment = Database['public']['Tables']['appointments']['Row'] & {
   };
 };
 
-type AppointmentInsert = Database['public']['Tables']['appointments']['Insert'];
-type AppointmentUpdate = Database['public']['Tables']['appointments']['Update'];
+type AppointmentInsert = {
+  business_id: string;
+  client_id: string;
+  employee_id: string;
+  service_id: string;
+  booking_date: string;
+  start_time: string;
+  end_time: string;
+  duration: number;
+  status?: string;
+  price: number;
+  notes?: string;
+};
+
+type AppointmentUpdate = Partial<Omit<AppointmentInsert, 'business_id'>>;
 
 export const useAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -38,15 +64,15 @@ export const useAppointments = () => {
 
     try {
       const { data, error } = await supabase
-        .from('appointments')
+        .from('bookings')
         .select(`
           *,
           clients!inner(name, phone),
           professionals(name),
           services!inner(name, price)
         `)
-        .eq('business_id', barbershop.id) // Changed from barbershop_id to business_id
-        .order('date', { ascending: true })
+        .eq('business_id', barbershop.id)
+        .order('booking_date', { ascending: true })
         .order('start_time', { ascending: true });
 
       if (error) {
@@ -66,10 +92,10 @@ export const useAppointments = () => {
 
     try {
       const { data, error } = await supabase
-        .from('appointments')
+        .from('bookings')
         .insert({
           ...appointmentData,
-          business_id: barbershop.id, // Changed from barbershop_id to business_id
+          business_id: barbershop.id,
         })
         .select(`
           *,
@@ -85,7 +111,7 @@ export const useAppointments = () => {
       }
 
       setAppointments(prev => [...prev, data].sort((a, b) => {
-        const dateCompare = new Date(a.date || '').getTime() - new Date(b.date || '').getTime();
+        const dateCompare = new Date(a.booking_date || '').getTime() - new Date(b.booking_date || '').getTime();
         if (dateCompare === 0) {
           return (a.start_time || '').localeCompare(b.start_time || '');
         }
@@ -101,7 +127,7 @@ export const useAppointments = () => {
   const updateAppointment = async (id: string, updates: AppointmentUpdate) => {
     try {
       const { data, error } = await supabase
-        .from('appointments')
+        .from('bookings')
         .update(updates)
         .eq('id', id)
         .select(`
@@ -130,7 +156,7 @@ export const useAppointments = () => {
   const deleteAppointment = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('appointments')
+        .from('bookings')
         .delete()
         .eq('id', id);
 

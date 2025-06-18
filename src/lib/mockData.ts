@@ -1,266 +1,249 @@
 
 import {
   Client,
-  Appointment,
   Service,
+  Professional,
+  Appointment,
   Birthday,
   RevenueData,
-  DashboardData,
-} from "./types";
+  DashboardStats as DashboardData
+} from './types';
 
-export const clients: Client[] = [
+// Mock Clients Data
+export const mockClients: Client[] = [
   {
-    id: "1",
-    name: "Ana Silva Santos",
-    email: "ana.silva@email.com",
-    phone: "(11) 99999-1111",
-    city: "São Paulo",
-    last_visit: "2025-05-15",
-    total_spent: 850.0,
-    status: "ativo",
-    join_date: "2024-03-10",
+    id: '1',
+    name: 'Maria Silva',
+    email: 'maria.silva@email.com',
+    phone: '(11) 99999-9999',
+    city: 'São Paulo',
+    status: 'ativo',
+    birthday: '1985-03-15',
+    totalSpent: 450.00,
     visits: 8,
-    notes: "Prefere horários pela manhã. Cliente muito pontual e educada.",
-    cpf: "123.456.789-00",
-    profession: "Designer Gráfica",
-    barbershop_id: "barbershop-1",
-    created_at: "2024-03-10T10:00:00Z",
-    updated_at: "2025-05-15T14:30:00Z",
+    lastVisit: '2024-01-15',
+    createdAt: '2023-01-15T10:00:00Z',
+    updatedAt: '2024-01-15T14:30:00Z',
+    notes: 'Cliente preferencial, gosta de cortes modernos'
   },
   {
-    id: "2",
-    name: "Carlos Roberto Lima",
-    email: "carlos.lima@email.com",
-    phone: "(11) 88888-2222",
-    city: "São Paulo",
-    last_visit: "2025-06-02",
-    total_spent: 420.0,
-    status: "ativo",
-    join_date: "2024-01-15",
-    visits: 6,
-    notes: "Cliente pontual, prefere agendamentos no final de semana.",
-    cpf: "987.654.321-00",
-    profession: "Advogado",
-    barbershop_id: "barbershop-1",
-    created_at: "2024-01-15T09:00:00Z",
-    updated_at: "2025-06-02T16:00:00Z",
+    id: '2',
+    name: 'João Santos',
+    email: 'joao.santos@email.com',
+    phone: '(11) 88888-8888',
+    city: 'São Paulo',
+    status: 'ativo',
+    birthday: '1990-07-22',
+    totalSpent: 320.00,
+    visits: 5,
+    lastVisit: '2024-01-10',
+    createdAt: '2023-06-10T09:00:00Z',
+    updatedAt: '2024-01-10T16:20:00Z',
+    notes: 'Alérgico a alguns produtos'
   },
   {
-    id: "3",
-    name: "Mariana Costa Oliveira",
-    email: "mariana.costa@email.com",
-    phone: "(11) 77777-3333",
-    city: "Santo André",
-    last_visit: "2025-04-28",
-    total_spent: 1200.0,
-    status: "ativo",
-    join_date: "2023-09-05",
+    id: '3',
+    name: 'Ana Costa',
+    email: 'ana.costa@email.com',
+    phone: '(11) 77777-7777',
+    city: 'São Paulo',
+    status: 'ativo',
+    birthday: '1982-12-08',
+    totalSpent: 680.00,
     visits: 12,
-    notes: "Cliente VIP. Sempre agenda serviços premium.",
-    cpf: "456.789.123-00",
-    profession: "Empresária",
-    barbershop_id: "barbershop-1",
-    created_at: "2023-09-05T11:00:00Z",
-    updated_at: "2025-04-28T15:30:00Z",
+    lastVisit: '2024-01-18',
+    createdAt: '2022-11-20T11:30:00Z',
+    updatedAt: '2024-01-18T15:45:00Z',
+    notes: 'Cliente VIP, sempre agenda com antecedência'
   },
   {
-    id: "4",
-    name: "Pedro Santos",
-    email: "pedro.santos@email.com",
-    phone: "(11) 66666-4444",
-    city: "Osasco",
-    last_visit: "2025-03-10",
-    total_spent: 320.0,
-    status: "inativo",
-    join_date: "2024-07-20",
-    visits: 4,
-    notes: "Cliente esporádico, só agenda em ocasiões especiais.",
-    cpf: "321.654.987-00",
-    profession: "Engenheiro",
-    barbershop_id: "barbershop-1",
-    created_at: "2024-07-20T08:30:00Z",
-    updated_at: "2025-03-10T12:00:00Z",
+    id: '4',
+    name: 'Carlos Oliveira',
+    email: 'carlos.oliveira@email.com',
+    phone: '(11) 66666-6666',
+    city: 'São Paulo',
+    status: 'ativo',
+    birthday: '1995-05-30',
+    totalSpent: 180.00,
+    visits: 3,
+    lastVisit: '2024-01-05',
+    createdAt: '2023-10-05T13:15:00Z',
+    updatedAt: '2024-01-05T10:30:00Z',
+    notes: 'Novo cliente, gosta de estilos clássicos'
   },
   {
-    id: "5",
-    name: "Julia Fernandes",
-    email: "julia.fernandes@email.com",
-    phone: "(11) 55555-5555",
-    city: "São Paulo",
-    last_visit: "2025-06-08",
-    total_spent: 680.0,
-    status: "ativo",
-    join_date: "2024-05-12",
+    id: '5',
+    name: 'Fernanda Lima',
+    email: 'fernanda.lima@email.com',
+    phone: '(11) 55555-5555',
+    city: 'São Paulo',
+    status: 'ativo',
+    birthday: '1988-09-12',
+    totalSpent: 520.00,
     visits: 9,
-    notes: "Sempre traz amigas como indicação.",
-    cpf: "789.123.456-00",
-    profession: "Professora",
-    barbershop_id: "barbershop-1",
-    created_at: "2024-05-12T13:00:00Z",
-    updated_at: "2025-06-08T17:00:00Z",
+    lastVisit: '2024-01-12',
+    createdAt: '2023-03-12T08:45:00Z',
+    updatedAt: '2024-01-12T17:00:00Z',
+    notes: 'Prefere atendimento pela manhã'
   },
   {
-    id: "6",
-    name: "Roberto Almeida",
-    email: "roberto.almeida@email.com",
-    phone: "(11) 44444-6666",
-    city: "São Paulo",
-    last_visit: "2025-06-05",
-    total_spent: 560.0,
-    status: "ativo",
-    join_date: "2024-04-08",
-    visits: 7,
-    notes: "Cliente fiel, sempre pontual.",
-    cpf: "654.321.987-00",
-    profession: "Contador",
-    barbershop_id: "barbershop-1",
-    created_at: "2024-04-08T10:30:00Z",
-    updated_at: "2025-06-05T14:00:00Z",
-  },
+    id: '6',
+    name: 'Roberto Ferreira',
+    email: 'roberto.ferreira@email.com',
+    phone: '(11) 44444-4444',
+    city: 'São Paulo',
+    status: 'ativo',
+    birthday: '1975-11-25',
+    totalSpent: 290.00,
+    visits: 6,
+    lastVisit: '2024-01-08',
+    createdAt: '2023-07-25T14:20:00Z',
+    updatedAt: '2024-01-08T12:15:00Z',
+    notes: 'Cliente pontual, nunca falta'
+  }
 ];
 
-export const revenueData: RevenueData[] = [
-  { month: "Jan", value: 12000 },
-  { month: "Fev", value: 14500 },
-  { month: "Mar", value: 16800 },
-  { month: "Abr", value: 15200 },
-  { month: "Mai", value: 18200 },
-  { month: "Jun", value: 18750 },
-];
-
-export const upcomingAppointments: Appointment[] = [
+// Mock Appointments Data
+export const mockAppointments: Appointment[] = [
   {
-    id: "1",
-    client_id: "1",
-    service_id: "service-1",
-    professional_id: "prof-1",
-    appointment_date: "2025-06-13",
-    appointment_time: "09:00",
+    id: '1',
+    clientId: '1',
+    professionalId: '1',
+    serviceId: '1',
+    date: '2024-01-25',
+    time: '09:00',
+    status: 'agendado',
+    price: 60.00,
+    notes: 'Corte e escova',
+    createdAt: '2024-01-20T10:00:00Z',
+    updatedAt: '2024-01-20T10:00:00Z'
+  },
+  {
+    id: '2',
+    clientId: '2',
+    professionalId: '2',
+    serviceId: '2',
+    date: '2024-01-25',
+    time: '10:30',
+    status: 'agendado',
+    price: 120.00,
+    notes: 'Coloração especial',
+    createdAt: '2024-01-22T14:30:00Z',
+    updatedAt: '2024-01-22T14:30:00Z'
+  },
+  {
+    id: '3',
+    clientId: '3',
+    professionalId: '1',
+    serviceId: '3',
+    date: '2024-01-25',
+    time: '14:00',
+    status: 'agendado',
+    price: 40.00,
+    notes: 'Só escova',
+    createdAt: '2024-01-23T09:15:00Z',
+    updatedAt: '2024-01-23T09:15:00Z'
+  }
+];
+
+// Mock Services Data
+export const mockServices: Service[] = [
+  {
+    id: '1',
+    name: 'Corte Feminino',
+    description: 'Corte de cabelo feminino com modelagem',
+    price: 60.00,
     duration: 60,
-    price: 45.0,
-    status: "confirmado",
-    notes: null,
-    barbershop_id: "barbershop-1",
-    created_at: "2025-06-12T10:00:00Z",
-    updated_at: "2025-06-12T10:00:00Z",
-    clients: {
-      name: "Ana Silva"
-    },
-    services: {
-      name: "Corte + Escova"
-    }
+    category: 'Corte',
+    isActive: true,
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z'
   },
   {
-    id: "2",
-    client_id: "2",
-    service_id: "service-2",
-    professional_id: "prof-1",
-    appointment_date: "2025-06-13",
-    appointment_time: "10:30",
-    duration: 30,
-    price: 25.0,
-    status: "agendado",
-    notes: null,
-    barbershop_id: "barbershop-1",
-    created_at: "2025-06-12T11:00:00Z",
-    updated_at: "2025-06-12T11:00:00Z",
-    clients: {
-      name: "Carlos Lima"
-    },
-    services: {
-      name: "Barba"
-    }
+    id: '2',
+    name: 'Coloração',
+    description: 'Coloração completa do cabelo',
+    price: 120.00,
+    duration: 120,
+    category: 'Coloração',
+    isActive: true,
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z'
   },
   {
-    id: "3",
-    client_id: "3",
-    service_id: "service-3",
-    professional_id: "prof-2",
-    appointment_date: "2025-06-13",
-    appointment_time: "14:00",
+    id: '3',
+    name: 'Escova',
+    description: 'Escova e finalização',
+    price: 40.00,
     duration: 45,
-    price: 35.0,
-    status: "confirmado",
-    notes: null,
-    barbershop_id: "barbershop-1",
-    created_at: "2025-06-12T12:00:00Z",
-    updated_at: "2025-06-12T12:00:00Z",
-    clients: {
-      name: "Maria Costa"
-    },
-    services: {
-      name: "Manicure"
-    }
+    category: 'Finalização',
+    isActive: true,
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z'
+  }
+];
+
+// Mock Professionals Data
+export const mockProfessionals: Professional[] = [
+  {
+    id: '1',
+    name: 'Carla Mendes',
+    email: 'carla.mendes@salon.com',
+    phone: '(11) 99999-1111',
+    specialty: 'Cortes e Escova',
+    commissionRate: 0.40,
+    status: 'ativo',
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z'
   },
   {
-    id: "4",
-    client_id: "4",
-    service_id: "service-1",
-    professional_id: "prof-1",
-    appointment_date: "2025-06-13",
-    appointment_time: "15:30",
-    duration: 45,
-    price: 40.0,
-    status: "agendado",
-    notes: null,
-    barbershop_id: "barbershop-1",
-    created_at: "2025-06-12T13:00:00Z",
-    updated_at: "2025-06-12T13:00:00Z",
-    clients: {
-      name: "João Santos"
-    },
-    services: {
-      name: "Corte"
-    }
-  },
+    id: '2',
+    name: 'Beatriz Costa',
+    email: 'beatriz.costa@salon.com',
+    phone: '(11) 99999-2222',
+    specialty: 'Coloração e Química',
+    commissionRate: 0.45,
+    status: 'ativo',
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z'
+  }
 ];
 
-export const birthdays: Birthday[] = [
-  { name: "Ana Silva", date: "Hoje" },
-  { name: "Pedro Santos", date: "Amanhã" },
-  { name: "Julia Fernandes", date: "12/06" },
+// Mock Birthday Data
+export const mockBirthdays: Birthday[] = [
+  {
+    id: '1',
+    clientId: '1',
+    clientName: 'Maria Silva',
+    date: '2024-03-15',
+    age: 39
+  },
+  {
+    id: '2',
+    clientId: '3',
+    clientName: 'Ana Costa',
+    date: '2024-12-08',
+    age: 42
+  }
 ];
 
-// Define a separate interface for top services with additional properties
-interface TopService {
-  name: string;
-  count: number;
-  revenue: number;
-}
-
-export const topServices: TopService[] = [
-  { name: "Corte + Escova", count: 45, revenue: 4500 },
-  { name: "Manicure", count: 32, revenue: 1280 },
-  { name: "Barba", count: 28, revenue: 1120 },
-  { name: "Hidratação", count: 22, revenue: 1760 },
+// Mock Revenue Data
+export const mockRevenueData: RevenueData[] = [
+  { date: '2024-01-01', revenue: 450, appointments: 8 },
+  { date: '2024-01-02', revenue: 380, appointments: 6 },
+  { date: '2024-01-03', revenue: 520, appointments: 9 },
+  { date: '2024-01-04', revenue: 290, appointments: 5 },
+  { date: '2024-01-05', revenue: 640, appointments: 11 }
 ];
 
-export const cities = ["São Paulo", "Santo André", "Osasco"];
-
-export const dashboardData: DashboardData = {
-  revenue: {
-    current: 18750,
-    growth: 15.8,
-    accumulated: 95200,
-    best: 21400,
-  },
-  appointments: {
-    total: 245,
-    variation: 12,
-  },
-  clients: {
-    active: clients.filter((c) => c.status === "ativo").length,
-    new: 12,
-    retention: 92,
-  },
-  satisfaction: 4.8,
-  services: {
-    completed: 198,
-    completion: 89,
-  },
-  insights: {
-    peakHour: "14:00 - 16:00",
-    cancellations: 8,
-    revenueStatus: "acima",
-  },
+// Mock Dashboard Data
+export const mockDashboardData: DashboardData = {
+  totalClients: 150,
+  totalAppointments: 45,
+  totalServices: 12,
+  totalProfessionals: 5,
+  todayAppointments: 8,
+  monthlyRevenue: 15420.00,
+  pendingAppointments: 12,
+  completedAppointments: 33
 };

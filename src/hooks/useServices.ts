@@ -2,11 +2,31 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
-import { Database } from '@/integrations/supabase/types';
 
-type Service = Database['public']['Tables']['services']['Row'];
-type ServiceInsert = Database['public']['Tables']['services']['Insert'];
-type ServiceUpdate = Database['public']['Tables']['services']['Update'];
+type Service = {
+  id: string;
+  business_id: string;
+  name: string;
+  description?: string;
+  price: number;
+  duration: number;
+  category?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+type ServiceInsert = {
+  business_id: string;
+  name: string;
+  description?: string;
+  price: number;
+  duration: number;
+  category?: string;
+  is_active?: boolean;
+};
+
+type ServiceUpdate = Partial<Omit<ServiceInsert, 'business_id'>>;
 
 export const useServices = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -26,7 +46,7 @@ export const useServices = () => {
       const { data, error } = await supabase
         .from('services')
         .select('*')
-        .eq('barbershop_id', barbershop.id)
+        .eq('business_id', barbershop.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -41,7 +61,7 @@ export const useServices = () => {
     }
   };
 
-  const addService = async (serviceData: Omit<ServiceInsert, 'barbershop_id'>) => {
+  const addService = async (serviceData: Omit<ServiceInsert, 'business_id'>) => {
     if (!barbershop?.id) return null;
 
     try {
@@ -49,7 +69,7 @@ export const useServices = () => {
         .from('services')
         .insert({
           ...serviceData,
-          barbershop_id: barbershop.id,
+          business_id: barbershop.id,
         })
         .select()
         .single();
