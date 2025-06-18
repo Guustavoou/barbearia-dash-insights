@@ -79,7 +79,7 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
     loading: paymentsLoading,
     error: paymentsError,
     refetch: refetchPayments,
-  } = useSupabaseTransactions({
+  } = useTransactions({
     type: "receita",
     limit: 100,
     sort: "date",
