@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { clientsApi } from '@/lib/clientsApi';
 
@@ -636,6 +635,34 @@ export const useInventoryReport = () => {
         outOfStock: 0,
         totalValue: 0,
         products: []
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+// Adding the missing useProfessionalReports hook
+export const useProfessionalReports = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        reports: [],
+        performance: {},
+        analytics: {}
       });
     } catch (err: any) {
       setError(err.message || 'An error occurred');
