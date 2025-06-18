@@ -892,77 +892,80 @@ export default function BeautifulAppointmentsFixed() {
   const deleteAppointmentMutation = useDeleteAppointment();
 
   // Filtrar appointments
-  const filteredAppointments = (appointments || []).filter((appointment) => {
-    // Filtro de data baseado no modo de visualização
-    const appointmentDate = appointment.date
-      ? new Date(appointment.date)
-      : null;
-    const selected = selectedDate;
+  const filteredAppointments = Array.isArray(appointments)
+    ? appointments.filter((appointment) => {
+        // Filtro de data baseado no modo de visualização
+        const appointmentDate = appointment.date
+          ? new Date(appointment.date)
+          : null;
+        const selected = selectedDate;
 
-    let dateMatch = false;
-    if (viewMode === "day") {
-      dateMatch = appointmentDate?.toDateString() === selected.toDateString();
-    } else if (viewMode === "week") {
-      const weekStart = new Date(selected);
-      weekStart.setDate(selected.getDate() - selected.getDay());
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekStart.getDate() + 6);
-      dateMatch = appointmentDate
-        ? appointmentDate >= weekStart && appointmentDate <= weekEnd
-        : false;
-    } else if (viewMode === "month") {
-      dateMatch = appointmentDate
-        ? appointmentDate.getMonth() === selected.getMonth() &&
-          appointmentDate.getFullYear() === selected.getFullYear()
-        : false;
-    }
+        let dateMatch = false;
+        if (viewMode === "day") {
+          dateMatch =
+            appointmentDate?.toDateString() === selected.toDateString();
+        } else if (viewMode === "week") {
+          const weekStart = new Date(selected);
+          weekStart.setDate(selected.getDate() - selected.getDay());
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          dateMatch = appointmentDate
+            ? appointmentDate >= weekStart && appointmentDate <= weekEnd
+            : false;
+        } else if (viewMode === "month") {
+          dateMatch = appointmentDate
+            ? appointmentDate.getMonth() === selected.getMonth() &&
+              appointmentDate.getFullYear() === selected.getFullYear()
+            : false;
+        }
 
-    // Filtro de busca
-    const matchesSearch =
-      searchTerm === "" ||
-      appointment.client_name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      appointment.service_name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      appointment.professional_name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
+        // Filtro de busca
+        const matchesSearch =
+          searchTerm === "" ||
+          appointment.client_name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          appointment.service_name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          appointment.professional_name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase());
 
-    // Filtro de status
-    const matchesStatus =
-      statusFilter === "" || appointment.status === statusFilter;
+        // Filtro de status
+        const matchesStatus =
+          statusFilter === "" || appointment.status === statusFilter;
 
-    // Filtro de profissional
-    const matchesProfessional =
-      professionalFilter === "" ||
-      appointment.professional_name === professionalFilter;
+        // Filtro de profissional
+        const matchesProfessional =
+          professionalFilter === "" ||
+          appointment.professional_name === professionalFilter;
 
-    // Filtro de período
-    const matchesTime = (() => {
-      if (timeFilter === "" || !appointment.start_time) return true;
-      const hour = parseInt(appointment.start_time.split(":")[0]);
-      switch (timeFilter) {
-        case "morning":
-          return hour >= 6 && hour < 12;
-        case "afternoon":
-          return hour >= 12 && hour < 18;
-        case "evening":
-          return hour >= 18 || hour < 6;
-        default:
-          return true;
-      }
-    })();
+        // Filtro de período
+        const matchesTime = (() => {
+          if (timeFilter === "" || !appointment.start_time) return true;
+          const hour = parseInt(appointment.start_time.split(":")[0]);
+          switch (timeFilter) {
+            case "morning":
+              return hour >= 6 && hour < 12;
+            case "afternoon":
+              return hour >= 12 && hour < 18;
+            case "evening":
+              return hour >= 18 || hour < 6;
+            default:
+              return true;
+          }
+        })();
 
-    return (
-      dateMatch &&
-      matchesSearch &&
-      matchesStatus &&
-      matchesProfessional &&
-      matchesTime
-    );
-  });
+        return (
+          dateMatch &&
+          matchesSearch &&
+          matchesStatus &&
+          matchesProfessional &&
+          matchesTime
+        );
+      })
+    : [];
 
   // Calcular KPIs
   const todayAppointments = (appointments || []).filter((apt) => {
