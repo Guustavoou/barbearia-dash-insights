@@ -131,7 +131,10 @@ export class SupabaseApiProduction {
             .split("T")[0],
         );
 
-      if (revenueError) throw revenueError;
+      if (revenueError) {
+        logSupabaseError("Error fetching monthly revenue", revenueError);
+        throw revenueError;
+      }
 
       const totalRevenue =
         monthlyRevenue?.reduce(
