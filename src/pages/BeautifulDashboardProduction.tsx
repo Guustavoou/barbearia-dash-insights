@@ -98,6 +98,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import { universalExport } from "@/lib/exportUtils";
+import { ApplicationDiagnostics } from "@/components/ApplicationDiagnostics";
 // 🚀 INTEGRAÇÃO PRODUCTION SUPABASE - 100% DADOS REAIS
 import {
   useDashboardStats,
