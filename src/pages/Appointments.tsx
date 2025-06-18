@@ -96,7 +96,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   };
 
   const handleUpdateAppointment = async (id: number, appointmentData: any) => {
-    await updateAppointmentMutation.mutate(id, appointmentData);
+    await updateAppointmentMutation.mutate({ id, data: appointmentData });
   };
 
   const handleDeleteAppointment = async (id: number) => {

@@ -6,8 +6,8 @@ import { cn } from '@/lib/unclicUtils';
 interface NewProfessionalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (professionalData: any) => void;
-  onSave?: (professionalData: any) => void;  // Adding this alias for compatibility
+  onSubmit?: (professionalData: any) => void;  // Making this optional
+  onSave?: (professionalData: any) => void;  // Keep this for compatibility
   darkMode: boolean;
 }
 
@@ -44,6 +44,8 @@ export const NewProfessionalModal: React.FC<NewProfessionalModalProps> = ({
       bio: '',
       status: 'active'
     });
+    
+    onClose();
   };
 
   if (!isOpen) return null;

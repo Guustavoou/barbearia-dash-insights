@@ -442,7 +442,7 @@ export const useDashboardStats = () => {
   return { data, loading, error, refetch };
 };
 
-// Financial stats hook - ADDING MISSING EXPORT
+// Financial stats hook - ADDING MISSING EXPORT with avgTicket alias
 export const useFinancialStats = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -491,6 +491,34 @@ export const useMonthlyRevenue = () => {
         monthlyData: [],
         totalRevenue: 0,
         growth: 0
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+// Adding missing appointment trends hook
+export const useAppointmentTrends = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        trends: [],
+        growth: 0,
+        totalAppointments: 0
       });
     } catch (err: any) {
       setError(err.message || 'An error occurred');
