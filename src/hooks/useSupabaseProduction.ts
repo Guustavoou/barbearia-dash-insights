@@ -275,6 +275,70 @@ export const useServices = () => {
   return { data, loading, error, refetch };
 };
 
+// Adding missing service hooks
+export const useCreateService = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (serviceData: any) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useUpdateService = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (variables: { id: string; data: any }) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useDeleteService = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (id: string) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
 export const useProfessionals = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);

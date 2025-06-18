@@ -1,6 +1,6 @@
 
 // Professional-related types and interfaces
-export type ProfessionalSortField = 'name' | 'email' | 'rating' | 'created_at';
+export type ProfessionalSortField = 'name' | 'email' | 'rating' | 'created_at' | 'commission';
 export type ProfessionalSortOrder = 'asc' | 'desc';
 
 export interface Professional {

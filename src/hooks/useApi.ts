@@ -375,3 +375,34 @@ export const useDashboardStats = () => {
 
   return { data, loading, error, refetch };
 };
+
+// Financial stats hook - ADDING MISSING EXPORT
+export const useFinancialStats = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({
+        totalPayments: 0,
+        approvedPayments: 0,
+        totalAmount: 0,
+        pendingAmount: 0,
+        approvalRate: 0,
+        averageTicket: 0
+      });
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
