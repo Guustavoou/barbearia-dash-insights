@@ -223,7 +223,9 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
                       <Sparkles className="w-4 h-4 mr-2" />
                       Ver detalhes
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => universalExport("clientes")}
+                    >
                       <Download className="w-4 h-4 mr-2" />
                       Exportar dados
                     </DropdownMenuItem>
