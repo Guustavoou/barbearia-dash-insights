@@ -239,9 +239,7 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
                       <Sparkles className="w-4 h-4 mr-2" />
                       Ver detalhes
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => universalExport("dashboard")}
-                    >
+                    <DropdownMenuItem onClick={() => universalExport("dashboard")}>
                       <Download className="w-4 h-4 mr-2" />
                       Exportar dados
                     </DropdownMenuItem>
@@ -568,13 +566,13 @@ export const BeautifulDashboardProduction: React.FC<
                 {isLoading ? "Atualizando..." : "Atualizar"}
               </Button>
               <Button
-                variant="secondary"
                 size="sm"
-                onClick={() => handleNavigate("reports")}
+                onClick={() => universalExport("dashboard")}
                 className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Exportar
+              </Button>
               </Button>
               <Button
                 onClick={() => handleNavigate("appointments")}
