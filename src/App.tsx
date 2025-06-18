@@ -43,7 +43,7 @@ function App() {
       id: '1',
       email: 'user@example.com',
       name: 'Demo User',
-      role: 'admin',
+      role: 'admin' as const,
       establishment_id: '1',
       is_active: true,
       created_at: new Date().toISOString(),

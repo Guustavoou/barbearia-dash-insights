@@ -1,4 +1,5 @@
 
+
 export interface OnboardingBusiness {
   name: string;
   slug: string;
@@ -25,8 +26,8 @@ export interface OnboardingBusiness {
   website?: string;
   instagram?: string;
   facebook?: string;
-  logo?: string;
-  banner?: string;
+  logo?: string | File;
+  banner?: string | File;
 }
 
 export interface WorkingHours {
@@ -47,13 +48,13 @@ export interface OnboardingProfessional {
   email: string;
   phone: string;
   bio: string;
-  avatar?: string;
+  avatar?: string | File;
   isActive: boolean;
   workingHours: WorkingHours;
   // Additional properties used in components
   role?: string;
   type?: string;
-  photo?: string;
+  photo?: string | File;
   calendarColor?: string;
   services?: string[];
   workDays?: string[];
@@ -138,3 +139,4 @@ export const serviceTemplates = [
     isActive: true
   }
 ];
+
