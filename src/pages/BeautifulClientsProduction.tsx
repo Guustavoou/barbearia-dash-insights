@@ -33,6 +33,8 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Trash2,
   CreditCard,
 } from "lucide-react";
