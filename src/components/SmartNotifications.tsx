@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Bell, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { PageType } from '@/lib/types';
 
 export interface SmartNotificationsProps {
   darkMode: boolean;
-  onPageChange: (page: string) => void;
+  onPageChange: (page: PageType) => void;
 }
 
 interface Notification {

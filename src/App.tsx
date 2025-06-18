@@ -37,16 +37,23 @@ function App() {
     setCurrentPage(page as PageType);
   };
 
-  // Mock user session for header props
+  // Mock user session for header props with all required properties
   const mockUserSession = {
     user: {
       id: '1',
       email: 'user@example.com',
-      full_name: 'Demo User'
-    }
+      name: 'Demo User'
+    },
+    establishment: {
+      id: '1',
+      name: 'Salão da Maria',
+      slug: 'salao-da-maria'
+    },
+    token: 'mock-token',
+    permissions: ['read', 'write']
   };
 
-  const mockCurrentTime = new Date().toLocaleTimeString();
+  const mockCurrentTime = new Date();
 
   const handleLogout = () => {
     console.log('Logout clicked');
@@ -112,7 +119,7 @@ function App() {
                               userSession={mockUserSession}
                             />
                             <main className="flex-1 overflow-y-auto p-6">
-                              <Dashboard darkMode={darkMode} onPageChange={handlePageChange} />
+                              <Dashboard darkMode={darkMode} />
                             </main>
                           </div>
                         </>

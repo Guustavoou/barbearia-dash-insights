@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Search,
@@ -287,7 +288,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             </Button>
 
             {/* Notifications */}
-            <SmartNotifications darkMode={darkMode} />
+            <SmartNotifications darkMode={darkMode} onPageChange={onPageChange} />
 
             {/* Right Sidebar Toggle */}
             {onToggleRightSidebar && (

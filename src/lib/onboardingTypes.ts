@@ -18,6 +18,15 @@ export interface OnboardingBusiness {
   language: string;
   currency: string;
   timezone: string;
+  // Additional properties used in components
+  email?: string;
+  cnpj?: string;
+  cep?: string;
+  website?: string;
+  instagram?: string;
+  facebook?: string;
+  logo?: string;
+  banner?: string;
 }
 
 export interface OnboardingProfessional {
@@ -39,6 +48,13 @@ export interface OnboardingProfessional {
       }>;
     };
   };
+  // Additional properties used in components
+  role?: string;
+  type?: string;
+  photo?: string;
+  calendarColor?: string;
+  services?: string[];
+  workDays?: string[];
 }
 
 export interface OnboardingService {
