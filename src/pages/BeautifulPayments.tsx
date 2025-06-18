@@ -88,7 +88,10 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
 
   // Calculate metrics usando dados reais do Supabase
   const metrics = useMemo(() => {
-    const safePayments = paymentsData || [];
+    // Extract the actual array from the response object
+    const safePayments = Array.isArray(paymentsData)
+      ? paymentsData
+      : paymentsData?.data || [];
     const totalPayments = safePayments.length;
     const approvedPayments = safePayments.filter(
       (p) => p.status === "confirmado",
