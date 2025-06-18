@@ -325,38 +325,53 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20 space-y-6 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              ✂️ Serviços
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Gerencie todos os serviços do seu estabelecimento
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={refetchServices}
-              disabled={isLoading}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw
-                className={cn("h-4 w-4", isLoading && "animate-spin")}
-              />
-              Atualizar
-            </Button>
-            <Button
-              onClick={() => setIsNewServiceModalOpen(true)}
-              className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Novo Serviço
-            </Button>
+      {/* Beautiful Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 text-white shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-800/20" />
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-400/20 rounded-full blur-2xl" />
+
+        <div className="relative p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <Scissors className="w-8 h-8" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent">
+                    Serviços Premium
+                  </h1>
+                  <p className="text-blue-100">
+                    Gerencie todos os serviços do seu estabelecimento
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={refetchServices}
+                disabled={isLoading}
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm transition-all duration-300"
+              >
+                <RefreshCw
+                  className={cn("h-4 w-4", isLoading && "animate-spin")}
+                />
+                Atualizar
+              </Button>
+              <Button
+                onClick={() => setIsNewServiceModalOpen(true)}
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Serviço
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
