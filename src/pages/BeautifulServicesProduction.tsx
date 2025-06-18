@@ -373,23 +373,32 @@ export const BeautifulServicesProduction: React.FC<BeautifulServicesProps> = ({
         </div>
       </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Total de Serviços
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {serviceStats.total}
-                  </p>
-                </div>
-                <Scissors className="h-8 w-8 text-purple-600" />
+      {/* KPIs Premium */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00112F]/5 via-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Total de Serviços
+                </p>
+                <p className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB]">
+                  {serviceStats.total}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-[#00112F] to-blue-600 rounded-xl text-white shadow-lg">
+                <Scissors className="w-6 h-6" />
               </div>
             </div>
-          </Card>
+            <div className="mt-4 flex items-center">
+              <TrendingUp className="w-4 h-4 text-blue-500 mr-1" />
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Catálogo completo
+              </span>
+            </div>
+          </div>
+        </Card>
 
           <Card className="border-0 shadow-md bg-white/70 backdrop-blur-sm">
             <div className="p-6">
