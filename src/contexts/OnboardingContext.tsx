@@ -6,6 +6,7 @@ import {
   OnboardingBusiness,
   OnboardingService,
   OnboardingProfessional,
+  OnboardingSchedule,
   WorkingHours,
   defaultWorkingHours,
 } from "@/lib/onboardingTypes";
@@ -34,7 +35,14 @@ const initialData: OnboardingData = {
   services: [],
   professionals: [],
   workingHours: defaultWorkingHours,
-  schedule: {},
+  schedule: {
+    businessHours: defaultWorkingHours,
+    appointmentDuration: 60,
+    advanceBookingDays: 30,
+    minimumNoticeHours: 2,
+    allowOnlineBooking: true,
+    requireAdvancePayment: false,
+  },
   currentStep: 0,
   completed: false,
 };
@@ -54,6 +62,7 @@ type OnboardingAction =
     }
   | { type: "REMOVE_PROFESSIONAL"; payload: number }
   | { type: "UPDATE_WORKING_HOURS"; payload: WorkingHours }
+  | { type: "UPDATE_SCHEDULE"; payload: Partial<OnboardingSchedule> }
   | { type: "SET_CURRENT_STEP"; payload: number }
   | { type: "NEXT_STEP" }
   | { type: "PREVIOUS_STEP" }
@@ -128,6 +137,12 @@ function onboardingReducer(
       return {
         ...state,
         workingHours: action.payload,
+      };
+
+    case "UPDATE_SCHEDULE":
+      return {
+        ...state,
+        schedule: { ...state.schedule, ...action.payload },
       };
 
     case "SET_CURRENT_STEP":
@@ -228,6 +243,10 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     dispatch({ type: "UPDATE_WORKING_HOURS", payload: hours });
   };
 
+  const updateSchedule = (schedule: Partial<OnboardingSchedule>) => {
+    dispatch({ type: "UPDATE_SCHEDULE", payload: schedule });
+  };
+
   const setCurrentStep = (step: number) => {
     dispatch({ type: "SET_CURRENT_STEP", payload: step });
   };
@@ -321,6 +340,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
     updateProfessional,
     removeProfessional,
     updateWorkingHours,
+    updateSchedule,
     setCurrentStep,
     nextStep,
     prevStep,
