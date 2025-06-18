@@ -82,6 +82,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
+import { universalExport } from "@/lib/exportUtils";
 // 🚀 INTEGRAÇÃO PRODUCTION SUPABASE - 100% DADOS REAIS
 import {
   useClients,
