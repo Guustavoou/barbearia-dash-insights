@@ -327,7 +327,7 @@ export class SupabaseApiProduction {
 
       // Fetch appointments without joins to avoid view relationship issues
       let query = supabase.from("appointments").select("*", { count: "exact" });
-      query = this.addBusinessFilter(query);
+      // Temporarily removed business filter: query = this.addBusinessFilter(query);
 
       // Apply filters
       if (params?.status && params.status !== "all") {
@@ -547,7 +547,7 @@ export class SupabaseApiProduction {
       logSupabaseDebug("Fetching services...", params);
 
       let query = supabase.from("services").select("*");
-      query = this.addBusinessFilter(query);
+      // Temporarily removed business filter: query = this.addBusinessFilter(query);
 
       if (params?.category && params.category !== "all") {
         query = query.eq("category", params.category);
@@ -641,7 +641,7 @@ export class SupabaseApiProduction {
       logSupabaseDebug("Fetching professionals...", params);
 
       let query = supabase.from("professionals").select("*");
-      query = this.addBusinessFilter(query);
+      // Temporarily removed business filter: query = this.addBusinessFilter(query);
 
       if (params?.status && params.status !== "all") {
         query = query.eq("status", params.status);
