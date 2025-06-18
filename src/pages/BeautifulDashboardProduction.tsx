@@ -115,7 +115,7 @@ interface BeautifulDashboardProps {
   onPageChange?: (page: PageType) => void;
 }
 
-// 🎨 Beautiful KPI Card seguindo padrão das telas Financial e Payments
+// 🎨 Beautiful KPI Card seguindo padrão Beautiful Profissionais
 interface BeautifulKPICardProps {
   title: string;
   value: string | number;
@@ -145,8 +145,6 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
   description,
   loading = false,
 }) => {
-  const isClickable = onCardClick || navigateTo;
-
   const formatValue = (val: string | number | undefined | null) => {
     if (val === undefined || val === null) {
       if (format === "currency") return formatCurrency(0);
@@ -200,11 +198,9 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
       className={cn(
         "group relative overflow-hidden transition-all duration-500 border-0 shadow-lg hover:shadow-xl",
         "bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl",
-        isClickable && "cursor-pointer hover:-translate-y-1 hover:scale-[1.02]",
+        onCardClick && "cursor-pointer hover:-translate-y-1 hover:scale-[1.02]",
       )}
-      onClick={() => {
-        if (onCardClick) onCardClick();
-      }}
+      onClick={onCardClick}
     >
       {/* Animated gradient background */}
       <div
@@ -226,7 +222,7 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {title}
               </p>
-              {isClickable && (
+              {onCardClick && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -319,12 +315,6 @@ const BeautifulKPICard: React.FC<BeautifulKPICardProps> = ({
                   100
                 }
                 className="h-1.5"
-              />
-              <div
-                className="absolute top-0 left-0 h-1.5 bg-gradient-to-r from-[#00112F] to-blue-600 rounded-full opacity-20 animate-pulse"
-                style={{
-                  width: `${(Number((value || 0).toString().replace(/[^\d]/g, "")) / target) * 100}%`,
-                }}
               />
             </div>
           </div>
@@ -451,14 +441,6 @@ export const BeautifulDashboardProduction: React.FC<
         ? (confirmedAppointments / todayAppointmentsCount) * 100
         : 0;
 
-    // Serviços mais populares
-    const serviceStats = safeServices.map((service) => ({
-      ...service,
-      appointmentCount: safeAppointments.filter(
-        (apt) => apt.service_id === service.id,
-      ).length,
-    }));
-
     // Profissionais ativos
     const activeProfessionals = safeProfessionals.filter(
       (prof) => prof.status === "ativo",
@@ -474,7 +456,6 @@ export const BeautifulDashboardProduction: React.FC<
       occupationRate,
       activeProfessionals,
       totalServices: safeServices.length,
-      serviceStats,
       monthlyRevenue: safeStats.total_revenue || 0,
       growthRate: 15.2, // Calcular com dados históricos
       customerSatisfaction: 4.8, // Integrar com avaliações quando disponível
@@ -530,8 +511,8 @@ export const BeautifulDashboardProduction: React.FC<
 
   if (globalError) {
     return (
-      <div className="min-h-screen p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
+        <div className="space-y-6 p-6">
           <Card className="p-8 text-center border-red-200 bg-red-50 dark:bg-red-900/20">
             <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">
@@ -549,27 +530,34 @@ export const BeautifulDashboardProduction: React.FC<
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* 🎨 HEADER BEAUTIFUL - Padrão das telas Financial/Payments */}
-      <div className="bg-gradient-to-r from-[#00112F] via-blue-800 to-blue-700 text-white shadow-2xl">
-        <div className="max-w-7xl mx-auto px-8 py-8">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20">
+      <div className="space-y-6 p-6">
+        {/* Beautiful Header - Padrão Profissionais */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00112F] via-blue-900 to-blue-800 p-8 text-white shadow-2xl">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)]" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full blur-3xl animate-pulse" />
+
+          <div className="relative flex items-center justify-between">
             <div>
-              <div className="flex items-center mb-2">
-                <Crown className="w-8 h-8 mr-3 text-yellow-400" />
-                <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
+              <div className="flex items-center space-x-3 mb-2">
+                <Crown className="w-8 h-8 text-blue-200 animate-pulse" />
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                  Dashboard Premium
+                </h1>
               </div>
-              <p className="text-blue-100 text-lg">
+              <p className="text-blue-200 text-lg">
                 Visão completa da sua barbearia • Última atualização:{" "}
                 {formatTime(lastUpdate)}
               </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-3">
               <Button
-                variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+                variant="secondary"
+                size="sm"
                 onClick={handleRefreshData}
                 disabled={isLoading}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               >
                 <RefreshCw
                   className={cn("w-4 h-4 mr-2", isLoading && "animate-spin")}
@@ -577,43 +565,40 @@ export const BeautifulDashboardProduction: React.FC<
                 {isLoading ? "Atualizando..." : "Atualizar"}
               </Button>
               <Button
-                variant="outline"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+                variant="secondary"
+                size="sm"
                 onClick={() => handleNavigate("reports")}
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Relatórios
+                Exportar
+              </Button>
+              <Button
+                onClick={() => handleNavigate("appointments")}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-lg"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Novo Agendamento
               </Button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
-        {/* 📊 INDICADORES PRINCIPAIS - Beautiful KPIs */}
+        {/* Beautiful KPI Cards */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[#00112F] dark:text-white flex items-center">
-              <BarChart3 className="w-6 h-6 mr-3 text-[#00112F] dark:text-blue-400" />
-              Indicadores de Hoje
-            </h2>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Calendar className="w-4 h-4 mr-2" />
-                {formatDate(new Date())}
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+            <BarChart3 className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
+            Indicadores de Hoje
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <BeautifulKPICard
               title="Agendamentos Hoje"
               value={barbershopStats.todayAppointments}
               change={12}
+              period="Total de agendamentos para hoje"
               icon={Calendar}
               variant="primary"
               format="number"
-              description="Total de agendamentos para hoje"
               loading={globalLoading}
               onCardClick={() => handleNavigate("appointments")}
             />
@@ -623,10 +608,10 @@ export const BeautifulDashboardProduction: React.FC<
               value={barbershopStats.todayRevenue}
               change={8}
               target={1500}
+              period="Faturamento até agora"
               icon={DollarSign}
               variant="success"
               format="currency"
-              description="Faturamento até agora"
               loading={globalLoading}
               onCardClick={() => handleNavigate("financial")}
             />
@@ -636,10 +621,10 @@ export const BeautifulDashboardProduction: React.FC<
               value={barbershopStats.occupationRate}
               change={5}
               target={85}
+              period="Agendamentos confirmados"
               icon={Target}
               variant="info"
               format="percentage"
-              description="Agendamentos confirmados"
               loading={globalLoading}
             />
 
@@ -647,33 +632,30 @@ export const BeautifulDashboardProduction: React.FC<
               title="Ticket Médio"
               value={barbershopStats.averageTicket}
               change={3}
+              period="Valor médio por atendimento"
               icon={Calculator}
               variant="premium"
               format="currency"
-              description="Valor médio por atendimento"
               loading={globalLoading}
             />
           </div>
         </section>
 
-        {/* 📈 INDICADORES MENSAIS */}
+        {/* Performance do Mês */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[#00112F] dark:text-white flex items-center">
-              <TrendingUp className="w-6 h-6 mr-3 text-[#00112F] dark:text-blue-400" />
-              Performance do Mês
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-2xl font-bold text-[#00112F] dark:text-[#F9FAFB] mb-6 flex items-center">
+            <TrendingUp className="w-6 h-6 mr-2 text-[#00112F] dark:text-blue-400" />
+            Performance do Mês
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <BeautifulKPICard
               title="Total de Clientes"
               value={barbershopStats.totalClients}
               change={15}
+              period="Clientes cadastrados"
               icon={Users}
               variant="success"
               format="number"
-              description="Clientes cadastrados"
               loading={globalLoading}
               onCardClick={() => handleNavigate("clients")}
             />
@@ -683,10 +665,10 @@ export const BeautifulDashboardProduction: React.FC<
               value={barbershopStats.monthlyRevenue}
               change={22}
               target={45000}
+              period="Faturamento do mês"
               icon={Banknote}
               variant="premium"
               format="currency"
-              description="Faturamento do mês"
               loading={globalLoading}
             />
 
@@ -694,10 +676,10 @@ export const BeautifulDashboardProduction: React.FC<
               title="Profissionais Ativos"
               value={barbershopStats.activeProfessionals}
               change={0}
+              period="Equipe trabalhando"
               icon={UserCheck}
               variant="info"
               format="number"
-              description="Equipe trabalhando"
               loading={globalLoading}
               onCardClick={() => handleNavigate("professionals")}
             />
@@ -707,22 +689,22 @@ export const BeautifulDashboardProduction: React.FC<
               value={barbershopStats.customerSatisfaction}
               change={2}
               target={5}
+              period="Avaliação média dos clientes"
               icon={Heart}
               variant="warning"
               format="number"
-              description="Avaliação média dos clientes"
               loading={globalLoading}
             />
           </div>
         </section>
 
-        {/* 📊 GRÁFICOS E ANÁLISES */}
+        {/* Charts Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Evolução da Receita */}
           <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
+                <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
                   <LineChart className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
                   Evolução da Receita
                 </h3>
@@ -774,7 +756,7 @@ export const BeautifulDashboardProduction: React.FC<
                           formatCurrency(Number(value)),
                           "Receita",
                         ]}
-                        labelFormatter={(label) => `Mês: ${label}`}
+                        labelFormatter={(label) => `M��s: ${label}`}
                         contentStyle={{
                           backgroundColor: "rgba(255, 255, 255, 0.95)",
                           border: "none",
@@ -800,7 +782,7 @@ export const BeautifulDashboardProduction: React.FC<
           <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
+                <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
                   <Scissors className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
                   Serviços Populares
                 </h3>
@@ -875,12 +857,12 @@ export const BeautifulDashboardProduction: React.FC<
           </Card>
         </section>
 
-        {/* 📅 AGENDAMENTOS DE HOJE */}
+        {/* Agendamentos de Hoje */}
         <section>
           <Card className="shadow-lg border-0 bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl">
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#00112F] dark:text-white flex items-center">
+                <h3 className="text-lg font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
                   <CalendarDays className="w-5 h-5 mr-2 text-[#00112F] dark:text-blue-400" />
                   Agendamentos de Hoje
                   <Badge
@@ -931,7 +913,7 @@ export const BeautifulDashboardProduction: React.FC<
                               <Clock className="w-5 h-5" />
                             </div>
                             <div>
-                              <p className="font-bold text-[#00112F] dark:text-white text-lg">
+                              <p className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg">
                                 {appointment.client_name ||
                                   "Cliente não informado"}
                               </p>
