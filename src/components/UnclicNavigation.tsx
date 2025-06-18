@@ -154,13 +154,13 @@ export const UnclicNavigation: React.FC<UnclicNavigationProps> = ({
               <Button
                 variant="ghost"
                 className="w-full justify-start"
-                onClick={() => alert("Login em desenvolvimento")}
+                onClick={onNavigateToLogin}
               >
                 Entrar
               </Button>
               <Button
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                onClick={() => alert("Teste grátis em desenvolvimento")}
+                onClick={onNavigateToLogin}
               >
                 Teste Grátis
                 <ArrowRight className="w-4 h-4 ml-2" />
