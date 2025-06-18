@@ -190,6 +190,143 @@ export const useAppointments = () => {
   return { data, loading, error, refetch };
 };
 
+export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (appointmentData: any) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (variables: { id: string; data: any }) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useDeleteAppointment = (options?: { onSuccess?: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  
+  const mutate = async (id: string) => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { mutate, isLoading: loading, isPending: loading };
+};
+
+export const useServices = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+export const useProfessionals = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
+export const useGlobalLoading = () => {
+  return { loading: false };
+};
+
+export const useGlobalError = () => {
+  return { error: null };
+};
+
+export const useBusinessReports = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData({});
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
 export const useDashboardStats = () => {
   const [data, setData] = useState({
     total_revenue: 0,

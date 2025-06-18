@@ -297,6 +297,30 @@ export const useServices = () => {
   return { data, loading, error, refetch };
 };
 
+// Products hooks - ADDING MISSING EXPORT
+export const useProducts = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Mock implementation for now
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setData([]);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { data, loading, error, refetch };
+};
+
 // Transactions hooks
 export const useTransactions = () => {
   const [data, setData] = useState([]);
