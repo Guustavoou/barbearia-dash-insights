@@ -14,6 +14,7 @@ import { EnhancedInteractiveDashboard } from "@/pages/EnhancedInteractiveDashboa
 // 🚀 PRODUCTION COMPONENTS - 100% SUPABASE INTEGRATION
 import BeautifulDashboardProduction from "@/pages/BeautifulDashboardProduction";
 import BeautifulClientsProduction from "@/pages/BeautifulClientsProduction";
+import BeautifulServicesProduction from "@/pages/BeautifulServicesProduction";
 import { BeautifulAppointmentsFixed } from "@/pages/BeautifulAppointmentsFixed";
 import { QuickActionsHub } from "@/components/QuickActionsHub";
 import { SmartNotifications } from "@/components/SmartNotifications";
