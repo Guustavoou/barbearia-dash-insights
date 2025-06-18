@@ -180,13 +180,15 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
     showActiveOnly,
   ]);
 
-  // Get unique categories for filter
-  const categories = [...new Set(servicesData.map((s: Service) => s.category))];
+  // Get unique categories for filter (with null safety)
+  const categories = [
+    ...new Set((servicesData || []).map((s: Service) => s.category)),
+  ];
 
-  // Calculate stats
+  // Calculate stats (with null safety)
   const stats = {
-    total: servicesData.length,
-    active: servicesData.filter((s: Service) => s.is_active).length,
+    total: (servicesData || []).length,
+    active: (servicesData || []).filter((s: Service) => s.is_active).length,
     totalRevenue: servicesData.reduce(
       (sum: number, service: Service) => sum + (service.price || 0),
       0,
@@ -232,7 +234,7 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
 
   const handleExportData = () => {
     toast({
-      title: "📊 Exportar Dados",
+      title: "�� Exportar Dados",
       description: "Preparando relatório de serviços...",
     });
   };
