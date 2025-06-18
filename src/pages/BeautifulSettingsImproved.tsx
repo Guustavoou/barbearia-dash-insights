@@ -11,6 +11,7 @@ import {
   Palette,
   Globe,
   Key,
+  Lock,
   Save,
   RefreshCw,
   Upload,
