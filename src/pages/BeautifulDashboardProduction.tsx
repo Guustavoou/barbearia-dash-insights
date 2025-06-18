@@ -1010,6 +1010,11 @@ export const BeautifulDashboardProduction: React.FC<
             </div>
           </Card>
         </section>
+
+        {/* Application Diagnostics - For testing and monitoring */}
+        <section className="px-4 sm:px-6 lg:px-8 py-6">
+          <ApplicationDiagnostics />
+        </section>
       </div>
     </div>
   );
