@@ -192,6 +192,12 @@ const UnclicAppContent: React.FC = () => {
     setCurrentPage("dashboard");
   };
 
+  const handlePostLoginRedirect = () => {
+    // After successful login, redirect to dashboard
+    setCurrentPage("dashboard");
+    setAppState("main");
+  };
+
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "landing":
