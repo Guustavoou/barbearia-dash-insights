@@ -49,7 +49,7 @@ import { Documents } from "@/pages/Documents";
 import { LoginPage } from "@/pages/Login";
 import { OnboardingPage } from "@/pages/Onboarding";
 import { SuccessStep } from "@/components/onboarding/SuccessStep";
-import { UnclicLanding } from "@/pages/UnclicLanding";
+import { UnclicWebsite } from "@/pages/UnclicWebsite";
 import { PageType } from "@/lib/types";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useRightSidebar } from "@/hooks/useRightSidebar";
