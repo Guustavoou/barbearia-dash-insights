@@ -6,7 +6,8 @@ export interface DashboardStats {
   profit_margin: number;
   overview: any;
   data: any[];
-  totalClients?: number; // Adding this for compatibility
+  totalClients?: number;
+  totalAppointments?: number; // Adding this missing property
 }
 
 export type PageType = 
@@ -22,7 +23,7 @@ export type PageType =
   | "financial"
   | "marketing" 
   | "documents"
-  | "database-emergency"; // Adding missing page types
+  | "database-emergency";
 
 // Client types
 export type ClientSortField = 'name' | 'email' | 'created_at' | 'total_spent' | 'last_visit';
@@ -36,7 +37,7 @@ export interface Client {
   address?: string;
   city?: string;
   birth_date?: string;
-  birthday?: string; // Adding for compatibility
+  birthday?: string;
   notes?: string;
   status: 'active' | 'inactive';
   business_id: string;
@@ -44,13 +45,13 @@ export interface Client {
   updated_at: string;
   total_spent?: number;
   last_visit?: string;
-  visits?: number; // Adding for compatibility
-  joinDate?: string; // Adding for compatibility
-  join_date?: string; // Adding for compatibility
-  createdAt?: string; // Adding for compatibility
-  updatedAt?: string; // Adding for compatibility
-  totalSpent?: number; // Adding for compatibility
-  lastVisit?: string; // Adding for compatibility
+  visits?: number;
+  joinDate?: string;
+  join_date?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  totalSpent?: number;
+  lastVisit?: string;
 }
 
 // NeonClient interface for compatibility
@@ -64,7 +65,7 @@ export interface NeonClient {
   business_id: string;
   created_at: string;
   total_spent: number;
-  status: 'ativo' | 'inativo';
+  status: 'active' | 'inactive'; // Fixed to use English values
   notes?: string;
   createdAt?: string;
   totalSpent?: number;
@@ -73,7 +74,6 @@ export interface NeonClient {
   visits?: any[];
 }
 
-// Adding missing interfaces for exports
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
@@ -113,7 +113,7 @@ export interface Professional {
 
 export interface Appointment {
   id: string;
-  client_id: string;
+  client_id: string; // Using snake_case consistently
   professional_id: string;
   service_id: string;
   date: string;
@@ -125,6 +125,7 @@ export interface Appointment {
   business_id: string;
   created_at: string;
   updated_at: string;
+  time?: string; // Adding for compatibility
 }
 
 export interface Birthday {
@@ -132,6 +133,7 @@ export interface Birthday {
   name: string;
   date: string;
   age?: number;
+  // Removing clientId, clientName as they're not in the interface
 }
 
 export interface RevenueData {
@@ -139,4 +141,5 @@ export interface RevenueData {
   revenue: number;
   expenses?: number;
   profit?: number;
+  // Note: using month instead of date for RevenueData
 }

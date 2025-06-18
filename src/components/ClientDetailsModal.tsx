@@ -225,13 +225,13 @@ const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                     onChange={(e) => handleChange('status', e.target.value)}
                     className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="ativo">Ativo</option>
-                    <option value="inativo">Inativo</option>
+                    <option value="active">Ativo</option>
+                    <option value="inactive">Inativo</option>
                   </select>
                 ) : (
                   <div className="mt-1">
-                    <Badge variant={currentClient.status === 'ativo' ? 'default' : 'secondary'}>
-                      {currentClient.status === 'ativo' ? 'Ativo' : 'Inativo'}
+                    <Badge variant={currentClient.status === 'active' ? 'default' : 'secondary'}>
+                      {currentClient.status === 'active' ? 'Ativo' : 'Inativo'}
                     </Badge>
                   </div>
                 )}
