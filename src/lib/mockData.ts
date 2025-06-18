@@ -102,6 +102,9 @@ export const mockClients: Client[] = [
   }
 ];
 
+// Export as clients for backward compatibility
+export const clients = mockClients;
+
 // Mock Appointments Data
 export const mockAppointments: Appointment[] = [
   {

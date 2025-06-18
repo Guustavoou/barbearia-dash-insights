@@ -8,9 +8,9 @@ export interface NeonClient {
   email: string;
   phone: string;
   city: string;
+  business_id: string;
   birth_date?: string;
   notes?: string;
-  business_id: string;
   created_at: string;
   status: string;
   total_spent: number;

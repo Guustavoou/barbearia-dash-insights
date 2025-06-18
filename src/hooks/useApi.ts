@@ -48,7 +48,7 @@ export const useCreateClient = (options?: { onSuccess?: () => void }) => {
     }
   };
 
-  return { mutate, isLoading: loading };
+  return { mutate, isLoading: loading, isPending: loading };
 };
 
 export const useUpdateClient = (options?: { onSuccess?: () => void }) => {
@@ -69,7 +69,7 @@ export const useUpdateClient = (options?: { onSuccess?: () => void }) => {
     }
   };
 
-  return { mutate, isLoading: loading };
+  return { mutate, isLoading: loading, isPending: loading };
 };
 
 export const useDeleteClient = (options?: { onSuccess?: () => void }) => {
@@ -90,7 +90,7 @@ export const useDeleteClient = (options?: { onSuccess?: () => void }) => {
     }
   };
 
-  return { mutate, isLoading: loading };
+  return { mutate, isLoading: loading, isPending: loading };
 };
 
 // Add missing appointment hooks
@@ -136,7 +136,7 @@ export const useCreateAppointment = (options?: { onSuccess?: () => void }) => {
     }
   };
 
-  return { mutate, isLoading: loading };
+  return { mutate, isLoading: loading, isPending: loading };
 };
 
 export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
@@ -158,7 +158,7 @@ export const useUpdateAppointment = (options?: { onSuccess?: () => void }) => {
     }
   };
 
-  return { mutate, isLoading: loading };
+  return { mutate, isLoading: loading, isPending: loading };
 };
 
 export const useDeleteAppointment = (options?: { onSuccess?: () => void }) => {
@@ -180,5 +180,5 @@ export const useDeleteAppointment = (options?: { onSuccess?: () => void }) => {
     }
   };
 
-  return { mutate, isLoading: loading };
+  return { mutate, isLoading: loading, isPending: loading };
 };

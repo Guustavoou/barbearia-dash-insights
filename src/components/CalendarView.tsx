@@ -5,6 +5,8 @@ import { cn } from '@/lib/unclicUtils';
 export interface CalendarViewProps {
   appointments: any[];
   darkMode: boolean;
+  currentDate?: Date;
+  onDateChange?: (date: Date) => void;
   onEditAppointment?: (id: any, data: any) => Promise<void>;
   onDeleteAppointment?: (id: any) => Promise<void>;
 }
@@ -12,6 +14,8 @@ export interface CalendarViewProps {
 export const CalendarView: React.FC<CalendarViewProps> = ({
   appointments,
   darkMode,
+  currentDate,
+  onDateChange,
   onEditAppointment,
   onDeleteAppointment
 }) => {
