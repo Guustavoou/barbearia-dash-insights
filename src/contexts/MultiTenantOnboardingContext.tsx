@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import {
   MultiTenantOnboardingData,
@@ -36,43 +35,43 @@ interface MultiTenantOnboardingContextType {
 
 const defaultWorkingHours: WorkingHours[] = [
   {
-    day_of_week: "Segunda",
+    day_of_week: 1,
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: "Terça",
+    day_of_week: 2,
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: "Quarta",
+    day_of_week: 3,
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: "Quinta",
+    day_of_week: 4,
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: "Sexta",
+    day_of_week: 5,
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: "Sábado",
+    day_of_week: 6,
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: "Domingo",
+    day_of_week: 0,
     is_open: false,
     open_time: "09:00",
     close_time: "18:00",
@@ -254,7 +253,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [data, dispatch] = useReducer(onboardingReducer, initialData);
-  const { user } = useAuth(); // Changed from session to user
+  const { user } = useAuth();
 
   // Load progress from localStorage on mount
   useEffect(() => {

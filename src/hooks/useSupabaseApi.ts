@@ -106,3 +106,32 @@ export const useSupabaseRealTimeAppointments = () => {
     loading: false
   };
 };
+
+// Add missing client hook exports
+export const useCreateSupabaseClient = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
+
+export const useUpdateSupabaseClient = () => {
+  return {
+    mutate: async (data: any) => {},
+    loading: false
+  };
+};
+
+export const useDeleteSupabaseClient = () => {
+  return {
+    mutate: async (id: string) => {},
+    loading: false
+  };
+};
+
+export const useSupabaseRealTimeClients = () => {
+  return {
+    data: [],
+    loading: false
+  };
+};

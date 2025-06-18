@@ -62,3 +62,32 @@ export const defaultWorkingHours: WorkingHours[] = [
   { day_of_week: 5, is_open: true, open_time: '09:00', close_time: '18:00' },  // Friday
   { day_of_week: 6, is_open: false, open_time: '09:00', close_time: '18:00' }, // Saturday
 ];
+
+// Add missing UserSession interface
+export interface UserSession {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+  establishment: {
+    id: string;
+    name: string;
+  };
+}
+
+// Add missing MultiTenantOnboardingData interface
+export interface MultiTenantOnboardingData {
+  establishment: Partial<Establishment>;
+  owner: {
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  services: EstablishmentService[];
+  professionals: EstablishmentProfessional[];
+  workingHours: WorkingHours[];
+  currentStep: number;
+  isCompleted: boolean;
+}
