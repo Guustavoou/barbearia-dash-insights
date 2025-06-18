@@ -1,91 +1,142 @@
+
+// Core business types
 export interface Client {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
-  city: string;
-  lastVisit: Date;
-  totalSpent: number;
-  status: "ativo" | "inativo";
-  joinDate: Date;
-  visits: number;
-  notes: string;
-  cpf: string;
-  profession: string;
-}
-
-export interface Appointment {
-  id: number;
-  client: string;
-  service: string;
-  time: string;
-  status: "confirmado" | "agendado" | "pendente";
+  city?: string;
+  status: 'ativo' | 'inativo';
+  birthday?: string;
+  totalSpent?: number;
+  visits?: number;
+  lastVisit?: string;
+  createdAt: string;
+  updatedAt: string;
+  notes?: string;
+  joinDate?: string; // For compatibility
+  // Legacy field mappings for backward compatibility
+  total_spent?: number;
+  last_visit?: string;
+  join_date?: string;
 }
 
 export interface Service {
+  id: string;
   name: string;
-  count: number;
-  revenue: number;
+  description?: string;
+  price: number;
+  duration: number;
+  category: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Birthday {
+export interface Professional {
+  id: string;
   name: string;
+  email: string;
+  phone: string;
+  specialty: string;
+  commissionRate: number;
+  status: 'ativo' | 'inativo';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Appointment {
+  id: string;
+  clientId: string;
+  professionalId: string;
+  serviceId: string;
   date: string;
+  time: string;
+  status: 'agendado' | 'concluido' | 'cancelado' | 'faltou';
+  price: number;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface RevenueData {
-  month: string;
-  value: number;
+export interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  category: string;
+  brand?: string;
+  costPrice: number;
+  price: number;
+  currentStock: number;
+  minStock: number;
+  status: 'ativo' | 'inativo';
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface DashboardData {
-  revenue: {
-    current: number;
-    growth: number;
-    accumulated: number;
-    best: number;
-  };
-  appointments: {
-    total: number;
-    variation: number;
-  };
-  clients: {
-    active: number;
-    new: number;
-    retention: number;
-  };
-  satisfaction: number;
-  services: {
-    completed: number;
-    completion: number;
-  };
-  insights: {
-    peakHour: string;
-    cancellations: number;
-    revenueStatus: string;
-  };
+export interface Transaction {
+  id: string;
+  type: 'receita' | 'despesa';
+  category: string;
+  amount: number;
+  paymentMethod?: string;
+  appointmentId?: string;
+  description?: string;
+  date: string;
+  status: 'pendente' | 'confirmado' | 'cancelado';
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type PageType =
-  | "landing"
-  | "dashboard"
-  | "clients"
-  | "appointments"
-  | "calendar"
-  | "services"
-  | "reports"
-  | "settings"
-  | "help"
-  | "professionals"
-  | "stock"
-  | "financial"
-  | "payments"
-  | "marketing"
-  | "documents"
-  | "testing"
-  | "database-emergency";
+// UI and application types
+export type PageType = 
+  | 'dashboard' 
+  | 'appointments' 
+  | 'clients' 
+  | 'professionals' 
+  | 'services' 
+  | 'stock' 
+  | 'financial' 
+  | 'reports' 
+  | 'settings'
+  | 'calendar'
+  | 'marketing'
+  | 'payments'
+  | 'documents'
+  | 'help';
 
-export type SortField = "name" | "lastVisit" | "totalSpent" | "joinDate";
-export type SortOrder = "asc" | "desc";
-export type ViewMode = "cards" | "list";
-export type StatusFilter = "todos" | "ativos" | "inativos";
+export interface DashboardStats {
+  totalClients: number;
+  totalAppointments: number;
+  totalServices: number;
+  totalProfessionals: number;
+  todayAppointments: number;
+  monthlyRevenue: number;
+  pendingAppointments: number;
+  completedAppointments: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+// Form and validation types
+export interface FormErrors {
+  [key: string]: string;
+}
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  order?: 'ASC' | 'DESC';
+}
+
+export interface SearchParams extends PaginationParams {
+  search?: string;
+  status?: string;
+  category?: string;
+}

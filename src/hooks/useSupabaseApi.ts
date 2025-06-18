@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabaseApi } from "@/lib/supabaseApi";
 import { useToast } from "@/hooks/use-toast";
@@ -35,14 +36,14 @@ export function useSupabaseQuery<T>(
       if (response.success) {
         logSupabaseDebug("✅ [Real Data] Dados carregados com sucesso");
         setState({
-          data: response.data || [],
+          data: response.data || null,
           loading: false,
           error: null,
         });
       } else {
         logSupabaseError("⚠️ [Real Data] Falha na resposta", response.error);
         setState({
-          data: [],
+          data: null,
           loading: false,
           error: response.error || "Failed to fetch data",
         });
@@ -52,7 +53,7 @@ export function useSupabaseQuery<T>(
         error instanceof Error ? error.message : "Unknown error";
       logSupabaseError("❌ [Real Data] Erro no fetch", errorMessage);
       setState({
-        data: [],
+        data: null,
         loading: false,
         error: errorMessage,
       });

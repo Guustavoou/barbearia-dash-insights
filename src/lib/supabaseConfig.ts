@@ -1,3 +1,4 @@
+
 // Configuração para integração completa com Supabase
 export const SUPABASE_CONFIG = {
   // 🚀 SUPABASE TOTALMENTE HABILITADO - INTEGRAÇÃO COMPLETA ATIVA!
