@@ -42,7 +42,12 @@ function App() {
     user: {
       id: '1',
       email: 'user@example.com',
-      name: 'Demo User'
+      name: 'Demo User',
+      role: 'admin',
+      establishment_id: '1',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     establishment: {
       id: '1',

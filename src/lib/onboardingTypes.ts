@@ -29,6 +29,18 @@ export interface OnboardingBusiness {
   banner?: string;
 }
 
+export interface WorkingHours {
+  [key: string]: {
+    isOpen: boolean;
+    start: string;
+    end: string;
+    breaks: Array<{
+      start: string;
+      end: string;
+    }>;
+  };
+}
+
 export interface OnboardingProfessional {
   id?: string;
   name: string;
@@ -37,17 +49,7 @@ export interface OnboardingProfessional {
   bio: string;
   avatar?: string;
   isActive: boolean;
-  workingHours: {
-    [key: string]: {
-      isOpen: boolean;
-      start: string;
-      end: string;
-      breaks: Array<{
-        start: string;
-        end: string;
-      }>;
-    };
-  };
+  workingHours: WorkingHours;
   // Additional properties used in components
   role?: string;
   type?: string;
@@ -68,17 +70,7 @@ export interface OnboardingService {
 }
 
 export interface OnboardingSchedule {
-  businessHours: {
-    [key: string]: {
-      isOpen: boolean;
-      start: string;
-      end: string;
-      breaks: Array<{
-        start: string;
-        end: string;
-      }>;
-    };
-  };
+  businessHours: WorkingHours;
   appointmentDuration: number;
   advanceBookingDays: number;
   minimumNoticeHours: number;
@@ -93,6 +85,7 @@ export interface OnboardingData {
   professionals: OnboardingProfessional[];
   services: OnboardingService[];
   schedule: Partial<OnboardingSchedule>;
+  workingHours?: WorkingHours; // Added for compatibility
   completed: boolean;
 }
 
@@ -107,11 +100,41 @@ export interface OnboardingContextType {
   updateService: (index: number, service: Partial<OnboardingService>) => void;
   removeService: (index: number) => void;
   updateSchedule: (schedule: Partial<OnboardingSchedule>) => void;
+  updateWorkingHours?: (workingHours: WorkingHours) => void; // Added for compatibility
   nextStep: () => void;
   prevStep: () => void;
   previousStep?: () => void; // For backward compatibility
   goToStep: (step: number) => void;
   setCurrentStep?: (step: number) => void; // For backward compatibility
   submitOnboarding: () => Promise<void>;
+  completeOnboarding?: () => Promise<void>; // Added for compatibility
   reset: () => void;
 }
+
+// Service templates for the onboarding process
+export const serviceTemplates = [
+  {
+    name: 'Corte de Cabelo',
+    description: 'Corte tradicional masculino',
+    duration: 30,
+    price: 25,
+    category: 'Cabelo',
+    isActive: true
+  },
+  {
+    name: 'Barba',
+    description: 'Corte e modelagem de barba',
+    duration: 20,
+    price: 15,
+    category: 'Barba',
+    isActive: true
+  },
+  {
+    name: 'Sobrancelha',
+    description: 'Design de sobrancelha',
+    duration: 15,
+    price: 10,
+    category: 'Estética',
+    isActive: true
+  }
+];
