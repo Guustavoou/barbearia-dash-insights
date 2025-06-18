@@ -384,7 +384,7 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
           </div>
 
           <div className="space-y-3">
-            {paymentsData.map((payment) => (
+            {(paymentsData || []).map((payment) => (
               <Card
                 key={payment.id}
                 className="group relative overflow-hidden transition-all duration-300 border-0 shadow-md hover:shadow-lg cursor-pointer bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-sm hover:bg-white dark:hover:bg-[#0D1117] hover:-translate-y-1 hover:scale-[1.02]"
