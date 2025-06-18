@@ -758,11 +758,13 @@ const MonthView = ({
   // Agrupar appointments por dia
   const getAppointmentsForDay = (day: Date) => {
     const dayStr = day.toISOString().split("T")[0];
-    return (appointments || []).filter((apt) => {
-      if (!apt.date) return false;
-      const aptDate = new Date(apt.date).toISOString().split("T")[0];
-      return aptDate === dayStr;
-    });
+    return Array.isArray(appointments)
+      ? appointments.filter((apt) => {
+          if (!apt.date) return false;
+          const aptDate = new Date(apt.date).toISOString().split("T")[0];
+          return aptDate === dayStr;
+        })
+      : [];
   };
 
   // Verificar se o dia está no mês atual
