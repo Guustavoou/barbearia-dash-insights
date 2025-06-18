@@ -723,16 +723,31 @@ export class SupabaseApiProduction {
       }
 
       logSupabaseDebug("Executing transactions query...");
+      logSupabaseDebug("Query details:", {
+        table: "transactions",
+        businessId: this.businessId,
+        filters: params,
+      });
+
       const { data, error, count } = await query;
 
       if (error) {
         logSupabaseError("Transactions query failed", error);
+        logSupabaseError("Full error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
         throw error;
       }
 
       logSupabaseDebug(
         `Transactions query successful: ${data?.length || 0} results, total count: ${count}`,
       );
+      if (data && data.length > 0) {
+        logSupabaseDebug("Sample transaction columns:", Object.keys(data[0]));
+      }
 
       return this.handleResponse(
         {
