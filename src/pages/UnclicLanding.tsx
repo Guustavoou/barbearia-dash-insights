@@ -60,7 +60,6 @@ import {
   Brain,
   Megaphone,
   ShoppingCart,
-  Gear,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
