@@ -179,7 +179,7 @@ export class SupabaseApiProduction {
       logSupabaseDebug("Fetching clients...", params);
 
       let query = supabase.from("clients").select("*", { count: "exact" });
-      query = this.addBusinessFilter(query);
+      // Temporarily removed business filter: query = this.addBusinessFilter(query);
 
       // Apply filters
       if (params?.status && params.status !== "all") {
