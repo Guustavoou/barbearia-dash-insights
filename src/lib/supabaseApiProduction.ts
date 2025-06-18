@@ -691,20 +691,13 @@ export class SupabaseApiProduction {
       logSupabaseDebug(`Using business_id: ${this.businessId}`);
 
       let query = supabase.from("transactions").select("*", { count: "exact" });
-
-      // Try different possible business ID column names
-      try {
-        query = query.eq("business_id", this.businessId);
-      } catch (error) {
-        logSupabaseDebug("Trying barbershop_id instead of business_id");
-        query = query.eq("barbershop_id", this.businessId);
-      }
+      query = query.eq("business_id", this.businessId);
 
       if (params?.type && params.type !== "all") {
         query = query.eq("type", params.type);
       }
 
-      // Use created_at for ordering (guaranteed to exist)
+      // Simple ordering by created_at which should exist
       query = query.order("created_at", { ascending: false });
 
       // Apply pagination
