@@ -1,3 +1,4 @@
+
 export interface AppointmentItem {
   id: number;
   client: string;
@@ -29,3 +30,16 @@ export interface AppointmentStats {
 
 export type CalendarViewType = "mensal" | "semanal";
 export type AppointmentViewMode = "calendario" | "lista";
+
+// Additional exports for compatibility
+export interface AppointmentWithDetails extends AppointmentItem {
+  clientName: string;
+  serviceName: string;
+  professionalName: string;
+}
+
+export type AppointmentStatus = "agendado" | "confirmado" | "concluido" | "cancelado" | "faltou";
+
+export type AppointmentSortField = "date" | "client" | "service" | "professional" | "status" | "price";
+
+export type AppointmentSortOrder = "asc" | "desc";

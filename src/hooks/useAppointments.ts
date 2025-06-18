@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
 
-// Use the bookings table which exists in the schema
+// Simplified Appointment type that matches the database structure
 type Appointment = {
   id: string;
   business_id: string;
@@ -22,14 +22,14 @@ type Appointment = {
   clients?: {
     name: string;
     phone: string;
-  };
+  } | null;
   services?: {
     name: string;
     price: number;
-  };
+  } | null;
   professionals?: {
     name: string;
-  };
+  } | null;
 };
 
 type AppointmentInsert = {
@@ -67,9 +67,9 @@ export const useAppointments = () => {
         .from('bookings')
         .select(`
           *,
-          clients!inner(name, phone),
+          clients(name, phone),
           professionals(name),
-          services!inner(name, price)
+          services(name, price)
         `)
         .eq('business_id', barbershop.id)
         .order('booking_date', { ascending: true })
@@ -77,11 +77,20 @@ export const useAppointments = () => {
 
       if (error) {
         console.error('Error fetching appointments:', error);
+        setAppointments([]);
       } else {
-        setAppointments(data || []);
+        // Transform the data to ensure it matches our type
+        const transformedData = (data || []).map(item => ({
+          ...item,
+          clients: item.clients || null,
+          professionals: item.professionals || null,
+          services: item.services || null,
+        }));
+        setAppointments(transformedData);
       }
     } catch (error) {
       console.error('Error:', error);
+      setAppointments([]);
     } finally {
       setLoading(false);
     }
@@ -99,9 +108,9 @@ export const useAppointments = () => {
         })
         .select(`
           *,
-          clients!inner(name, phone),
+          clients(name, phone),
           professionals(name),
-          services!inner(name, price)
+          services(name, price)
         `)
         .single();
 
@@ -110,14 +119,21 @@ export const useAppointments = () => {
         return null;
       }
 
-      setAppointments(prev => [...prev, data].sort((a, b) => {
+      const transformedData = {
+        ...data,
+        clients: data.clients || null,
+        professionals: data.professionals || null,
+        services: data.services || null,
+      };
+
+      setAppointments(prev => [...prev, transformedData].sort((a, b) => {
         const dateCompare = new Date(a.booking_date || '').getTime() - new Date(b.booking_date || '').getTime();
         if (dateCompare === 0) {
           return (a.start_time || '').localeCompare(b.start_time || '');
         }
         return dateCompare;
       }));
-      return data;
+      return transformedData;
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -132,9 +148,9 @@ export const useAppointments = () => {
         .eq('id', id)
         .select(`
           *,
-          clients!inner(name, phone),
+          clients(name, phone),
           professionals(name),
-          services!inner(name, price)
+          services(name, price)
         `)
         .single();
 
@@ -143,10 +159,17 @@ export const useAppointments = () => {
         return null;
       }
 
+      const transformedData = {
+        ...data,
+        clients: data.clients || null,
+        professionals: data.professionals || null,
+        services: data.services || null,
+      };
+
       setAppointments(prev => prev.map(appointment => 
-        appointment.id === id ? data : appointment
+        appointment.id === id ? transformedData : appointment
       ));
-      return data;
+      return transformedData;
     } catch (error) {
       console.error('Error:', error);
       return null;

@@ -1,3 +1,4 @@
+
 import { Establishment, EstablishmentProfessional, EstablishmentService, WorkingHours } from "@/lib/multiTenantTypes";
 import { ApiResponse } from "./types";
 
@@ -8,6 +9,7 @@ export const onboardingAPI = {
 
       // Mock success response
       const establishment: Establishment = {
+        id: '1',
         name: 'Example Salon',
         email: 'contact@examplesalon.com',
         phone: '+15551234567',
@@ -17,6 +19,9 @@ export const onboardingAPI = {
         website: 'www.examplesalon.com',
         instagram: '@examplesalon',
         facebook: 'facebook.com/examplesalon',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -118,7 +123,11 @@ export const onboardingAPI = {
           description: 'A professional haircut',
           price: 25.00,
           duration: 30,
-          establishment_id: businessId
+          establishment_id: businessId,
+          category: 'Hair',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         },
         {
           id: '2',
@@ -126,7 +135,11 @@ export const onboardingAPI = {
           description: 'A relaxing manicure',
           price: 20.00,
           duration: 45,
-          establishment_id: businessId
+          establishment_id: businessId,
+          category: 'Nails',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         }
       ];
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -154,7 +167,11 @@ export const onboardingAPI = {
       const newService: EstablishmentService = {
         ...service,
         id: Date.now().toString(),
-        establishment_id: businessId
+        establishment_id: businessId,
+        category: service.category || 'General',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -184,7 +201,11 @@ export const onboardingAPI = {
         description: service.description || 'Updated description',
         price: service.price || 30.00,
         duration: service.duration || 60,
-        establishment_id: businessId
+        establishment_id: businessId,
+        category: service.category || 'General',
+        is_active: service.is_active !== undefined ? service.is_active : true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -234,13 +255,11 @@ export const onboardingAPI = {
         {
           id: '1',
           name: 'Alice Johnson',
-          specialty: 'Hair stylist',
           establishment_id: businessId
         },
         {
           id: '2',
           name: 'Bob Smith',
-          specialty: 'Nail technician',
           establishment_id: businessId
         }
       ];
@@ -296,7 +315,6 @@ export const onboardingAPI = {
       const updatedProfessional: EstablishmentProfessional = {
         id,
         name: professional.name || 'Updated Professional',
-        specialty: professional.specialty || 'Updated specialty',
         establishment_id: businessId
       };
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -346,11 +364,12 @@ export const onboardingAPI = {
       const processedHours = workingHours.map(dayHours => {
         if (typeof dayHours === 'object' && dayHours !== null) {
           return {
-            dayOfWeek: dayHours.day_of_week || dayHours.dayOfWeek,
-            isOpen: dayHours.is_open !== undefined ? dayHours.is_open : dayHours.isOpen,
-            startTime: dayHours.open_time || dayHours.startTime || '09:00',
-            endTime: dayHours.close_time || dayHours.endTime || '18:00',
-            breaks: dayHours.breaks || []
+            day_of_week: dayHours.day_of_week || 0,
+            is_open: dayHours.is_open !== undefined ? dayHours.is_open : true,
+            open_time: dayHours.open_time || '09:00',
+            close_time: dayHours.close_time || '18:00',
+            break_start: dayHours.break_start,
+            break_end: dayHours.break_end
           };
         }
         return dayHours;
@@ -396,3 +415,6 @@ export const onboardingAPI = {
     }
   }
 };
+
+// Export as OnboardingAPI for backward compatibility
+export const OnboardingAPI = onboardingAPI;

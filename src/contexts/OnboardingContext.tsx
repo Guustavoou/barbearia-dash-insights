@@ -266,12 +266,12 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({
   const submitOnboarding = async () => {
     try {
       // Import API here to avoid circular dependencies
-      const { OnboardingAPI } = await import("@/lib/onboardingApi");
+      const { onboardingAPI } = await import("@/lib/onboardingApi");
 
       console.log("Completing onboarding with data:", data);
 
       // Send data to API (with fallback to mock)
-      const result = await OnboardingAPI.completeOnboarding(data);
+      const result = await onboardingAPI.completeOnboarding(data.business.slug || 'default');
 
       console.log("Onboarding API result:", result);
 
