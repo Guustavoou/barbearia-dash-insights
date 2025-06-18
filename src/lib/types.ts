@@ -103,7 +103,8 @@ export type PageType =
   | 'marketing'
   | 'payments'
   | 'documents'
-  | 'help';
+  | 'help'
+  | 'database-emergency';
 
 export interface DashboardStats {
   totalClients: number;

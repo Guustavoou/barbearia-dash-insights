@@ -4,25 +4,25 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import ModernHeader from '@/components/ModernHeader';
-import ModernSidebar from '@/components/ModernSidebar';
-import Index from '@/pages/Index';
-import Login from '@/pages/Login';
-import Dashboard from '@/pages/Dashboard';
-import Appointments from '@/pages/Appointments';
-import Clients from '@/pages/Clients';
-import Professionals from '@/pages/Professionals';
-import Services from '@/pages/Services';
-import Stock from '@/pages/Stock';
-import Financial from '@/pages/Financial';
-import Reports from '@/pages/Reports';
-import Settings from '@/pages/Settings';
-import Calendar from '@/pages/Calendar';
-import Marketing from '@/pages/Marketing';
-import Payments from '@/pages/Payments';
-import Documents from '@/pages/Documents';
-import Help from '@/pages/Help';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { ModernHeader } from '@/components/ModernHeader';
+import { ModernSidebar } from '@/components/ModernSidebar';
+import { Index } from '@/pages/Index';
+import { Login } from '@/pages/Login';
+import { Dashboard } from '@/pages/Dashboard';
+import { Appointments } from '@/pages/Appointments';
+import { Clients } from '@/pages/Clients';
+import { Professionals } from '@/pages/Professionals';
+import { Services } from '@/pages/Services';
+import { Stock } from '@/pages/Stock';
+import { Financial } from '@/pages/Financial';
+import { Reports } from '@/pages/Reports';
+import { Settings } from '@/pages/Settings';
+import { Calendar } from '@/pages/Calendar';
+import { Marketing } from '@/pages/Marketing';
+import { Payments } from '@/pages/Payments';
+import { Documents } from '@/pages/Documents';
+import { Help } from '@/pages/Help';
 import { PageType } from '@/lib/types';
 
 const queryClient = new QueryClient();
@@ -53,8 +53,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -79,8 +79,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -105,8 +105,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -131,8 +131,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -157,8 +157,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -183,8 +183,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -209,8 +209,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -235,8 +235,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -261,8 +261,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -287,8 +287,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -313,8 +313,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -339,8 +339,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -365,8 +365,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -391,8 +391,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">
@@ -417,8 +417,8 @@ function App() {
                           <ModernSidebar 
                             currentPage={currentPage}
                             onPageChange={handlePageChange}
-                            expanded={sidebarExpanded}
-                            onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
+                            collapsed={!sidebarExpanded}
+                            onToggleCollapse={() => setSidebarExpanded(!sidebarExpanded)}
                             darkMode={darkMode}
                           />
                           <div className="flex-1 flex flex-col overflow-hidden">

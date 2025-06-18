@@ -73,6 +73,7 @@ export interface OnboardingSchedule {
 export interface OnboardingData {
   currentStep: number;
   business: Partial<OnboardingBusiness>;
+  businessInfo?: Partial<OnboardingBusiness>; // For backward compatibility
   professionals: OnboardingProfessional[];
   services: OnboardingService[];
   schedule: Partial<OnboardingSchedule>;
@@ -82,6 +83,7 @@ export interface OnboardingData {
 export interface OnboardingContextType {
   data: OnboardingData;
   updateBusiness: (business: Partial<OnboardingBusiness>) => void;
+  updateBusinessInfo?: (business: Partial<OnboardingBusiness>) => void; // For backward compatibility
   addProfessional: (professional: OnboardingProfessional) => void;
   updateProfessional: (index: number, professional: Partial<OnboardingProfessional>) => void;
   removeProfessional: (index: number) => void;
@@ -91,7 +93,9 @@ export interface OnboardingContextType {
   updateSchedule: (schedule: Partial<OnboardingSchedule>) => void;
   nextStep: () => void;
   prevStep: () => void;
+  previousStep?: () => void; // For backward compatibility
   goToStep: (step: number) => void;
+  setCurrentStep?: (step: number) => void; // For backward compatibility
   submitOnboarding: () => Promise<void>;
   reset: () => void;
 }

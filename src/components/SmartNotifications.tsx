@@ -16,7 +16,7 @@ interface Notification {
   read: boolean;
 }
 
-const SmartNotifications: React.FC<SmartNotificationsProps> = ({ darkMode, onPageChange }) => {
+export const SmartNotifications: React.FC<SmartNotificationsProps> = ({ darkMode, onPageChange }) => {
   const notifications: Notification[] = [
     {
       id: '1',

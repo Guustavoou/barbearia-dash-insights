@@ -13,6 +13,9 @@ export const SUPABASE_CONFIG = {
   // Log level para monitoramento
   DEBUG_MODE: true,
 
+  // Motivo da desabilitação (quando aplicável)
+  DISABLE_REASON: null,
+
   // Status da integração
   INTEGRATION_STATUS:
     "🎉 SUPABASE INTEGRADO COM SUCESSO - TODAS AS TELAS USANDO DADOS REAIS",
