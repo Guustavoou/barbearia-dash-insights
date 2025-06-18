@@ -86,6 +86,7 @@ import {
   List,
   MoreVertical,
   MoreHorizontal,
+  Hash,
 } from "lucide-react";
 import { cn } from "@/lib/unclicUtils";
 import { Button } from "@/components/ui/button";
