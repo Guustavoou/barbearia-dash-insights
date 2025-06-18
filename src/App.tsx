@@ -222,7 +222,7 @@ const UnclicAppContent: React.FC = () => {
         );
       case "settings":
         return (
-          <BeautifulSettings
+          <BeautifulSettingsImproved
             darkMode={darkMode}
             onPageChange={setCurrentPage}
           />
