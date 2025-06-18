@@ -189,23 +189,23 @@ export const BeautifulServices: React.FC<BeautifulServicesProps> = ({
   const stats = {
     total: (servicesData || []).length,
     active: (servicesData || []).filter((s: Service) => s.is_active).length,
-    totalRevenue: servicesData.reduce(
+    totalRevenue: (servicesData || []).reduce(
       (sum: number, service: Service) => sum + (service.price || 0),
       0,
     ),
     averagePrice:
-      servicesData.length > 0
-        ? servicesData.reduce(
+      (servicesData || []).length > 0
+        ? (servicesData || []).reduce(
             (sum: number, service: Service) => sum + (service.price || 0),
             0,
-          ) / servicesData.length
+          ) / (servicesData || []).length
         : 0,
     averageDuration:
-      servicesData.length > 0
-        ? servicesData.reduce(
+      (servicesData || []).length > 0
+        ? (servicesData || []).reduce(
             (sum: number, service: Service) => sum + (service.duration || 0),
             0,
-          ) / servicesData.length
+          ) / (servicesData || []).length
         : 0,
   };
 
