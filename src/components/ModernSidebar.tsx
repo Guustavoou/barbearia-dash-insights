@@ -96,7 +96,6 @@ export const ModernSidebar: React.FC<ModernSidebarProps> = ({
   isMobile = false,
 }) => {
   const menuItems = [
-    { icon: TestTube, label: "Site UNCLIC", pageId: "landing" as PageType },
     { icon: BarChart3, label: "Dashboard", pageId: "dashboard" as PageType },
     {
       icon: Calendar,
