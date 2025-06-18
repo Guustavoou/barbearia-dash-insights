@@ -490,16 +490,9 @@ export const BeautifulStock: React.FC<BeautifulStockProps> = ({
         ? ((product.price - product.cost) / product.price) * 100
         : 0;
 
-    return (
-      <Card className="group relative overflow-hidden bg-white/90 dark:bg-[#0D1117]/90 backdrop-blur-xl border-0 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-        <div className="absolute -inset-1 bg-gradient-to-r from-[#00112F]/20 to-blue-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-1000" />
-
-        <div className="relative p-4 space-y-4">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <h3 className="font-bold text-[#00112F] dark:text-[#F9FAFB] text-lg leading-tight">
-                {product.name}
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] via-white to-blue-50/30 dark:from-[#0D1117] dark:via-[#0D1117] dark:to-blue-950/20 space-y-6 p-6">
+      <div className="space-y-6">
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {product.brand} • {product.category}
