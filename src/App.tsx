@@ -149,8 +149,15 @@ const UnclicAppContent: React.FC = () => {
   useEffect(() => {
     if (isLoading) return;
 
-    // Allow public access to landing page
-    if (currentPage === "landing") {
+    // If user just logged in and is on landing page, redirect to dashboard
+    if (session && currentPage === "landing") {
+      setCurrentPage("dashboard");
+      setAppState("main");
+      return;
+    }
+
+    // Allow public access to landing page when not authenticated
+    if (currentPage === "landing" && !session) {
       setAppState("main");
       return;
     }
