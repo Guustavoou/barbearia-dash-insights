@@ -85,6 +85,16 @@ const UnclicAppContent: React.FC = () => {
       ) {
         return "database-emergency";
       }
+
+      // Check if user wants to access the public landing page
+      if (
+        pageParam === "landing" ||
+        hashPage === "landing" ||
+        window.location.pathname === "/" ||
+        window.location.pathname === "/landing"
+      ) {
+        return "landing";
+      }
     }
     return "dashboard";
   });
