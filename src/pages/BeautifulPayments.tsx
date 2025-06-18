@@ -86,12 +86,14 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
     order: "DESC",
   });
 
-  // Calculate metrics usando dados reais do Supabase
+  // Helper function to safely extract payments array
+  const getPaymentsArray = (data: any) => {
+    return Array.isArray(data) ? data : data?.data || [];
+  };
+
   const metrics = useMemo(() => {
-    // Extract the actual array from the response object
-    const safePayments = Array.isArray(paymentsData)
-      ? paymentsData
-      : paymentsData?.data || [];
+    const safePayments = getPaymentsArray(paymentsData);
+    const totalPayments = safePayments.length;
     const totalPayments = safePayments.length;
     const approvedPayments = safePayments.filter(
       (p) => p.status === "confirmado",
