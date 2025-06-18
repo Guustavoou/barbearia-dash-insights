@@ -872,9 +872,16 @@ export default function BeautifulAppointmentsFixed() {
   // Hooks de dados
   const { data: appointments = [], isLoading: appointmentsLoading } =
     useAppointments();
-  const { data: clients = [] } = useClients();
-  const { data: services = [] } = useServices();
-  const { data: professionals = [] } = useProfessionals();
+  const { data: clientsData = [] } = useClients();
+  const { data: servicesData = [] } = useServices();
+  const { data: professionalsData = [] } = useProfessionals();
+
+  // Ensure we always have arrays
+  const clients = Array.isArray(clientsData) ? clientsData : [];
+  const services = Array.isArray(servicesData) ? servicesData : [];
+  const professionals = Array.isArray(professionalsData)
+    ? professionalsData
+    : [];
   const globalLoading = useGlobalLoading();
   const globalError = useGlobalError();
 
