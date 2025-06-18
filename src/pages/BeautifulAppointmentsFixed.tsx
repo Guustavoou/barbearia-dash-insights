@@ -968,11 +968,13 @@ export default function BeautifulAppointmentsFixed() {
     : [];
 
   // Calcular KPIs
-  const todayAppointments = (appointments || []).filter((apt) => {
-    const today = new Date().toDateString();
-    const aptDate = apt.date ? new Date(apt.date).toDateString() : null;
-    return aptDate === today;
-  });
+  const todayAppointments = Array.isArray(appointments)
+    ? appointments.filter((apt) => {
+        const today = new Date().toDateString();
+        const aptDate = apt.date ? new Date(apt.date).toDateString() : null;
+        return aptDate === today;
+      })
+    : [];
 
   const todayRevenue = todayAppointments.reduce(
     (total, apt) => total + (apt.price || 0),
