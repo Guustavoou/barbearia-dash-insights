@@ -69,7 +69,6 @@ import {
   RotateCcw,
   CloudUpload,
   FileJson,
-  Import,
   Archive,
   CloudDownload,
   CircleCheck,
@@ -240,7 +239,7 @@ export const BeautifulSettingsImproved: React.FC<
       enabled: true,
       start: "09:00",
       end: "18:00",
-      breaks: [{ start: "12:00", end: "13:00", name: "Almo��o" }],
+      breaks: [{ start: "12:00", end: "13:00", name: "Almoço" }],
     },
     tuesday: {
       enabled: true,
@@ -831,7 +830,7 @@ export const BeautifulSettingsImproved: React.FC<
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-[#00112F] dark:text-[#F9FAFB] flex items-center">
                     <Building className="w-6 h-6 mr-3 text-[#00112F] dark:text-blue-400" />
-                    Informa��ões do Negócio
+                    Informações do Negócio
                   </h3>
                   <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
                     Essencial
