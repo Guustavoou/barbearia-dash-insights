@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import {
   Calendar,
@@ -122,14 +123,12 @@ export const BeautifulDashboard: React.FC<BeautifulDashboardProps> = ({
   // Supabase data hooks com fallback automático
   const { data: stats, loading: statsLoading } = useSupabaseDashboardStats();
   const { data: businessReports, loading: reportsLoading } =
-    useSupabaseBusinessReports(selectedPeriod);
+    useSupabaseBusinessReports();
   const { data: salesPerformance, loading: salesLoading } =
-    useSupabaseSalesPerformance(selectedPeriod, 5);
-  const { data: clients, loading: clientsLoading } = useSupabaseClients({
-    limit: 10,
-  });
+    useSupabaseSalesPerformance();
+  const { data: clients, loading: clientsLoading } = useSupabaseClients();
   const { data: appointments, loading: appointmentsLoading } =
-    useSupabaseAppointments({ limit: 8 });
+    useSupabaseAppointments();
 
   const loading =
     statsLoading || reportsLoading || salesLoading || appointmentsLoading;

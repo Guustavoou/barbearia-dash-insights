@@ -1,205 +1,452 @@
-import { OnboardingData } from "./onboardingTypes";
 
-const API_BASE_URL = "http://localhost:3001/api";
+import { Establishment, EstablishmentProfessional, EstablishmentService, WorkingHours } from "@/lib/multiTenantTypes";
+import { ApiResponse } from "./types";
 
-export class OnboardingAPI {
-  private static async makeRequest(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<any> {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const defaultHeaders = {
-      "Content-Type": "application/json",
-    };
-
+export const onboardingAPI = {
+  async getEstablishment(businessId: string): Promise<ApiResponse<Establishment>> {
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          ...defaultHeaders,
-          ...options.headers,
-        },
-      });
+      console.log('🔍 [Onboarding API] Fetching establishment...', businessId);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Mock success response
+      const establishment: Establishment = {
+        id: '1',
+        name: 'Example Salon',
+        email: 'contact@examplesalon.com',
+        phone: '+15551234567',
+        cnpj: '12.345.678/0001-90',
+        address: '123 Main St',
+        cep: '90210',
+        website: 'www.examplesalon.com',
+        instagram: '@examplesalon',
+        facebook: 'facebook.com/examplesalon',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      return await response.json();
-    } catch (error) {
-      console.warn(`API request failed for ${endpoint}:`, error);
-      console.warn("Falling back to mock response");
-
-      // Fallback to mock response when backend is not available
-      return this.getMockResponse(endpoint, options);
-    }
-  }
-
-  private static getMockResponse(
-    endpoint: string,
-    options: RequestInit = {},
-  ): any {
-    console.log(`Mock response for ${endpoint}`, options);
-
-    // Simulate API delay
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          message: "Mock response - backend not available",
-          data: {
-            id: Date.now().toString(),
-            mockData: true,
-          },
-        });
-      }, 500);
-    });
-  }
-
-  static async createBusiness(businessInfo: any) {
-    return this.makeRequest("/onboarding/business", {
-      method: "POST",
-      body: JSON.stringify(businessInfo),
-    });
-  }
-
-  static async createServices(businessId: string, services: any[]) {
-    return this.makeRequest("/onboarding/services", {
-      method: "POST",
-      body: JSON.stringify({ businessId, services }),
-    });
-  }
-
-  static async createProfessionals(businessId: string, professionals: any[]) {
-    return this.makeRequest("/onboarding/professionals", {
-      method: "POST",
-      body: JSON.stringify({ businessId, professionals }),
-    });
-  }
-
-  static async createWorkingHours(businessId: string, workingHours: any[]) {
-    return this.makeRequest("/onboarding/working-hours", {
-      method: "POST",
-      body: JSON.stringify({ businessId, workingHours }),
-    });
-  }
-
-  static async completeOnboarding(data: OnboardingData) {
-    try {
-      return await this.makeRequest("/onboarding/complete", {
-        method: "POST",
-        body: JSON.stringify({
-          businessInfo: data.businessInfo,
-          services: data.services,
-          professionals: data.professionals,
-          workingHours: data.workingHours,
-        }),
-      });
-    } catch (error) {
-      console.warn("Backend not available, using mock completion");
-
-      // Mock successful completion
+      console.log('✅ [Onboarding API] Establishment fetched successfully');
       return {
         success: true,
-        message: "Onboarding completed successfully (mock)",
-        data: {
-          business: { id: "mock-business-1", ...data.businessInfo },
-          services: data.services.map((s, i) => ({
-            id: `mock-service-${i}`,
-            ...s,
-          })),
-          professionals: data.professionals.map((p, i) => ({
-            id: `mock-prof-${i}`,
-            ...p,
-          })),
-          workingHours: data.workingHours.map((h, i) => ({
-            id: `mock-hours-${i}`,
-            ...h,
-          })),
+        data: establishment
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error fetching establishment:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to fetch establishment'
+      };
+    }
+  },
+
+  async updateEstablishment(businessId: string, info: Partial<Establishment>): Promise<ApiResponse<Establishment>> {
+    try {
+      console.log('🔍 [Onboarding API] Updating establishment...', { businessId, info });
+
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Establishment updated successfully');
+      return {
+        success: true,
+        data: info as Establishment
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error updating establishment:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to update establishment'
+      };
+    }
+  },
+
+  async getOwner(businessId: string): Promise<ApiResponse<{ name: string; email: string; phone?: string }>> {
+    try {
+      console.log('🔍 [Onboarding API] Fetching owner...', businessId);
+
+      // Mock success response
+      const owner = {
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        phone: '+15557778888'
+      };
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Owner fetched successfully');
+      return {
+        success: true,
+        data: owner
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error fetching owner:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to fetch owner'
+      };
+    }
+  },
+
+  async updateOwner(businessId: string, info: Partial<{ name: string; email: string; phone?: string }>): Promise<ApiResponse<{ name: string; email: string; phone?: string }>> {
+    try {
+      console.log('🔍 [Onboarding API] Updating owner...', { businessId, info });
+
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Owner updated successfully');
+      return {
+        success: true,
+        data: info as { name: string; email: string; phone?: string }
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error updating owner:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to update owner'
+      };
+    }
+  },
+
+  async getServices(businessId: string): Promise<ApiResponse<EstablishmentService[]>> {
+    try {
+      console.log('🔍 [Onboarding API] Fetching services...', businessId);
+
+      // Mock success response
+      const services: EstablishmentService[] = [
+        {
+          id: '1',
+          name: 'Haircut',
+          description: 'A professional haircut',
+          price: 25.00,
+          duration: 30,
+          establishment_id: businessId,
+          category: 'Hair',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         },
+        {
+          id: '2',
+          name: 'Manicure',
+          description: 'A relaxing manicure',
+          price: 20.00,
+          duration: 45,
+          establishment_id: businessId,
+          category: 'Nails',
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      ];
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Services fetched successfully');
+      return {
+        success: true,
+        data: services
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error fetching services:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to fetch services'
+      };
+    }
+  },
+
+  async addService(businessId: string, service: EstablishmentService): Promise<ApiResponse<EstablishmentService>> {
+    try {
+      console.log('🔍 [Onboarding API] Adding service...', { businessId, service });
+
+      // Mock success response
+      const newService: EstablishmentService = {
+        ...service,
+        id: Date.now().toString(),
+        establishment_id: businessId,
+        category: service.category || 'General',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Service added successfully');
+      return {
+        success: true,
+        data: newService
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error adding service:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to add service'
+      };
+    }
+  },
+
+  async updateService(businessId: string, id: string, service: Partial<EstablishmentService>): Promise<ApiResponse<EstablishmentService>> {
+    try {
+      console.log('🔍 [Onboarding API] Updating service...', { businessId, id, service });
+
+      // Mock success response
+      const updatedService: EstablishmentService = {
+        id,
+        name: service.name || 'Updated Service',
+        description: service.description || 'Updated description',
+        price: service.price || 30.00,
+        duration: service.duration || 60,
+        establishment_id: businessId,
+        category: service.category || 'General',
+        is_active: service.is_active !== undefined ? service.is_active : true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Service updated successfully');
+      return {
+        success: true,
+        data: updatedService
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error updating service:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to update service'
+      };
+    }
+  },
+
+  async removeService(businessId: string, id: string): Promise<ApiResponse<boolean>> {
+    try {
+      console.log('🔍 [Onboarding API] Removing service...', { businessId, id });
+
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Service removed successfully');
+      return {
+        success: true,
+        data: true
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error removing service:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to remove service'
+      };
+    }
+  },
+
+  async getProfessionals(businessId: string): Promise<ApiResponse<EstablishmentProfessional[]>> {
+    try {
+      console.log('🔍 [Onboarding API] Fetching professionals...', businessId);
+
+      // Mock success response
+      const professionals: EstablishmentProfessional[] = [
+        {
+          id: '1',
+          name: 'Alice Johnson',
+          establishment_id: businessId,
+          email: 'alice@example.com',
+          phone: '+1234567890',
+          role: 'stylist',
+          type: 'employee',
+          specialties: ['haircut', 'coloring'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: '2',
+          name: 'Bob Smith',
+          establishment_id: businessId,
+          email: 'bob@example.com',
+          phone: '+1234567891',
+          role: 'barber',
+          type: 'employee',
+          specialties: ['beard', 'haircut'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      ];
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Professionals fetched successfully');
+      return {
+        success: true,
+        data: professionals
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error fetching professionals:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to fetch professionals'
+      };
+    }
+  },
+
+  async addProfessional(businessId: string, professional: EstablishmentProfessional): Promise<ApiResponse<EstablishmentProfessional>> {
+    try {
+      console.log('🔍 [Onboarding API] Adding professional...', { businessId, professional });
+
+      // Mock success response
+      const newProfessional: EstablishmentProfessional = {
+        ...professional,
+        id: Date.now().toString(),
+        establishment_id: businessId,
+        email: professional.email || '',
+        phone: professional.phone || '',
+        role: professional.role || 'employee',
+        type: professional.type || 'employee',
+        specialties: professional.specialties || [],
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Professional added successfully');
+      return {
+        success: true,
+        data: newProfessional
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error adding professional:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to add professional'
+      };
+    }
+  },
+
+  async updateProfessional(businessId: string, id: string, professional: Partial<EstablishmentProfessional>): Promise<ApiResponse<EstablishmentProfessional>> {
+    try {
+      console.log('🔍 [Onboarding API] Updating professional...', { businessId, id, professional });
+
+      // Mock success response
+      const updatedProfessional: EstablishmentProfessional = {
+        id,
+        name: professional.name || 'Updated Professional',
+        establishment_id: businessId,
+        email: professional.email || '',
+        phone: professional.phone || '',
+        role: professional.role || 'employee',
+        type: professional.type || 'employee',
+        specialties: professional.specialties || [],
+        is_active: professional.is_active !== undefined ? professional.is_active : true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Professional updated successfully');
+      return {
+        success: true,
+        data: updatedProfessional
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error updating professional:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to update professional'
+      };
+    }
+  },
+
+  async removeProfessional(businessId: string, id: string): Promise<ApiResponse<boolean>> {
+    try {
+      console.log('🔍 [Onboarding API] Removing professional...', { businessId, id });
+
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Professional removed successfully');
+      return {
+        success: true,
+        data: true
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error removing professional:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to remove professional'
+      };
+    }
+  },
+
+  async updateWorkingHours(businessId: string, workingHours: WorkingHours[]): Promise<ApiResponse<WorkingHours[]>> {
+    try {
+      console.log('🔍 [Onboarding API] Updating working hours...', { businessId, workingHours });
+
+      // Simple implementation without circular reference
+      const processedHours = workingHours.map(dayHours => {
+        if (typeof dayHours === 'object' && dayHours !== null) {
+          return {
+            day_of_week: dayHours.day_of_week || 0,
+            is_open: dayHours.is_open !== undefined ? dayHours.is_open : true,
+            open_time: dayHours.open_time || '09:00',
+            close_time: dayHours.close_time || '18:00',
+            break_start: dayHours.break_start,
+            break_end: dayHours.break_end
+          };
+        }
+        return dayHours;
+      });
+
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      console.log('✅ [Onboarding API] Working hours updated successfully');
+      return {
+        success: true,
+        data: processedHours as WorkingHours[]
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error updating working hours:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to update working hours'
+      };
+    }
+  },
+
+  async completeOnboarding(businessId: string): Promise<ApiResponse<boolean>> {
+    try {
+      console.log('🔍 [Onboarding API] Completing onboarding...', businessId);
+
+      // Mock success response
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      console.log('✅ [Onboarding API] Onboarding completed successfully');
+      return {
+        success: true,
+        data: true
+      };
+
+    } catch (error: any) {
+      console.error('❌ [Onboarding API] Error completing onboarding:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to complete onboarding'
       };
     }
   }
+};
 
-  static async getOnboardingStatus() {
-    return this.makeRequest("/onboarding/status");
-  }
-
-  // Mock authentication methods (to be replaced with real auth service)
-  static async login(email: string, password: string) {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Mock validation
-    if (email && password) {
-      return {
-        success: true,
-        user: {
-          id: "1",
-          email,
-          name: "Maria Silva",
-          avatar: null,
-        },
-        token: "mock-jwt-token",
-      };
-    }
-
-    throw new Error("Credenciais inválidas");
-  }
-
-  static async loginWithGoogle() {
-    // Simulate Google OAuth
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    return {
-      success: true,
-      user: {
-        id: "2",
-        email: "maria@gmail.com",
-        name: "Maria Silva",
-        avatar: null,
-      },
-      token: "google-jwt-token",
-    };
-  }
-
-  static async createAccount(email: string, password: string) {
-    // Simulate account creation
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return {
-      success: true,
-      user: {
-        id: "3",
-        email,
-        name: email.split("@")[0],
-        avatar: null,
-      },
-      token: "new-user-jwt-token",
-    };
-  }
-
-  static async logout() {
-    // Simulate logout
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return { success: true };
-  }
-
-  // Upload file helper
-  static async uploadFile(file: File, type: "logo" | "banner" | "photo") {
-    // Mock file upload
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // In a real implementation, this would upload to your storage service
-    // For now, we'll return a mock URL
-    const mockUrl = URL.createObjectURL(file);
-
-    return {
-      success: true,
-      url: mockUrl,
-      filename: file.name,
-      size: file.size,
-      type: file.type,
-    };
-  }
-}
+// Export as OnboardingAPI for backward compatibility
+export const OnboardingAPI = onboardingAPI;

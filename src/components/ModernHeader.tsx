@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Search,
@@ -69,14 +70,18 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("pt-BR", {
+    // Ensure we have a valid Date object
+    const validDate = date instanceof Date ? date : new Date();
+    return validDate.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("pt-BR", {
+    // Ensure we have a valid Date object
+    const validDate = date instanceof Date ? date : new Date();
+    return validDate.toLocaleDateString("pt-BR", {
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -287,7 +292,7 @@ export const ModernHeader: React.FC<ModernHeaderProps> = ({
             </Button>
 
             {/* Notifications */}
-            <SmartNotifications darkMode={darkMode} />
+            <SmartNotifications darkMode={darkMode} onPageChange={onPageChange} />
 
             {/* Right Sidebar Toggle */}
             {onToggleRightSidebar && (

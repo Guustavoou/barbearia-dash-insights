@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +9,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const LoginPage: React.FC = () => {
-  const { login, loginWithGoogle, signup, isLoading } = useAuth();
+export const Login: React.FC = () => {
+  const { signIn, signUp, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,16 +43,15 @@ export const LoginPage: React.FC = () => {
           return;
         }
 
-        await signup({
-          name,
-          email,
-          password,
-          establishmentName,
-          establishmentPhone,
-          establishmentAddress,
-        });
+        const result = await signUp(email, password);
+        if (result.error) {
+          setError(result.error);
+        }
       } else {
-        await login(email, password);
+        const result = await signIn(email, password);
+        if (result.error) {
+          setError(result.error);
+        }
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Erro desconhecido");
@@ -60,13 +60,8 @@ export const LoginPage: React.FC = () => {
 
   const handleGoogleLogin = async () => {
     setError(null);
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Erro no login com Google",
-      );
-    }
+    // Implement Google login logic here
+    console.log("Google login not implemented yet");
   };
 
   return (
@@ -289,9 +284,9 @@ export const LoginPage: React.FC = () => {
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700"
-                  disabled={isLoading}
+                  disabled={loading}
                 >
-                  {isLoading
+                  {loading
                     ? "Carregando..."
                     : isSignUp
                       ? "Criar Estabelecimento"
@@ -315,7 +310,7 @@ export const LoginPage: React.FC = () => {
                 variant="outline"
                 className="w-full"
                 onClick={handleGoogleLogin}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                   <path
@@ -361,3 +356,5 @@ export const LoginPage: React.FC = () => {
     </div>
   );
 };
+
+export default Login;

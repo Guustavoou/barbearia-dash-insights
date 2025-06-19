@@ -397,14 +397,27 @@ export class SupabaseApiProduction {
           : { data: [], error: null },
       ]);
 
-      // Create lookup maps
-      const clientsMap = new Map(clientsData.data?.map((c) => [c.id, c]) || []);
-      const servicesMap = new Map(
-        servicesData.data?.map((s) => [s.id, s]) || [],
-      );
-      const professionalsMap = new Map(
-        professionalsData.data?.map((p) => [p.id, p]) || [],
-      );
+      // Create lookup maps with proper type safety
+      const clientsMap = new Map<string, any>();
+      (clientsData.data || []).forEach((c: any) => {
+        if (c && c.id) {
+          clientsMap.set(c.id, c);
+        }
+      });
+
+      const servicesMap = new Map<string, any>();
+      (servicesData.data || []).forEach((s: any) => {
+        if (s && s.id) {
+          servicesMap.set(s.id, s);
+        }
+      });
+
+      const professionalsMap = new Map<string, any>();
+      (professionalsData.data || []).forEach((p: any) => {
+        if (p && p.id) {
+          professionalsMap.set(p.id, p);
+        }
+      });
 
       // Transform data for frontend
       const transformedData =

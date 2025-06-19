@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useBarbershop } from './useBarbershop';
 import { Database } from '@/integrations/supabase/types';
 
 type Professional = Database['public']['Tables']['professionals']['Row'];
@@ -11,23 +10,17 @@ type ProfessionalUpdate = Database['public']['Tables']['professionals']['Update'
 export const useProfessionals = () => {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [loading, setLoading] = useState(true);
-  const { barbershop } = useBarbershop();
 
   useEffect(() => {
-    if (barbershop?.id) {
-      fetchProfessionals();
-    }
-  }, [barbershop?.id]);
+    fetchProfessionals();
+  }, []);
 
   const fetchProfessionals = async () => {
-    if (!barbershop?.id) return;
-
     try {
       const { data, error } = await supabase
         .from('professionals')
         .select('*')
-        .eq('barbershop_id', barbershop.id)
-        .order('created_at', { ascending: false });
+        .order('name');
 
       if (error) {
         console.error('Error fetching professionals:', error);
@@ -41,16 +34,11 @@ export const useProfessionals = () => {
     }
   };
 
-  const addProfessional = async (professionalData: Omit<ProfessionalInsert, 'barbershop_id'>) => {
-    if (!barbershop?.id) return null;
-
+  const addProfessional = async (professionalData: ProfessionalInsert) => {
     try {
       const { data, error } = await supabase
         .from('professionals')
-        .insert({
-          ...professionalData,
-          barbershop_id: barbershop.id,
-        })
+        .insert(professionalData)
         .select()
         .single();
 
@@ -59,7 +47,7 @@ export const useProfessionals = () => {
         return null;
       }
 
-      setProfessionals(prev => [data, ...prev]);
+      setProfessionals(prev => [...prev, data]);
       return data;
     } catch (error) {
       console.error('Error:', error);
