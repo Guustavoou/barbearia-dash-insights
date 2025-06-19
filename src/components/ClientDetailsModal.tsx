@@ -1,312 +1,553 @@
-
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, Phone, Mail, MapPin, Edit3, Save, X } from 'lucide-react';
-import { Client } from '@/lib/types';
+import React, { useState } from "react";
+import { X, Edit3, Calendar, Phone, Mail, Trash2, Save } from "lucide-react";
+import {
+  cn,
+  formatCurrency,
+  formatDate,
+  getClientStatusColor,
+} from "@/lib/unclicUtils";
+import { Client } from "@/lib/types";
 
 interface ClientDetailsModalProps {
   client: Client | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (client: Client) => void;
+  onUpdateClient: (id: string, updates: any) => Promise<void>;
+  onDeleteClient: (id: string) => Promise<void>;
+  darkMode: boolean;
 }
 
-const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
+export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
   client,
   isOpen,
   onClose,
-  onSave,
+  onUpdateClient,
+  onDeleteClient,
+  darkMode,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedClient, setEditedClient] = useState<Client | null>(null);
+  const [editData, setEditData] = useState<Partial<Client>>({});
 
-  React.useEffect(() => {
-    if (client) {
-      setEditedClient({ ...client });
-    }
-  }, [client]);
-
-  if (!client) return null;
+  if (!isOpen || !client) return null;
 
   const handleEdit = () => {
+    setEditData({
+      name: client.name,
+      email: client.email,
+      phone: client.phone,
+      city: client.city,
+      cpf: client.cpf,
+      profession: client.profession,
+      status: client.status,
+      notes: client.notes,
+    });
     setIsEditing(true);
-    setEditedClient({ ...client });
   };
 
-  const handleSave = () => {
-    if (editedClient) {
-      onSave(editedClient);
-      setIsEditing(false);
-    }
-  };
-
-  const handleCancel = () => {
+  const handleSave = async () => {
+    await onUpdateClient(client.id, editData);
     setIsEditing(false);
-    setEditedClient({ ...client });
   };
 
-  const handleChange = (field: keyof Client, value: string | number) => {
-    if (editedClient) {
-      setEditedClient({
-        ...editedClient,
-        [field]: value,
-      });
-    }
+  const handleDelete = async () => {
+    await onDeleteClient(client.id);
   };
-
-  const formatCurrency = (value: number | undefined) => {
-    if (!value) return 'R$ 0,00';
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
-  const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return 'Não informado';
-    try {
-      return new Date(dateString).toLocaleDateString('pt-BR');
-    } catch {
-      return 'Data inválida';
-    }
-  };
-
-  const currentClient = isEditing ? editedClient : client;
-  if (!currentClient) return null;
-
-  // Use the new camelCase properties or fallback to snake_case for compatibility
-  const joinDate = currentClient.joinDate || currentClient.join_date || currentClient.createdAt;
-  const totalSpent = currentClient.totalSpent || currentClient.total_spent || 0;
-  const lastVisit = currentClient.lastVisit || currentClient.last_visit;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle className="text-xl font-semibold">
-            {isEditing ? 'Editar Cliente' : 'Detalhes do Cliente'}
-          </DialogTitle>
-          <div className="flex gap-2">
-            {isEditing ? (
-              <>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Save className="w-4 h-4 mr-1" />
-                  Salvar
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCancel}
-                >
-                  <X className="w-4 h-4 mr-1" />
-                  Cancelar
-                </Button>
-              </>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleEdit}
-              >
-                <Edit3 className="w-4 h-4 mr-1" />
-                Editar
-              </Button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div
+        className={cn(
+          "w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl",
+          darkMode ? "bg-gray-800" : "bg-white",
+        )}
+      >
+        {/* Header */}
+        <div
+          className={cn(
+            "sticky top-0 flex items-center justify-between p-6 border-b",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          <h2
+            className={cn(
+              "text-xl font-semibold",
+              darkMode ? "text-white" : "text-gray-900",
             )}
-          </div>
-        </DialogHeader>
+          >
+            {isEditing ? "Editar Cliente" : "Detalhes do Cliente"}
+          </h2>
+          <button
+            onClick={onClose}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100",
+            )}
+          >
+            <X
+              className={cn(
+                "h-5 w-5",
+                darkMode ? "text-gray-400" : "text-gray-500",
+              )}
+            />
+          </button>
+        </div>
 
-        <div className="space-y-6">
-          {/* Informações Pessoais */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium mb-4 text-gray-900">
-              Informações Pessoais
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Nome</Label>
-                {isEditing ? (
-                  <Input
-                    id="name"
-                    value={currentClient.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    className="mt-1"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm text-gray-900">{currentClient.name}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                {isEditing ? (
-                  <Input
-                    id="email"
-                    type="email"
-                    value={currentClient.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center">
-                    <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                    <span className="text-sm text-gray-900">{currentClient.email}</span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="phone">Telefone</Label>
-                {isEditing ? (
-                  <Input
-                    id="phone"
-                    value={currentClient.phone}
-                    onChange={(e) => handleChange('phone', e.target.value)}
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center">
-                    <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                    <span className="text-sm text-gray-900">{currentClient.phone}</span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="city">Cidade</Label>
-                {isEditing ? (
-                  <Input
-                    id="city"
-                    value={currentClient.city || ''}
-                    onChange={(e) => handleChange('city', e.target.value)}
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center">
-                    <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                    <span className="text-sm text-gray-900">{currentClient.city || 'Não informado'}</span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="birthday">Data de Nascimento</Label>
-                {isEditing ? (
-                  <Input
-                    id="birthday"
-                    type="date"
-                    value={currentClient.birthday || ''}
-                    onChange={(e) => handleChange('birthday', e.target.value)}
-                    className="mt-1"
-                  />
-                ) : (
-                  <div className="mt-1 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                    <span className="text-sm text-gray-900">
-                      {currentClient.birthday ? formatDate(currentClient.birthday) : 'Não informado'}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <Label>Status</Label>
+        {/* Content */}
+        <div className="p-6 space-y-6">
+          {/* Client Avatar and Basic Info */}
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xl">
+                {(isEditing ? editData.name || client.name : client.name)
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)}
+              </span>
+            </div>
+            <div className="flex-1">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editData.name || ""}
+                  onChange={(e) => setEditData({...editData, name: e.target.value})}
+                  className={cn(
+                    "text-lg font-semibold bg-transparent border-b border-gray-300 focus:border-blue-500 outline-none",
+                    darkMode ? "text-white border-gray-600" : "text-gray-900"
+                  )}
+                />
+              ) : (
+                <h3
+                  className={cn(
+                    "text-lg font-semibold",
+                    darkMode ? "text-white" : "text-gray-900",
+                  )}
+                >
+                  {client.name}
+                </h3>
+              )}
+              <div className="flex items-center gap-2 mt-1">
                 {isEditing ? (
                   <select
-                    value={currentClient.status}
-                    onChange={(e) => handleChange('status', e.target.value)}
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editData.status || client.status}
+                    onChange={(e) => setEditData({...editData, status: e.target.value as "ativo" | "inativo"})}
+                    className={cn(
+                      "px-2 py-1 rounded-full text-xs font-medium border",
+                      darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
+                    )}
                   >
-                    <option value="active">Ativo</option>
-                    <option value="inactive">Inativo</option>
+                    <option value="ativo">Ativo</option>
+                    <option value="inativo">Inativo</option>
                   </select>
                 ) : (
-                  <div className="mt-1">
-                    <Badge variant={currentClient.status === 'active' ? 'default' : 'secondary'}>
-                      {currentClient.status === 'active' ? 'Ativo' : 'Inativo'}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Estatísticas */}
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium mb-4 text-gray-900">
-              Estatísticas
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(totalSpent)}
-                </div>
-                <div className="text-sm text-gray-600">Total Gasto</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {currentClient.visits || 0}
-                </div>
-                <div className="text-sm text-gray-600">Visitas</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">
-                  {lastVisit ? formatDate(lastVisit) : 'Nunca'}
-                </div>
-                <div className="text-sm text-gray-600">Última Visita</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Informações Adicionais */}
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium mb-4 text-gray-900">
-              Informações Adicionais
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Data de Cadastro</Label>
-                <div className="mt-1 flex items-center">
-                  <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                  <span className="text-sm text-gray-900">
-                    {formatDate(joinDate)}
+                  <span
+                    className={cn(
+                      "px-2 py-1 rounded-full text-xs font-medium",
+                      getClientStatusColor(client.status),
+                    )}
+                  >
+                    {client.status}
                   </span>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="notes">Observações</Label>
-                {isEditing ? (
-                  <Textarea
-                    id="notes"
-                    value={currentClient.notes || ''}
-                    onChange={(e) => handleChange('notes', e.target.value)}
-                    placeholder="Adicione observações sobre o cliente..."
-                    className="mt-1"
-                    rows={3}
-                  />
-                ) : (
-                  <p className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">
-                    {currentClient.notes || 'Nenhuma observação registrada.'}
-                  </p>
                 )}
+                <span
+                  className={cn(
+                    "text-sm",
+                    darkMode ? "text-gray-400" : "text-gray-600",
+                  )}
+                >
+                  Cliente desde {client.join_date ? formatDate(new Date(client.join_date)) : 'Data não informada'}
+                </span>
               </div>
             </div>
+          </div>
+
+          {/* Contact Information */}
+          <div
+            className={cn(
+              "rounded-xl p-4 border",
+              darkMode
+                ? "bg-gray-700 border-gray-600"
+                : "bg-gray-50 border-gray-200",
+            )}
+          >
+            <h4
+              className={cn(
+                "font-semibold mb-3",
+                darkMode ? "text-white" : "text-gray-900",
+              )}
+            >
+              Informações Pessoais
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Phone
+                    className={cn(
+                      "h-4 w-4",
+                      darkMode ? "text-gray-400" : "text-gray-500",
+                    )}
+                  />
+                  <div className="flex-1">
+                    <span
+                      className={cn(
+                        "text-xs",
+                        darkMode ? "text-gray-400" : "text-gray-500",
+                      )}
+                    >
+                      Telefone
+                    </span>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={editData.phone || ""}
+                        onChange={(e) => setEditData({...editData, phone: e.target.value})}
+                        className={cn(
+                          "w-full text-sm font-medium bg-transparent border-b border-gray-300 focus:border-blue-500 outline-none",
+                          darkMode ? "text-white border-gray-600" : "text-gray-900"
+                        )}
+                      />
+                    ) : (
+                      <p
+                        className={cn(
+                          "text-sm font-medium",
+                          darkMode ? "text-white" : "text-gray-900",
+                        )}
+                      >
+                        {client.phone || 'Não informado'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail
+                    className={cn(
+                      "h-4 w-4",
+                      darkMode ? "text-gray-400" : "text-gray-500",
+                    )}
+                  />
+                  <div className="flex-1">
+                    <span
+                      className={cn(
+                        "text-xs",
+                        darkMode ? "text-gray-400" : "text-gray-500",
+                      )}
+                    >
+                      E-mail
+                    </span>
+                    {isEditing ? (
+                      <input
+                        type="email"
+                        value={editData.email || ""}
+                        onChange={(e) => setEditData({...editData, email: e.target.value})}
+                        className={cn(
+                          "w-full text-sm font-medium bg-transparent border-b border-gray-300 focus:border-blue-500 outline-none",
+                          darkMode ? "text-white border-gray-600" : "text-gray-900"
+                        )}
+                      />
+                    ) : (
+                      <p
+                        className={cn(
+                          "text-sm font-medium",
+                          darkMode ? "text-white" : "text-gray-900",
+                        )}
+                      >
+                        {client.email || 'Não informado'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <span
+                    className={cn(
+                      "text-xs",
+                      darkMode ? "text-gray-400" : "text-gray-500",
+                    )}
+                  >
+                    CPF
+                  </span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editData.cpf || ""}
+                      onChange={(e) => setEditData({...editData, cpf: e.target.value})}
+                      className={cn(
+                        "w-full text-sm font-medium bg-transparent border-b border-gray-300 focus:border-blue-500 outline-none",
+                        darkMode ? "text-white border-gray-600" : "text-gray-900"
+                      )}
+                    />
+                  ) : (
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        darkMode ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      {client.cpf || 'Não informado'}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <span
+                    className={cn(
+                      "text-xs",
+                      darkMode ? "text-gray-400" : "text-gray-500",
+                    )}
+                  >
+                    Profissão
+                  </span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editData.profession || ""}
+                      onChange={(e) => setEditData({...editData, profession: e.target.value})}
+                      className={cn(
+                        "w-full text-sm font-medium bg-transparent border-b border-gray-300 focus:border-blue-500 outline-none",
+                        darkMode ? "text-white border-gray-600" : "text-gray-900"
+                      )}
+                    />
+                  ) : (
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        darkMode ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      {client.profession || 'Não informada'}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <span
+                    className={cn(
+                      "text-xs",
+                      darkMode ? "text-gray-400" : "text-gray-500",
+                    )}
+                  >
+                    Cidade
+                  </span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editData.city || ""}
+                      onChange={(e) => setEditData({...editData, city: e.target.value})}
+                      className={cn(
+                        "w-full text-sm font-medium bg-transparent border-b border-gray-300 focus:border-blue-500 outline-none",
+                        darkMode ? "text-white border-gray-600" : "text-gray-900"
+                      )}
+                    />
+                  ) : (
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        darkMode ? "text-white" : "text-gray-900",
+                      )}
+                    >
+                      {client.city || 'Não informada'}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Statistics */}
+          <div
+            className={cn(
+              "rounded-xl p-4 border",
+              darkMode
+                ? "bg-gray-700 border-gray-600"
+                : "bg-gray-50 border-gray-200",
+            )}
+          >
+            <h4
+              className={cn(
+                "font-semibold mb-3",
+                darkMode ? "text-white" : "text-gray-900",
+              )}
+            >
+              Histórico
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <p
+                  className={cn(
+                    "text-2xl font-bold",
+                    darkMode ? "text-blue-400" : "text-blue-600",
+                  )}
+                >
+                  {client.visits || 0}
+                </p>
+                <span
+                  className={cn(
+                    "text-xs",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  Total de visitas
+                </span>
+              </div>
+              <div className="text-center">
+                <p
+                  className={cn(
+                    "text-2xl font-bold",
+                    darkMode ? "text-green-400" : "text-green-600",
+                  )}
+                >
+                  {formatCurrency(client.total_spent || 0)}
+                </p>
+                <span
+                  className={cn(
+                    "text-xs",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  Total gasto
+                </span>
+              </div>
+              <div className="text-center">
+                <p
+                  className={cn(
+                    "text-2xl font-bold",
+                    darkMode ? "text-purple-400" : "text-purple-600",
+                  )}
+                >
+                  {client.last_visit ? formatDate(new Date(client.last_visit)) : 'Nunca'}
+                </p>
+                <span
+                  className={cn(
+                    "text-xs",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  Última visita
+                </span>
+              </div>
+              <div className="text-center">
+                <p
+                  className={cn(
+                    "text-2xl font-bold",
+                    darkMode ? "text-orange-400" : "text-orange-600",
+                  )}
+                >
+                  {client.visits && client.total_spent ? Math.round((client.total_spent || 0) / (client.visits || 1)) : 0}
+                </p>
+                <span
+                  className={cn(
+                    "text-xs",
+                    darkMode ? "text-gray-400" : "text-gray-500",
+                  )}
+                >
+                  Ticket médio
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div
+            className={cn(
+              "rounded-xl p-4 border",
+              darkMode
+                ? "bg-gray-700 border-gray-600"
+                : "bg-gray-50 border-gray-200",
+            )}
+          >
+            <h4
+              className={cn(
+                "font-semibold mb-2",
+                darkMode ? "text-white" : "text-gray-900",
+              )}
+            >
+              Observações
+            </h4>
+            {isEditing ? (
+              <textarea
+                value={editData.notes || ""}
+                onChange={(e) => setEditData({...editData, notes: e.target.value})}
+                rows={3}
+                className={cn(
+                  "w-full text-sm leading-relaxed bg-transparent border border-gray-300 rounded p-2 focus:border-blue-500 outline-none resize-none",
+                  darkMode ? "text-gray-300 border-gray-600" : "text-gray-700"
+                )}
+                placeholder="Adicione observações sobre o cliente..."
+              />
+            ) : (
+              <p
+                className={cn(
+                  "text-sm leading-relaxed",
+                  darkMode ? "text-gray-300" : "text-gray-700",
+                )}
+              >
+                {client.notes || 'Nenhuma observação'}
+              </p>
+            )}
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* Footer Actions */}
+        <div
+          className={cn(
+            "sticky bottom-0 flex gap-3 p-6 border-t",
+            darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200",
+          )}
+        >
+          {isEditing ? (
+            <>
+              <button
+                onClick={() => setIsEditing(false)}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-colors",
+                  darkMode
+                    ? "border-gray-600 text-gray-300 hover:bg-gray-700"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50",
+                )}
+              >
+                <X className="h-4 w-4" />
+                Cancelar
+              </button>
+              <button
+                onClick={handleSave}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Save className="h-4 w-4" />
+                Salvar
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleEdit}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-colors",
+                  darkMode
+                    ? "border-gray-600 text-gray-300 hover:bg-gray-700"
+                    : "border-gray-300 text-gray-600 hover:bg-gray-50",
+                )}
+              >
+                <Edit3 className="h-4 w-4" />
+                Editar
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                Excluir
+              </button>
+              <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Calendar className="h-4 w-4" />
+                Agendar
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
-
-export default ClientDetailsModal;

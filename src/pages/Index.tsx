@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   DollarSign,
@@ -85,7 +86,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   </div>
 );
 
-export const Index: React.FC<DashboardProps> = ({
+export const Dashboard: React.FC<DashboardProps> = ({
   darkMode,
   onPageChange,
 }) => {
@@ -550,5 +551,3 @@ export const Index: React.FC<DashboardProps> = ({
     </div>
   );
 };
-
-export default Index;

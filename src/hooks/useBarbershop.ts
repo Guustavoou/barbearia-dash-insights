@@ -4,11 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Database } from '@/integrations/supabase/types';
 
-// Use the correct table name from the database schema
-type Business = Database['public']['Tables']['businesses']['Row'];
+type Barbershop = Database['public']['Tables']['barbershops']['Row'];
 
 export const useBarbershop = () => {
-  const [barbershop, setBarbershop] = useState<Business | null>(null);
+  const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -21,13 +20,13 @@ export const useBarbershop = () => {
   const fetchBarbershop = async () => {
     try {
       const { data, error } = await supabase
-        .from('businesses') // Changed from barbershops to businesses
+        .from('barbershops')
         .select('*')
-        .eq('admin_email', user?.email) // Use admin_email instead of owner_id
+        .eq('owner_id', user?.id)
         .single();
 
       if (error) {
-        console.error('Error fetching business:', error);
+        console.error('Error fetching barbershop:', error);
       } else {
         setBarbershop(data);
       }

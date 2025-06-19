@@ -1,6 +1,5 @@
-
 import { supabase } from "./supabase";
-import { NeonClient, ApiResponse } from "./clientsApi";
+import { NeonClient } from "./clientsApi";
 import {
   SUPABASE_CONFIG,
   logSupabaseDebug,

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useBarbershop } from './useBarbershop';
 import { Database } from '@/integrations/supabase/types';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -10,17 +11,23 @@ type ProductUpdate = Database['public']['Tables']['products']['Update'];
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { barbershop } = useBarbershop();
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (barbershop?.id) {
+      fetchProducts();
+    }
+  }, [barbershop?.id]);
 
   const fetchProducts = async () => {
+    if (!barbershop?.id) return;
+
     try {
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .order('name');
+        .eq('barbershop_id', barbershop.id)
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching products:', error);
@@ -34,11 +41,16 @@ export const useProducts = () => {
     }
   };
 
-  const addProduct = async (productData: ProductInsert) => {
+  const addProduct = async (productData: Omit<ProductInsert, 'barbershop_id'>) => {
+    if (!barbershop?.id) return null;
+
     try {
       const { data, error } = await supabase
         .from('products')
-        .insert(productData)
+        .insert({
+          ...productData,
+          barbershop_id: barbershop.id,
+        })
         .select()
         .single();
 
@@ -47,7 +59,7 @@ export const useProducts = () => {
         return null;
       }
 
-      setProducts(prev => [...prev, data]);
+      setProducts(prev => [data, ...prev]);
       return data;
     } catch (error) {
       console.error('Error:', error);

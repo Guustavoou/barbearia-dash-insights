@@ -35,43 +35,43 @@ interface MultiTenantOnboardingContextType {
 
 const defaultWorkingHours: WorkingHours[] = [
   {
-    day_of_week: 1,
+    day_of_week: "Segunda",
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: 2,
+    day_of_week: "Terça",
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: 3,
+    day_of_week: "Quarta",
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: 4,
+    day_of_week: "Quinta",
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: 5,
+    day_of_week: "Sexta",
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: 6,
+    day_of_week: "Sábado",
     is_open: true,
     open_time: "09:00",
     close_time: "18:00",
   },
   {
-    day_of_week: 0,
+    day_of_week: "Domingo",
     is_open: false,
     open_time: "09:00",
     close_time: "18:00",
@@ -253,7 +253,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [data, dispatch] = useReducer(onboardingReducer, initialData);
-  const { user } = useAuth();
+  const { session } = useAuth();
 
   // Load progress from localStorage on mount
   useEffect(() => {
@@ -353,7 +353,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
 
   const saveProgress = () => {
     try {
-      const userId = user?.id || "anonymous"; // Changed from session to user
+      const userId = session?.user.id || "anonymous";
       localStorage.setItem(
         `unclic-multitenant-onboarding-progress-${userId}`,
         JSON.stringify(data),
@@ -365,7 +365,7 @@ export const MultiTenantOnboardingProvider: React.FC<{
 
   const loadProgress = () => {
     try {
-      const userId = user?.id || "anonymous"; // Changed from session to user
+      const userId = session?.user.id || "anonymous";
       const saved = localStorage.getItem(
         `unclic-multitenant-onboarding-progress-${userId}`,
       );

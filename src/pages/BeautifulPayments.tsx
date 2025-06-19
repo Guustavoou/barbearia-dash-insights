@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import {
   CreditCard,
@@ -113,7 +112,6 @@ export const BeautifulPayments: React.FC<BeautifulPaymentsProps> = ({
       approvalRate:
         totalPayments > 0 ? (approvedPayments / totalPayments) * 100 : 0,
       averageTicket: approvedPayments > 0 ? totalAmount / approvedPayments : 0,
-      avgTicket: approvedPayments > 0 ? totalAmount / approvedPayments : 0, // Adding alias
     };
   }, [paymentsData]);
 

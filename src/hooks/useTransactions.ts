@@ -2,42 +2,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
+import { Database } from '@/integrations/supabase/types';
 
-type Transaction = {
-  id: string;
-  business_id: string;
-  description: string;
-  amount: number;
-  type: string;
-  category: string;
-  date: string;
-  status?: string;
-  payment_method?: string;
-  created_at?: string;
-  updated_at?: string;
-  clients?: {
-    name: string;
-  };
-  professionals?: {
-    name: string;
-  };
-  services?: {
-    name: string;
-  };
-};
-
-type TransactionInsert = {
-  business_id: string;
-  description: string;
-  amount: number;
-  type: string;
-  category: string;
-  date: string;
-  status?: string;
-  payment_method?: string;
-};
-
-type TransactionUpdate = Partial<Omit<TransactionInsert, 'business_id'>>;
+type Transaction = Database['public']['Tables']['transactions']['Row'];
+type TransactionInsert = Database['public']['Tables']['transactions']['Insert'];
+type TransactionUpdate = Database['public']['Tables']['transactions']['Update'];
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -54,57 +23,45 @@ export const useTransactions = () => {
     if (!barbershop?.id) return;
 
     try {
-      // First try to get from payments table, fallback to simple structure if needed
       const { data, error } = await supabase
-        .from('payments')
-        .select('*')
-        .eq('business_id', barbershop.id)
-        .order('payment_date', { ascending: false });
+        .from('transactions')
+        .select(`
+          *,
+          clients(name),
+          professionals(name),
+          services(name)
+        `)
+        .eq('barbershop_id', barbershop.id)
+        .order('transaction_date', { ascending: false });
 
       if (error) {
         console.error('Error fetching transactions:', error);
-        // Set empty array on error
-        setTransactions([]);
       } else {
-        // Transform payments data to match Transaction type
-        const transformedData = (data || []).map(payment => ({
-          id: payment.id,
-          business_id: payment.business_id,
-          description: `Payment for booking ${payment.booking_id}`,
-          amount: payment.amount,
-          type: 'receita',
-          category: 'payment',
-          date: payment.payment_date,
-          status: payment.status,
-          payment_method: payment.payment_method,
-          created_at: payment.created_at,
-          updated_at: payment.updated_at,
-        }));
-        setTransactions(transformedData);
+        setTransactions(data || []);
       }
     } catch (error) {
       console.error('Error:', error);
-      setTransactions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const addTransaction = async (transactionData: Omit<TransactionInsert, 'business_id'>) => {
+  const addTransaction = async (transactionData: Omit<TransactionInsert, 'barbershop_id'>) => {
     if (!barbershop?.id) return null;
 
     try {
-      // Add to payments table
       const { data, error } = await supabase
-        .from('payments')
+        .from('transactions')
         .insert({
-          business_id: barbershop.id,
-          amount: transactionData.amount,
-          payment_method: transactionData.payment_method || 'cash',
-          status: transactionData.status || 'completed',
-          payment_date: transactionData.date,
+          ...transactionData,
+          barbershop_id: barbershop.id,
         })
-        .select()
+        .select(`
+          *,
+          clients(name),
+          professionals(name),
+          services(name)
+        `)
         .single();
 
       if (error) {
@@ -112,23 +69,8 @@ export const useTransactions = () => {
         return null;
       }
 
-      // Transform and add to state
-      const transformedData = {
-        id: data.id,
-        business_id: data.business_id,
-        description: `Payment for booking ${data.booking_id}`,
-        amount: data.amount,
-        type: 'receita',
-        category: 'payment',
-        date: data.payment_date,
-        status: data.status,
-        payment_method: data.payment_method,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-      };
-
-      setTransactions(prev => [transformedData, ...prev]);
-      return transformedData;
+      setTransactions(prev => [data, ...prev]);
+      return data;
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -138,15 +80,15 @@ export const useTransactions = () => {
   const updateTransaction = async (id: string, updates: TransactionUpdate) => {
     try {
       const { data, error } = await supabase
-        .from('payments')
-        .update({
-          amount: updates.amount,
-          payment_method: updates.payment_method,
-          status: updates.status,
-          payment_date: updates.date,
-        })
+        .from('transactions')
+        .update(updates)
         .eq('id', id)
-        .select()
+        .select(`
+          *,
+          clients(name),
+          professionals(name),
+          services(name)
+        `)
         .single();
 
       if (error) {
@@ -154,24 +96,10 @@ export const useTransactions = () => {
         return null;
       }
 
-      const transformedData = {
-        id: data.id,
-        business_id: data.business_id,
-        description: `Payment for booking ${data.booking_id}`,
-        amount: data.amount,
-        type: 'receita',
-        category: 'payment',
-        date: data.payment_date,
-        status: data.status,
-        payment_method: data.payment_method,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-      };
-
       setTransactions(prev => prev.map(transaction => 
-        transaction.id === id ? transformedData : transaction
+        transaction.id === id ? data : transaction
       ));
-      return transformedData;
+      return data;
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -181,7 +109,7 @@ export const useTransactions = () => {
   const deleteTransaction = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('payments')
+        .from('transactions')
         .delete()
         .eq('id', id);
 

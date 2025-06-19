@@ -1,7 +1,6 @@
+import { Service, ServiceCategory, ServiceStats } from "./servicesTypes";
 
-import { ServiceMockData, ServiceCategoryMockData, ServiceStats } from "./servicesTypes";
-
-export const servicesMockData: ServiceMockData[] = [
+export const servicesMockData: Service[] = [
   {
     id: 1,
     name: "Corte Feminino",
@@ -184,7 +183,7 @@ export const servicesMockData: ServiceMockData[] = [
   },
 ];
 
-export const serviceCategories: ServiceCategoryMockData[] = [
+export const serviceCategories: ServiceCategory[] = [
   {
     id: "cabelo-feminino",
     name: "Cabelo Feminino",

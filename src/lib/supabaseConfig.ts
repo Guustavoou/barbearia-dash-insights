@@ -1,4 +1,3 @@
-
 // Configuração para integração completa com Supabase
 export const SUPABASE_CONFIG = {
   // 🚀 SUPABASE TOTALMENTE HABILITADO - INTEGRAÇÃO COMPLETA ATIVA!
@@ -12,9 +11,6 @@ export const SUPABASE_CONFIG = {
 
   // Log level para monitoramento
   DEBUG_MODE: true,
-
-  // Motivo da desabilitação (quando aplicável)
-  DISABLE_REASON: null,
 
   // Status da integração
   INTEGRATION_STATUS:

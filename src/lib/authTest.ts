@@ -1,92 +1,91 @@
+import { supabase } from "./supabase";
 
-import { supabase } from '@/integrations/supabase/client';
+export async function testSupabaseAuth() {
+  console.log("🔐 Testando autenticação Supabase...");
 
-export const testSupabaseConnection = async () => {
   try {
-    console.log('🔍 [Auth Test] Testing Supabase connection...');
-    
-    // Test basic connection
-    const { data: healthCheck, error: healthError } = await supabase
-      .from('clients')
-      .select('count')
-      .limit(1);
+    // Teste 1: Verificar se consegue acessar informações básicas
+    console.log("📋 Configuração Supabase:", {
+      url: supabase.supabaseUrl,
+      key: supabase.supabaseKey
+        ? `${supabase.supabaseKey.substring(0, 10)}...`
+        : "Não definida",
+    });
 
-    if (healthError) {
-      console.error('❌ [Auth Test] Health check failed:', healthError);
-      return {
-        success: false,
-        error: 'Health check failed',
-        details: healthError
-      };
+    // Teste 2: Verificar usuário atual
+    const { data: user, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.log("⚠️ Erro ao verificar usuário:", {
+        message: userError.message,
+        status: userError.status,
+      });
+    } else {
+      console.log("👤 Status do usuário:", {
+        authenticated: !!user?.user,
+        userId: user?.user?.id || "Anônimo",
+      });
     }
 
-    console.log('✅ [Auth Test] Basic connection successful');
-
-    // Test authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError) {
-      console.error('❌ [Auth Test] Auth check failed:', authError);
-      return {
-        success: false,
-        error: 'Authentication failed',
-        details: authError
-      };
+    // Teste 3: Verificar se consegue fazer uma query simples no auth
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      console.log("🔑 Sessão:", {
+        hasSession: !!session?.session,
+        expired: session?.session
+          ? new Date(session.session.expires_at! * 1000) < new Date()
+          : "N/A",
+      });
+    } catch (sessionError) {
+      console.log("❌ Erro ao verificar sessão:", sessionError);
     }
 
-    console.log('✅ [Auth Test] Authentication check successful');
-    console.log('👤 [Auth Test] Current user:', user ? user.email : 'Not logged in');
+    // Teste 4: Verificar RLS - tentar acessar uma tabela simples
+    const { data, error } = await supabase
+      .rpc("version") // Função que sempre existe
+      .catch(() => null);
+
+    if (data) {
+      console.log("✅ Conexão com Supabase OK - versão:", data);
+    } else {
+      console.log("⚠️ Não conseguiu executar RPC version");
+    }
+
+    // Teste 5: Tentar listar schemas disponíveis
+    try {
+      const { data: schemas, error: schemaError } = await supabase
+        .from("information_schema.schemata")
+        .select("schema_name")
+        .limit(5)
+        .catch(() => ({ data: null, error: "Não disponível" }));
+
+      if (schemas && schemas.length > 0) {
+        console.log(
+          "📚 Schemas disponíveis:",
+          schemas.map((s) => s.schema_name),
+        );
+      } else {
+        console.log("⚠️ Não conseguiu listar schemas:", schemaError);
+      }
+    } catch (error) {
+      console.log("❌ Erro ao listar schemas:", error);
+    }
 
     return {
       success: true,
-      user: user,
-      connectionStatus: 'Connected'
+      authenticated: !!user?.user,
+      connectionOk: !!data,
     };
-
   } catch (error) {
-    console.error('❌ [Auth Test] Unexpected error:', error);
+    console.error("💥 Erro geral no teste de auth:", error);
     return {
       success: false,
-      error: 'Unexpected error occurred',
-      details: error
+      error: String(error),
     };
   }
-};
+}
 
-export const testDatabaseAccess = async () => {
-  try {
-    console.log('🔍 [Auth Test] Testing database access...');
-    
-    // Test reading from tables
-    const tables = ['clients', 'services', 'professionals', 'appointments'];
-    const results: Record<string, any> = {};
-
-    for (const table of tables) {
-      try {
-        const { data, error } = await supabase
-          .from(table as any)
-          .select('*')
-          .limit(1);
-
-        if (error) {
-          results[table] = { success: false, error: error.message };
-        } else {
-          results[table] = { success: true, rowCount: data?.length || 0 };
-        }
-      } catch (tableError) {
-        results[table] = { success: false, error: 'Table access failed' };
-      }
-    }
-
-    console.log('📊 [Auth Test] Database access results:', results);
-    return results;
-
-  } catch (error) {
-    console.error('❌ [Auth Test] Database test failed:', error);
-    return {
-      success: false,
-      error: 'Database test failed',
-      details: error
-    };
-  }
-};
+// Auto-executar teste
+testSupabaseAuth().then((result) => {
+  console.log("🏁 Resultado do teste de auth:", result);
+});

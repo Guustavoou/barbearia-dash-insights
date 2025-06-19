@@ -2,51 +2,24 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useBarbershop } from './useBarbershop';
+import { Database } from '@/integrations/supabase/types';
 
-// Simplified Appointment type that matches the database structure
-type Appointment = {
-  id: string;
-  business_id: string;
-  client_id: string;
-  employee_id: string;
-  service_id: string;
-  booking_date: string;
-  start_time: string;
-  end_time: string;
-  duration: number;
-  status: string;
-  price: number;
-  notes?: string;
-  created_at?: string;
-  updated_at?: string;
+type Appointment = Database['public']['Tables']['appointments']['Row'] & {
   clients?: {
     name: string;
     phone: string;
-  } | null;
+  };
   services?: {
     name: string;
     price: number;
-  } | null;
+  };
   professionals?: {
     name: string;
-  } | null;
+  };
 };
 
-type AppointmentInsert = {
-  business_id: string;
-  client_id: string;
-  employee_id: string;
-  service_id: string;
-  booking_date: string;
-  start_time: string;
-  end_time: string;
-  duration: number;
-  status?: string;
-  price: number;
-  notes?: string;
-};
-
-type AppointmentUpdate = Partial<Omit<AppointmentInsert, 'business_id'>>;
+type AppointmentInsert = Database['public']['Tables']['appointments']['Insert'];
+type AppointmentUpdate = Database['public']['Tables']['appointments']['Update'];
 
 export const useAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -64,51 +37,44 @@ export const useAppointments = () => {
 
     try {
       const { data, error } = await supabase
-        .from('bookings')
+        .from('appointments')
         .select(`
           *,
-          clients(name, phone),
-          services(name, price)
+          clients!inner(name, phone),
+          professionals(name),
+          services!inner(name, price)
         `)
-        .eq('business_id', barbershop.id)
-        .order('booking_date', { ascending: true })
-        .order('start_time', { ascending: true });
+        .eq('barbershop_id', barbershop.id)
+        .order('appointment_date', { ascending: true })
+        .order('appointment_time', { ascending: true });
 
       if (error) {
         console.error('Error fetching appointments:', error);
-        setAppointments([]);
       } else {
-        // Transform the data to ensure it matches our type, handling potential relation errors
-        const transformedData = (data || []).map(item => ({
-          ...item,
-          clients: item.clients || null,
-          professionals: null, // Set to null since relation doesn't exist
-          services: item.services || null,
-        }));
-        setAppointments(transformedData);
+        setAppointments(data || []);
       }
     } catch (error) {
       console.error('Error:', error);
-      setAppointments([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const addAppointment = async (appointmentData: Omit<AppointmentInsert, 'business_id'>) => {
+  const addAppointment = async (appointmentData: Omit<AppointmentInsert, 'barbershop_id'>) => {
     if (!barbershop?.id) return null;
 
     try {
       const { data, error } = await supabase
-        .from('bookings')
+        .from('appointments')
         .insert({
           ...appointmentData,
-          business_id: barbershop.id,
+          barbershop_id: barbershop.id,
         })
         .select(`
           *,
-          clients(name, phone),
-          services(name, price)
+          clients!inner(name, phone),
+          professionals(name),
+          services!inner(name, price)
         `)
         .single();
 
@@ -117,21 +83,14 @@ export const useAppointments = () => {
         return null;
       }
 
-      const transformedData = {
-        ...data,
-        clients: data.clients || null,
-        professionals: null,
-        services: data.services || null,
-      };
-
-      setAppointments(prev => [...prev, transformedData].sort((a, b) => {
-        const dateCompare = new Date(a.booking_date || '').getTime() - new Date(b.booking_date || '').getTime();
+      setAppointments(prev => [...prev, data].sort((a, b) => {
+        const dateCompare = new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime();
         if (dateCompare === 0) {
-          return (a.start_time || '').localeCompare(b.start_time || '');
+          return a.appointment_time.localeCompare(b.appointment_time);
         }
         return dateCompare;
       }));
-      return transformedData;
+      return data;
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -141,13 +100,14 @@ export const useAppointments = () => {
   const updateAppointment = async (id: string, updates: AppointmentUpdate) => {
     try {
       const { data, error } = await supabase
-        .from('bookings')
+        .from('appointments')
         .update(updates)
         .eq('id', id)
         .select(`
           *,
-          clients(name, phone),
-          services(name, price)
+          clients!inner(name, phone),
+          professionals(name),
+          services!inner(name, price)
         `)
         .single();
 
@@ -156,17 +116,10 @@ export const useAppointments = () => {
         return null;
       }
 
-      const transformedData = {
-        ...data,
-        clients: data.clients || null,
-        professionals: null,
-        services: data.services || null,
-      };
-
       setAppointments(prev => prev.map(appointment => 
-        appointment.id === id ? transformedData : appointment
+        appointment.id === id ? data : appointment
       ));
-      return transformedData;
+      return data;
     } catch (error) {
       console.error('Error:', error);
       return null;
@@ -176,7 +129,7 @@ export const useAppointments = () => {
   const deleteAppointment = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('bookings')
+        .from('appointments')
         .delete()
         .eq('id', id);
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,27 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Clock, Copy, Coffee } from "lucide-react";
 import { useOnboarding } from "@/contexts/OnboardingContext";
-import { WorkingHours, defaultWorkingHours } from "@/lib/onboardingTypes";
-
-const DAYS_OF_WEEK = [
-  { key: 'monday', label: 'Segunda-feira' },
-  { key: 'tuesday', label: 'Terça-feira' },
-  { key: 'wednesday', label: 'Quarta-feira' },
-  { key: 'thursday', label: 'Quinta-feira' },
-  { key: 'friday', label: 'Sexta-feira' },
-  { key: 'saturday', label: 'Sábado' },
-  { key: 'sunday', label: 'Domingo' },
-];
+import { WorkingHours } from "@/lib/onboardingTypes";
 
 export const ScheduleStep: React.FC = () => {
-  const { data, updateWorkingHours, nextStep, prevStep } = useOnboarding();
-
-  const [localHours, setLocalHours] = useState<WorkingHours>(
-    data.workingHours || defaultWorkingHours
-  );
-  const [showLunchBreak, setShowLunchBreak] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const { data, updateWorkingHours, nextStep, previousStep } = useOnboarding();
 
   const handleNextStep = () => {
     console.log("ScheduleStep: Tentando avançar para próxima etapa");
@@ -40,41 +22,43 @@ export const ScheduleStep: React.FC = () => {
     // Force advance to next step
     nextStep();
   };
+  const [localHours, setLocalHours] = useState<WorkingHours[]>(
+    data.workingHours,
+  );
+  const [showLunchBreak, setShowLunchBreak] = useState<{
+    [key: string]: boolean;
+  }>({});
 
-  const updateDayHours = (dayKey: string, updates: Partial<{ isOpen: boolean; start: string; end: string; breaks: Array<{ start: string; end: string; }> }>) => {
-    const newHours = {
-      ...localHours,
-      [dayKey]: { ...localHours[dayKey], ...updates }
-    };
+  const updateDayHours = (dayIndex: number, updates: Partial<WorkingHours>) => {
+    const newHours = [...localHours];
+    newHours[dayIndex] = { ...newHours[dayIndex], ...updates };
     setLocalHours(newHours);
     updateWorkingHours(newHours);
   };
 
-  const copyToAllDays = (sourceDay: { isOpen: boolean; start: string; end: string; breaks: Array<{ start: string; end: string; }> }) => {
-    const newHours = { ...localHours };
-    DAYS_OF_WEEK.forEach(day => {
-      newHours[day.key] = {
-        ...newHours[day.key],
-        isOpen: sourceDay.isOpen,
-        start: sourceDay.start,
-        end: sourceDay.end,
-        breaks: sourceDay.breaks,
-      };
-    });
+  const copyToAllDays = (sourceDay: WorkingHours) => {
+    const newHours = localHours.map((day) => ({
+      ...day,
+      isOpen: sourceDay.isOpen,
+      openTime: sourceDay.openTime,
+      closeTime: sourceDay.closeTime,
+      lunchBreak: sourceDay.lunchBreak,
+    }));
     setLocalHours(newHours);
     updateWorkingHours(newHours);
   };
 
-  const handleLunchBreakToggle = (dayKey: string, enabled: boolean) => {
-    setShowLunchBreak((prev) => ({ ...prev, [dayKey]: enabled }));
+  const handleLunchBreakToggle = (dayIndex: number, enabled: boolean) => {
+    const dayName = localHours[dayIndex].day;
+    setShowLunchBreak((prev) => ({ ...prev, [dayName]: enabled }));
 
     if (enabled) {
-      updateDayHours(dayKey, {
-        breaks: [{ start: "12:00", end: "13:00" }],
+      updateDayHours(dayIndex, {
+        lunchBreak: { start: "12:00", end: "13:00" },
       });
     } else {
-      updateDayHours(dayKey, {
-        breaks: [],
+      updateDayHours(dayIndex, {
+        lunchBreak: undefined,
       });
     }
   };
@@ -84,21 +68,21 @@ export const ScheduleStep: React.FC = () => {
   };
 
   const getWorkingHoursSummary = () => {
-    const openDays = DAYS_OF_WEEK.filter(day => localHours[day.key]?.isOpen);
+    const openDays = localHours.filter((day) => day.isOpen);
     if (openDays.length === 0) return "Nenhum dia configurado";
 
-    const firstDay = localHours[openDays[0].key];
+    const firstDay = openDays[0];
     const allSame = openDays.every(
-      day =>
-        localHours[day.key].start === firstDay.start &&
-        localHours[day.key].end === firstDay.end,
+      (day) =>
+        day.openTime === firstDay.openTime &&
+        day.closeTime === firstDay.closeTime,
     );
 
     if (allSame && openDays.length === 7) {
-      return `Todos os dias: ${formatTimeDisplay(firstDay.start)} - ${formatTimeDisplay(firstDay.end)}`;
+      return `Todos os dias: ${formatTimeDisplay(firstDay.openTime)} - ${formatTimeDisplay(firstDay.closeTime)}`;
     } else if (allSame && openDays.length === 6) {
-      const closedDay = DAYS_OF_WEEK.find(day => !localHours[day.key]?.isOpen);
-      return `${formatTimeDisplay(firstDay.start)} - ${formatTimeDisplay(firstDay.end)} (exceto ${closedDay?.label})`;
+      const closedDay = localHours.find((day) => !day.isOpen);
+      return `${formatTimeDisplay(firstDay.openTime)} - ${formatTimeDisplay(firstDay.closeTime)} (exceto ${closedDay?.day})`;
     } else {
       return `${openDays.length} dias configurados`;
     }
@@ -129,18 +113,18 @@ export const ScheduleStep: React.FC = () => {
               Configure um dia e copie para todos os outros dias da semana
             </p>
             <div className="flex flex-wrap gap-2">
-              {DAYS_OF_WEEK.map(
-                day =>
-                  localHours[day.key]?.isOpen && (
+              {localHours.map(
+                (day, index) =>
+                  day.isOpen && (
                     <Button
-                      key={day.key}
+                      key={day.day}
                       variant="outline"
                       size="sm"
-                      onClick={() => copyToAllDays(localHours[day.key])}
+                      onClick={() => copyToAllDays(day)}
                       className="flex items-center"
                     >
                       <Copy className="w-3 h-3 mr-1" />
-                      Copiar {day.label}
+                      Copiar {day.day}
                     </Button>
                   ),
               )}
@@ -155,157 +139,156 @@ export const ScheduleStep: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {DAYS_OF_WEEK.map((day) => {
-                const dayData = localHours[day.key];
-                return (
-                  <div
-                    key={day.key}
-                    className={`p-4 border rounded-lg ${
-                      dayData?.isOpen
-                        ? "border-green-200 bg-green-50"
-                        : "border-gray-200 bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <h3 className="font-medium text-gray-900">{day.label}</h3>
-                        <Switch
-                          checked={dayData?.isOpen || false}
-                          onCheckedChange={(checked) =>
-                            updateDayHours(day.key, { isOpen: checked })
-                          }
-                        />
-                        <span className="text-sm text-gray-600">
-                          {dayData?.isOpen ? "Aberto" : "Fechado"}
-                        </span>
-                      </div>
-
-                      {dayData?.isOpen && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyToAllDays(dayData)}
-                          className="flex items-center"
-                        >
-                          <Copy className="w-3 h-3 mr-1" />
-                          Copiar para todos
-                        </Button>
-                      )}
+              {localHours.map((day, index) => (
+                <div
+                  key={day.day}
+                  className={`p-4 border rounded-lg ${
+                    day.isOpen
+                      ? "border-green-200 bg-green-50"
+                      : "border-gray-200 bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <h3 className="font-medium text-gray-900">{day.day}</h3>
+                      <Switch
+                        checked={day.isOpen}
+                        onCheckedChange={(checked) =>
+                          updateDayHours(index, { isOpen: checked })
+                        }
+                      />
+                      <span className="text-sm text-gray-600">
+                        {day.isOpen ? "Aberto" : "Fechado"}
+                      </span>
                     </div>
 
-                    {dayData?.isOpen && (
-                      <div className="space-y-4">
-                        {/* Working Hours */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor={`open-${day.key}`}>
-                              Horário de Abertura
-                            </Label>
-                            <Input
-                              id={`open-${day.key}`}
-                              type="time"
-                              value={dayData.start || '09:00'}
-                              onChange={(e) =>
-                                updateDayHours(day.key, {
-                                  start: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor={`close-${day.key}`}>
-                              Horário de Fechamento
-                            </Label>
-                            <Input
-                              id={`close-${day.key}`}
-                              type="time"
-                              value={dayData.end || '18:00'}
-                              onChange={(e) =>
-                                updateDayHours(day.key, {
-                                  end: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        {/* Lunch Break Toggle */}
-                        <div className="flex items-center space-x-3">
-                          <Switch
-                            checked={showLunchBreak[day.key] || (dayData.breaks && dayData.breaks.length > 0)}
-                            onCheckedChange={(checked) =>
-                              handleLunchBreakToggle(day.key, checked)
-                            }
-                          />
-                          <div className="flex items-center">
-                            <Coffee className="w-4 h-4 mr-2 text-orange-500" />
-                            <span className="text-sm font-medium">
-                              Pausa para almoço
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Lunch Break Hours */}
-                        {(showLunchBreak[day.key] || (dayData.breaks && dayData.breaks.length > 0)) && (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6 border-l-2 border-orange-200">
-                            <div>
-                              <Label htmlFor={`lunch-start-${day.key}`}>
-                                Início do Almoço
-                              </Label>
-                              <Input
-                                id={`lunch-start-${day.key}`}
-                                type="time"
-                                value={dayData.breaks?.[0]?.start || "12:00"}
-                                onChange={(e) =>
-                                  updateDayHours(day.key, {
-                                    breaks: [{
-                                      start: e.target.value,
-                                      end: dayData.breaks?.[0]?.end || "13:00",
-                                    }],
-                                  })
-                                }
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor={`lunch-end-${day.key}`}>
-                                Fim do Almoço
-                              </Label>
-                              <Input
-                                id={`lunch-end-${day.key}`}
-                                type="time"
-                                value={dayData.breaks?.[0]?.end || "13:00"}
-                                onChange={(e) =>
-                                  updateDayHours(day.key, {
-                                    breaks: [{
-                                      start: dayData.breaks?.[0]?.start || "12:00",
-                                      end: e.target.value,
-                                    }],
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Hours Summary */}
-                        <div className="text-sm text-gray-600 bg-white p-2 rounded border">
-                          <strong>Resumo:</strong>{" "}
-                          {formatTimeDisplay(dayData.start)} às{" "}
-                          {formatTimeDisplay(dayData.end)}
-                          {dayData.breaks && dayData.breaks.length > 0 && (
-                            <span>
-                              {" "}
-                              (pausa: {formatTimeDisplay(
-                                dayData.breaks[0].start,
-                              )} às {formatTimeDisplay(dayData.breaks[0].end)})
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                    {day.isOpen && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => copyToAllDays(day)}
+                        className="flex items-center"
+                      >
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copiar para todos
+                      </Button>
                     )}
                   </div>
-                );
-              })}
+
+                  {day.isOpen && (
+                    <div className="space-y-4">
+                      {/* Working Hours */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor={`open-${index}`}>
+                            Horário de Abertura
+                          </Label>
+                          <Input
+                            id={`open-${index}`}
+                            type="time"
+                            value={day.openTime}
+                            onChange={(e) =>
+                              updateDayHours(index, {
+                                openTime: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`close-${index}`}>
+                            Horário de Fechamento
+                          </Label>
+                          <Input
+                            id={`close-${index}`}
+                            type="time"
+                            value={day.closeTime}
+                            onChange={(e) =>
+                              updateDayHours(index, {
+                                closeTime: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      {/* Lunch Break Toggle */}
+                      <div className="flex items-center space-x-3">
+                        <Switch
+                          checked={showLunchBreak[day.day] || !!day.lunchBreak}
+                          onCheckedChange={(checked) =>
+                            handleLunchBreakToggle(index, checked)
+                          }
+                        />
+                        <div className="flex items-center">
+                          <Coffee className="w-4 h-4 mr-2 text-orange-500" />
+                          <span className="text-sm font-medium">
+                            Pausa para almoço
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Lunch Break Hours */}
+                      {(showLunchBreak[day.day] || day.lunchBreak) && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6 border-l-2 border-orange-200">
+                          <div>
+                            <Label htmlFor={`lunch-start-${index}`}>
+                              Início do Almoço
+                            </Label>
+                            <Input
+                              id={`lunch-start-${index}`}
+                              type="time"
+                              value={day.lunchBreak?.start || "12:00"}
+                              onChange={(e) =>
+                                updateDayHours(index, {
+                                  lunchBreak: {
+                                    ...day.lunchBreak,
+                                    start: e.target.value,
+                                    end: day.lunchBreak?.end || "13:00",
+                                  },
+                                })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`lunch-end-${index}`}>
+                              Fim do Almoço
+                            </Label>
+                            <Input
+                              id={`lunch-end-${index}`}
+                              type="time"
+                              value={day.lunchBreak?.end || "13:00"}
+                              onChange={(e) =>
+                                updateDayHours(index, {
+                                  lunchBreak: {
+                                    ...day.lunchBreak,
+                                    start: day.lunchBreak?.start || "12:00",
+                                    end: e.target.value,
+                                  },
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Hours Summary */}
+                      <div className="text-sm text-gray-600 bg-white p-2 rounded border">
+                        <strong>Resumo:</strong>{" "}
+                        {formatTimeDisplay(day.openTime)} às{" "}
+                        {formatTimeDisplay(day.closeTime)}
+                        {day.lunchBreak && (
+                          <span>
+                            {" "}
+                            (pausa: {formatTimeDisplay(
+                              day.lunchBreak.start,
+                            )} às {formatTimeDisplay(day.lunchBreak.end)})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -323,12 +306,12 @@ export const ScheduleStep: React.FC = () => {
               <div className="text-sm text-gray-600">
                 <p>
                   <strong>Dias abertos:</strong>{" "}
-                  {DAYS_OF_WEEK.filter(day => localHours[day.key]?.isOpen).length} de 7 dias
+                  {localHours.filter((day) => day.isOpen).length} de 7 dias
                 </p>
-                {DAYS_OF_WEEK.some(day => localHours[day.key]?.breaks && localHours[day.key]?.breaks.length > 0) && (
+                {localHours.some((day) => day.lunchBreak) && (
                   <p>
                     <strong>Dias com pausa para almoço:</strong>{" "}
-                    {DAYS_OF_WEEK.filter(day => localHours[day.key]?.breaks && localHours[day.key]?.breaks.length > 0).length} dias
+                    {localHours.filter((day) => day.lunchBreak).length} dias
                   </p>
                 )}
               </div>
@@ -369,7 +352,7 @@ export const ScheduleStep: React.FC = () => {
 
       {/* Navigation */}
       <div className="flex justify-between mt-8">
-        <Button type="button" variant="outline" onClick={prevStep}>
+        <Button type="button" variant="outline" onClick={previousStep}>
           Voltar
         </Button>
         <Button

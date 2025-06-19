@@ -98,7 +98,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { PageType } from "@/lib/types";
 import { universalExport } from "@/lib/exportUtils";
-import { ApplicationDiagnostics } from "@/components/ApplicationDiagnostics";
 // 🚀 INTEGRAÇÃO PRODUCTION SUPABASE - 100% DADOS REAIS
 import {
   useDashboardStats,
@@ -1009,11 +1008,6 @@ export const BeautifulDashboardProduction: React.FC<
               )}
             </div>
           </Card>
-        </section>
-
-        {/* Application Diagnostics - For testing and monitoring */}
-        <section className="px-4 sm:px-6 lg:px-8 py-6">
-          <ApplicationDiagnostics />
         </section>
       </div>
     </div>

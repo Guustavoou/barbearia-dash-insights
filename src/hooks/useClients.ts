@@ -1,220 +1,147 @@
 
 import { useState, useEffect } from 'react';
-import { Client } from '@/lib/types';
+import { supabase } from '@/integrations/supabase/client';
+import { useBarbershop } from './useBarbershop';
+import { Client } from '@/lib/types'; // Use our local type
+import { Database } from '@/integrations/supabase/types';
 
-interface UseClientsParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: string;
-}
+type DatabaseClient = Database['public']['Tables']['clients']['Row'];
+type ClientInsert = Database['public']['Tables']['clients']['Insert'];
+type ClientUpdate = Database['public']['Tables']['clients']['Update'];
 
-interface UseClientsReturn {
-  clients: Client[];
-  loading: boolean;
-  error: string | null;
-  totalPages: number;
-  currentPage: number;
-  refetch: () => void;
-}
+// Function to convert database client to our local Client type
+const convertToLocalClient = (dbClient: DatabaseClient): Client => ({
+  id: dbClient.id,
+  name: dbClient.name,
+  email: dbClient.email,
+  phone: dbClient.phone,
+  city: dbClient.city,
+  last_visit: dbClient.last_visit,
+  total_spent: dbClient.total_spent || 0,
+  status: (dbClient.status as "ativo" | "inativo") || "ativo", // Type assertion with fallback
+  join_date: dbClient.join_date,
+  visits: dbClient.visits || 0,
+  notes: dbClient.notes,
+  cpf: dbClient.cpf,
+  profession: dbClient.profession,
+  barbershop_id: dbClient.barbershop_id,
+  created_at: dbClient.created_at || '',
+  updated_at: dbClient.updated_at || '',
+});
 
-const mockClients: Client[] = [
-  {
-    id: "1",
-    name: "João Silva",
-    email: "joao@email.com",
-    phone: "(11) 99999-9999",
-    city: "São Paulo",
-    status: "active", // Fixed: using "active" instead of "ativo"
-    birthday: "1990-05-15",
-    birth_date: "1990-05-15",
-    totalSpent: 450.00,
-    total_spent: 450.00,
-    visits: 8,
-    lastVisit: "2024-01-15",
-    last_visit: "2024-01-15",
-    created_at: "2023-06-01T10:00:00Z",
-    updated_at: "2024-01-15T14:30:00Z",
-    createdAt: "2023-06-01T10:00:00Z", // Adding camelCase version
-    updatedAt: "2024-01-15T14:30:00Z", // Adding camelCase version
-    notes: "Cliente preferencial",
-    joinDate: "2023-06-01T10:00:00Z",
-    join_date: "2023-06-01T10:00:00Z",
-    business_id: "business-1"
-  },
-  {
-    id: "2", 
-    name: "Maria Santos",
-    email: "maria@email.com",
-    phone: "(11) 88888-8888",
-    city: "Rio de Janeiro",
-    status: "active", // Fixed: using "active" instead of "ativo"
-    birthday: "1985-12-22",
-    birth_date: "1985-12-22",
-    totalSpent: 680.00,
-    total_spent: 680.00,
-    visits: 12,
-    lastVisit: "2024-01-20",
-    last_visit: "2024-01-20",
-    created_at: "2023-07-15T09:00:00Z",
-    updated_at: "2024-01-20T16:00:00Z",
-    createdAt: "2023-07-15T09:00:00Z", // Adding camelCase version
-    updatedAt: "2024-01-20T16:00:00Z", // Adding camelCase version
-    notes: "Gosta de cortes modernos",
-    joinDate: "2023-07-15T09:00:00Z",
-    join_date: "2023-07-15T09:00:00Z",
-    business_id: "business-1"
-  }
-];
-
-export const useClients = (params: UseClientsParams = {}): UseClientsReturn => {
+export const useClients = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(params.page || 1);
+  const { barbershop } = useBarbershop();
+
+  useEffect(() => {
+    if (barbershop?.id) {
+      fetchClients();
+    }
+  }, [barbershop?.id]);
 
   const fetchClients = async () => {
+    if (!barbershop?.id) return;
+
     try {
-      setLoading(true);
-      setError(null);
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('barbershop_id', barbershop.id)
+        .order('created_at', { ascending: false });
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      let filteredClients = [...mockClients];
-
-      // Apply search filter
-      if (params.search) {
-        const searchLower = params.search.toLowerCase();
-        filteredClients = filteredClients.filter(client =>
-          client.name.toLowerCase().includes(searchLower) ||
-          client.email?.toLowerCase().includes(searchLower) ||
-          client.phone?.includes(params.search!)
-        );
+      if (error) {
+        console.error('Error fetching clients:', error);
+      } else {
+        // Convert database clients to our local Client type
+        const convertedClients = (data || []).map(convertToLocalClient);
+        setClients(convertedClients);
       }
-
-      // Apply status filter
-      if (params.status && params.status !== 'all') {
-        filteredClients = filteredClients.filter(client => 
-          client.status === params.status
-        );
-      }
-
-      // Calculate pagination
-      const limit = params.limit || 10;
-      const page = params.page || 1;
-      const total = filteredClients.length;
-      const totalPagesCalc = Math.ceil(total / limit);
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      const paginatedClients = filteredClients.slice(startIndex, endIndex);
-
-      setClients(paginatedClients);
-      setTotalPages(totalPagesCalc);
-      setCurrentPage(page);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+    } catch (error) {
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchClients();
-  }, [params.page, params.limit, params.search, params.status]);
+  const addClient = async (clientData: Omit<ClientInsert, 'barbershop_id'>) => {
+    if (!barbershop?.id) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .insert({
+          ...clientData,
+          barbershop_id: barbershop.id,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error adding client:', error);
+        return null;
+      }
+
+      const convertedClient = convertToLocalClient(data);
+      setClients(prev => [convertedClient, ...prev]);
+      return convertedClient;
+    } catch (error) {
+      console.error('Error:', error);
+      return null;
+    }
+  };
+
+  const updateClient = async (id: string, updates: ClientUpdate) => {
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating client:', error);
+        return null;
+      }
+
+      const convertedClient = convertToLocalClient(data);
+      setClients(prev => prev.map(client => 
+        client.id === id ? convertedClient : client
+      ));
+      return convertedClient;
+    } catch (error) {
+      console.error('Error:', error);
+      return null;
+    }
+  };
+
+  const deleteClient = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting client:', error);
+        return false;
+      }
+
+      setClients(prev => prev.filter(client => client.id !== id));
+      return true;
+    } catch (error) {
+      console.error('Error:', error);
+      return false;
+    }
+  };
 
   return {
     clients,
     loading,
-    error,
-    totalPages,
-    currentPage,
+    addClient,
+    updateClient,
+    deleteClient,
     refetch: fetchClients,
   };
-};
-
-export const useCreateClient = () => {
-  const [loading, setLoading] = useState(false);
-
-  const createClient = async (clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'>) => {
-    setLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newClient: Client = {
-        ...clientData,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString(), // Fixed: using created_at
-        updated_at: new Date().toISOString(), // Fixed: using updated_at
-        total_spent: 0,
-        visits: 0,
-        joinDate: new Date().toISOString(),
-        business_id: clientData.business_id || 'default-business'
-      };
-
-      return { success: true, data: newClient };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { createClient, loading };
-};
-
-export const useUpdateClient = () => {
-  const [loading, setLoading] = useState(false);
-
-  const updateClient = async (id: string, clientData: Partial<Client>) => {
-    setLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const updatedClient: Client = {
-        ...clientData as Client,
-        id,
-        updated_at: new Date().toISOString() // Fixed: using updated_at
-      };
-
-      return { success: true, data: updatedClient };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { updateClient, loading };
-};
-
-export const useDeleteClient = () => {
-  const [loading, setLoading] = useState(false);
-
-  const deleteClient = async (id: string) => {
-    setLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { success: true };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { deleteClient, loading };
 };

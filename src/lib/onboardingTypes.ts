@@ -1,163 +1,164 @@
-
-export interface OnboardingBusiness {
-  name: string;
-  slug: string;
-  adminEmail: string;
-  phone: string;
-  ein: string;
-  legalName: string;
-  tradeName: string;
-  address: string;
-  addressNumber: string;
-  addressComplement: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  description: string;
-  language: string;
-  currency: string;
-  timezone: string;
-  // Additional properties used in components
-  email?: string;
-  cnpj?: string;
-  cep?: string;
-  website?: string;
-  instagram?: string;
-  facebook?: string;
-  logo?: string | File;
-  banner?: string | File;
-}
-
-// For backward compatibility
-export interface BusinessInfo extends OnboardingBusiness {}
-
-export interface WorkingHours {
-  [key: string]: {
-    isOpen: boolean;
-    start: string;
-    end: string;
-    breaks: Array<{
-      start: string;
-      end: string;
-    }>;
-  };
-}
-
-export const defaultWorkingHours: WorkingHours = {
-  monday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
-  tuesday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
-  wednesday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
-  thursday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
-  friday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
-  saturday: { isOpen: true, start: '09:00', end: '18:00', breaks: [] },
-  sunday: { isOpen: false, start: '09:00', end: '18:00', breaks: [] }
-};
-
-export interface OnboardingProfessional {
-  id?: string;
+export interface BusinessInfo {
   name: string;
   email: string;
   phone: string;
-  bio: string;
-  avatar?: string | File;
-  isActive: boolean;
-  workingHours: WorkingHours;
-  // Additional properties used in components
-  role?: string;
-  type?: string;
-  photo?: string | File;
-  calendarColor?: string;
-  services?: string[];
-  workDays?: string[];
+  cnpj?: string;
+  address: string;
+  cep: string;
+  website?: string;
+  instagram?: string;
+  facebook?: string;
+  logo?: File | string;
+  banner?: File | string;
+}
+
+export interface ServiceTemplate {
+  id: string;
+  name: string;
+  duration: number;
+  price: number;
+  description?: string;
+  category: string;
 }
 
 export interface OnboardingService {
   id?: string;
   name: string;
-  description: string;
   duration: number;
   price: number;
+  description?: string;
   category: string;
-  isActive: boolean;
+  active: boolean;
 }
 
-export interface OnboardingSchedule {
-  businessHours: WorkingHours;
-  appointmentDuration: number;
-  advanceBookingDays: number;
-  minimumNoticeHours: number;
-  allowOnlineBooking: boolean;
-  requireAdvancePayment: boolean;
+export interface OnboardingProfessional {
+  id?: string;
+  name: string;
+  role: string;
+  type: "employee" | "freelancer";
+  email: string;
+  phone: string;
+  photo?: File | string;
+  calendarColor: string;
+  services: string[];
+  workDays: string[];
+}
+
+export interface WorkingHours {
+  day: string;
+  isOpen: boolean;
+  openTime: string;
+  closeTime: string;
+  lunchBreak?: {
+    start: string;
+    end: string;
+  };
 }
 
 export interface OnboardingData {
-  currentStep: number;
-  business: Partial<OnboardingBusiness>;
-  businessInfo?: Partial<OnboardingBusiness>; // For backward compatibility
-  professionals: OnboardingProfessional[];
+  businessInfo: BusinessInfo;
   services: OnboardingService[];
-  schedule: Partial<OnboardingSchedule>;
-  workingHours?: WorkingHours; // Added for compatibility
-  completed: boolean;
+  professionals: OnboardingProfessional[];
+  workingHours: WorkingHours[];
+  currentStep: number;
+  isCompleted: boolean;
 }
 
 export interface OnboardingContextType {
   data: OnboardingData;
-  updateBusiness: (business: Partial<OnboardingBusiness>) => void;
-  updateBusinessInfo?: (business: Partial<OnboardingBusiness>) => void; // For backward compatibility
-  addProfessional: (professional: OnboardingProfessional) => void;
-  updateProfessional: (index: number, professional: Partial<OnboardingProfessional>) => void;
-  removeProfessional: (index: number) => void;
+  updateBusinessInfo: (info: Partial<BusinessInfo>) => void;
   addService: (service: OnboardingService) => void;
-  updateService: (index: number, service: Partial<OnboardingService>) => void;
-  removeService: (index: number) => void;
-  updateSchedule: (schedule: Partial<OnboardingSchedule>) => void;
-  updateWorkingHours?: (workingHours: WorkingHours) => void; // Added for compatibility
+  updateService: (id: string, service: Partial<OnboardingService>) => void;
+  removeService: (id: string) => void;
+  addProfessional: (professional: OnboardingProfessional) => void;
+  updateProfessional: (
+    id: string,
+    professional: Partial<OnboardingProfessional>,
+  ) => void;
+  removeProfessional: (id: string) => void;
+  updateWorkingHours: (hours: WorkingHours[]) => void;
+  setCurrentStep: (step: number) => void;
   nextStep: () => void;
-  prevStep: () => void;
-  previousStep?: () => void; // For backward compatibility
-  goToStep: (step: number) => void;
-  setCurrentStep?: (step: number) => void; // For backward compatibility
-  submitOnboarding: () => Promise<void>;
-  completeOnboarding?: () => Promise<void>; // Added for compatibility
-  reset: () => void;
+  previousStep: () => void;
+  completeOnboarding: () => Promise<void>;
+  resetOnboarding: () => void;
+  saveProgress: () => void;
+  loadProgress: () => void;
 }
 
-// Service template interface
-export interface ServiceTemplate {
-  name: string;
-  description: string;
-  duration: number;
-  price: number;
-  category: string;
-  isActive: boolean;
-}
-
-// Service templates for the onboarding process
 export const serviceTemplates: ServiceTemplate[] = [
   {
-    name: 'Corte de Cabelo',
-    description: 'Corte tradicional masculino',
+    id: "1",
+    name: "Corte Masculino",
     duration: 30,
     price: 25,
-    category: 'Cabelo',
-    isActive: true
+    description: "Corte de cabelo masculino tradicional",
+    category: "Cabelo",
   },
   {
-    name: 'Barba',
-    description: 'Corte e modelagem de barba',
+    id: "2",
+    name: "Corte Feminino",
+    duration: 45,
+    price: 40,
+    description: "Corte de cabelo feminino",
+    category: "Cabelo",
+  },
+  {
+    id: "3",
+    name: "Barba",
     duration: 20,
     price: 15,
-    category: 'Barba',
-    isActive: true
+    description: "Corte e aparação de barba",
+    category: "Barba",
   },
   {
-    name: 'Sobrancelha',
-    description: 'Design de sobrancelha',
+    id: "4",
+    name: "Sobrancelha",
     duration: 15,
-    price: 10,
-    category: 'Estética',
-    isActive: true
-  }
+    price: 12,
+    description: "Design de sobrancelha",
+    category: "Sobrancelha",
+  },
+  {
+    id: "5",
+    name: "Escova",
+    duration: 40,
+    price: 30,
+    description: "Escova modeladora",
+    category: "Cabelo",
+  },
+  {
+    id: "6",
+    name: "Hidratação",
+    duration: 60,
+    price: 50,
+    description: "Tratamento de hidratação capilar",
+    category: "Tratamento",
+  },
+  {
+    id: "7",
+    name: "Manicure",
+    duration: 45,
+    price: 20,
+    description: "Cuidados com as unhas das mãos",
+    category: "Unhas",
+  },
+  {
+    id: "8",
+    name: "Pedicure",
+    duration: 60,
+    price: 25,
+    description: "Cuidados com as unhas dos pés",
+    category: "Unhas",
+  },
+];
+
+export const defaultWorkingHours: WorkingHours[] = [
+  { day: "Segunda", isOpen: true, openTime: "09:00", closeTime: "18:00" },
+  { day: "Terça", isOpen: true, openTime: "09:00", closeTime: "18:00" },
+  { day: "Quarta", isOpen: true, openTime: "09:00", closeTime: "18:00" },
+  { day: "Quinta", isOpen: true, openTime: "09:00", closeTime: "18:00" },
+  { day: "Sexta", isOpen: true, openTime: "09:00", closeTime: "18:00" },
+  { day: "Sábado", isOpen: true, openTime: "09:00", closeTime: "18:00" },
+  { day: "Domingo", isOpen: false, openTime: "09:00", closeTime: "18:00" },
 ];

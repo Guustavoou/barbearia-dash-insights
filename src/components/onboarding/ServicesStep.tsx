@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +24,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useOnboarding } from "@/contexts/OnboardingContext";
+import { useOnboardingHelpers } from "@/hooks/useOnboarding";
 import {
   OnboardingService,
   serviceTemplates,
@@ -38,32 +38,23 @@ export const ServicesStep: React.FC = () => {
     updateService,
     removeService,
     nextStep,
-    prevStep,
+    previousStep,
   } = useOnboarding();
+  const { validateServices, getServiceTemplatesByCategory } =
+    useOnboardingHelpers();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingService, setEditingService] =
     useState<OnboardingService | null>(null);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newService, setNewService] = useState<Partial<OnboardingService>>({
     name: "",
     duration: 30,
     price: 0,
     description: "",
     category: "",
-    isActive: true,
+    active: true,
   });
-
-  const getServiceTemplatesByCategory = () => {
-    const categories: { [key: string]: ServiceTemplate[] } = {};
-    serviceTemplates.forEach((template) => {
-      if (!categories[template.category]) {
-        categories[template.category] = [];
-      }
-      categories[template.category].push(template);
-    });
-    return categories;
-  };
+  const [errors, setErrors] = useState<string[]>([]);
 
   const categories = getServiceTemplatesByCategory();
 
@@ -71,6 +62,7 @@ export const ServicesStep: React.FC = () => {
     addService({
       ...template,
       id: Date.now().toString(),
+      active: true,
     });
   };
 
@@ -88,7 +80,7 @@ export const ServicesStep: React.FC = () => {
         price: newService.price,
         description: newService.description || "",
         category: newService.category,
-        isActive: true,
+        active: true,
       });
       setNewService({
         name: "",
@@ -96,23 +88,26 @@ export const ServicesStep: React.FC = () => {
         price: 0,
         description: "",
         category: "",
-        isActive: true,
+        active: true,
       });
       setShowAddForm(false);
     }
   };
 
   const handleUpdateService = () => {
-    if (editingService && editingIndex !== null) {
-      updateService(editingIndex, editingService);
+    if (editingService && editingService.id) {
+      updateService(editingService.id, editingService);
       setEditingService(null);
-      setEditingIndex(null);
     }
   };
 
-  const handleEditClick = (service: OnboardingService, index: number) => {
-    setEditingService(service);
-    setEditingIndex(index);
+  const handleNext = () => {
+    const validation = validateServices(data.services);
+    if (validation.isValid) {
+      nextStep();
+    } else {
+      setErrors(validation.errors);
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -130,6 +125,24 @@ export const ServicesStep: React.FC = () => {
           Configure o catálogo de serviços do seu estabelecimento
         </p>
       </div>
+
+      {errors.length > 0 && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center mb-2">
+            <X className="w-5 h-5 text-red-500 mr-2" />
+            <h4 className="text-red-800 font-medium">
+              Corrija os seguintes erros:
+            </h4>
+          </div>
+          <ul className="list-disc list-inside space-y-1">
+            {errors.map((error, index) => (
+              <li key={index} className="text-red-700 text-sm">
+                {error}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <Tabs defaultValue="templates" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
@@ -157,13 +170,13 @@ export const ServicesStep: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {templates.map((template, templateIndex) => {
+                  {templates.map((template) => {
                     const isAdded = data.services.some(
                       (service) => service.name === template.name,
                     );
                     return (
                       <div
-                        key={`${category}-${templateIndex}`}
+                        key={template.id}
                         className={`p-4 border rounded-lg ${
                           isAdded
                             ? "border-green-300 bg-green-50"
@@ -232,7 +245,7 @@ export const ServicesStep: React.FC = () => {
                     <Input
                       id="serviceName"
                       placeholder="Ex: Corte Especial"
-                      value={newService.name || ""}
+                      value={newService.name}
                       onChange={(e) =>
                         setNewService({ ...newService, name: e.target.value })
                       }
@@ -242,7 +255,7 @@ export const ServicesStep: React.FC = () => {
                   <div>
                     <Label htmlFor="serviceCategory">Categoria</Label>
                     <Select
-                      value={newService.category || ""}
+                      value={newService.category}
                       onValueChange={(value) =>
                         setNewService({ ...newService, category: value })
                       }
@@ -266,7 +279,7 @@ export const ServicesStep: React.FC = () => {
                     <Input
                       id="serviceDuration"
                       type="number"
-                      value={newService.duration || 30}
+                      value={newService.duration}
                       onChange={(e) =>
                         setNewService({
                           ...newService,
@@ -282,7 +295,7 @@ export const ServicesStep: React.FC = () => {
                       id="servicePrice"
                       type="number"
                       step="0.01"
-                      value={newService.price || 0}
+                      value={newService.price}
                       onChange={(e) =>
                         setNewService({
                           ...newService,
@@ -300,7 +313,7 @@ export const ServicesStep: React.FC = () => {
                   <Textarea
                     id="serviceDescription"
                     placeholder="Descrição do serviço"
-                    value={newService.description || ""}
+                    value={newService.description}
                     onChange={(e) =>
                       setNewService({
                         ...newService,
@@ -333,9 +346,9 @@ export const ServicesStep: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.services.map((service, index) => (
+              {data.services.map((service) => (
                 <div
-                  key={service.id || index}
+                  key={service.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="flex-1">
@@ -366,14 +379,14 @@ export const ServicesStep: React.FC = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleEditClick(service, index)}
+                      onClick={() => setEditingService(service)}
                     >
                       <Edit className="w-3 h-3" />
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => removeService(index)}
+                      onClick={() => service.id && removeService(service.id)}
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
@@ -482,10 +495,7 @@ export const ServicesStep: React.FC = () => {
               <div className="flex justify-end space-x-2">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setEditingService(null);
-                    setEditingIndex(null);
-                  }}
+                  onClick={() => setEditingService(null)}
                 >
                   Cancelar
                 </Button>
@@ -498,10 +508,10 @@ export const ServicesStep: React.FC = () => {
 
       {/* Navigation */}
       <div className="flex justify-between mt-8">
-        <Button variant="outline" onClick={prevStep}>
+        <Button variant="outline" onClick={previousStep}>
           Voltar
         </Button>
-        <Button onClick={nextStep} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700">
           Próximo: Profissionais
         </Button>
       </div>

@@ -32,13 +32,20 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   const [sortOrder, setSortOrder] = useState<AppointmentSortOrder>("desc");
   const [showNewModal, setShowNewModal] = useState(false);
 
-  // API integration with automatic fallback - Updated to match hook signatures
+  // API integration with automatic fallback
   const {
-    data: appointmentsData,
+    data: apiResponse,
     loading,
     error,
     refetch,
-  } = useAppointments();
+  } = useAppointments({
+    search: searchTerm,
+    status: statusFilter !== "todos" ? statusFilter : undefined,
+    sort: sortBy,
+    order: sortOrder.toUpperCase() as "ASC" | "DESC",
+    page: 1,
+    limit: 100,
+  });
 
   const createAppointmentMutation = useCreateAppointment({
     onSuccess: () => {
@@ -59,27 +66,27 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
     },
   });
 
-  // Get appointments array safely
-  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
+  // Use API data or fallback to empty array
+  const appointments = apiResponse?.data || [];
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const total = appointments?.length || 0;
-    const agendado = appointments?.filter(
+    const total = appointments.length;
+    const agendado = appointments.filter(
       (a: any) => a.status === "agendado",
-    ).length || 0;
-    const confirmado = appointments?.filter(
+    ).length;
+    const confirmado = appointments.filter(
       (a: any) => a.status === "confirmado",
-    ).length || 0;
-    const concluido = appointments?.filter(
+    ).length;
+    const concluido = appointments.filter(
       (a: any) => a.status === "concluido",
-    ).length || 0;
-    const cancelado = appointments?.filter(
+    ).length;
+    const cancelado = appointments.filter(
       (a: any) => a.status === "cancelado",
-    ).length || 0;
-    const faltou = appointments?.filter(
+    ).length;
+    const faltou = appointments.filter(
       (a: any) => a.status === "faltou",
-    ).length || 0;
+    ).length;
 
     return {
       total,
@@ -106,7 +113,7 @@ export const Appointments: React.FC<AppointmentsProps> = ({ darkMode }) => {
   };
 
   // Filter appointments based on search term
-  const filteredAppointments = (appointments || []).filter(
+  const filteredAppointments = appointments.filter(
     (appointment: any) =>
       appointment.client_name
         ?.toLowerCase()
